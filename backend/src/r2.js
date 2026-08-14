@@ -9,31 +9,35 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 require('dotenv').config();
 
 const {
-  R2_ACCOUNT_ID,
-  R2_ACCESS_KEY_ID,
-  R2_SECRET_ACCESS_KEY,
-  R2_BUCKET_NAME,
+  STORAGE_ACCESS_KEY_ID,
+  STORAGE_SECRET_ACCESS_KEY,
+  STORAGE_ENDPOINT,
+  STORAGE_REGION,
+  STORAGE_BUCKET,
 } = process.env;
 
-if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET_NAME) {
+// S3-compatible storage (Backblaze B2, Cloudflare R2, etc.). Provide the
+// endpoint/region via env vars; the presigned-URL flow works the same for all.
+if (!STORAGE_ACCESS_KEY_ID || !STORAGE_SECRET_ACCESS_KEY || !STORAGE_ENDPOINT || !STORAGE_BUCKET) {
   // Fail loudly at boot rather than on first upload — credentials never
   // touch the frontend, so this check only ever runs server-side.
   console.warn(
-    '[r2] Missing one or more R2_* environment variables. ' +
-    'R2 calls will fail until they are set.'
+    '[r2] Missing one or more STORAGE_* environment variables. ' +
+    'Storage calls will fail until they are set.'
   );
 }
 
 const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  region: STORAGE_REGION || 'auto',
+  endpoint: STORAGE_ENDPOINT,
+  forcePathStyle: true,
   credentials: {
-    accessKeyId: R2_ACCESS_KEY_ID,
-    secretAccessKey: R2_SECRET_ACCESS_KEY,
+    accessKeyId: STORAGE_ACCESS_KEY_ID,
+    secretAccessKey: STORAGE_SECRET_ACCESS_KEY,
   },
 });
 
-const BUCKET = R2_BUCKET_NAME;
+const BUCKET = STORAGE_BUCKET;
 const DEFAULT_EXPIRY = parseInt(process.env.PRESIGNED_URL_EXPIRY_SECONDS || '300', 10);
 
 /**
