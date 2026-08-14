@@ -774,7 +774,14 @@
       });
     } catch (err) {
       CATEGORIES.forEach((cat) => {
-        document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+        const staticList = STATIC_SUBJECTS[cat];
+        if (staticList && staticList.length) {
+          renderCategory(cat, []);
+          const countEl = document.getElementById('catCount-' + cat);
+          if (countEl) countEl.textContent = staticList.length + ' subject' + (staticList.length === 1 ? '' : 's');
+        } else {
+          document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+        }
       });
     }
   }
