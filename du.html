@@ -827,7 +827,7 @@
       </div>`;
   }
 
-  function deleteMaterial(id, title) {
+  async function deleteMaterial(id, title) {
     if (!state.isAdmin) { alert('Only the site admin can delete materials.'); return; }
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
     try {
