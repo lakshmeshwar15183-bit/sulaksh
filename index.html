@@ -156,7 +156,7 @@
   /* ---------- Category cards ---------- */
   .cats{margin-top:-8px; padding-bottom:8px;}
   .cats-grid{
-    display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; margin-top:8px;
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:18px; margin-top:8px;
   }
   .cat-card{
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
@@ -401,22 +401,6 @@
 <section class="cats wrap" id="exams">
   <div class="cats-grid">
     <div class="cat-card">
-      <div class="cat-icon" style="background:rgba(30,95,255,.1); color:var(--blue);">🚆</div>
-      <h3 style="color:var(--blue);">RAILWAY</h3>
-      <p>RRB NTPC, Group D, JE, ALP &amp; more</p>
-      <a href="#" class="cat-link" style="color:var(--blue);">View All →</a>
-      <button class="upload-btn" onclick="openUpload('Railway','RRB NTPC')">⬆ Upload Material</button>
-      <div class="mat-list" data-exam="Railway"></div>
-    </div>
-    <div class="cat-card">
-      <div class="cat-icon" style="background:rgba(255,122,26,.1); color:var(--saffron);">👥</div>
-      <h3 style="color:var(--saffron);">SSC</h3>
-      <p>SSC CGL, CHSL, MTS, GD &amp; more</p>
-      <a href="#" class="cat-link" style="color:var(--saffron);">View All →</a>
-      <button class="upload-btn" onclick="openUpload('SSC','SSC CGL')">⬆ Upload Material</button>
-      <div class="mat-list" data-exam="SSC"></div>
-    </div>
-    <div class="cat-card">
       <div class="cat-icon" style="background:rgba(12,35,64,.08); color:var(--navy);">🏛️</div>
       <h3 style="color:var(--navy);">UPSC</h3>
       <p>Prelims, Mains, Current Affairs, NCERT &amp; more</p>
@@ -443,10 +427,8 @@
           <button class="upload-btn" style="width:auto; margin:0; padding:8px 14px;" onclick="openUpload('','')">⬆ Upload</button>
         </div>
       </div>
-      <div class="exam-row"><div class="exam-left">🔥 RRB NTPC 2024</div><span>›</span></div>
-      <div class="exam-row"><div class="exam-left">🔥 SSC CGL 2024</div><span>›</span></div>
-      <div class="exam-row"><div class="exam-left">🔥 UPSC Prelims 2024</div><span>›</span></div>
-      <div class="exam-row"><div class="exam-left">🔥 RRB Group D 2024</div><span>›</span></div>
+      <div class="exam-row"><div class="exam-left">🔥 UPSC Prelims 2026</div><span>›</span></div>
+      <div class="exam-row"><div class="exam-left">🎓 DU &amp; College Sem 1</div><span>›</span></div>
     </div>
 
     <div class="panel" id="pyqs">
