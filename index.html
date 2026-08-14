@@ -204,6 +204,40 @@
     font-size:15px; font-weight:600; margin-bottom:56px;
   }
 
+  /* ---------- About Us ---------- */
+  .about{
+    padding:64px 0 72px; border-top:1px solid var(--border);
+  }
+  .about .wrap{max-width:1080px;}
+  .about-head{text-align:center; margin-bottom:44px;}
+  .about-head h2{font-size:clamp(26px, 3vw, 34px); font-weight:800; letter-spacing:-.5px;}
+  .about-head p{
+    margin:14px auto 0; max-width:640px; font-size:15.5px; color:var(--muted); line-height:1.7;
+  }
+  .about-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .about-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:28px 24px; text-align:center; transition:transform .2s, box-shadow .2s;
+  }
+  .about-card:hover{transform:translateY(-4px); box-shadow:var(--shadow);}
+  .about-card .pillar-icon{
+    width:56px; height:56px; border-radius:14px; margin:0 auto 16px;
+    display:flex; align-items:center; justify-content:center; font-size:26px;
+  }
+  .about-card h3{font-size:17px; margin-bottom:10px;}
+  .about-card p{font-size:13.5px; color:var(--muted); line-height:1.65;}
+
+  .about-mission{
+    margin-top:24px; background:linear-gradient(90deg, var(--navy), var(--navy-2));
+    color:#fff; border-radius:var(--radius); padding:30px 32px; text-align:center;
+  }
+  .about-mission h3{font-size:19px; margin-bottom:10px;}
+  .about-mission p{font-size:14.5px; color:#cfd9ec; line-height:1.7; max-width:760px; margin:0 auto;}
+
+  @media (max-width:800px){
+    .about-grid{grid-template-columns:1fr;}
+  }
+
   footer{
     background:var(--navy); color:#cfd9ec; padding:36px 0; text-align:center; font-size:13px;
   }
@@ -431,10 +465,50 @@
   <div class="banner" id="notes">🏆 Your Journey, Our Support — Let's Achieve Success Together!</div>
 </section>
 
-<footer id="about">
+<section class="about" id="about">
+  <div class="wrap">
+    <div class="about-head">
+      <div class="eyebrow" style="margin-bottom:14px;">About Sulaksh</div>
+      <h2>Built for Aspirants, by Aspirants</h2>
+      <p>
+        Sulaksh is a one-stop learning platform for every student — from competitive
+        exam aspirants to university scholars. We bring exam updates, study material,
+        notes and previous-year questions together so you can focus on what matters:
+        your preparation.
+      </p>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="pillar-icon" style="background:rgba(30,95,255,.1); color:var(--blue);">📚</div>
+        <h3>Learn</h3>
+        <p>Clear, structured study material and one-liner facts across exams like Railway, SSC, UPSC and university courses.</p>
+      </div>
+      <div class="about-card">
+        <div class="pillar-icon" style="background:rgba(255,122,26,.1); color:var(--saffron);">🛠️</div>
+        <h3>Prepare</h3>
+        <p>Mock tests, syllabus breakdowns and latest exam notifications — everything you need to plan a smart preparation.</p>
+      </div>
+      <div class="about-card">
+        <div class="pillar-icon" style="background:rgba(30,142,90,.1); color:var(--green);">🏆</div>
+        <h3>Achieve</h3>
+        <p>Previous year questions, high-quality notes and consistent support that have helped 50,000+ aspirants succeed.</p>
+      </div>
+    </div>
+    <div class="about-mission">
+      <h3>Our Mission</h3>
+      <p>
+        To make quality education material accessible, organised and free of clutter —
+        so every aspirant, regardless of background, has a fair shot at their dream.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
   <div class="wrap">
     <div class="brand-name" style="color:#fff; margin-bottom:8px;">SULAKSH</div>
-    <p>© 2026 Sulaksh. Built for aspirants, by aspirants.</p>
+    <p>© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+    <p style="margin-top:6px;">Contact: <a href="mailto:y1315544@gmail.com">y1315544@gmail.com</a></p>
   </div>
 </footer>
 
