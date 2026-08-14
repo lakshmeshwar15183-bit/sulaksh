@@ -54,15 +54,9 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 24px; max-width:1280px; margin:0 auto;
   }
-  .brand{display:flex; align-items:center; gap:10px;}
-  .brand-mark{
-    width:40px; height:40px; border-radius:10px;
-    background:linear-gradient(135deg, var(--navy), var(--blue));
-    display:flex; align-items:center; justify-content:center;
-    color:#fff; font-weight:800; font-size:20px; flex-shrink:0;
-  }
-  .brand-name{font-size:19px; font-weight:700; letter-spacing:.3px;}
-  .brand-tag{font-size:10px; letter-spacing:1.5px; color:var(--saffron); font-weight:600;}
+  .brand{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .brand-emblem{height:44px; width:auto; display:block; flex-shrink:0;}
+  .brand-wordmark{height:26px; width:auto; display:block; flex-shrink:0;}
 
   .nav-links{display:flex; align-items:center; gap:28px; list-style:none;}
   .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
@@ -260,6 +254,13 @@
   @media (max-width:900px){
     .nav-links{display:none;}
     .hamburger{display:flex;}
+    .brand-emblem{height:38px;}
+    .brand-wordmark{height:22px;}
+  }
+  @media (max-width:520px){
+    .brand{gap:8px;}
+    .brand-emblem{height:32px;}
+    .brand-wordmark{height:18px;}
   }
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;}
@@ -271,11 +272,8 @@
 <header>
   <nav class="nav">
     <a href="index.html" class="brand">
-      <div class="brand-mark">S</div>
-      <div>
-        <div class="brand-name">SULAKSH</div>
-        <div class="brand-tag">LEARN · PREPARE · ACHIEVE</div>
-      </div>
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem" width="782" height="665">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark" width="1115" height="203">
     </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
