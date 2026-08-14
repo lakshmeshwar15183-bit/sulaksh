@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS materials (
   status TEXT NOT NULL DEFAULT 'active',
   is_imp INTEGER NOT NULL DEFAULT 0,
   is_syllabus INTEGER NOT NULL DEFAULT 0,
+  is_pyq INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -53,6 +54,10 @@ if (!cols.some((c) => c.name === 'is_syllabus')) {
   db.exec('ALTER TABLE materials ADD COLUMN is_syllabus INTEGER NOT NULL DEFAULT 0');
   console.log('[db] Added is_syllabus column to materials');
 }
+if (!cols.some((c) => c.name === 'is_pyq')) {
+  db.exec('ALTER TABLE materials ADD COLUMN is_pyq INTEGER NOT NULL DEFAULT 0');
+  console.log('[db] Added is_pyq column to materials');
+}
 
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_materials_exam ON materials(exam);
@@ -62,6 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_materials_year ON materials(year);
 CREATE INDEX IF NOT EXISTS idx_materials_status ON materials(status);
 CREATE INDEX IF NOT EXISTS idx_materials_is_imp ON materials(is_imp);
 CREATE INDEX IF NOT EXISTS idx_materials_is_syllabus ON materials(is_syllabus);
+CREATE INDEX IF NOT EXISTS idx_materials_is_pyq ON materials(is_pyq);
 `);
 
 module.exports = db;

@@ -180,6 +180,13 @@
     font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
   }
   .syl-btn:hover{background:var(--green); color:#fff;}
+  .pyq-btn{
+    display:inline-flex; align-items:center; gap:4px;
+    background:rgba(38,82,164,.12); color:var(--blue);
+    border:1px solid rgba(38,82,164,.35); padding:6px 12px; border-radius:8px;
+    font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
+  }
+  .pyq-btn:hover{background:var(--blue); color:#fff;}
 
   .mat-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
@@ -242,6 +249,8 @@
   .imp-check input{width:17px; height:17px; accent-color:var(--saffron); cursor:pointer;}
   .imp-check.syl{color:var(--green);}
   .imp-check.syl input{accent-color:var(--green);}
+  .imp-check.pyq{color:var(--blue);}
+  .imp-check.pyq input{accent-color:var(--blue);}
 
   footer{
     background:var(--navy); color:#cfd9ec; padding:36px 0; text-align:center; font-size:13px;
@@ -423,6 +432,7 @@
     <input type="text" id="upYear" class="field" placeholder="Year (optional)">
     <label class="imp-check"><input type="checkbox" id="upImp"> ⭐ Important Question</label>
     <label class="imp-check syl"><input type="checkbox" id="upSyl"> 📑 Syllabus</label>
+    <label class="imp-check pyq"><input type="checkbox" id="upPyq"> 📜 PYQ</label>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
@@ -565,7 +575,6 @@
     isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
   };
 
-  const expanded = new Set();
   const dynamicSubjects = {};
 
   const upCatEl = document.getElementById('upCat');
@@ -607,12 +616,6 @@
     document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   window.backToCategories = backToCategories;
-
-  function toggleSubject(card) {
-    const key = card.dataset.key;
-    if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
-    card.classList.toggle('closed');
-  }
 
   function setMsg(el, text, ok) {
     el.textContent = text;
@@ -705,6 +708,7 @@
     document.getElementById('upFile').value = '';
     document.getElementById('upImp').checked = false;
     document.getElementById('upSyl').checked = false;
+    document.getElementById('upPyq').checked = false;
     setMsg(document.getElementById('uploadMsg'), '', false);
     hideSuggest();
     openModal('uploadOverlay');
@@ -734,6 +738,7 @@
     fd.append('subject', subject);
     fd.append('is_imp', document.getElementById('upImp').checked ? 'true' : 'false');
     fd.append('is_syllabus', document.getElementById('upSyl').checked ? 'true' : 'false');
+    fd.append('is_pyq', document.getElementById('upPyq').checked ? 'true' : 'false');
     if (year) fd.append('year', year);
     fd.append('file', file);
 
@@ -798,37 +803,24 @@
 
   function subjectCard(cat, s, files) {
     const key = cat + '::' + s;
-    const isOpen = expanded.has(key);
-    const listHtml = files.length ? files.map(matItem).join('') : '<div class="mat-empty">No files yet.</div>';
     const impUrl = `imp.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent(cat)}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
     const sylUrl = `syllabus.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent(cat)}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
+    const pyqUrl = `pyq.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent(cat)}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
     return `
-      <div class="subj-card ${isOpen ? '' : 'closed'}" data-key="${escapeHtml(key)}" onclick="toggleSubject(this)">
+      <div class="subj-card" data-key="${escapeHtml(key)}">
         <div class="subj-head">
-          <div class="subj-title"><span class="chev">▼</span> 📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
+          <div class="subj-title">📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
           <div style="display:flex; gap:6px; flex-shrink:0;">
-            <a class="syl-btn" onclick="event.stopPropagation(); window.open('${sylUrl}','_blank')">📑 Syllabus</a>
-            <a class="imp-btn" onclick="event.stopPropagation(); window.open('${impUrl}','_blank')">⭐ Imp Questions</a>
-            ${state.isAdmin ? `<button class="upload-btn" onclick="event.stopPropagation(); openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
+            <a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a>
+            <a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a>
+            <a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>
+            ${state.isAdmin ? `<button class="upload-btn" onclick="openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
           </div>
         </div>
-        <div class="mat-list">${listHtml}</div>
       </div>`;
   }
 
-  function matItem(m) {
-    return `
-      <div class="mat-item">
-        <span class="t">${escapeHtml(m.title)}${m.year ? ' (' + m.year + ')' : ''}</span>
-        <span class="a">
-          <button onclick="event.stopPropagation(); viewMaterial('${m.id}')">View</button>
-          <button onclick="event.stopPropagation(); downloadMaterial('${m.id}')">Save</button>
-          ${state.isAdmin ? `<button class="del-btn" onclick="event.stopPropagation(); deleteMaterial('${m.id}', '${escapeHtml(m.title)}')">Delete</button>` : ''}
-        </span>
-      </div>`;
-  }
-
-  async function deleteMaterial(id, title) {
+  function deleteMaterial(id, title) {
     if (!state.isAdmin) { alert('Only the site admin can delete materials.'); return; }
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
     try {

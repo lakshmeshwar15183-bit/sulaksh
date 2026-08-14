@@ -8,7 +8,7 @@ const router = express.Router();
 // the client; downloads only ever happen via a short-lived presigned URL.
 const PUBLIC_FIELDS = `
   id, title, exam, category, subject, year, description,
-  file_name, file_size, content_type, is_imp, is_syllabus, created_at, updated_at
+  file_name, file_size, content_type, is_imp, is_syllabus, is_pyq, created_at, updated_at
 `;
 
 // GET /api/materials?exam=&category=&subject=&year=&q=
