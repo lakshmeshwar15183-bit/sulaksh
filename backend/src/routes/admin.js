@@ -70,10 +70,10 @@ router.post('/materials', upload.single('file'), async (req, res) => {
     db.prepare(`
       INSERT INTO materials
         (id, title, exam, category, subject, year, description, file_name, file_size, content_type, r2_object_key, status, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `    ).run(
       id, title, exam, category, subject || null, year ? parseInt(year, 10) : null,
-      description || null, safeFileName, req.file.size, contentType, objectKey, ts, ts
+      description || null, safeFileName, req.file.size, contentType, objectKey, 'active', ts, ts
     );
   } catch (err) {
     console.error('[admin] DB insert failed after R2 upload, cleaning up object:', objectKey, err.message);
