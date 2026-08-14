@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 const { uploadObject, deleteObject, objectExists } = require('../r2');
-const { validateUpload, buildObjectKey, sanitizeFileName, MAX_FILE_SIZE_BYTES } = require('../utils/validate');
+const { validateUpload, buildObjectKey, sanitizeFileName, detectFileType, MAX_FILE_SIZE_BYTES } = require('../utils/validate');
 
 const router = express.Router();
 router.use(requireAdmin);
@@ -50,12 +50,13 @@ router.post('/materials', upload.single('file'), async (req, res) => {
     return res.status(400).json({ error: fileErrors.join(' ') });
   }
 
-  const objectKey = buildObjectKey({ exam, category, year });
-  const safeFileName = sanitizeFileName(req.file.originalname);
+  const contentType = detectFileType(req.file.buffer);
+  const objectKey = buildObjectKey({ exam, category, year }, contentType);
+  const safeFileName = sanitizeFileName(req.file.originalname, contentType);
 
   // 1. Upload to R2 first. If this throws, we return before ever touching the DB.
   try {
-    await uploadObject(objectKey, req.file.buffer, 'application/pdf');
+    await uploadObject(objectKey, req.file.buffer, contentType);
   } catch (err) {
     console.error('[admin] R2 upload failed:', err.message);
     return res.status(502).json({ error: 'Upload to storage failed. No record was created.' });
@@ -69,10 +70,10 @@ router.post('/materials', upload.single('file'), async (req, res) => {
     db.prepare(`
       INSERT INTO materials
         (id, title, exam, category, subject, year, description, file_name, file_size, content_type, r2_object_key, status, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'application/pdf', ?, 'active', ?, ?)
-    `).run(
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)
+    `    ).run(
       id, title, exam, category, subject || null, year ? parseInt(year, 10) : null,
-      description || null, safeFileName, req.file.size, objectKey, ts, ts
+      description || null, safeFileName, req.file.size, contentType, objectKey, ts, ts
     );
   } catch (err) {
     console.error('[admin] DB insert failed after R2 upload, cleaning up object:', objectKey, err.message);
@@ -125,12 +126,13 @@ router.put('/materials/:id/file', upload.single('file'), async (req, res) => {
     return res.status(400).json({ error: fileErrors.join(' ') });
   }
 
-  const newKey = buildObjectKey({ exam: existing.exam, category: existing.category, year: existing.year });
-  const safeFileName = sanitizeFileName(req.file.originalname);
+  const contentType = detectFileType(req.file.buffer);
+  const newKey = buildObjectKey({ exam: existing.exam, category: existing.category, year: existing.year }, contentType);
+  const safeFileName = sanitizeFileName(req.file.originalname, contentType);
 
   // 1. Upload the new file under a brand-new key (never overwrite in place).
   try {
-    await uploadObject(newKey, req.file.buffer, 'application/pdf');
+    await uploadObject(newKey, req.file.buffer, contentType);
   } catch (err) {
     console.error('[admin] R2 upload failed during replace:', err.message);
     return res.status(502).json({ error: 'Upload of the replacement file failed. Nothing was changed.' });
@@ -142,9 +144,9 @@ router.put('/materials/:id/file', upload.single('file'), async (req, res) => {
   try {
     db.prepare(`
       UPDATE materials
-      SET r2_object_key = ?, file_name = ?, file_size = ?, updated_at = ?
+      SET r2_object_key = ?, file_name = ?, file_size = ?, content_type = ?, updated_at = ?
       WHERE id = ?
-    `).run(newKey, safeFileName, req.file.size, nowIso(), req.params.id);
+    `).run(newKey, safeFileName, req.file.size, contentType, nowIso(), req.params.id);
   } catch (err) {
     console.error('[admin] DB update failed after replace-upload, cleaning up new object:', newKey, err.message);
     try {
