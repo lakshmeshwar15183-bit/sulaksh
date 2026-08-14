@@ -136,6 +136,13 @@
     padding:3px 9px; border-radius:100px; border:1px solid var(--border);
   }
   .subj-head .upload-btn{width:auto; padding:6px 12px; font-size:12px;}
+  .imp-btn{
+    display:inline-flex; align-items:center; gap:4px;
+    background:rgba(255,122,26,.12); color:var(--saffron);
+    border:1px solid rgba(255,122,26,.35); padding:6px 12px; border-radius:8px;
+    font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
+  }
+  .imp-btn:hover{background:var(--saffron); color:#fff;}
 
   .mat-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
@@ -190,6 +197,11 @@
   .up-suggest.show{display:block;}
   .up-suggest-item{padding:10px 14px; font-size:13.5px; cursor:pointer;}
   .up-suggest-item:hover{background:var(--bg); color:var(--blue);}
+  .imp-check{
+    display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600;
+    color:var(--saffron); margin:4px 0 12px; cursor:pointer; user-select:none;
+  }
+  .imp-check input{width:17px; height:17px; accent-color:var(--saffron); cursor:pointer;}
 
   footer{
     background:var(--navy); color:#cfd9ec; padding:36px 0; text-align:center; font-size:13px;
@@ -301,6 +313,7 @@
     </div>
     <input type="text" id="upTitle" class="field" placeholder="File title">
     <input type="text" id="upYear" class="field" placeholder="Year (optional)">
+    <label class="imp-check"><input type="checkbox" id="upImp"> ⭐ Important Question</label>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
@@ -463,6 +476,7 @@
     document.getElementById('upTitle').value = '';
     document.getElementById('upYear').value = '';
     document.getElementById('upFile').value = '';
+    document.getElementById('upImp').checked = false;
     setMsg(document.getElementById('uploadMsg'), '', false);
     hideSuggest();
     openModal('uploadOverlay');
@@ -490,6 +504,7 @@
     fd.append('exam', 'UPSC');
     fd.append('category', category);
     fd.append('subject', subject);
+    fd.append('is_imp', document.getElementById('upImp').checked ? 'true' : 'false');
     if (year) fd.append('year', year);
     fd.append('file', file);
 
@@ -538,11 +553,15 @@
     const key = cat + '::' + s;
     const isOpen = expanded.has(key);
     const listHtml = files.length ? files.map(matItem).join('') : '<div class="mat-empty">No files yet.</div>';
+    const impUrl = `imp.html?exam=${encodeURIComponent('UPSC')}&category=${encodeURIComponent('UPSC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('upsc.html')}`;
     return `
       <div class="subj-card ${isOpen ? '' : 'closed'}" data-key="${escapeHtml(key)}" onclick="toggleSubject(this)">
         <div class="subj-head">
           <div class="subj-title"><span class="chev">▼</span> 📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
-          ${state.isAdmin ? `<button class="upload-btn" onclick="event.stopPropagation(); openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
+          <div style="display:flex; gap:6px; flex-shrink:0;">
+            <a class="imp-btn" onclick="event.stopPropagation(); window.open('${impUrl}','_blank')">⭐ Imp Questions</a>
+            ${state.isAdmin ? `<button class="upload-btn" onclick="event.stopPropagation(); openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
+          </div>
         </div>
         <div class="mat-list">${listHtml}</div>
       </div>`;

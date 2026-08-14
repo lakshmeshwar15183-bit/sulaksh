@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ONE DAY EXAMS — Sulaksh</title>
+<title>Important Questions — Sulaksh</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -66,7 +66,6 @@
 
   .nav-links{display:flex; align-items:center; gap:28px; list-style:none;}
   .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
-  .nav-links a.active{color:var(--saffron); opacity:1; font-weight:600;}
   .nav-links a:hover{opacity:1;}
 
   .nav-actions{display:flex; align-items:center; gap:12px;}
@@ -95,52 +94,29 @@
 
   /* ---------- Page hero ---------- */
   .du-hero{
-    background:linear-gradient(180deg, #FFF3E8 0%, var(--bg) 100%);
+    background:linear-gradient(180deg, #FFF7ED 0%, var(--bg) 100%);
     padding:52px 0 40px;
   }
   [data-theme="dark"] .du-hero{background:linear-gradient(180deg, #2A1605 0%, var(--bg) 100%);}
   .du-hero .eyebrow{color:var(--saffron); font-weight:700; font-size:12.5px; letter-spacing:.4px; margin-bottom:12px;}
-  .du-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
-  .du-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:560px; margin-top:10px;}
+  .du-hero h1{font-size:clamp(26px, 3.4vw, 38px); font-weight:800; letter-spacing:-.5px;}
+  .du-hero p{color:var(--muted); font-size:15px; line-height:1.7; max-width:620px; margin-top:10px;}
 
-  /* ---------- Category sections ---------- */
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px; color:var(--blue); font-size:14px; font-weight:600;
+    margin-bottom:16px;
+  }
+  .back-link:hover{text-decoration:underline;}
+
+  /* ---------- List ---------- */
   .du-main{padding:36px 0 64px;}
-  .du-cat{margin-bottom:36px; display:none;}
-  .du-cat.active{display:block;}
-
-  /* ---------- Category picker tiles ---------- */
-  .du-cats{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-bottom:16px;}
-  .cat-tile{
-    text-align:left; background:var(--card); border:1px solid var(--border); border-top:4px solid transparent;
-    border-radius:var(--radius); padding:22px; cursor:pointer; transition:transform .15s, box-shadow .2s, border-color .2s;
-    display:flex; flex-direction:column; gap:6px; color:var(--text);
-  }
-  .cat-tile:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
-  .cat-tile.gs{border-top-color:var(--green);}
-  .cat-tile.gk{border-top-color:var(--blue);}
-  .cat-tile.sc{border-top-color:var(--saffron);}
-  .cat-ico{font-size:26px;}
-  .cat-name{font-family:'Sora',sans-serif; font-size:18px; font-weight:800; letter-spacing:.2px;}
-  .cat-sub{font-size:13px; color:var(--muted);}
-  .cat-count{font-size:12.5px; font-weight:600; color:var(--saffron); margin-top:6px;}
-  #catPicker.hidden{display:none;}
-
-  .back-btn{
-    display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); color:#fff;
-    border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:8px;
-    font-size:12.5px; font-weight:600; margin-bottom:10px;
-  }
-  .back-btn:hover{background:rgba(255,255,255,.3);}
-
-  .du-cat-head{
+  .imp-head{
     display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
     padding:18px 22px; border-radius:var(--radius); color:#fff; margin-bottom:18px;
+    background:linear-gradient(90deg, var(--saffron), #e05a00);
   }
-  .du-cat-head.gs{background:linear-gradient(90deg, var(--green), #146b44);}
-  .du-cat-head.gk{background:linear-gradient(90deg, var(--blue), var(--navy-2));}
-  .du-cat-head.sc{background:linear-gradient(90deg, var(--saffron), #e05a00);}
-  .du-cat-head h2{font-size:20px;}
-  .du-cat-head .sub{font-size:12.5px; opacity:.85; font-weight:500; display:block; margin-top:2px;}
+  .imp-head h2{font-size:20px;}
+  .imp-head .sub{font-size:12.5px; opacity:.9; font-weight:500; display:block; margin-top:2px;}
   .upload-btn{
     display:none; background:rgba(255,255,255,.18); color:#fff; padding:9px 16px; border-radius:10px;
     font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,.35);
@@ -148,33 +124,11 @@
   body.is-admin .upload-btn{display:inline-flex; align-items:center; gap:6px;}
   .upload-btn:hover{background:rgba(255,255,255,.3);}
 
-  /* ---------- Subject folders ---------- */
-  .subj-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
-  .subj-card{
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:18px;
-  }
-  .subj-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; cursor:pointer; user-select:none;}
-  .subj-title{font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
-  .subj-title .chev{font-size:9px; color:var(--muted); transition:transform .2s ease;}
-  .subj-card.closed .subj-title .chev{transform:rotate(-90deg);}
-  .subj-card.closed .mat-list{display:none;}
-  .subj-title .count{
-    font-size:11.5px; font-weight:600; color:var(--muted); background:var(--bg);
-    padding:3px 9px; border-radius:100px; border:1px solid var(--border);
-  }
-  .subj-head .upload-btn{width:auto; padding:6px 12px; font-size:12px;}
-  .imp-btn{
-    display:inline-flex; align-items:center; gap:4px;
-    background:rgba(255,122,26,.12); color:var(--saffron);
-    border:1px solid rgba(255,122,26,.35); padding:6px 12px; border-radius:8px;
-    font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
-  }
-  .imp-btn:hover{background:var(--saffron); color:#fff;}
-
+  .mat-list{display:flex; flex-direction:column; gap:10px;}
   .mat-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
-    padding:9px 10px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; font-size:13px;
+    padding:13px 14px; border:1px solid var(--border); border-radius:10px; font-size:13.5px;
+    background:var(--card);
   }
   .mat-item .t{font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .mat-item .a{display:flex; gap:6px; flex-shrink:0;}
@@ -184,7 +138,7 @@
   }
   .mat-item button:hover{border-color:var(--saffron); color:var(--saffron);}
   .mat-item button.del-btn:hover{border-color:#d64545; color:#d64545;}
-  .mat-empty{font-size:13px; color:var(--muted); text-align:center; padding:14px; border:1px dashed var(--border); border-radius:10px;}
+  .mat-empty{font-size:13px; color:var(--muted); text-align:center; padding:18px; border:1px dashed var(--border); border-radius:10px;}
 
   /* ---------- Modals ---------- */
   .modal-overlay{
@@ -215,30 +169,12 @@
     width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
   }
   .modal-close:hover{background:var(--bg);}
-  .sel{appearance:none;}
-  .up-suggest-wrap{position:relative;}
-  .up-suggest{
-    position:absolute; top:100%; left:0; right:0; z-index:50; margin-top:3px;
-    background:var(--card); border:1px solid var(--border); border-radius:10px;
-    box-shadow:var(--shadow); max-height:190px; overflow:auto; display:none;
-  }
-  .up-suggest.show{display:block;}
-  .up-suggest-item{padding:10px 14px; font-size:13.5px; cursor:pointer;}
-  .up-suggest-item:hover{background:var(--bg); color:var(--saffron);}
-  .imp-check{
-    display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600;
-    color:var(--saffron); margin:4px 0 12px; cursor:pointer; user-select:none;
-  }
-  .imp-check input{width:17px; height:17px; accent-color:var(--saffron); cursor:pointer;}
 
   footer{
     background:var(--navy); color:#cfd9ec; padding:36px 0; text-align:center; font-size:13px;
   }
   footer a{color:#fff; font-weight:600;}
 
-  @media (max-width:800px){
-    .subj-grid{grid-template-columns:1fr;}
-  }
   @media (max-width:900px){
     .nav-links{display:none;}
     .hamburger{display:flex;}
@@ -262,7 +198,8 @@
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="index.html#exams">Exams</a></li>
-      <li><a href="one-day.html" class="active">ONE DAY EXAMS</a></li>
+      <li><a href="one-day.html">ONE DAY EXAMS</a></li>
+      <li><a href="upsc.html">UPSC</a></li>
       <li><a href="du.html">DU &amp; College</a></li>
       <li><a href="index.html#study">Study Material</a></li>
       <li><a href="index.html#about">About Us</a></li>
@@ -277,6 +214,7 @@
     <a href="index.html">Home</a>
     <a href="index.html#exams">Exams</a>
     <a href="one-day.html">ONE DAY EXAMS</a>
+    <a href="upsc.html">UPSC</a>
     <a href="du.html">DU &amp; College</a>
     <a href="index.html#study">Study Material</a>
     <a href="index.html#about">About Us</a>
@@ -285,69 +223,23 @@
 
 <section class="du-hero">
   <div class="wrap">
-    <div class="eyebrow">⚡ ONE DAY EXAMS</div>
-    <h1>Subject-wise Study Folders</h1>
-    <p>RRB, SSC and other one-day exams — notes, PYQs and one-liners for General Studies, General Knowledge/Static GK and Science. Select a section to view its folders.</p>
+    <div class="eyebrow">⭐ IMPORTANT QUESTIONS</div>
+    <h1 id="pageTitle">Important Questions</h1>
+    <p id="pageSub">Important questions for this subject — selected by the admin for focused revision.</p>
   </div>
 </section>
 
 <main class="wrap du-main">
-  <div class="du-cats" id="catPicker">
-    <button class="cat-tile gs" onclick="openCategory('GS')">
-      <span class="cat-ico">📘</span>
-      <span class="cat-name">General Studies</span>
-      <span class="cat-sub">History, Polity, Geography, Economy &amp; more</span>
-      <span class="cat-count" id="catCount-GS">0 files</span>
-    </button>
-    <button class="cat-tile gk" onclick="openCategory('GK')">
-      <span class="cat-ico">📗</span>
-      <span class="cat-name">General Knowledge / Static GK</span>
-      <span class="cat-sub">Static GK, Current Affairs, One-liners</span>
-      <span class="cat-count" id="catCount-GK">0 files</span>
-    </button>
-    <button class="cat-tile sc" onclick="openCategory('SC')">
-      <span class="cat-ico">🔬</span>
-      <span class="cat-name">Science</span>
-      <span class="cat-sub">Physics, Chemistry, Biology &amp; more</span>
-      <span class="cat-count" id="catCount-SC">0 files</span>
-    </button>
+  <div id="backRow" style="display:none;"><a class="back-link" id="backLink" href="#">← Back to all subjects</a></div>
+
+  <div class="imp-head">
+    <div>
+      <h2 id="impTitle">Loading…</h2>
+      <span class="sub" id="impSub"></span>
+    </div>
+    <button class="upload-btn" onclick="openUpload()">⬆ Upload Important Question</button>
   </div>
-
-  <section class="du-cat" id="cat-GS">
-    <div class="du-cat-head gs">
-      <div>
-        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
-        <h2>General Studies</h2>
-        <span class="sub">History, Polity, Geography, Economy &amp; more</span>
-      </div>
-      <button class="upload-btn" onclick="openUpload('GS','')">⬆ Upload</button>
-    </div>
-    <div class="subj-grid" id="subj-GS"></div>
-  </section>
-
-  <section class="du-cat" id="cat-GK">
-    <div class="du-cat-head gk">
-      <div>
-        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
-        <h2>General Knowledge / Static GK</h2>
-        <span class="sub">Static GK, Current Affairs, One-liners</span>
-      </div>
-      <button class="upload-btn" onclick="openUpload('GK','')">⬆ Upload</button>
-    </div>
-    <div class="subj-grid" id="subj-GK"></div>
-  </section>
-
-  <section class="du-cat" id="cat-SC">
-    <div class="du-cat-head sc">
-      <div>
-        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
-        <h2>Science</h2>
-        <span class="sub">Physics, Chemistry, Biology &amp; more</span>
-      </div>
-      <button class="upload-btn" onclick="openUpload('SC','')">⬆ Upload</button>
-    </div>
-    <div class="subj-grid" id="subj-SC"></div>
-  </section>
+  <div class="mat-list" id="matList"></div>
 </main>
 
 <footer>
@@ -374,19 +266,10 @@
 <div class="modal-overlay" id="uploadOverlay">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('uploadOverlay')" aria-label="Close">×</button>
-    <h3>Upload Material</h3>
-    <select id="upCat" class="field sel">
-      <option value="GS">General Studies</option>
-      <option value="GK">General Knowledge / Static GK</option>
-      <option value="SC">Science</option>
-    </select>
-    <div class="up-suggest-wrap">
-      <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. History, Physics)" autocomplete="off">
-      <div class="up-suggest" id="upSuggest"></div>
-    </div>
+    <h3>Upload Important Question</h3>
+    <div class="field" id="upContext" style="background:var(--border); font-weight:600;"></div>
     <input type="text" id="upTitle" class="field" placeholder="File title">
     <input type="text" id="upYear" class="field" placeholder="Year (optional)">
-    <label class="imp-check"><input type="checkbox" id="upImp"> ⭐ Important Question</label>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
@@ -397,8 +280,12 @@
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
   const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
-  const CATEGORIES = ['GS', 'GK', 'SC'];
-  const CAT_NAMES = { GS: 'General Studies', GK: 'General Knowledge/Static GK', SC: 'Science' };
+
+  const params = new URLSearchParams(location.search);
+  const EXAM = params.get('exam') || '';
+  const CATEGORY = params.get('category') || '';
+  const SUBJECT = params.get('subject') || '';
+  const BACK = params.get('back') || '';
 
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
@@ -406,55 +293,18 @@
     isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
   };
 
-  const expanded = new Set();
-  const dynamicSubjects = {};
-
-  const upCatEl = document.getElementById('upCat');
-  const upSubjectEl = document.getElementById('upSubject');
-  const upSuggestEl = document.getElementById('upSuggest');
-
-  function getSubjectsFor(cat) {
-    return Array.from(new Set((dynamicSubjects[cat] || [])));
-  }
-  function hideSuggest() { upSuggestEl.innerHTML = ''; upSuggestEl.classList.remove('show'); }
-  function showSuggest() {
-    const q = upSubjectEl.value.trim().toLowerCase();
-    if (!q) return hideSuggest();
-    const matches = getSubjectsFor(upCatEl.value).filter((s) => s.toLowerCase().includes(q)).slice(0, 8);
-    if (!matches.length) return hideSuggest();
-    upSuggestEl.innerHTML = matches.map((s) => `<div class="up-suggest-item" data-v="${escapeHtml(s)}">${escapeHtml(s)}</div>`).join('');
-    upSuggestEl.classList.add('show');
-  }
-  upSubjectEl.addEventListener('input', showSuggest);
-  upCatEl.addEventListener('change', showSuggest);
-  upSubjectEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideSuggest(); });
-  upSubjectEl.addEventListener('blur', () => setTimeout(hideSuggest, 150));
-  document.addEventListener('click', (e) => {
-    const item = e.target.closest('.up-suggest-item');
-    if (item) { upSubjectEl.value = item.dataset.v; hideSuggest(); }
-  });
-
-  function openCategory(cat) {
-    document.getElementById('catPicker').classList.add('hidden');
-    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
-    document.getElementById('cat-' + cat).classList.add('active');
-    document.getElementById('cat-' + cat).scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  window.openCategory = openCategory;
-
-  function backToCategories() {
-    document.getElementById('catPicker').classList.remove('hidden');
-    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
-    document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  window.backToCategories = backToCategories;
-
-  function toggleSubject(card) {
-    const key = card.dataset.key;
-    if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
-    card.classList.toggle('closed');
+  // ---------- Page setup ----------
+  document.getElementById('pageTitle').textContent = SUBJECT ? `Important Questions — ${SUBJECT}` : 'Important Questions';
+  document.getElementById('impTitle').textContent = SUBJECT || 'Important Questions';
+  document.getElementById('impSub').textContent = `${EXAM || ''}${CATEGORY ? ' · ' + CATEGORY : ''}`.trim();
+  document.getElementById('upContext').textContent = `${EXAM || ''}${CATEGORY ? ' · ' + CATEGORY : ''} · ${SUBJECT || ''}`;
+  if (BACK) {
+    const row = document.getElementById('backRow');
+    row.style.display = '';
+    document.getElementById('backLink').href = BACK;
   }
 
+  // ---------- Helpers ----------
   function setMsg(el, text, ok) {
     el.textContent = text;
     el.className = 'modal-msg' + (ok ? ' ok' : (text ? ' err' : ''));
@@ -536,17 +386,13 @@
     loadMaterials();
   }
 
-  // Upload
-  function openUpload(cat, subject) {
+  // ---------- Upload (is_imp forced to true) ----------
+  function openUpload() {
     if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
-    document.getElementById('upCat').value = cat || 'GS';
-    document.getElementById('upSubject').value = subject ? decodeURIComponent(subject) : '';
     document.getElementById('upTitle').value = '';
     document.getElementById('upYear').value = '';
     document.getElementById('upFile').value = '';
-    document.getElementById('upImp').checked = false;
     setMsg(document.getElementById('uploadMsg'), '', false);
-    hideSuggest();
     openModal('uploadOverlay');
   }
   window.openUpload = openUpload;
@@ -560,20 +406,17 @@
 
   async function doUpload() {
     const msg = document.getElementById('uploadMsg');
-    const cat = document.getElementById('upCat').value;
-    const category = CAT_NAMES[cat];
-    const subject = document.getElementById('upSubject').value.trim();
     const title = document.getElementById('upTitle').value.trim();
     const year = document.getElementById('upYear').value.trim();
     const file = document.getElementById('upFile').files[0];
-    if (!subject || !title || !file) return setMsg(msg, 'Subject folder, file title and a PDF are required.', false);
+    if (!title || !file) return setMsg(msg, 'File title and a file are required.', false);
 
     const fd = new FormData();
     fd.append('title', title);
-    fd.append('exam', 'One Day Exams');
-    fd.append('category', category);
-    fd.append('subject', subject);
-    fd.append('is_imp', document.getElementById('upImp').checked ? 'true' : 'false');
+    fd.append('exam', EXAM);
+    fd.append('category', CATEGORY);
+    fd.append('subject', SUBJECT);
+    fd.append('is_imp', 'true');
     if (year) fd.append('year', year);
     fd.append('file', file);
 
@@ -593,85 +436,40 @@
     }
   }
 
-  // Materials
+  // ---------- List important questions ----------
   async function loadMaterials() {
+    const list = document.getElementById('matList');
     try {
       const res = await fetch(`${SULAKSH_API}/api/materials`);
       if (!res.ok) throw new Error();
       const data = await res.json();
-      const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'one day exams');
-      CATEGORIES.forEach((cat) => {
-        const catMats = mats.filter((m) => (m.category || '') === CAT_NAMES[cat]);
-        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
-        renderCategory(cat, catMats);
-        const countEl = document.getElementById('catCount-' + cat);
-        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
-      });
+      const items = (data.materials || []).filter((m) =>
+        m.is_imp &&
+        (!EXAM || (m.exam || '').toLowerCase() === EXAM.toLowerCase()) &&
+        (!CATEGORY || (m.category || '') === CATEGORY) &&
+        (!SUBJECT || (m.subject || '') === SUBJECT)
+      );
+      renderList(list, items);
     } catch (err) {
-      CATEGORIES.forEach((cat) => {
-        document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
-      });
+      list.innerHTML = '<div class="mat-empty">Could not load important questions.</div>';
     }
   }
 
-  function renderCategory(cat, mats) {
-    const grid = document.getElementById('subj-' + cat);
-    const bySubject = {};
-    mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
-    const subjectNames = Object.keys(bySubject).sort();
-
-    if (!subjectNames.length) {
-      grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
-      return;
-    }
-
-    grid.innerHTML = subjectNames.map((s) => subjectCard(cat, s, bySubject[s] || [])).join('');
-  }
-
-  function subjectCard(cat, s, files) {
-    const key = cat + '::' + s;
-    const isOpen = expanded.has(key);
-    const listHtml = files.length ? files.map(matItem).join('') : '<div class="mat-empty">No files yet.</div>';
-    const impUrl = `imp.html?exam=${encodeURIComponent('One Day Exams')}&category=${encodeURIComponent(CAT_NAMES[cat])}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('one-day.html')}`;
-    return `
-      <div class="subj-card ${isOpen ? '' : 'closed'}" data-key="${escapeHtml(key)}" onclick="toggleSubject(this)">
-        <div class="subj-head">
-          <div class="subj-title"><span class="chev">▼</span> 📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
-          <div style="display:flex; gap:6px; flex-shrink:0;">
-            <a class="imp-btn" onclick="event.stopPropagation(); window.open('${impUrl}','_blank')">⭐ Imp Questions</a>
-            ${state.isAdmin ? `<button class="upload-btn" onclick="event.stopPropagation(); openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
-          </div>
-        </div>
-        <div class="mat-list">${listHtml}</div>
-      </div>`;
+  function renderList(list, items) {
+    if (!items.length) { list.innerHTML = '<div class="mat-empty">No important questions yet.' + (state.isAdmin ? ' Use the Upload button above to add one.' : '') + '</div>'; return; }
+    list.innerHTML = items.map(matItem).join('');
   }
 
   function matItem(m) {
     return `
       <div class="mat-item">
-        <span class="t">${escapeHtml(m.title)}${m.year ? ' (' + m.year + ')' : ''}</span>
+        <span class="t">⭐ ${escapeHtml(m.title)}${m.year ? ' (' + m.year + ')' : ''}</span>
         <span class="a">
-          <button onclick="event.stopPropagation(); viewMaterial('${m.id}')">View</button>
-          <button onclick="event.stopPropagation(); downloadMaterial('${m.id}')">Save</button>
-          ${state.isAdmin ? `<button class="del-btn" onclick="event.stopPropagation(); deleteMaterial('${m.id}', '${escapeHtml(m.title)}')">Delete</button>` : ''}
+          <button onclick="viewMaterial('${m.id}')">View</button>
+          <button onclick="downloadMaterial('${m.id}')">Save</button>
+          ${state.isAdmin ? `<button class="del-btn" onclick="deleteMaterial('${m.id}', '${escapeHtml(m.title)}')">Delete</button>` : ''}
         </span>
       </div>`;
-  }
-
-  async function deleteMaterial(id, title) {
-    if (!state.isAdmin) { alert('Only the site admin can delete materials.'); return; }
-    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
-    try {
-      const res = await fetch(`${SULAKSH_API}/api/admin/materials/${id}`, {
-        method: 'DELETE',
-        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Delete failed.');
-      loadMaterials();
-    } catch (err) {
-      alert(err.message);
-    }
   }
 
   function escapeHtml(s) {
@@ -689,6 +487,22 @@
   }
   async function downloadMaterial(id) {
     try { window.open(await materialLink(id, 'attachment'), '_blank'); } catch (e) { alert(e.message); }
+  }
+
+  async function deleteMaterial(id, title) {
+    if (!state.isAdmin) { alert('Only the site admin can delete materials.'); return; }
+    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/admin/materials/${id}`, {
+        method: 'DELETE',
+        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Delete failed.');
+      loadMaterials();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   updateAuthUI();
