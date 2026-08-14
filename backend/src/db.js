@@ -36,17 +36,22 @@ CREATE TABLE IF NOT EXISTS materials (
   r2_object_key TEXT NOT NULL UNIQUE,
   status TEXT NOT NULL DEFAULT 'active',
   is_imp INTEGER NOT NULL DEFAULT 0,
+  is_syllabus INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
 `);
 
-// ---- Migration for databases created before is_imp existed ----
-// Must run before creating the is_imp index below.
+// ---- Migrations for databases created before these columns existed ----
+// Must run before creating the indexes below.
 const cols = db.prepare('PRAGMA table_info(materials)').all();
 if (!cols.some((c) => c.name === 'is_imp')) {
   db.exec('ALTER TABLE materials ADD COLUMN is_imp INTEGER NOT NULL DEFAULT 0');
   console.log('[db] Added is_imp column to materials');
+}
+if (!cols.some((c) => c.name === 'is_syllabus')) {
+  db.exec('ALTER TABLE materials ADD COLUMN is_syllabus INTEGER NOT NULL DEFAULT 0');
+  console.log('[db] Added is_syllabus column to materials');
 }
 
 db.exec(`
@@ -56,6 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_materials_subject ON materials(subject);
 CREATE INDEX IF NOT EXISTS idx_materials_year ON materials(year);
 CREATE INDEX IF NOT EXISTS idx_materials_status ON materials(status);
 CREATE INDEX IF NOT EXISTS idx_materials_is_imp ON materials(is_imp);
+CREATE INDEX IF NOT EXISTS idx_materials_is_syllabus ON materials(is_syllabus);
 `);
 
 module.exports = db;

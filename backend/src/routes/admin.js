@@ -40,7 +40,7 @@ router.get('/materials', (req, res) => {
 // ---- Upload new material ----
 // POST /api/admin/materials  (multipart/form-data: file, title, exam, category, subject, year, description)
 router.post('/materials', upload.single('file'), async (req, res) => {
-  const { title, exam, category, subject, year, description, is_imp } = req.body || {};
+  const { title, exam, category, subject, year, description, is_imp, is_syllabus } = req.body || {};
   if (!title || !exam || !category) {
     return res.status(400).json({ error: 'title, exam, and category are required.' });
   }
@@ -69,12 +69,14 @@ router.post('/materials', upload.single('file'), async (req, res) => {
   try {
     db.prepare(`
       INSERT INTO materials
-        (id, title, exam, category, subject, year, description, file_name, file_size, content_type, r2_object_key, status, is_imp, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, title, exam, category, subject, year, description, file_name, file_size, content_type, r2_object_key, status, is_imp, is_syllabus, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `    ).run(
       id, title, exam, category, subject || null, year ? parseInt(year, 10) : null,
       description || null, safeFileName, req.file.size, contentType, objectKey, 'active',
-      is_imp === 'true' || is_imp === '1' ? 1 : 0, ts, ts
+      is_imp === 'true' || is_imp === '1' ? 1 : 0,
+      is_syllabus === 'true' || is_syllabus === '1' ? 1 : 0,
+      ts, ts
     );
   } catch (err) {
     console.error('[admin] DB insert failed after R2 upload, cleaning up object:', objectKey, err.message);
@@ -98,11 +100,11 @@ router.patch('/materials/:id', (req, res) => {
   const existing = db.prepare('SELECT * FROM materials WHERE id = ?').get(req.params.id);
   if (!existing) return res.status(404).json({ error: 'Material not found.' });
 
-  const fields = ['title', 'exam', 'category', 'subject', 'year', 'description', 'is_imp'];
+  const fields = ['title', 'exam', 'category', 'subject', 'year', 'description', 'is_imp', 'is_syllabus'];
   const updates = {};
   for (const f of fields) {
     if (req.body[f] !== undefined) {
-      updates[f] = f === 'is_imp' ? (req.body[f] === 'true' || req.body[f] === '1' ? 1 : 0) : req.body[f];
+      updates[f] = (f === 'is_imp' || f === 'is_syllabus') ? (req.body[f] === 'true' || req.body[f] === '1' ? 1 : 0) : req.body[f];
     }
   }
   if (Object.keys(updates).length === 0) {
