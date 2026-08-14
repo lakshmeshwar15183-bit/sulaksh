@@ -395,6 +395,48 @@
   const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
   const CATEGORIES = ['SEC', 'VAC', 'AEC', 'GE'];
 
+  const VAC_SUBJECTS = [
+    'Ayurveda and Nutrition',
+    'Constitutional Values and Fundamental Duties',
+    'Culture and Communication',
+    'Emotional Intelligence',
+    'Envisaging Viksit Bharat: Perspectives and Challenges',
+    'Ethics and Culture',
+    'Ethics and Values in Ancient Indian Traditions',
+    'Financial Literacy',
+    'Gandhi and Education',
+    'Ecology and Literature',
+    'National Cadet Corps-I*',
+    'National Cadet Corps-II*',
+    'National Cadet Corps-III*',
+    'National Cadet Corps-IV*',
+    'Panchkosha: Holistic Development of Personality',
+    'Reading Indian Fiction in English',
+    'Science and Society',
+    'Social and Emotional Learning',
+    'Swachh Bharat',
+    'Tribes of India',
+    'The Art of Being Happy',
+    'The Gita for Holistic Life',
+    'The Gita for Sustainable Universe',
+    'The Gita: Navigating Life Challenges',
+    'Leadership Excellence Through the Gita',
+    'Vedic Mathematics-I**',
+    'Vedic Mathematics-II**',
+    'Vedic Mathematics-III**',
+    'Vedic Mathematics-IV**',
+    'Yoga: Philosophy and Practice',
+    'The Science of Happiness',
+    'भारतीय भक्ति परम्परा और मानव मूल्य',
+    'साहित्य संस्कृति और सिनेमा',
+    'सृजनात्मक लेख के आयाम',
+    'Digital Empowerment',
+    'Fit India',
+    'Sports for Life***',
+    'Indigenous Sports',
+    'Sports - Diversity and Inclusivity',
+  ];
+
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
     token: localStorage.getItem('sulaksh-token') || null,
@@ -580,25 +622,37 @@
 
   function renderCategory(cat, mats) {
     const grid = document.getElementById('subj-' + cat);
-    if (!mats.length) {
-      grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
-      return;
-    }
     const bySubject = {};
     mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
 
-    grid.innerHTML = Object.keys(bySubject).sort().map((s) => {
-      const key = cat + '::' + s;
-      const isOpen = expanded.has(key);
-      return `
+    let subjectNames;
+    if (cat === 'VAC') {
+      subjectNames = VAC_SUBJECTS.slice();
+      Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s)) subjectNames.push(s); });
+    } else {
+      subjectNames = Object.keys(bySubject).sort();
+    }
+
+    if (!subjectNames.length) {
+      grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
+      return;
+    }
+
+    grid.innerHTML = subjectNames.map((s) => subjectCard(cat, s, bySubject[s] || [])).join('');
+  }
+
+  function subjectCard(cat, s, files) {
+    const key = cat + '::' + s;
+    const isOpen = expanded.has(key);
+    const listHtml = files.length ? files.map(matItem).join('') : '<div class="mat-empty">No files yet.</div>';
+    return `
       <div class="subj-card ${isOpen ? '' : 'closed'}" data-key="${escapeHtml(key)}" onclick="toggleSubject(this)">
         <div class="subj-head">
-          <div class="subj-title"><span class="chev">▼</span> 📁 <b>${escapeHtml(s)}</b> <span class="count">${bySubject[s].length} file${bySubject[s].length > 1 ? 's' : ''}</span></div>
+          <div class="subj-title"><span class="chev">▼</span> 📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
           ${state.isAdmin ? `<button class="upload-btn" onclick="event.stopPropagation(); openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
         </div>
-        <div class="mat-list">${bySubject[s].map(matItem).join('')}</div>
+        <div class="mat-list">${listHtml}</div>
       </div>`;
-    }).join('');
   }
 
   function matItem(m) {
