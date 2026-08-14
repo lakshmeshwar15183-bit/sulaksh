@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SULAKSH Admin — Materials</title>
+<style>
+  :root{ --navy:#0C2340; --blue:#1E5FFF; --bg:#F6F8FC; --border:#E4E9F1; --text:#1A2433; --muted:#5B6B80; --danger:#D64545; --green:#1E8E5A; }
+  *{box-sizing:border-box;}
+  body{ font-family:'Segoe UI', Arial, sans-serif; background:var(--bg); color:var(--text); margin:0; }
+  header{ background:#fff; border-bottom:1px solid var(--border); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:700; }
+  .brand-mark{ width:32px; height:32px; border-radius:8px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+  #adminEmail{ font-size:13px; color:var(--muted); }
+  .logout{ background:none; border:1px solid var(--border); border-radius:8px; padding:8px 14px; cursor:pointer; font-size:13px; }
+
+  main{ max-width:1100px; margin:0 auto; padding:28px 24px 60px; }
+  .grid{ display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start; }
+  @media (max-width:820px){ .grid{ grid-template-columns:1fr; } }
+
+  .panel{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .panel h2{ font-size:15px; margin:0 0 14px; }
+  label{ display:block; font-size:12.5px; font-weight:600; margin:12px 0 5px; }
+  input, select, textarea{ width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:7px; font-size:13.5px; font-family:inherit; }
+  textarea{ resize:vertical; min-height:56px; }
+  button.primary{ margin-top:16px; width:100%; padding:11px; border:none; border-radius:8px; background:var(--navy); color:#fff; font-weight:600; cursor:pointer; font-size:14px; }
+  button.primary:disabled{ opacity:.6; }
+  .msg{ font-size:12.5px; margin-top:10px; min-height:14px; }
+  .msg.err{ color:var(--danger); }
+  .msg.ok{ color:var(--green); }
+
+  .filters{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .filters input, .filters select{ width:auto; flex:1 1 120px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th, td{ text-align:left; padding:9px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+  th{ font-size:11.5px; text-transform:uppercase; color:var(--muted); }
+  .pill{ display:inline-block; padding:2px 8px; border-radius:100px; font-size:11px; font-weight:600; background:#EEF2FA; color:var(--navy); }
+  .row-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+  .row-actions button{ font-size:12px; padding:5px 9px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer; }
+  .row-actions button.danger{ color:var(--danger); border-color:#F3C9C9; }
+  .empty{ color:var(--muted); font-size:13px; padding:20px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><div class="brand-mark">S</div> SULAKSH Admin</div>
+  <div style="display:flex; align-items:center; gap:14px;">
+    <span id="adminEmail"></span>
+    <button class="logout" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+    <section class="panel">
+      <h2 id="formTitle">Upload New Material</h2>
+      <form id="uploadForm">
+        <input type="hidden" id="editId">
+        <label>Title *</label>
+        <input type="text" id="title" required>
+
+        <label>Exam *</label>
+        <input type="text" id="exam" placeholder="e.g. UPSC, SSC, Railway, DU" required>
+
+        <label>Category *</label>
+        <input type="text" id="category" placeholder="e.g. Prelims, CGL, NTPC" required>
+
+        <label>Subject</label>
+        <input type="text" id="subject" placeholder="optional">
+
+        <label>Year</label>
+        <input type="number" id="year" placeholder="e.g. 2024">
+
+        <label>Description</label>
+        <textarea id="description" placeholder="optional"></textarea>
+
+        <label id="fileLabel">PDF File *</label>
+        <input type="file" id="file" accept="application/pdf">
+
+        <button type="submit" class="primary" id="submitBtn">Upload Material</button>
+        <button type="button" class="primary" id="cancelEditBtn" style="display:none; background:var(--muted); margin-top:8px;">Cancel Edit</button>
+        <div class="msg" id="formMsg"></div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Materials</h2>
+      <div class="filters">
+        <input type="text" id="fq" placeholder="Search title/description">
+        <input type="text" id="fexam" placeholder="Exam">
+        <input type="text" id="fcategory" placeholder="Category">
+        <input type="number" id="fyear" placeholder="Year">
+        <button id="filterBtn" style="padding:9px 14px; border-radius:7px; border:1px solid var(--border); background:#fff; cursor:pointer;">Filter</button>
+      </div>
+      <div id="tableWrap"><div class="empty">Loading…</div></div>
+    </section>
+  </div>
+</main>
+
+<script>
+  const API = window.location.origin;
+  const $ = (id) => document.getElementById(id);
+
+  // ---- Auth guard ----
+  async function checkAuth() {
+    const res = await fetch(`${API}/api/auth/me`, { credentials: 'include' });
+    if (!res.ok) { window.location.href = './login.html'; return; }
+    const data = await res.json();
+    $('adminEmail').textContent = data.email;
+  }
+
+  $('logoutBtn').addEventListener('click', async () => {
+    await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+    window.location.href = './login.html';
+  });
+
+  // ---- Load / render materials table ----
+  async function loadMaterials() {
+    const params = new URLSearchParams();
+    if ($('fq').value) params.set('q', $('fq').value);
+    if ($('fexam').value) params.set('exam', $('fexam').value);
+    if ($('fcategory').value) params.set('category', $('fcategory').value);
+    if ($('fyear').value) params.set('year', $('fyear').value);
+
+    const res = await fetch(`${API}/api/admin/materials?${params}`, { credentials: 'include' });
+    if (res.status === 401) { window.location.href = './login.html'; return; }
+    const data = await res.json();
+    renderTable(data.materials || []);
+  }
+
+  function renderTable(rows) {
+    const wrap = $('tableWrap');
+    if (!rows.length) {
+      wrap.innerHTML = '<div class="empty">No materials found.</div>';
+      return;
+    }
+    const trs = rows.map((m) => `
+      <tr>
+        <td><strong>${escapeHtml(m.title)}</strong><br><span class="pill">${escapeHtml(m.exam)}</span> <span class="pill">${escapeHtml(m.category)}</span></td>
+        <td>${m.year || '—'}</td>
+        <td>${(m.file_size / 1024).toFixed(0)} KB</td>
+        <td>
+          <div class="row-actions">
+            <button onclick="editMaterial('${m.id}')">Edit</button>
+            <button onclick="replaceFile('${m.id}')">Replace PDF</button>
+            <button onclick="viewMaterial('${m.id}')">View</button>
+            <button class="danger" onclick="deleteMaterial('${m.id}', '${escapeHtml(m.title).replace(/'/g, "\\'")}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+    wrap.innerHTML = `<table><thead><tr><th>Title</th><th>Year</th><th>Size</th><th>Actions</th></tr></thead><tbody>${trs}</tbody></table>`;
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  $('filterBtn').addEventListener('click', loadMaterials);
+
+  // ---- Upload / edit form ----
+  const form = $('uploadForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const editId = $('editId').value;
+    $('submitBtn').disabled = true;
+    $('formMsg').textContent = '';
+    $('formMsg').className = 'msg';
+
+    try {
+      if (editId) {
+        // Metadata-only edit
+        const res = await fetch(`${API}/api/admin/materials/${editId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            title: $('title').value, exam: $('exam').value, category: $('category').value,
+            subject: $('subject').value, year: $('year').value, description: $('description').value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        $('formMsg').textContent = 'Material updated.';
+        $('formMsg').className = 'msg ok';
+        resetForm();
+      } else {
+        if (!$('file').files[0]) throw new Error('Please choose a PDF file.');
+        const fd = new FormData();
+        fd.append('file', $('file').files[0]);
+        ['title','exam','category','subject','year','description'].forEach((f) => fd.append(f, $(f).value));
+        const res = await fetch(`${API}/api/admin/materials`, { method: 'POST', credentials: 'include', body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        $('formMsg').textContent = 'Material uploaded.';
+        $('formMsg').className = 'msg ok';
+        resetForm();
+      }
+      loadMaterials();
+    } catch (err) {
+      $('formMsg').textContent = err.message;
+      $('formMsg').className = 'msg err';
+    } finally {
+      $('submitBtn').disabled = false;
+    }
+  });
+
+  function resetForm() {
+    form.reset();
+    $('editId').value = '';
+    $('formTitle').textContent = 'Upload New Material';
+    $('submitBtn').textContent = 'Upload Material';
+    $('file').required = true;
+    $('fileLabel').textContent = 'PDF File *';
+    $('cancelEditBtn').style.display = 'none';
+  }
+  $('cancelEditBtn').addEventListener('click', resetForm);
+
+  window.editMaterial = async (id) => {
+    const res = await fetch(`${API}/api/admin/materials?q=`, { credentials: 'include' });
+    const data = await res.json();
+    const m = (data.materials || []).find((x) => x.id === id);
+    if (!m) return;
+    $('editId').value = m.id;
+    $('title').value = m.title;
+    $('exam').value = m.exam;
+    $('category').value = m.category;
+    $('subject').value = m.subject || '';
+    $('year').value = m.year || '';
+    $('description').value = m.description || '';
+    $('file').required = false;
+    $('fileLabel').textContent = 'PDF File (use "Replace PDF" in the table to change the file)';
+    $('formTitle').textContent = 'Edit Material Metadata';
+    $('submitBtn').textContent = 'Save Changes';
+    $('cancelEditBtn').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  window.replaceFile = async (id) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/pdf';
+    input.onchange = async () => {
+      if (!input.files[0]) return;
+      const fd = new FormData();
+      fd.append('file', input.files[0]);
+      const res = await fetch(`${API}/api/admin/materials/${id}/file`, { method: 'PUT', credentials: 'include', body: fd });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error); return; }
+      alert('File replaced.');
+      loadMaterials();
+    };
+    input.click();
+  };
+
+  window.viewMaterial = async (id) => {
+    const res = await fetch(`${API}/api/materials/${id}/download?disposition=inline`);
+    const data = await res.json();
+    if (!res.ok) { alert(data.error); return; }
+    window.open(data.url, '_blank');
+  };
+
+  window.deleteMaterial = async (id, title) => {
+    if (!confirm(`Delete "${title}"? This removes the file from storage too.`)) return;
+    const res = await fetch(`${API}/api/admin/materials/${id}`, { method: 'DELETE', credentials: 'include' });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error); return; }
+    loadMaterials();
+  };
+
+  checkAuth().then(loadMaterials);
+</script>
+</body>
+</html>

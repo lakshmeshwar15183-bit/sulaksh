@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets — never commit
+.env
+
+# Database files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+data/
+
+# OS
+.DS_Store
+
+# Netlify
+.netlify/
