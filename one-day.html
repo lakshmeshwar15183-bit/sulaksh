@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONE DAY EXAMS — Sulaksh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2340;
+    --navy-2:#123467;
+    --blue:#1E5FFF;
+    --saffron:#FF7A1A;
+    --green:#1E8E5A;
+    --bg:#F6F8FC;
+    --card:#FFFFFF;
+    --text:#1A2433;
+    --muted:#5B6B80;
+    --border:#E4E9F1;
+    --radius:16px;
+    --shadow: 0 4px 24px rgba(12,35,64,0.06);
+  }
+  [data-theme="dark"]{
+    --navy:#0A192E;
+    --navy-2:#0F2647;
+    --bg:#0B1424;
+    --card:#101B2E;
+    --text:#EAF0FA;
+    --muted:#8FA0B8;
+    --border:#1E2C42;
+    --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.brand-name{font-family:'Sora',sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1280px; margin:0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:40px; height:40px; border-radius:10px;
+    background:linear-gradient(135deg, var(--navy), var(--blue));
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; font-size:20px; flex-shrink:0;
+  }
+  .brand-name{font-size:19px; font-weight:700; letter-spacing:.3px;}
+  .brand-tag{font-size:10px; letter-spacing:1.5px; color:var(--saffron); font-weight:600;}
+
+  .nav-links{display:flex; align-items:center; gap:28px; list-style:none;}
+  .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
+  .nav-links a.active{color:var(--saffron); opacity:1; font-weight:600;}
+  .nav-links a:hover{opacity:1;}
+
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg); border:1px solid var(--border);
+    color:var(--muted); transition:all .2s;
+  }
+  .icon-btn:hover{background:var(--border);}
+  .btn-primary{
+    background:var(--navy); color:#fff; padding:10px 20px; border-radius:10px;
+    font-size:14.5px; font-weight:600; display:flex; align-items:center; gap:8px;
+    transition:background .2s, transform .15s;
+  }
+  .btn-primary:hover{background:var(--blue); transform:translateY(-1px);}
+  .hamburger{display:none; flex-direction:column; gap:5px; width:38px; height:38px; align-items:center; justify-content:center;}
+  .hamburger span{width:20px; height:2px; background:var(--text); border-radius:2px;}
+
+  .mobile-menu{
+    display:none; flex-direction:column; background:var(--card); border-top:1px solid var(--border);
+    padding:10px 24px 20px;
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{padding:12px 0; font-size:15px; font-weight:500; border-bottom:1px solid var(--border);}
+
+  /* ---------- Page hero ---------- */
+  .du-hero{
+    background:linear-gradient(180deg, #FFF3E8 0%, var(--bg) 100%);
+    padding:52px 0 40px;
+  }
+  [data-theme="dark"] .du-hero{background:linear-gradient(180deg, #2A1605 0%, var(--bg) 100%);}
+  .du-hero .eyebrow{color:var(--saffron); font-weight:700; font-size:12.5px; letter-spacing:.4px; margin-bottom:12px;}
+  .du-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
+  .du-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:560px; margin-top:10px;}
+
+  /* ---------- Category sections ---------- */
+  .du-main{padding:36px 0 64px;}
+  .du-cat{margin-bottom:36px; display:none;}
+  .du-cat.active{display:block;}
+
+  /* ---------- Category picker tiles ---------- */
+  .du-cats{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-bottom:16px;}
+  .cat-tile{
+    text-align:left; background:var(--card); border:1px solid var(--border); border-top:4px solid transparent;
+    border-radius:var(--radius); padding:22px; cursor:pointer; transition:transform .15s, box-shadow .2s, border-color .2s;
+    display:flex; flex-direction:column; gap:6px; color:var(--text);
+  }
+  .cat-tile:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
+  .cat-tile.gs{border-top-color:var(--green);}
+  .cat-tile.gk{border-top-color:var(--blue);}
+  .cat-tile.sc{border-top-color:var(--saffron);}
+  .cat-ico{font-size:26px;}
+  .cat-name{font-family:'Sora',sans-serif; font-size:18px; font-weight:800; letter-spacing:.2px;}
+  .cat-sub{font-size:13px; color:var(--muted);}
+  .cat-count{font-size:12.5px; font-weight:600; color:var(--saffron); margin-top:6px;}
+  #catPicker.hidden{display:none;}
+
+  .back-btn{
+    display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); color:#fff;
+    border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:8px;
+    font-size:12.5px; font-weight:600; margin-bottom:10px;
+  }
+  .back-btn:hover{background:rgba(255,255,255,.3);}
+
+  .du-cat-head{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    padding:18px 22px; border-radius:var(--radius); color:#fff; margin-bottom:18px;
+  }
+  .du-cat-head.gs{background:linear-gradient(90deg, var(--green), #146b44);}
+  .du-cat-head.gk{background:linear-gradient(90deg, var(--blue), var(--navy-2));}
+  .du-cat-head.sc{background:linear-gradient(90deg, var(--saffron), #e05a00);}
+  .du-cat-head h2{font-size:20px;}
+  .du-cat-head .sub{font-size:12.5px; opacity:.85; font-weight:500; display:block; margin-top:2px;}
+  .upload-btn{
+    display:none; background:rgba(255,255,255,.18); color:#fff; padding:9px 16px; border-radius:10px;
+    font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,.35);
+  }
+  body.is-admin .upload-btn{display:inline-flex; align-items:center; gap:6px;}
+  .upload-btn:hover{background:rgba(255,255,255,.3);}
+
+  /* ---------- Subject folders ---------- */
+  .subj-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .subj-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px;
+  }
+  .subj-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; cursor:pointer; user-select:none;}
+  .subj-title{font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .subj-title .chev{font-size:9px; color:var(--muted); transition:transform .2s ease;}
+  .subj-card.closed .subj-title .chev{transform:rotate(-90deg);}
+  .subj-card.closed .mat-list{display:none;}
+  .subj-title .count{
+    font-size:11.5px; font-weight:600; color:var(--muted); background:var(--bg);
+    padding:3px 9px; border-radius:100px; border:1px solid var(--border);
+  }
+  .subj-head .upload-btn{width:auto; padding:6px 12px; font-size:12px;}
+
+  .mat-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:9px 10px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; font-size:13px;
+  }
+  .mat-item .t{font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .mat-item .a{display:flex; gap:6px; flex-shrink:0;}
+  .mat-item button{
+    padding:5px 10px; border-radius:7px; font-size:12px; font-weight:600;
+    background:var(--bg); border:1px solid var(--border); color:var(--text);
+  }
+  .mat-item button:hover{border-color:var(--saffron); color:var(--saffron);}
+  .mat-empty{font-size:13px; color:var(--muted); text-align:center; padding:14px; border:1px dashed var(--border); border-radius:10px;}
+
+  /* ---------- Modals ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(10,20,40,.5); display:none;
+    align-items:flex-start; justify-content:center; padding-top:12vh; z-index:200;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--card); width:min(420px, 92vw); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.3);
+    padding:24px; position:relative;
+  }
+  .modal-box h3{font-size:18px; margin-bottom:16px;}
+  .modal-box .field{
+    width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:10px;
+    background:var(--bg); color:var(--text); font-size:14.5px; font-family:inherit; margin-bottom:12px;
+    outline:none;
+  }
+  .modal-box .field:focus{border-color:var(--saffron);}
+  .pass-wrap{position:relative;}
+  .pass-wrap .field{padding-right:42px;}
+  .pass-toggle{position:absolute; right:4px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:17px; color:var(--muted); padding:8px; line-height:1; border-radius:8px;}
+  .pass-toggle:hover{color:var(--text); background:var(--bg);}
+  .modal-box .btn-primary{width:100%; justify-content:center; padding:12px;}
+  .modal-msg{font-size:13px; margin-top:10px; min-height:18px;}
+  .modal-msg.ok{color:var(--green);} .modal-msg.err{color:#d64545;}
+  .modal-close{
+    position:absolute; top:12px; right:14px; font-size:20px; color:var(--muted);
+    width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{background:var(--bg);}
+  .sel{appearance:none;}
+  .up-suggest-wrap{position:relative;}
+  .up-suggest{
+    position:absolute; top:100%; left:0; right:0; z-index:50; margin-top:3px;
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    box-shadow:var(--shadow); max-height:190px; overflow:auto; display:none;
+  }
+  .up-suggest.show{display:block;}
+  .up-suggest-item{padding:10px 14px; font-size:13.5px; cursor:pointer;}
+  .up-suggest-item:hover{background:var(--bg); color:var(--saffron);}
+
+  footer{
+    background:var(--navy); color:#cfd9ec; padding:36px 0; text-align:center; font-size:13px;
+  }
+  footer a{color:#fff; font-weight:600;}
+
+  @media (max-width:800px){
+    .subj-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">SULAKSH</div>
+        <div class="brand-tag">LEARN · PREPARE · ACHIEVE</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#exams">Exams</a></li>
+      <li><a href="one-day.html" class="active">ONE DAY EXAMS</a></li>
+      <li><a href="du.html">DU &amp; College</a></li>
+      <li><a href="index.html#study">Study Material</a></li>
+      <li><a href="index.html#about">About Us</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
+      <button class="btn-primary" id="loginBtn">👤 Login</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="index.html#exams">Exams</a>
+    <a href="one-day.html">ONE DAY EXAMS</a>
+    <a href="du.html">DU &amp; College</a>
+    <a href="index.html#study">Study Material</a>
+    <a href="index.html#about">About Us</a>
+  </div>
+</header>
+
+<section class="du-hero">
+  <div class="wrap">
+    <div class="eyebrow">⚡ ONE DAY EXAMS</div>
+    <h1>Subject-wise Study Folders</h1>
+    <p>RRB, SSC and other one-day exams — notes, PYQs and one-liners for General Studies, General Knowledge/Static GK and Science. Select a section to view its folders.</p>
+  </div>
+</section>
+
+<main class="wrap du-main">
+  <div class="du-cats" id="catPicker">
+    <button class="cat-tile gs" onclick="openCategory('GS')">
+      <span class="cat-ico">📘</span>
+      <span class="cat-name">General Studies</span>
+      <span class="cat-sub">History, Polity, Geography, Economy &amp; more</span>
+      <span class="cat-count" id="catCount-GS">0 files</span>
+    </button>
+    <button class="cat-tile gk" onclick="openCategory('GK')">
+      <span class="cat-ico">📗</span>
+      <span class="cat-name">General Knowledge / Static GK</span>
+      <span class="cat-sub">Static GK, Current Affairs, One-liners</span>
+      <span class="cat-count" id="catCount-GK">0 files</span>
+    </button>
+    <button class="cat-tile sc" onclick="openCategory('SC')">
+      <span class="cat-ico">🔬</span>
+      <span class="cat-name">Science</span>
+      <span class="cat-sub">Physics, Chemistry, Biology &amp; more</span>
+      <span class="cat-count" id="catCount-SC">0 files</span>
+    </button>
+  </div>
+
+  <section class="du-cat" id="cat-GS">
+    <div class="du-cat-head gs">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
+        <h2>General Studies</h2>
+        <span class="sub">History, Polity, Geography, Economy &amp; more</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('GS','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-GS"></div>
+  </section>
+
+  <section class="du-cat" id="cat-GK">
+    <div class="du-cat-head gk">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
+        <h2>General Knowledge / Static GK</h2>
+        <span class="sub">Static GK, Current Affairs, One-liners</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('GK','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-GK"></div>
+  </section>
+
+  <section class="du-cat" id="cat-SC">
+    <div class="du-cat-head sc">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
+        <h2>Science</h2>
+        <span class="sub">Physics, Chemistry, Biology &amp; more</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('SC','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-SC"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand-name" style="color:#fff; margin-bottom:8px;">SULAKSH</div>
+    <p>© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('loginOverlay')" aria-label="Close">×</button>
+    <h3>Admin Login</h3>
+    <input type="email" id="loginEmail" class="field" placeholder="Email" autocomplete="email">
+    <div class="pass-wrap">
+      <input type="password" id="loginPassword" class="field" placeholder="Password" autocomplete="current-password">
+      <button type="button" class="pass-toggle" id="passToggle" aria-label="Show password">👁</button>
+    </div>
+    <button class="btn-primary" id="loginSubmit">Login</button>
+    <div class="modal-msg" id="loginMsg"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="uploadOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('uploadOverlay')" aria-label="Close">×</button>
+    <h3>Upload Material</h3>
+    <select id="upCat" class="field sel">
+      <option value="GS">General Studies</option>
+      <option value="GK">General Knowledge / Static GK</option>
+      <option value="SC">Science</option>
+    </select>
+    <div class="up-suggest-wrap">
+      <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. History, Physics)" autocomplete="off">
+      <div class="up-suggest" id="upSuggest"></div>
+    </div>
+    <input type="text" id="upTitle" class="field" placeholder="File title">
+    <input type="text" id="upYear" class="field" placeholder="Year (optional)">
+    <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
+    <button class="btn-primary" id="uploadSubmit">Upload</button>
+    <div class="modal-msg" id="uploadMsg"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- Config ----------
+  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
+  const CATEGORIES = ['GS', 'GK', 'SC'];
+  const CAT_NAMES = { GS: 'General Studies', GK: 'General Knowledge/Static GK', SC: 'Science' };
+
+  const state = {
+    email: localStorage.getItem('sulaksh-email') || null,
+    token: localStorage.getItem('sulaksh-token') || null,
+    isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
+  };
+
+  const expanded = new Set();
+  const dynamicSubjects = {};
+
+  const upCatEl = document.getElementById('upCat');
+  const upSubjectEl = document.getElementById('upSubject');
+  const upSuggestEl = document.getElementById('upSuggest');
+
+  function getSubjectsFor(cat) {
+    return Array.from(new Set((dynamicSubjects[cat] || [])));
+  }
+  function hideSuggest() { upSuggestEl.innerHTML = ''; upSuggestEl.classList.remove('show'); }
+  function showSuggest() {
+    const q = upSubjectEl.value.trim().toLowerCase();
+    if (!q) return hideSuggest();
+    const matches = getSubjectsFor(upCatEl.value).filter((s) => s.toLowerCase().includes(q)).slice(0, 8);
+    if (!matches.length) return hideSuggest();
+    upSuggestEl.innerHTML = matches.map((s) => `<div class="up-suggest-item" data-v="${escapeHtml(s)}">${escapeHtml(s)}</div>`).join('');
+    upSuggestEl.classList.add('show');
+  }
+  upSubjectEl.addEventListener('input', showSuggest);
+  upCatEl.addEventListener('change', showSuggest);
+  upSubjectEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideSuggest(); });
+  upSubjectEl.addEventListener('blur', () => setTimeout(hideSuggest, 150));
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('.up-suggest-item');
+    if (item) { upSubjectEl.value = item.dataset.v; hideSuggest(); }
+  });
+
+  function openCategory(cat) {
+    document.getElementById('catPicker').classList.add('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    document.getElementById('cat-' + cat).classList.add('active');
+    document.getElementById('cat-' + cat).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.openCategory = openCategory;
+
+  function backToCategories() {
+    document.getElementById('catPicker').classList.remove('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.backToCategories = backToCategories;
+
+  function toggleSubject(card) {
+    const key = card.dataset.key;
+    if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
+    card.classList.toggle('closed');
+  }
+
+  function setMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = 'modal-msg' + (ok ? ' ok' : (text ? ' err' : ''));
+  }
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  window.closeModal = closeModal;
+
+  function updateAuthUI() {
+    const btn = document.getElementById('loginBtn');
+    btn.textContent = state.email ? '👤 ' + state.email.split('@')[0] : '👤 Login';
+    document.body.classList.toggle('is-admin', state.isAdmin);
+  }
+
+  // Theme
+  const themeBtn = document.getElementById('themeBtn');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('sulaksh-theme', t);
+  }
+  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  themeBtn.addEventListener('click', () => {
+    setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  // Mobile menu
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+
+  // Login / logout
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    if (state.email) { logout(); return; }
+    setMsg(document.getElementById('loginMsg'), '', false);
+    openModal('loginOverlay');
+  });
+  document.getElementById('loginSubmit').addEventListener('click', doLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('passToggle').addEventListener('click', () => {
+    const input = document.getElementById('loginPassword');
+    const btn = document.getElementById('passToggle');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+    btn.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
+  });
+
+  async function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMsg');
+    if (!email || !password) return setMsg(msg, 'Enter both email and password.', false);
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Login failed.');
+      state.email = email;
+      state.token = data.token;
+      state.isAdmin = ADMIN_EMAILS.includes(email);
+      localStorage.setItem('sulaksh-email', email);
+      localStorage.setItem('sulaksh-token', data.token);
+      updateAuthUI();
+      closeModal('loginOverlay');
+      loadMaterials();
+    } catch (err) {
+      setMsg(msg, err.message, false);
+    }
+  }
+
+  async function logout() {
+    state.email = null; state.token = null; state.isAdmin = false;
+    localStorage.removeItem('sulaksh-email');
+    localStorage.removeItem('sulaksh-token');
+    updateAuthUI();
+    loadMaterials();
+  }
+
+  // Upload
+  function openUpload(cat, subject) {
+    if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
+    document.getElementById('upCat').value = cat || 'GS';
+    document.getElementById('upSubject').value = subject ? decodeURIComponent(subject) : '';
+    document.getElementById('upTitle').value = '';
+    document.getElementById('upYear').value = '';
+    document.getElementById('upFile').value = '';
+    setMsg(document.getElementById('uploadMsg'), '', false);
+    hideSuggest();
+    openModal('uploadOverlay');
+  }
+  window.openUpload = openUpload;
+
+  document.getElementById('uploadSubmit').addEventListener('click', doUpload);
+  document.getElementById('upFile').addEventListener('change', () => {
+    const f = document.getElementById('upFile').files[0];
+    const t = document.getElementById('upTitle');
+    if (f && !t.value) t.value = f.name.replace(/\.pdf$/i, '');
+  });
+
+  async function doUpload() {
+    const msg = document.getElementById('uploadMsg');
+    const cat = document.getElementById('upCat').value;
+    const category = CAT_NAMES[cat];
+    const subject = document.getElementById('upSubject').value.trim();
+    const title = document.getElementById('upTitle').value.trim();
+    const year = document.getElementById('upYear').value.trim();
+    const file = document.getElementById('upFile').files[0];
+    if (!subject || !title || !file) return setMsg(msg, 'Subject folder, file title and a PDF are required.', false);
+
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('exam', 'One Day Exams');
+    fd.append('category', category);
+    fd.append('subject', subject);
+    if (year) fd.append('year', year);
+    fd.append('file', file);
+
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/admin/materials`, {
+        method: 'POST',
+        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+        body: fd,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Upload failed.');
+      setMsg(msg, 'Uploaded successfully!', true);
+      setTimeout(() => closeModal('uploadOverlay'), 1200);
+      loadMaterials();
+    } catch (err) {
+      setMsg(msg, err.message, false);
+    }
+  }
+
+  // Materials
+  async function loadMaterials() {
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/materials`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'one day exams');
+      CATEGORIES.forEach((cat) => {
+        const catMats = mats.filter((m) => (m.category || '') === CAT_NAMES[cat]);
+        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
+        renderCategory(cat, catMats);
+        const countEl = document.getElementById('catCount-' + cat);
+        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
+      });
+    } catch (err) {
+      CATEGORIES.forEach((cat) => {
+        document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+      });
+    }
+  }
+
+  function renderCategory(cat, mats) {
+    const grid = document.getElementById('subj-' + cat);
+    const bySubject = {};
+    mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
+    const subjectNames = Object.keys(bySubject).sort();
+
+    if (!subjectNames.length) {
+      grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
+      return;
+    }
+
+    grid.innerHTML = subjectNames.map((s) => subjectCard(cat, s, bySubject[s] || [])).join('');
+  }
+
+  function subjectCard(cat, s, files) {
+    const key = cat + '::' + s;
+    const isOpen = expanded.has(key);
+    const listHtml = files.length ? files.map(matItem).join('') : '<div class="mat-empty">No files yet.</div>';
+    return `
+      <div class="subj-card ${isOpen ? '' : 'closed'}" data-key="${escapeHtml(key)}" onclick="toggleSubject(this)">
+        <div class="subj-head">
+          <div class="subj-title"><span class="chev">▼</span> 📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
+          ${state.isAdmin ? `<button class="upload-btn" onclick="event.stopPropagation(); openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
+        </div>
+        <div class="mat-list">${listHtml}</div>
+      </div>`;
+  }
+
+  function matItem(m) {
+    return `
+      <div class="mat-item">
+        <span class="t">${escapeHtml(m.title)}${m.year ? ' (' + m.year + ')' : ''}</span>
+        <span class="a">
+          <button onclick="event.stopPropagation(); viewMaterial('${m.id}')">View</button>
+          <button onclick="event.stopPropagation(); downloadMaterial('${m.id}')">Save</button>
+        </span>
+      </div>`;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  async function materialLink(id, mode) {
+    const res = await fetch(`${SULAKSH_API}/api/materials/${id}/download?disposition=${mode}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not open this file.');
+    return data.url;
+  }
+  async function viewMaterial(id) {
+    try { window.open(await materialLink(id, 'inline'), '_blank'); } catch (e) { alert(e.message); }
+  }
+  async function downloadMaterial(id) {
+    try { window.open(await materialLink(id, 'attachment'), '_blank'); } catch (e) { alert(e.message); }
+  }
+
+  updateAuthUI();
+  loadMaterials();
+</script>
+
+</body>
+</html>
