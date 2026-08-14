@@ -211,6 +211,15 @@
   .modal-close:hover{background:var(--bg);}
   .row-2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .sel{appearance:none;}
+  .up-suggest-wrap{position:relative;}
+  .up-suggest{
+    position:absolute; top:100%; left:0; right:0; z-index:50; margin-top:3px;
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    box-shadow:var(--shadow); max-height:190px; overflow:auto; display:none;
+  }
+  .up-suggest.show{display:block;}
+  .up-suggest-item{padding:10px 14px; font-size:13.5px; cursor:pointer;}
+  .up-suggest-item:hover{background:var(--bg); color:var(--blue);}
 
   footer{
     background:var(--navy); color:#cfd9ec; padding:36px 0; text-align:center; font-size:13px;
@@ -380,7 +389,10 @@
       <option value="AEC">AEC — Ability Enhancement</option>
       <option value="GE">GE — Generic Elective</option>
     </select>
-    <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. Web Design, Environmental Science)">
+    <div class="up-suggest-wrap">
+      <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. Web Design, Environmental Science)" autocomplete="off">
+      <div class="up-suggest" id="upSuggest"></div>
+    </div>
     <input type="text" id="upTitle" class="field" placeholder="File title">
     <input type="text" id="upYear" class="field" placeholder="Year (optional)">
     <input type="file" id="upFile" class="field" accept="application/pdf">
@@ -502,6 +514,32 @@
   };
 
   const expanded = new Set();
+  const dynamicSubjects = {};
+
+  const upCatEl = document.getElementById('upCat');
+  const upSubjectEl = document.getElementById('upSubject');
+  const upSuggestEl = document.getElementById('upSuggest');
+
+  function getSubjectsFor(cat) {
+    return Array.from(new Set((STATIC_SUBJECTS[cat] || []).concat(dynamicSubjects[cat] || [])));
+  }
+  function hideSuggest() { upSuggestEl.innerHTML = ''; upSuggestEl.classList.remove('show'); }
+  function showSuggest() {
+    const q = upSubjectEl.value.trim().toLowerCase();
+    if (!q) return hideSuggest();
+    const matches = getSubjectsFor(upCatEl.value).filter((s) => s.toLowerCase().includes(q)).slice(0, 8);
+    if (!matches.length) return hideSuggest();
+    upSuggestEl.innerHTML = matches.map((s) => `<div class="up-suggest-item" data-v="${escapeHtml(s)}">${escapeHtml(s)}</div>`).join('');
+    upSuggestEl.classList.add('show');
+  }
+  upSubjectEl.addEventListener('input', showSuggest);
+  upCatEl.addEventListener('change', showSuggest);
+  upSubjectEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideSuggest(); });
+  upSubjectEl.addEventListener('blur', () => setTimeout(hideSuggest, 150));
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('.up-suggest-item');
+    if (item) { upSubjectEl.value = item.dataset.v; hideSuggest(); }
+  });
 
   function openCategory(cat) {
     document.getElementById('catPicker').classList.add('hidden');
@@ -614,6 +652,7 @@
     document.getElementById('upYear').value = '';
     document.getElementById('upFile').value = '';
     setMsg(document.getElementById('uploadMsg'), '', false);
+    hideSuggest();
     openModal('uploadOverlay');
   }
   window.openUpload = openUpload;
@@ -667,6 +706,7 @@
       const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
       CATEGORIES.forEach((cat) => {
         const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
+        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
         renderCategory(cat, catMats);
         const countEl = document.getElementById('catCount-' + cat);
         if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
