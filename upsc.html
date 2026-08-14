@@ -148,6 +148,7 @@
     background:var(--bg); border:1px solid var(--border); color:var(--text);
   }
   .mat-item button:hover{border-color:var(--navy); color:var(--navy);}
+  .mat-item button.del-btn:hover{border-color:#d64545; color:#d64545;}
   .mat-empty{font-size:13px; color:var(--muted); text-align:center; padding:14px; border:1px dashed var(--border); border-radius:10px;}
 
   /* ---------- Modals ---------- */
@@ -554,8 +555,25 @@
         <span class="a">
           <button onclick="event.stopPropagation(); viewMaterial('${m.id}')">View</button>
           <button onclick="event.stopPropagation(); downloadMaterial('${m.id}')">Save</button>
+          ${state.isAdmin ? `<button class="del-btn" onclick="event.stopPropagation(); deleteMaterial('${m.id}', '${escapeHtml(m.title)}')">Delete</button>` : ''}
         </span>
       </div>`;
+  }
+
+  async function deleteMaterial(id, title) {
+    if (!state.isAdmin) { alert('Only the site admin can delete materials.'); return; }
+    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/admin/materials/${id}`, {
+        method: 'DELETE',
+        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Delete failed.');
+      loadMaterials();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   function escapeHtml(s) {
