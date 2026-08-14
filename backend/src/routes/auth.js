@@ -34,7 +34,7 @@ router.post('/login', (req, res) => {
     maxAge: 12 * 60 * 60 * 1000,
   });
 
-  res.json({ email: admin.email });
+  res.json({ email: admin.email, token });
 });
 
 router.post('/logout', (req, res) => {

@@ -246,6 +246,49 @@
   .mobile-menu.open{display:flex;}
   .mobile-menu a{padding:12px 0; font-size:15px; font-weight:500; border-bottom:1px solid var(--border);}
 
+  /* ---------- Auth & Upload modals ---------- */
+  .modal-box{
+    background:var(--card); width:min(420px, 92vw); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.3);
+    padding:24px; position:relative;
+  }
+  .modal-box h3{font-size:18px; margin-bottom:16px;}
+  .modal-box .field{
+    width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:10px;
+    background:var(--bg); color:var(--text); font-size:14.5px; font-family:inherit; margin-bottom:12px;
+    outline:none;
+  }
+  .modal-box .field:focus{border-color:var(--blue);}
+  .modal-box .btn-primary{width:100%; justify-content:center; padding:12px;}
+  .modal-msg{font-size:13px; margin-top:10px; min-height:18px;}
+  .modal-msg.ok{color:var(--green);} .modal-msg.err{color:#d64545;}
+  .modal-close{
+    position:absolute; top:12px; right:14px; font-size:20px; color:var(--muted);
+    width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{background:var(--bg);}
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+
+  .upload-btn{
+    display:none; margin-top:12px; width:100%; padding:9px; border-radius:10px;
+    background:var(--navy); color:#fff; font-size:13px; font-weight:600;
+  }
+  body.is-admin .upload-btn{display:block;}
+  .upload-btn:hover{background:var(--blue);}
+
+  .mat-list{margin-top:12px;}
+  .mat-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:9px 10px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; font-size:13px;
+  }
+  .mat-item .t{font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .mat-item .a{display:flex; gap:6px; flex-shrink:0;}
+  .mat-item button{
+    padding:5px 10px; border-radius:7px; font-size:12px; font-weight:600;
+    background:var(--bg); border:1px solid var(--border); color:var(--text);
+  }
+  .mat-item button:hover{border-color:var(--blue); color:var(--blue);}
+  .mat-empty{font-size:12.5px; color:var(--muted); text-align:center; padding:10px 0;}
+
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;}
   }
@@ -328,24 +371,32 @@
       <h3 style="color:var(--blue);">RAILWAY</h3>
       <p>RRB NTPC, Group D, JE, ALP &amp; more</p>
       <a href="#" class="cat-link" style="color:var(--blue);">View All →</a>
+      <button class="upload-btn" onclick="openUpload('Railway','RRB NTPC')">⬆ Upload Material</button>
+      <div class="mat-list" data-exam="Railway"></div>
     </div>
     <div class="cat-card">
       <div class="cat-icon" style="background:rgba(255,122,26,.1); color:var(--saffron);">👥</div>
       <h3 style="color:var(--saffron);">SSC</h3>
       <p>SSC CGL, CHSL, MTS, GD &amp; more</p>
       <a href="#" class="cat-link" style="color:var(--saffron);">View All →</a>
+      <button class="upload-btn" onclick="openUpload('SSC','SSC CGL')">⬆ Upload Material</button>
+      <div class="mat-list" data-exam="SSC"></div>
     </div>
     <div class="cat-card">
       <div class="cat-icon" style="background:rgba(12,35,64,.08); color:var(--navy);">🏛️</div>
       <h3 style="color:var(--navy);">UPSC</h3>
       <p>Prelims, Mains, Current Affairs, NCERT &amp; more</p>
       <a href="#" class="cat-link" style="color:var(--navy);">View All →</a>
+      <button class="upload-btn" onclick="openUpload('UPSC','Prelims')">⬆ Upload Material</button>
+      <div class="mat-list" data-exam="UPSC"></div>
     </div>
     <div class="cat-card">
       <div class="cat-icon" style="background:rgba(30,142,90,.1); color:var(--green);">🎓</div>
       <h3 style="color:var(--green);">DU &amp; COLLEGE</h3>
       <p>BA Programme, Semester Notes, PYQs, Question Bank</p>
       <a href="#" class="cat-link" style="color:var(--green);">View All →</a>
+      <button class="upload-btn" onclick="openUpload('DU &amp; College','Semester')">⬆ Upload Material</button>
+      <div class="mat-list" data-exam="DU &amp; College"></div>
     </div>
   </div>
 
@@ -353,7 +404,10 @@
     <div class="panel" id="study">
       <div class="panel-head">
         <h2>Popular Exams</h2>
-        <a href="#" class="view-all">View All →</a>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <a href="#" class="view-all">View All →</a>
+          <button class="upload-btn" style="width:auto; margin:0; padding:8px 14px;" onclick="openUpload('','')">⬆ Upload</button>
+        </div>
       </div>
       <div class="exam-row"><div class="exam-left">🔥 RRB NTPC 2024</div><span>›</span></div>
       <div class="exam-row"><div class="exam-left">🔥 SSC CGL 2024</div><span>›</span></div>
@@ -388,6 +442,36 @@
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Search exams, notes, PYQs..." autofocus>
     <div class="search-hint">Press <b>Esc</b> to close</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('loginOverlay')" aria-label="Close">×</button>
+    <h3>Admin Login</h3>
+    <input type="email" id="loginEmail" class="field" placeholder="Email" autocomplete="email">
+    <input type="password" id="loginPassword" class="field" placeholder="Password" autocomplete="current-password">
+    <button class="btn-primary" id="loginSubmit">Login</button>
+    <div class="modal-msg" id="loginMsg"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="uploadOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('uploadOverlay')" aria-label="Close">×</button>
+    <h3>Upload Material</h3>
+    <input type="text" id="upTitle" class="field" placeholder="Title">
+    <div class="row-2">
+      <input type="text" id="upExam" class="field" placeholder="Exam">
+      <input type="text" id="upCategory" class="field" placeholder="Category">
+    </div>
+    <div class="row-2">
+      <input type="text" id="upSubject" class="field" placeholder="Subject (optional)">
+      <input type="text" id="upYear" class="field" placeholder="Year (optional)">
+    </div>
+    <input type="file" id="upFile" class="field" accept="application/pdf">
+    <button class="btn-primary" id="uploadSubmit">Upload</button>
+    <div class="modal-msg" id="uploadMsg"></div>
   </div>
 </div>
 
@@ -441,10 +525,190 @@
     });
   });
 
-  // Login placeholder
-  document.getElementById('loginBtn').addEventListener('click', () => {
-    alert('Login flow goes here — hook this up to your auth system.');
+  // ---------- API config ----------
+  // Change this to your deployed backend URL once Render is live.
+  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'http://localhost:4000';
+  const ADMIN_EMAIL = 'y1315544@gmail.com';
+
+  const state = {
+    email: localStorage.getItem('sulaksh-email') || null,
+    token: localStorage.getItem('sulaksh-token') || null,
+    isAdmin: localStorage.getItem('sulaksh-email') === ADMIN_EMAIL,
+  };
+
+  function setMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = 'modal-msg' + (ok ? ' ok' : (text ? ' err' : ''));
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  window.closeModal = closeModal;
+
+  function updateAuthUI() {
+    const btn = document.getElementById('loginBtn');
+    if (state.email) {
+      btn.textContent = '👤 ' + state.email.split('@')[0];
+      btn.title = 'Click to log out';
+    } else {
+      btn.textContent = '👤 Login';
+      btn.title = 'Admin login';
+    }
+    document.body.classList.toggle('is-admin', state.isAdmin);
+  }
+
+  // Login / logout
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', () => {
+    if (state.email) { logout(); return; }
+    setMsg(document.getElementById('loginMsg'), '', false);
+    openModal('loginOverlay');
   });
+  document.getElementById('loginSubmit').addEventListener('click', doLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+  async function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMsg');
+    if (!email || !password) return setMsg(msg, 'Enter both email and password.', false);
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Login failed.');
+      state.email = email;
+      state.token = data.token;
+      state.isAdmin = email === ADMIN_EMAIL;
+      localStorage.setItem('sulaksh-email', email);
+      localStorage.setItem('sulaksh-token', data.token);
+      updateAuthUI();
+      closeModal('loginOverlay');
+      loadMaterials();
+    } catch (err) {
+      setMsg(msg, err.message, false);
+    }
+  }
+
+  async function logout() {
+    state.email = null;
+    state.token = null;
+    state.isAdmin = false;
+    localStorage.removeItem('sulaksh-email');
+    localStorage.removeItem('sulaksh-token');
+    updateAuthUI();
+    loadMaterials();
+  }
+
+  // Upload (admin only — gated to ADMIN_EMAIL in the UI)
+  function openUpload(exam, category) {
+    if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
+    document.getElementById('upExam').value = exam;
+    document.getElementById('upCategory').value = category;
+    document.getElementById('upTitle').value = '';
+    document.getElementById('upSubject').value = '';
+    document.getElementById('upYear').value = '';
+    document.getElementById('upFile').value = '';
+    setMsg(document.getElementById('uploadMsg'), '', false);
+    openModal('uploadOverlay');
+  }
+  window.openUpload = openUpload;
+
+  document.getElementById('uploadSubmit').addEventListener('click', doUpload);
+  document.getElementById('upFile').addEventListener('change', () => {
+    const f = document.getElementById('upFile').files[0];
+    const t = document.getElementById('upTitle');
+    if (f && !t.value) t.value = f.name.replace(/\.pdf$/i, '');
+  });
+
+  async function doUpload() {
+    const msg = document.getElementById('uploadMsg');
+    const title = document.getElementById('upTitle').value.trim();
+    const exam = document.getElementById('upExam').value.trim();
+    const category = document.getElementById('upCategory').value.trim();
+    const subject = document.getElementById('upSubject').value.trim();
+    const year = document.getElementById('upYear').value.trim();
+    const file = document.getElementById('upFile').files[0];
+    if (!title || !exam || !category || !file) return setMsg(msg, 'Title, exam, category and a PDF file are required.', false);
+
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('exam', exam);
+    fd.append('category', category);
+    if (subject) fd.append('subject', subject);
+    if (year) fd.append('year', year);
+    fd.append('file', file);
+
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/admin/materials`, {
+        method: 'POST',
+        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+        body: fd,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Upload failed.');
+      setMsg(msg, 'Uploaded successfully!', true);
+      setTimeout(() => closeModal('uploadOverlay'), 1200);
+      loadMaterials();
+    } catch (err) {
+      setMsg(msg, err.message, false);
+    }
+  }
+
+  // Materials display
+  async function loadMaterials() {
+    const lists = document.querySelectorAll('.mat-list');
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/materials`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const mats = data.materials || [];
+      lists.forEach((list) => {
+        const exam = list.getAttribute('data-exam').replace('&amp;', '&');
+        const items = mats.filter((m) => (m.exam || '').toLowerCase() === exam.toLowerCase());
+        renderList(list, items);
+      });
+    } catch (err) {
+      lists.forEach((list) => {
+        list.innerHTML = '<div class="mat-empty">Materials will appear here once the backend is connected.</div>';
+      });
+    }
+  }
+
+  function renderList(list, items) {
+    if (!items.length) { list.innerHTML = '<div class="mat-empty">No materials yet.</div>'; return; }
+    list.innerHTML = items.slice(0, 5).map((m) => `
+      <div class="mat-item">
+        <span class="t">${escapeHtml(m.title)}${m.year ? ' (' + m.year + ')' : ''}</span>
+        <span class="a">
+          <button onclick="viewMaterial('${m.id}')">View</button>
+          <button onclick="downloadMaterial('${m.id}')">Save</button>
+        </span>
+      </div>`).join('');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  async function materialLink(id, mode) {
+    const res = await fetch(`${SULAKSH_API}/api/materials/${id}/download?disposition=${mode}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not open this file.');
+    return data.url;
+  }
+  async function viewMaterial(id) {
+    try { window.open(await materialLink(id, 'inline'), '_blank'); } catch (e) { alert(e.message); }
+  }
+  async function downloadMaterial(id) {
+    try { window.open(await materialLink(id, 'attachment'), '_blank'); } catch (e) { alert(e.message); }
+  }
+
+  updateAuthUI();
+  loadMaterials();
 </script>
 
 </body>
