@@ -87,15 +87,16 @@ async function deleteObject(key) {
 
 /**
  * Generate a short-lived presigned GET URL. `disposition` controls whether
- * the browser opens the PDF inline ("View") or downloads it ("Download").
+ * the browser opens the file inline ("View") or downloads it ("Download").
+ * `contentType` is the real stored type so images open inline and PDFs too.
  */
-async function getPresignedDownloadUrl(key, { fileName, disposition = 'inline', expiresIn = DEFAULT_EXPIRY } = {}) {
+async function getPresignedDownloadUrl(key, { fileName, disposition = 'inline', contentType = 'application/pdf', expiresIn = DEFAULT_EXPIRY } = {}) {
   const safeName = fileName ? fileName.replace(/"/g, '') : 'document.pdf';
   const command = new GetObjectCommand({
     Bucket: BUCKET,
     Key: key,
     ResponseContentDisposition: `${disposition}; filename="${safeName}"`,
-    ResponseContentType: 'application/pdf',
+    ResponseContentType: contentType,
   });
   return getSignedUrl(s3, command, { expiresIn });
 }

@@ -57,6 +57,7 @@ router.get('/:id/download', async (req, res) => {
     const url = await getPresignedDownloadUrl(material.r2_object_key, {
       fileName: material.file_name,
       disposition,
+      contentType: material.content_type,
     });
     res.json({ url, expires_in: parseInt(process.env.PRESIGNED_URL_EXPIRY_SECONDS || '300', 10) });
   } catch (err) {
