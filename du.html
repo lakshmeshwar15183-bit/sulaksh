@@ -167,6 +167,10 @@
     outline:none;
   }
   .modal-box .field:focus{border-color:var(--blue);}
+  .pass-wrap{position:relative;}
+  .pass-wrap .field{padding-right:42px;}
+  .pass-toggle{position:absolute; right:4px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:17px; color:var(--muted); padding:8px; line-height:1; border-radius:8px;}
+  .pass-toggle:hover{color:var(--text); background:var(--bg);}
   .modal-box .btn-primary{width:100%; justify-content:center; padding:12px;}
   .modal-msg{font-size:13px; margin-top:10px; min-height:18px;}
   .modal-msg.ok{color:var(--green);} .modal-msg.err{color:#d64545;}
@@ -296,7 +300,10 @@
     <button class="modal-close" onclick="closeModal('loginOverlay')" aria-label="Close">×</button>
     <h3>Admin Login</h3>
     <input type="email" id="loginEmail" class="field" placeholder="Email" autocomplete="email">
-    <input type="password" id="loginPassword" class="field" placeholder="Password" autocomplete="current-password">
+    <div class="pass-wrap">
+      <input type="password" id="loginPassword" class="field" placeholder="Password" autocomplete="current-password">
+      <button type="button" class="pass-toggle" id="passToggle" aria-label="Show password">👁</button>
+    </div>
     <button class="btn-primary" id="loginSubmit">Login</button>
     <div class="modal-msg" id="loginMsg"></div>
   </div>
@@ -372,6 +379,13 @@
   });
   document.getElementById('loginSubmit').addEventListener('click', doLogin);
   document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('passToggle').addEventListener('click', () => {
+    const input = document.getElementById('loginPassword');
+    const btn = document.getElementById('passToggle');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+    btn.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
+  });
 
   async function doLogin() {
     const email = document.getElementById('loginEmail').value.trim();
