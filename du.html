@@ -437,6 +437,55 @@
     'Sports - Diversity and Inclusivity',
   ];
 
+  const SEC_SUBJECTS = [
+    'Advanced Spreadsheets Tools',
+    'Analytics/ Computing With Python',
+    'APP Development using Flutter',
+    'Back-End Web Development',
+    'Basic IT Tools',
+    'Big Data Analytics',
+    'Beginners Course to Calligraphy',
+    'Business Communication',
+    'Business Intelligence and Data Visualisation',
+    'CAD for Fashion',
+    'Communication in Everyday Life',
+    'Communication in Professional Life',
+    'Creative Writing',
+    'Cyber Sphere and Security: Global Concern',
+    'Developing sustainability plans for a business',
+    'Digital Film Production',
+    'Digital Marketing',
+    'Essentials of Python',
+    'E-Tourism',
+    'Finance for Everyone',
+    'Financial Database and Analysis Software',
+    'Front End Web Design and Development',
+    'Graphics Design & Animation',
+    'Harmonium',
+    'Introduction to Arabic Calligraphy',
+    'Introduction to Blockchain',
+    'Introduction to Cloud Computing (AWS)',
+    'Negotiations and Leadership',
+    'Personal Financial Planning',
+    'Personality Development and Communication',
+    'Political Leadership and Communication',
+    'Programing with Python',
+    'Prospecting E-Waste for Sustainability',
+    'Public Speaking in English Language and Leadership',
+    'Statistical Software Package',
+    "Statistics with 'R'",
+    'Sustainable Ecotourism and Entrepreneurship',
+    'Visual Communication and Photography',
+    'पटकथा लेखन',
+    'रंगमंच',
+    'रचनात्मक लेखन',
+    'Museum and Museology',
+    'Reading the Archive',
+    'Fundamentals of Indian Manuscriptology',
+  ];
+
+  const STATIC_SUBJECTS = { VAC: VAC_SUBJECTS, SEC: SEC_SUBJECTS };
+
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
     token: localStorage.getItem('sulaksh-token') || null,
@@ -626,8 +675,9 @@
     mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
 
     let subjectNames;
-    if (cat === 'VAC') {
-      subjectNames = VAC_SUBJECTS.slice();
+    const staticList = STATIC_SUBJECTS[cat];
+    if (staticList) {
+      subjectNames = staticList.slice();
       Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s)) subjectNames.push(s); });
     } else {
       subjectNames = Object.keys(bySubject).sort();
