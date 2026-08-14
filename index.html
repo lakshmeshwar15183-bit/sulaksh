@@ -434,8 +434,6 @@
     <div class="panel" id="pyqs">
       <div class="panel-head"><h2>What We Provide</h2></div>
       <div class="feat-grid">
-        <div class="feat"><div class="feat-icon" style="background:rgba(30,95,255,.1);">📋</div><span>Latest Exam Updates</span></div>
-        <div class="feat"><div class="feat-icon" style="background:rgba(30,142,90,.1);">✅</div><span>Mock Tests</span></div>
         <div class="feat"><div class="feat-icon" style="background:rgba(255,122,26,.1);">📝</div><span>High Quality Notes</span></div>
         <div class="feat"><div class="feat-icon" style="background:rgba(30,95,255,.1);">📑</div><span>Syllabus</span></div>
         <div class="feat"><div class="feat-icon" style="background:rgba(160,80,255,.1);">📄</div><span>Previous Year Questions</span></div>
@@ -584,12 +582,12 @@
   // ---------- API config ----------
   // Change this to your deployed backend URL once Render is live.
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-api.onrender.com';
-  const ADMIN_EMAIL = 'y1315544@gmail.com';
+  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla@gmail.com'];
 
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
     token: localStorage.getItem('sulaksh-token') || null,
-    isAdmin: localStorage.getItem('sulaksh-email') === ADMIN_EMAIL,
+    isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
   };
 
   function setMsg(el, text, ok) {
@@ -638,7 +636,7 @@
       if (!res.ok) throw new Error(data.error || 'Login failed.');
       state.email = email;
       state.token = data.token;
-      state.isAdmin = email === ADMIN_EMAIL;
+      state.isAdmin = ADMIN_EMAILS.includes(email);
       localStorage.setItem('sulaksh-email', email);
       localStorage.setItem('sulaksh-token', data.token);
       updateAuthUI();
@@ -659,7 +657,7 @@
     loadMaterials();
   }
 
-  // Upload (admin only — gated to ADMIN_EMAIL in the UI)
+  // Upload (admin only — gated to ADMIN_EMAILS in the UI)
   function openUpload(exam, category) {
     if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
     document.getElementById('upExam').value = exam;

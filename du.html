@@ -324,13 +324,13 @@
 <script>
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-api.onrender.com';
-  const ADMIN_EMAIL = 'y1315544@gmail.com';
+  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla@gmail.com'];
   const CATEGORIES = ['SEC', 'VAC', 'AEC', 'GE'];
 
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
     token: localStorage.getItem('sulaksh-token') || null,
-    isAdmin: localStorage.getItem('sulaksh-email') === ADMIN_EMAIL,
+    isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
   };
 
   function setMsg(el, text, ok) {
@@ -388,7 +388,7 @@
       if (!res.ok) throw new Error(data.error || 'Login failed.');
       state.email = email;
       state.token = data.token;
-      state.isAdmin = email === ADMIN_EMAIL;
+      state.isAdmin = ADMIN_EMAILS.includes(email);
       localStorage.setItem('sulaksh-email', email);
       localStorage.setItem('sulaksh-token', data.token);
       updateAuthUI();
