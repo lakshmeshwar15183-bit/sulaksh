@@ -129,8 +129,11 @@
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
     padding:18px;
   }
-  .subj-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px;}
+  .subj-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; cursor:pointer; user-select:none;}
   .subj-title{font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .subj-title .chev{font-size:9px; color:var(--muted); transition:transform .2s ease;}
+  .subj-card.closed .subj-title .chev{transform:rotate(-90deg);}
+  .subj-card.closed .mat-list{display:none;}
   .subj-title .count{
     font-size:11.5px; font-weight:600; color:var(--muted); background:var(--bg);
     padding:3px 9px; border-radius:100px; border:1px solid var(--border);
@@ -340,6 +343,14 @@
     isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
   };
 
+  const expanded = new Set();
+
+  function toggleSubject(card) {
+    const key = card.dataset.key;
+    if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
+    card.classList.toggle('closed');
+  }
+
   function setMsg(el, text, ok) {
     el.textContent = text;
     el.className = 'modal-msg' + (ok ? ' ok' : (text ? ' err' : ''));
@@ -498,14 +509,18 @@
     const bySubject = {};
     mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
 
-    grid.innerHTML = Object.keys(bySubject).sort().map((s) => `
-      <div class="subj-card">
+    grid.innerHTML = Object.keys(bySubject).sort().map((s) => {
+      const key = cat + '::' + s;
+      const isOpen = expanded.has(key);
+      return `
+      <div class="subj-card ${isOpen ? '' : 'closed'}" data-key="${escapeHtml(key)}" onclick="toggleSubject(this)">
         <div class="subj-head">
-          <div class="subj-title">📁 <b>${escapeHtml(s)}</b> <span class="count">${bySubject[s].length} file${bySubject[s].length > 1 ? 's' : ''}</span></div>
-          ${state.isAdmin ? `<button class="upload-btn" onclick="openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
+          <div class="subj-title"><span class="chev">▼</span> 📁 <b>${escapeHtml(s)}</b> <span class="count">${bySubject[s].length} file${bySubject[s].length > 1 ? 's' : ''}</span></div>
+          ${state.isAdmin ? `<button class="upload-btn" onclick="event.stopPropagation(); openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
         </div>
         <div class="mat-list">${bySubject[s].map(matItem).join('')}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   function matItem(m) {
@@ -513,8 +528,8 @@
       <div class="mat-item">
         <span class="t">${escapeHtml(m.title)}${m.year ? ' (' + m.year + ')' : ''}</span>
         <span class="a">
-          <button onclick="viewMaterial('${m.id}')">View</button>
-          <button onclick="downloadMaterial('${m.id}')">Save</button>
+          <button onclick="event.stopPropagation(); viewMaterial('${m.id}')">View</button>
+          <button onclick="event.stopPropagation(); downloadMaterial('${m.id}')">Save</button>
         </span>
       </div>`;
   }
