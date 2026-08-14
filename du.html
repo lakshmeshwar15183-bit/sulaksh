@@ -105,7 +105,34 @@
 
   /* ---------- Category sections ---------- */
   .du-main{padding:36px 0 64px;}
-  .du-cat{margin-bottom:36px;}
+  .du-cat{margin-bottom:36px; display:none;}
+  .du-cat.active{display:block;}
+
+  /* ---------- Category picker tiles ---------- */
+  .du-cats{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-bottom:16px;}
+  .cat-tile{
+    text-align:left; background:var(--card); border:1px solid var(--border); border-top:4px solid transparent;
+    border-radius:var(--radius); padding:22px; cursor:pointer; transition:transform .15s, box-shadow .2s, border-color .2s;
+    display:flex; flex-direction:column; gap:6px; color:var(--text);
+  }
+  .cat-tile:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
+  .cat-tile.sec{border-top-color:var(--blue);}
+  .cat-tile.vac{border-top-color:var(--saffron);}
+  .cat-tile.aec{border-top-color:var(--navy-2);}
+  .cat-tile.ge{border-top-color:var(--green);}
+  .cat-ico{font-size:26px;}
+  .cat-name{font-family:'Sora',sans-serif; font-size:20px; font-weight:800; letter-spacing:.2px;}
+  .cat-sub{font-size:13px; color:var(--muted);}
+  .cat-count{font-size:12.5px; font-weight:600; color:var(--blue); margin-top:6px;}
+  #catPicker.hidden{display:none;}
+
+  .back-btn{
+    display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); color:#fff;
+    border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:8px;
+    font-size:12.5px; font-weight:600; margin-bottom:10px;
+  }
+  .back-btn:hover{background:rgba(255,255,255,.3);}
+
   .du-cat-head{
     display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
     padding:18px 22px; border-radius:var(--radius); color:#fff; margin-bottom:18px;
@@ -246,9 +273,37 @@
 </section>
 
 <main class="wrap du-main">
+  <div class="du-cats" id="catPicker">
+    <button class="cat-tile sec" onclick="openCategory('SEC')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">SEC</span>
+      <span class="cat-sub">Skill Enhancement Courses</span>
+      <span class="cat-count" id="catCount-SEC">0 files</span>
+    </button>
+    <button class="cat-tile vac" onclick="openCategory('VAC')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">VAC</span>
+      <span class="cat-sub">Value Addition Courses</span>
+      <span class="cat-count" id="catCount-VAC">0 files</span>
+    </button>
+    <button class="cat-tile aec" onclick="openCategory('AEC')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">AEC</span>
+      <span class="cat-sub">Ability Enhancement Courses</span>
+      <span class="cat-count" id="catCount-AEC">0 files</span>
+    </button>
+    <button class="cat-tile ge" onclick="openCategory('GE')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">GE</span>
+      <span class="cat-sub">Generic Elective Courses</span>
+      <span class="cat-count" id="catCount-GE">0 files</span>
+    </button>
+  </div>
+
   <section class="du-cat" id="cat-SEC">
     <div class="du-cat-head sec">
       <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
         <h2>SEC</h2>
         <span class="sub">Skill Enhancement Courses</span>
       </div>
@@ -260,6 +315,7 @@
   <section class="du-cat" id="cat-VAC">
     <div class="du-cat-head vac">
       <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
         <h2>VAC</h2>
         <span class="sub">Value Addition Courses</span>
       </div>
@@ -271,6 +327,7 @@
   <section class="du-cat" id="cat-AEC">
     <div class="du-cat-head aec">
       <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
         <h2>AEC</h2>
         <span class="sub">Ability Enhancement Courses</span>
       </div>
@@ -282,6 +339,7 @@
   <section class="du-cat" id="cat-GE">
     <div class="du-cat-head ge">
       <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
         <h2>GE</h2>
         <span class="sub">Generic Elective Courses</span>
       </div>
@@ -344,6 +402,21 @@
   };
 
   const expanded = new Set();
+
+  function openCategory(cat) {
+    document.getElementById('catPicker').classList.add('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    document.getElementById('cat-' + cat).classList.add('active');
+    document.getElementById('cat-' + cat).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.openCategory = openCategory;
+
+  function backToCategories() {
+    document.getElementById('catPicker').classList.remove('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.backToCategories = backToCategories;
 
   function toggleSubject(card) {
     const key = card.dataset.key;
@@ -492,7 +565,12 @@
       if (!res.ok) throw new Error();
       const data = await res.json();
       const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
-      CATEGORIES.forEach((cat) => renderCategory(cat, mats.filter((m) => (m.category || '').toUpperCase() === cat)));
+      CATEGORIES.forEach((cat) => {
+        const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
+        renderCategory(cat, catMats);
+        const countEl = document.getElementById('catCount-' + cat);
+        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
+      });
     } catch (err) {
       CATEGORIES.forEach((cat) => {
         document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
