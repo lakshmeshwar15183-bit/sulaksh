@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms &amp; Conditions — Sulaksh</title>
+<meta name="description" content="Review the Sulaksh Terms and Conditions covering acceptable use, study materials, intellectual property, user responsibilities and limitation of liability.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2340;
+    --navy-2:#123467;
+    --blue:#1E5FFF;
+    --saffron:#FF7A1A;
+    --green:#1E8E5A;
+    --bg:#F6F8FC;
+    --card:#FFFFFF;
+    --text:#1A2433;
+    --muted:#5B6B80;
+    --border:#E4E9F1;
+    --radius:16px;
+    --shadow: 0 4px 24px rgba(12,35,64,0.06);
+  }
+  [data-theme="dark"]{
+    --navy:#0A192E;
+    --navy-2:#0F2647;
+    --bg:#0B1424;
+    --card:#101B2E;
+    --text:#EAF0FA;
+    --muted:#8FA0B8;
+    --border:#1E2C42;
+    --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.brand-name{font-family:'Sora',sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1280px; margin:0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .brand-emblem{height:44px; width:auto; display:block; flex-shrink:0;}
+  .brand-wordmark{height:26px; width:auto; display:block; flex-shrink:0;}
+
+  .nav-links{display:flex; align-items:center; gap:28px; list-style:none;}
+  .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
+  .nav-links a.active{color:var(--blue); opacity:1; font-weight:600;}
+  .nav-links a:hover{opacity:1;}
+
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg); border:1px solid var(--border);
+    color:var(--muted); transition:all .2s;
+  }
+  .icon-btn:hover{background:var(--border);}
+  .hamburger{display:none; flex-direction:column; gap:5px; width:38px; height:38px; align-items:center; justify-content:center;}
+  .hamburger span{width:20px; height:2px; background:var(--text); border-radius:2px;}
+
+  .mobile-menu{
+    display:none; flex-direction:column; background:var(--card); border-top:1px solid var(--border);
+    padding:10px 24px 20px;
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{padding:12px 0; font-size:15px; font-weight:500; border-bottom:1px solid var(--border);}
+
+  /* ---------- Page hero ---------- */
+  .page-hero{
+    background:linear-gradient(180deg, #EEF2FA 0%, var(--bg) 100%);
+    padding:52px 0 40px;
+  }
+  [data-theme="dark"] .page-hero{background:linear-gradient(180deg, #0D1B30 0%, var(--bg) 100%);}
+  .page-hero .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,122,26,.1); color:var(--saffron);
+    padding:6px 14px; border-radius:100px; font-size:12.5px; font-weight:700;
+    letter-spacing:.4px; margin-bottom:14px;
+  }
+  .page-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
+  .page-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:680px; margin-top:10px;}
+  .updated{font-size:13px; color:var(--muted); margin-top:14px; font-weight:600;}
+
+  /* ---------- Content ---------- */
+  .page-main{padding:40px 0 64px;}
+  .page-main .wrap{max-width:860px;}
+  .policy-grid{display:flex; flex-direction:column; gap:18px;}
+  .policy-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:26px; box-shadow:var(--shadow);
+  }
+  .policy-card h2{
+    font-size:19px; font-weight:800; letter-spacing:-.2px; margin-bottom:12px;
+    display:flex; align-items:center; gap:10px; color:var(--navy);
+  }
+  .policy-card p, .policy-card li{font-size:14.5px; line-height:1.75; color:var(--muted);}
+  .policy-card p + p{margin-top:10px;}
+  .policy-card ul, .policy-card ol{padding-left:20px; margin:8px 0;}
+  .policy-card li{margin-bottom:6px;}
+  .policy-card a{color:var(--blue); font-weight:600;}
+  .policy-card a:hover{text-decoration:underline;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    background:var(--navy); color:#cfd9ec; padding:40px 0 36px; text-align:center; font-size:13px;
+  }
+  footer a{color:#fff; font-weight:600;}
+  footer a:hover{color:var(--saffron);}
+  .footer-brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;}
+  .footer-brand img.brand-emblem{height:36px;}
+  .footer-brand img.brand-wordmark{height:20px;}
+  .footer-links{display:flex; flex-wrap:wrap; justify-content:center; gap:8px 22px; margin:18px 0; list-style:none;}
+  .footer-links a{color:#cfd9ec; font-weight:600;}
+  .footer-links a:hover{color:#fff;}
+  .footer-copy{opacity:.85; line-height:1.8;}
+  .footer-contact{margin-top:6px;}
+  .footer-contact a{color:#fff;}
+
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .brand-emblem{height:38px;}
+    .brand-wordmark{height:22px;}
+  }
+  @media (max-width:520px){
+    .brand{gap:8px;}
+    .brand-emblem{height:32px;}
+    .brand-wordmark{height:18px;}
+    .policy-card{padding:20px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem" width="782" height="665">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark" width="1115" height="203">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="one-day.html">ONE DAY EXAMS</a></li>
+      <li><a href="upsc.html">UPSC</a></li>
+      <li><a href="du.html">DU &amp; College</a></li>
+      <li><a href="index.html#study">Study Material</a></li>
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="one-day.html">ONE DAY EXAMS</a>
+    <a href="upsc.html">UPSC</a>
+    <a href="du.html">DU &amp; College</a>
+    <a href="index.html#study">Study Material</a>
+    <a href="index.html#about">About Us</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">📜 Terms &amp; Conditions</div>
+    <h1>Terms &amp; Conditions</h1>
+    <p>These Terms and Conditions govern your use of the Sulaksh website and the educational content, notes, PYQs and study materials we provide.</p>
+    <p class="updated">Last updated: 15 August 2026</p>
+  </div>
+</section>
+
+<main class="page-main">
+  <div class="wrap">
+    <div class="policy-grid">
+
+      <div class="policy-card">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using the Sulaksh website, you agree to be bound by these Terms and Conditions and our <a href="privacy-policy.html">Privacy Policy</a>. If you do not agree with any part of these terms, please do not use the website.</p>
+        <p>These terms apply to all visitors, users and others who access the website. You should review these terms periodically, as continued use after changes are posted constitutes acceptance of the updated terms.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>2. Acceptable Use</h2>
+        <p>When using Sulaksh, you agree not to:</p>
+        <ul>
+          <li>Use the website for any unlawful or unauthorized purpose, or in any way that violates applicable laws;</li>
+          <li>Copy, reproduce, redistribute, resell or commercially exploit the content for purposes other than personal study without prior permission;</li>
+          <li>Attempt to gain unauthorized access to any part of the website, its servers or connected systems;</li>
+          <li>Interfere with or disrupt the proper functioning of the website; or</li>
+          <li>Upload, post or transmit any content that is false, misleading, defamatory or infringing on the rights of others.</li>
+        </ul>
+      </div>
+
+      <div class="policy-card">
+        <h2>3. Study Materials</h2>
+        <p>The materials provided on Sulaksh, including notes, previous year questions (PYQs), syllabi and other study resources, are offered for personal, non-commercial, educational use. Please note:</p>
+        <ul>
+          <li>Materials are provided for reference and study purposes only.</li>
+          <li>Some resources are created by us, while others may be compiled or shared from publicly available sources, with attribution where applicable.</li>
+          <li>We make reasonable efforts to keep content accurate and up to date, but you should always verify important examination-related information with the official sources.</li>
+        </ul>
+      </div>
+
+      <div class="policy-card">
+        <h2>4. Intellectual Property &amp; Copyright</h2>
+        <p>Unless otherwise stated, the name "Sulaksh", the website design, branding and original content published by us are our intellectual property and are protected by applicable copyright and trademark laws. You may view and use content for personal, non-commercial study purposes, but you may not reproduce, distribute or create derivative works from our original content without our prior written permission.</p>
+        <p>If any material hosted on the website belongs to a third party and you believe its use infringes your rights, please contact us and we will review and, where appropriate, remove the material.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>5. User Responsibilities</h2>
+        <p>You are responsible for how you use the website and the materials you access. You agree to use the content at your own discretion and to independently verify exam notifications, syllabi, dates and other official information with the relevant authorities or institutions before relying on it.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>6. External Links</h2>
+        <p>The website may contain links to external websites that are not operated by us. We have no control over their content and assume no responsibility for them. The inclusion of any external link does not imply endorsement. You access external sites entirely at your own risk.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>7. Availability of the Website</h2>
+        <p>We aim to keep the website available at all times, but we do not guarantee that it will be uninterrupted, secure or free from errors. We may suspend, modify or discontinue any part of the website at any time, with or without notice, without liability to you.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>8. Limitation of Liability</h2>
+        <p>To the fullest extent permitted by law, Sulaksh and its operators shall not be liable for any indirect, incidental, special, consequential or punitive damages, or any loss of profits, data or other intangible losses, arising out of or related to your use of, or inability to use, the website and its content.</p>
+        <p>Because examination patterns, syllabi and notifications may change, we accept no liability for decisions made based on the content provided on this website. You are advised to confirm all official details with the issuing authority.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>9. Changes to These Terms</h2>
+        <p>We may update these Terms and Conditions from time to time. Updated versions will be posted on this page with a revised "Last updated" date. Your continued use of the website after any changes means you accept the revised terms.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>10. Contact Us</h2>
+        <p>If you have any questions about these Terms and Conditions, please contact us:</p>
+        <ul>
+          <li>Email: <a href="mailto:y1315544@gmail.com">y1315544@gmail.com</a></li>
+          <li>Website: <a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark">
+    </div>
+    <p class="footer-copy">© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+    <ul class="footer-links">
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      <li><a href="disclaimer.html">Disclaimer</a></li>
+    </ul>
+    <p class="footer-contact">Contact: <a href="mailto:y1315544@gmail.com">y1315544@gmail.com</a></p>
+  </div>
+</footer>
+
+<script>
+  const themeBtn = document.getElementById('themeBtn');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('sulaksh-theme', t);
+  }
+  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  themeBtn.addEventListener('click', () => {
+    setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>

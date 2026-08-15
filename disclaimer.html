@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disclaimer — Sulaksh</title>
+<meta name="description" content="Sulaksh provides educational resources for informational purposes. Read our Disclaimer to understand the limits of our content and the importance of verifying official examination information.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2340;
+    --navy-2:#123467;
+    --blue:#1E5FFF;
+    --saffron:#FF7A1A;
+    --green:#1E8E5A;
+    --bg:#F6F8FC;
+    --card:#FFFFFF;
+    --text:#1A2433;
+    --muted:#5B6B80;
+    --border:#E4E9F1;
+    --radius:16px;
+    --shadow: 0 4px 24px rgba(12,35,64,0.06);
+  }
+  [data-theme="dark"]{
+    --navy:#0A192E;
+    --navy-2:#0F2647;
+    --bg:#0B1424;
+    --card:#101B2E;
+    --text:#EAF0FA;
+    --muted:#8FA0B8;
+    --border:#1E2C42;
+    --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.brand-name{font-family:'Sora',sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1280px; margin:0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .brand-emblem{height:44px; width:auto; display:block; flex-shrink:0;}
+  .brand-wordmark{height:26px; width:auto; display:block; flex-shrink:0;}
+
+  .nav-links{display:flex; align-items:center; gap:28px; list-style:none;}
+  .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
+  .nav-links a.active{color:var(--blue); opacity:1; font-weight:600;}
+  .nav-links a:hover{opacity:1;}
+
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg); border:1px solid var(--border);
+    color:var(--muted); transition:all .2s;
+  }
+  .icon-btn:hover{background:var(--border);}
+  .hamburger{display:none; flex-direction:column; gap:5px; width:38px; height:38px; align-items:center; justify-content:center;}
+  .hamburger span{width:20px; height:2px; background:var(--text); border-radius:2px;}
+
+  .mobile-menu{
+    display:none; flex-direction:column; background:var(--card); border-top:1px solid var(--border);
+    padding:10px 24px 20px;
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{padding:12px 0; font-size:15px; font-weight:500; border-bottom:1px solid var(--border);}
+
+  /* ---------- Page hero ---------- */
+  .page-hero{
+    background:linear-gradient(180deg, #EEF2FA 0%, var(--bg) 100%);
+    padding:52px 0 40px;
+  }
+  [data-theme="dark"] .page-hero{background:linear-gradient(180deg, #0D1B30 0%, var(--bg) 100%);}
+  .page-hero .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,122,26,.1); color:var(--saffron);
+    padding:6px 14px; border-radius:100px; font-size:12.5px; font-weight:700;
+    letter-spacing:.4px; margin-bottom:14px;
+  }
+  .page-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
+  .page-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:680px; margin-top:10px;}
+  .updated{font-size:13px; color:var(--muted); margin-top:14px; font-weight:600;}
+
+  /* ---------- Content ---------- */
+  .page-main{padding:40px 0 64px;}
+  .page-main .wrap{max-width:860px;}
+  .policy-grid{display:flex; flex-direction:column; gap:18px;}
+  .policy-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:26px; box-shadow:var(--shadow);
+  }
+  .policy-card h2{
+    font-size:19px; font-weight:800; letter-spacing:-.2px; margin-bottom:12px;
+    display:flex; align-items:center; gap:10px; color:var(--navy);
+  }
+  .policy-card p, .policy-card li{font-size:14.5px; line-height:1.75; color:var(--muted);}
+  .policy-card p + p{margin-top:10px;}
+  .policy-card ul, .policy-card ol{padding-left:20px; margin:8px 0;}
+  .policy-card li{margin-bottom:6px;}
+  .policy-card a{color:var(--blue); font-weight:600;}
+  .policy-card a:hover{text-decoration:underline;}
+  .note-box{
+    background:rgba(255,122,26,.08); border:1px solid rgba(255,122,26,.35);
+    border-radius:12px; padding:16px 18px; margin-top:12px;
+  }
+  .note-box p{color:var(--saffron); font-weight:600; font-size:14px;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    background:var(--navy); color:#cfd9ec; padding:40px 0 36px; text-align:center; font-size:13px;
+  }
+  footer a{color:#fff; font-weight:600;}
+  footer a:hover{color:var(--saffron);}
+  .footer-brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;}
+  .footer-brand img.brand-emblem{height:36px;}
+  .footer-brand img.brand-wordmark{height:20px;}
+  .footer-links{display:flex; flex-wrap:wrap; justify-content:center; gap:8px 22px; margin:18px 0; list-style:none;}
+  .footer-links a{color:#cfd9ec; font-weight:600;}
+  .footer-links a:hover{color:#fff;}
+  .footer-copy{opacity:.85; line-height:1.8;}
+  .footer-contact{margin-top:6px;}
+  .footer-contact a{color:#fff;}
+
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .brand-emblem{height:38px;}
+    .brand-wordmark{height:22px;}
+  }
+  @media (max-width:520px){
+    .brand{gap:8px;}
+    .brand-emblem{height:32px;}
+    .brand-wordmark{height:18px;}
+    .policy-card{padding:20px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem" width="782" height="665">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark" width="1115" height="203">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="one-day.html">ONE DAY EXAMS</a></li>
+      <li><a href="upsc.html">UPSC</a></li>
+      <li><a href="du.html">DU &amp; College</a></li>
+      <li><a href="index.html#study">Study Material</a></li>
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="one-day.html">ONE DAY EXAMS</a>
+    <a href="upsc.html">UPSC</a>
+    <a href="du.html">DU &amp; College</a>
+    <a href="index.html#study">Study Material</a>
+    <a href="index.html#about">About Us</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">⚠️ Disclaimer</div>
+    <h1>Disclaimer</h1>
+    <p>Sulaksh is an educational website that provides study materials, notes, PYQs and related resources for informational and educational purposes.</p>
+    <p class="updated">Last updated: 15 August 2026</p>
+  </div>
+</section>
+
+<main class="page-main">
+  <div class="wrap">
+    <div class="policy-grid">
+
+      <div class="policy-card">
+        <h2>1. Informational Purpose Only</h2>
+        <p>All content on Sulaksh, including notes, study guides, previous year questions, syllabi summaries and one-liner facts, is provided for informational and educational purposes only. It is intended to support your preparation and is not a substitute for official study material, textbooks or guidance from authorized institutions.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>2. Verify Official Information</h2>
+        <p>Examination patterns, syllabi, notification dates, eligibility criteria, application deadlines and other official details change frequently and are issued by the respective authorities and institutions. You are strongly advised to verify any examination-related information appearing on this website with the official, authoritative sources before relying on it. Sulaksh is not affiliated with any government body, examination authority, university or institution unless explicitly stated.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>3. No Endorsement or Affiliation</h2>
+        <p>References to any examination, university, institution, organization or third-party service on this website do not imply endorsement, sponsorship or affiliation unless expressly stated. All trademarks and service marks mentioned belong to their respective owners.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>4. Accuracy and Completeness</h2>
+        <p>We make reasonable efforts to keep the content on this website accurate and up to date. However, we do not warrant or guarantee the accuracy, completeness, reliability or suitability of any content for any purpose. Content may contain errors or omissions and may become outdated over time. You use the information at your own risk.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>5. No Certification or Guarantee of Results</h2>
+        <p>Sulaksh does not certify, endorse or guarantee your performance in any examination, nor does it promise any specific outcome, selection, rank or result. Success in any examination depends on many factors, including your own effort, preparation and the official eligibility criteria set by the conducting authority.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>6. Ownership of Materials</h2>
+        <p>Some study materials available on this website may be compiled from publicly available or third-party sources. We do not claim ownership of materials that belong to their original authors or rights holders. If you believe any material on this website infringes your copyright, please contact us and we will review and, where appropriate, remove it.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>7. No Professional Advice</h2>
+        <p>The content on this website is not professional, legal, financial, career or counselling advice. For guidance specific to your situation, we encourage you to consult qualified professionals or the relevant official authorities.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>8. External Links</h2>
+        <p>This website may contain links to external websites. We are not responsible for the content, policies, accuracy or availability of any external site. Links are provided for convenience only and do not constitute endorsement.</p>
+      </div>
+
+      <div class="policy-card">
+        <h2>9. Limitation of Liability</h2>
+        <p>To the fullest extent permitted by law, Sulaksh and its operators shall not be liable for any loss or damage arising from your use of, or reliance on, any content on this website, including decisions made based on examination-related information found here.</p>
+      </div>
+
+      <div class="policy-card">
+        <div class="note-box">
+          <p>Important: Always confirm syllabus, pattern, eligibility and notification details with the official website or notification of the respective examination or institution.</p>
+        </div>
+      </div>
+
+      <div class="policy-card">
+        <h2>10. Contact Us</h2>
+        <p>If you have any questions about this Disclaimer, please contact us:</p>
+        <ul>
+          <li>Email: <a href="mailto:y1315544@gmail.com">y1315544@gmail.com</a></li>
+          <li>Website: <a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark">
+    </div>
+    <p class="footer-copy">© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+    <ul class="footer-links">
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      <li><a href="disclaimer.html">Disclaimer</a></li>
+    </ul>
+    <p class="footer-contact">Contact: <a href="mailto:y1315544@gmail.com">y1315544@gmail.com</a></p>
+  </div>
+</footer>
+
+<script>
+  const themeBtn = document.getElementById('themeBtn');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('sulaksh-theme', t);
+  }
+  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  themeBtn.addEventListener('click', () => {
+    setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>

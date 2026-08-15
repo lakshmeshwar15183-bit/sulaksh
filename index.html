@@ -221,9 +221,14 @@
   }
 
   footer{
-    background:var(--navy); color:#cfd9ec; padding:36px 0; text-align:center; font-size:13px;
+    background:var(--navy); color:#cfd9ec; padding:40px 0 36px; text-align:center; font-size:13px;
   }
   footer a{color:#fff; font-weight:600;}
+  footer a:hover{color:var(--saffron);}
+  .footer-links{display:flex; flex-wrap:wrap; justify-content:center; gap:8px 22px; margin:18px 0; list-style:none;}
+  .footer-links a{color:#cfd9ec; font-weight:600;}
+  .footer-links a:hover{color:#fff;}
+  .footer-copy{line-height:1.8;}
 
   /* ---------- Search modal ---------- */
   .modal-overlay{
@@ -240,6 +245,36 @@
     font-size:16px; color:var(--text); font-family:inherit;
   }
   .search-hint{padding:10px 16px 14px; font-size:12.5px; color:var(--muted); border-top:1px solid var(--border);}
+  .search-input-row{display:flex; align-items:center; gap:4px; padding:4px 8px 0 8px;}
+  .search-input-row input{flex:1; min-width:0;}
+  .search-close{
+    display:none; width:36px; height:36px; border-radius:50%; flex-shrink:0;
+    background:var(--bg); border:1px solid var(--border); color:var(--muted);
+    font-size:20px; line-height:1; align-items:center; justify-content:center; align-self:flex-start;
+  }
+  .search-close:hover{background:var(--border); color:var(--text);}
+  .search-results{max-height:340px; overflow-y:auto; margin-top:6px;}
+  .search-result{
+    display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px;
+    cursor:pointer; margin:0 4px; transition:background .15s;
+  }
+  .search-result:hover, .search-result.active{background:var(--bg);}
+  .search-result .r-icon{
+    width:34px; height:34px; border-radius:9px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+  }
+  .search-result .r-main{min-width:0; flex:1;}
+  .search-result .r-title{font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .search-result .r-sub{font-size:12px; color:var(--muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .search-result .r-type{
+    font-size:10px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; flex-shrink:0;
+    padding:3px 8px; border-radius:100px; background:var(--bg); color:var(--muted); border:1px solid var(--border);
+  }
+  .search-empty{padding:18px 14px 20px; text-align:center; font-size:13.5px; color:var(--muted);}
+  @media (max-width:900px){
+    .search-close{display:flex;}
+    .search-hint{display:none;}
+  }
 
   /* ---------- Responsive ---------- */
   @media (max-width:900px){
@@ -472,14 +507,25 @@
 <footer>
   <div class="wrap">
     <div class="brand-name" style="color:#fff; margin-bottom:8px;">SULAKSH</div>
-    <p>© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
-    <p style="margin-top:6px;">Contact: <a href="mailto:y1315544@gmail.com">y1315544@gmail.com</a></p>
+    <p class="footer-copy">© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+    <ul class="footer-links">
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      <li><a href="disclaimer.html">Disclaimer</a></li>
+    </ul>
+    <p>Contact: <a href="mailto:y1315544@gmail.com">y1315544@gmail.com</a></p>
   </div>
 </footer>
 
 <div class="modal-overlay" id="searchOverlay">
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search exams, notes, PYQs..." autofocus>
+    <div class="search-input-row">
+      <input type="text" id="searchInput" placeholder="Search exams, notes, PYQs..." autofocus>
+      <button class="search-close" id="searchClose" aria-label="Close search">×</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
     <div class="search-hint">Press <b>Esc</b> to close</div>
   </div>
 </div>
@@ -540,16 +586,123 @@
   const searchBtn = document.getElementById('searchBtn');
   const searchOverlay = document.getElementById('searchOverlay');
   const searchInput = document.getElementById('searchInput');
+  const searchClose = document.getElementById('searchClose');
+  const searchResults = document.getElementById('searchResults');
+
+  const SEARCH_PAGES = [
+    { title: 'Home', sub: 'One stop destination for all aspirants', url: 'index.html' },
+    { title: 'One Day Exams', sub: 'RRB NTPC, SSC CGL, CHSL, MTS, GD & more', url: 'one-day.html' },
+    { title: 'UPSC', sub: 'Prelims, Mains, Current Affairs, NCERT & more', url: 'upsc.html' },
+    { title: 'DU & College', sub: 'SEC, VAC, AEC, GE subject folders', url: 'du.html' },
+    { title: 'Study Material', sub: 'Notes, PYQs, one-liner facts', url: 'index.html#study' },
+    { title: 'PYQs', sub: 'Previous year questions', url: 'index.html#pyqs' },
+    { title: 'Notes', sub: 'High quality subject notes', url: 'index.html#notes' },
+    { title: 'About Us', sub: 'Learn, Prepare, Achieve', url: 'index.html#about' },
+    { title: 'Syllabus', sub: 'Official syllabus documents', url: 'syllabus.html' },
+    { title: 'Previous Year Questions', sub: 'PYQ documents', url: 'pyq.html' },
+    { title: 'Important Questions', sub: 'Selected questions for revision', url: 'imp.html' },
+    { title: 'Contact Us', sub: 'Get in touch with the team', url: 'contact.html' },
+    { title: 'Privacy Policy', sub: 'How we handle your information', url: 'privacy-policy.html' },
+    { title: 'Terms & Conditions', sub: 'Rules for using the website', url: 'terms.html' },
+    { title: 'Disclaimer', sub: 'Educational use notice', url: 'disclaimer.html' },
+  ];
+
+  const SUBJECT_GROUPS = [
+    {
+      exam: 'UPSC', url: 'upsc.html',
+      subs: ['Indian Polity & Constitution','History of India','Ancient History','Medieval History','Modern History','Art & Culture','Indian & World Geography','Indian Economy','Environment & Ecology','Science & Technology','Current Affairs','International Relations','Governance & Social Issues','Internal Security','Ethics, Integrity & Aptitude','Essay','CSAT','Optional Subject'],
+    },
+    {
+      exam: 'DU & College', url: 'du.html',
+      subs: ['Ayurveda and Nutrition','Constitutional Values and Fundamental Duties','Emotional Intelligence','Financial Literacy','Ethics and Values in Ancient Indian Traditions','The Gita for Holistic Life','Yoga: Philosophy and Practice','Vedic Mathematics','Digital Empowerment','Environmental Science','English','Political Science','Economics','Sociology','Psychology','History','Geography','Mathematics'],
+    },
+    {
+      exam: 'One Day Exams', url: 'one-day.html',
+      subs: ['General Studies','General Knowledge','Static GK','Science','Reasoning','Mathematics','English','Current Affairs'],
+    },
+  ];
+
+  let materialIndex = [];
+  let searchTimer = null;
+
+  function materialUrl(m) {
+    const base = `?exam=${encodeURIComponent(m.exam)}&category=${encodeURIComponent(m.category || '')}&subject=${encodeURIComponent(m.subject || '')}`;
+    if (m.is_pyq) return 'pyq.html' + base;
+    if (m.is_syllabus) return 'syllabus.html' + base;
+    if (m.is_imp) return 'imp.html' + base;
+    const ex = (m.exam || '').toLowerCase();
+    if (ex.includes('upsc')) return 'upsc.html';
+    if (ex.includes('du')) return 'du.html';
+    return 'one-day.html';
+  }
+
+  async function ensureMaterialIndex() {
+    if (materialIndex.length) return;
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/materials`);
+      if (!res.ok) return;
+      const data = await res.json();
+      materialIndex = (data.materials || []).map((m) => ({
+        title: m.title,
+        sub: `${m.exam || ''}${m.subject ? ' · ' + m.subject : ''}${m.is_pyq ? ' · PYQ' : ''}${m.is_syllabus ? ' · Syllabus' : ''}${m.is_imp ? ' · Imp Q' : ''}`,
+        url: materialUrl(m),
+        icon: m.is_pyq ? '📜' : (m.is_syllabus ? '📑' : (m.is_imp ? '⭐' : '📄')),
+        hay: [m.title, m.exam, m.category, m.subject, m.year, m.is_pyq ? 'pyq' : '', m.is_syllabus ? 'syllabus' : '', m.is_imp ? 'important' : ''].join(' ').toLowerCase(),
+        title_lc: m.title.toLowerCase(),
+      }));
+    } catch (e) {}
+  }
+
+  function doSearch(q) {
+    q = q.trim().toLowerCase();
+    if (!q) { searchResults.innerHTML = ''; return; }
+    const res = [];
+    const push = (r) => { res.push({ score: r.title_lc === q ? 0 : (r.title_lc && r.title_lc.startsWith(q) ? 1 : 2), ...r }); };
+    SEARCH_PAGES.forEach((p) => { const hay = [p.title, p.sub].join(' ').toLowerCase(); if (hay.includes(q)) push({ type: 'Page', icon: '📄', title_lc: p.title.toLowerCase(), title: p.title, sub: p.sub, url: p.url }); });
+    SUBJECT_GROUPS.forEach((g) => g.subs.forEach((s) => {
+      const hay = [g.exam, s].join(' ').toLowerCase();
+      if (hay.includes(q)) push({ type: 'Subject', icon: '📁', title_lc: s.toLowerCase(), title: s, sub: g.exam + ' subject', url: g.url });
+    }));
+    materialIndex.forEach((m) => { if (m.hay.includes(q)) push({ type: 'Material', icon: m.icon, title_lc: m.title_lc, title: m.title, sub: m.sub, url: m.url, m }); });
+
+    const seen = new Set();
+    const deduped = res.filter((r) => { const k = r.title.toLowerCase() + '|' + r.url; if (seen.has(k)) return false; seen.add(k); return true; });
+    deduped.sort((a, b) => a.score - b.score);
+
+    if (!deduped.length) { searchResults.innerHTML = '<div class="search-empty">No results found</div>'; return; }
+    searchResults.innerHTML = deduped.slice(0, 10).map((r) => `
+      <a class="search-result" href="${r.url}" data-h="${escapeHtml(r.title).replace(/"/g, '&quot;')}" target="_self">
+        <div class="r-icon" style="background:rgba(30,95,255,.1);">${r.icon}</div>
+        <div class="r-main">
+          <div class="r-title">${escapeHtml(r.title)}</div>
+          <div class="r-sub">${escapeHtml(r.sub || '')}</div>
+        </div>
+        <span class="r-type">${r.type}</span>
+      </a>`).join('');
+  }
+
   searchBtn.addEventListener('click', () => {
     searchOverlay.classList.add('open');
-    searchInput.focus();
+    searchInput.value = '';
+    searchResults.innerHTML = '';
+    setTimeout(() => searchInput.focus(), 30);
   });
-  searchOverlay.addEventListener('click', (e) => {
-    if(e.target === searchOverlay) searchOverlay.classList.remove('open');
+  searchClose.addEventListener('click', () => searchOverlay.classList.remove('open'));
+  searchOverlay.addEventListener('click', (e) => { if (e.target === searchOverlay) searchOverlay.classList.remove('open'); });
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    const q = searchInput.value;
+    searchTimer = setTimeout(() => { ensureMaterialIndex().then(() => doSearch(q)); }, 200);
+  });
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const first = searchResults.querySelector('.search-result');
+      if (first) { e.preventDefault(); window.location.href = first.getAttribute('href'); }
+    }
   });
   document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape') searchOverlay.classList.remove('open');
-    if((e.metaKey || e.ctrlKey) && e.key === 'k'){ e.preventDefault(); searchOverlay.classList.add('open'); searchInput.focus(); }
+    if (e.key === 'Escape') searchOverlay.classList.remove('open');
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k'){ e.preventDefault(); searchOverlay.classList.add('open'); setTimeout(() => searchInput.focus(), 30); }
   });
 
   // Smooth scroll for in-page links
