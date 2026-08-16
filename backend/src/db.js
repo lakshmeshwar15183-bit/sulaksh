@@ -64,6 +64,12 @@ if (!cols.some((c) => c.name === 'track')) {
   db.exec('ALTER TABLE materials ADD COLUMN track TEXT');
   console.log('[db] Added track column to materials');
 }
+// semester: which semester of a subject's course a file belongs to (Core
+// Subjects → Sem 1..8). Nullable — legacy materials are unaffected.
+if (!cols.some((c) => c.name === 'semester')) {
+  db.exec('ALTER TABLE materials ADD COLUMN semester TEXT');
+  console.log('[db] Added semester column to materials');
+}
 
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_materials_exam ON materials(exam);
@@ -75,6 +81,7 @@ CREATE INDEX IF NOT EXISTS idx_materials_is_imp ON materials(is_imp);
 CREATE INDEX IF NOT EXISTS idx_materials_is_syllabus ON materials(is_syllabus);
 CREATE INDEX IF NOT EXISTS idx_materials_is_pyq ON materials(is_pyq);
 CREATE INDEX IF NOT EXISTS idx_materials_track ON materials(track);
+CREATE INDEX IF NOT EXISTS idx_materials_semester ON materials(semester);
 `);
 
 module.exports = db;

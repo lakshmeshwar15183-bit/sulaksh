@@ -7,14 +7,14 @@ const router = express.Router();
 // Fields exposed publicly — r2_object_key is intentionally never sent to
 // the client; downloads only ever happen via a short-lived presigned URL.
 const PUBLIC_FIELDS = `
-  id, title, exam, category, subject, track, year, description,
+  id, title, exam, category, subject, track, semester, year, description,
   file_name, file_size, content_type, is_imp, is_syllabus, is_pyq, created_at, updated_at
 `;
 
-// GET /api/materials?exam=&category=&subject=&track=&year=&q=
+// GET /api/materials?exam=&category=&subject=&track=&semester=&year=&q=
 // Lightweight listing — no file bytes touched, just metadata rows.
 router.get('/', (req, res) => {
-  const { exam, category, subject, track, year, q } = req.query;
+  const { exam, category, subject, track, semester, year, q } = req.query;
   const clauses = ["status = 'active'"];
   const params = [];
 
@@ -22,6 +22,7 @@ router.get('/', (req, res) => {
   if (category) { clauses.push('category = ?'); params.push(category); }
   if (subject) { clauses.push('subject = ?'); params.push(subject); }
   if (track) { clauses.push('track = ?'); params.push(track); }
+  if (semester) { clauses.push('semester = ?'); params.push(semester); }
   if (year) { clauses.push('year = ?'); params.push(year); }
   if (q) {
     clauses.push('(title LIKE ? OR description LIKE ?)');

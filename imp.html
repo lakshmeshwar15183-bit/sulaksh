@@ -279,6 +279,17 @@
     <button class="modal-close" onclick="closeModal('uploadOverlay')" aria-label="Close">×</button>
     <h3>Upload Important Question</h3>
     <div class="field" id="upContext" style="background:var(--border); font-weight:600;"></div>
+    <select id="upSem" class="field sel" style="display:none;">
+      <option value="">Semester</option>
+      <option value="1">Sem 1</option>
+      <option value="2">Sem 2</option>
+      <option value="3">Sem 3</option>
+      <option value="4">Sem 4</option>
+      <option value="5">Sem 5</option>
+      <option value="6">Sem 6</option>
+      <option value="7">Sem 7</option>
+      <option value="8">Sem 8</option>
+    </select>
     <input type="text" id="upTitle" class="field" placeholder="File title">
     <input type="text" id="upYear" class="field" placeholder="Year (optional)">
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
@@ -325,6 +336,7 @@
   const CATEGORY = params.get('category') || '';
   const SUBJECT = params.get('subject') || '';
   const TRACK = params.get('track') || '';
+  const SEM = params.get('sem') || '';
   const BACK = params.get('back') || '';
 
   const state = {
@@ -334,10 +346,10 @@
   };
 
   // ---------- Page setup ----------
-  document.getElementById('pageTitle').textContent = SUBJECT ? `Important Questions — ${SUBJECT}${TRACK ? ' · ' + TRACK : ''}` : 'Important Questions';
-  document.getElementById('impTitle').textContent = SUBJECT ? `${SUBJECT}${TRACK ? ' · ' + TRACK : ''}` : 'Important Questions';
-  document.getElementById('impSub').textContent = `${EXAM || ''}${CATEGORY ? ' · ' + CATEGORY : ''}${TRACK ? ' · ' + TRACK : ''}`.trim();
-  document.getElementById('upContext').textContent = `${EXAM || ''}${CATEGORY ? ' · ' + CATEGORY : ''}${TRACK ? ' · ' + TRACK : ''} · ${SUBJECT || ''}`;
+  document.getElementById('pageTitle').textContent = SUBJECT ? `Important Questions — ${SUBJECT}${SEM ? ' · Sem ' + SEM : ''}${TRACK ? ' · ' + TRACK : ''}` : 'Important Questions';
+  document.getElementById('impTitle').textContent = SUBJECT ? `${SUBJECT}${SEM ? ' · Sem ' + SEM : ''}${TRACK ? ' · ' + TRACK : ''}` : 'Important Questions';
+  document.getElementById('impSub').textContent = `${EXAM || ''}${CATEGORY ? ' · ' + CATEGORY : ''}${SEM ? ' · Sem ' + SEM : ''}${TRACK ? ' · ' + TRACK : ''}`.trim();
+  document.getElementById('upContext').textContent = `${EXAM || ''}${CATEGORY ? ' · ' + CATEGORY : ''}${SEM ? ' · Sem ' + SEM : ''}${TRACK ? ' · ' + TRACK : ''} · ${SUBJECT || ''}`;
   if (BACK) {
     const row = document.getElementById('backRow');
     row.style.display = '';
@@ -430,11 +442,15 @@
   function openUpload() {
     if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
     document.getElementById('upTitle').value = '';
+    upSemEl.value = SEM;
+    upSemEl.style.display = CATEGORY === 'CORE' ? '' : 'none';
     document.getElementById('upYear').value = '';
     document.getElementById('upFile').value = '';
     setMsg(document.getElementById('uploadMsg'), '', false);
     openModal('uploadOverlay');
   }
+  const upSemEl = document.getElementById('upSem');
+
   window.openUpload = openUpload;
 
   document.getElementById('uploadSubmit').addEventListener('click', doUpload);
@@ -469,6 +485,9 @@
     fd.append('category', CATEGORY);
     fd.append('subject', SUBJECT);
     fd.append('track', TRACK);
+    const sem = upSemEl ? upSemEl.value.trim() : '';
+    if (CATEGORY === 'CORE' && !sem) return setMsg(msg, 'Select a Semester (1–8) for Core Subjects — every upload needs a clear semester.', false);
+    if (sem) fd.append('semester', sem);
     fd.append('is_imp', 'true');
     if (year) fd.append('year', year);
     fd.append('file', uploadFile, uploadFile.name || file.name);
@@ -501,7 +520,8 @@
         (!EXAM || (m.exam || '').toLowerCase() === EXAM.toLowerCase()) &&
         (!CATEGORY || (m.category || '') === CATEGORY) &&
         (!SUBJECT || (m.subject || '') === SUBJECT) &&
-        (!TRACK || (m.track || '') === TRACK)
+        (!TRACK || (m.track || '') === TRACK) &&
+        (!SEM || String(m.semester || '') === SEM)
       );
       renderList(list, items);
     } catch (err) {
