@@ -70,6 +70,9 @@
         <label>Subject</label>
         <input type="text" id="subject" placeholder="optional">
 
+        <label>Track / Section</label>
+        <input type="text" id="track" placeholder="e.g. Honours, As Major, As Minor (optional)">
+
         <label>Year</label>
         <input type="number" id="year" placeholder="e.g. 2024">
 
@@ -138,7 +141,7 @@
     }
     const trs = rows.map((m) => `
       <tr>
-        <td><strong>${escapeHtml(m.title)}</strong><br><span class="pill">${escapeHtml(m.exam)}</span> <span class="pill">${escapeHtml(m.category)}</span></td>
+        <td><strong>${escapeHtml(m.title)}</strong><br><span class="pill">${escapeHtml(m.exam)}</span> <span class="pill">${escapeHtml(m.category)}</span>${m.subject ? `<span class="pill">${escapeHtml(m.subject)}</span>` : ''}${m.track ? `<span class="pill">${escapeHtml(m.track)}</span>` : ''}</td>
         <td>${m.year || '—'}</td>
         <td>${(m.file_size / 1024).toFixed(0)} KB</td>
         <td>
@@ -178,7 +181,7 @@
           credentials: 'include',
           body: JSON.stringify({
             title: $('title').value, exam: $('exam').value, category: $('category').value,
-            subject: $('subject').value, year: $('year').value, description: $('description').value,
+            subject: $('subject').value, track: $('track').value, year: $('year').value, description: $('description').value,
           }),
         });
         const data = await res.json();
@@ -190,7 +193,7 @@
         if (!$('file').files[0]) throw new Error('Please choose a PDF file.');
         const fd = new FormData();
         fd.append('file', $('file').files[0]);
-        ['title','exam','category','subject','year','description'].forEach((f) => fd.append(f, $(f).value));
+        ['title','exam','category','subject','track','year','description'].forEach((f) => fd.append(f, $(f).value));
         const res = await fetch(`${API}/api/admin/materials`, { method: 'POST', credentials: 'include', body: fd });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
@@ -228,6 +231,7 @@
     $('exam').value = m.exam;
     $('category').value = m.category;
     $('subject').value = m.subject || '';
+    $('track').value = m.track || '';
     $('year').value = m.year || '';
     $('description').value = m.description || '';
     $('file').required = false;

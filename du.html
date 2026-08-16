@@ -232,6 +232,8 @@
   .mat-item button:hover{border-color:var(--green); color:var(--green);}
   .mat-item button.del-btn:hover{border-color:#d64545; color:#d64545;}
   .mat-empty{font-size:13px; color:var(--muted); text-align:center; padding:14px; border:1px dashed var(--border); border-radius:10px;}
+  .file-list{display:flex; flex-direction:column; gap:8px;}
+  .mat-item .tags{font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; display:flex; gap:8px; flex-wrap:wrap;}
 
   /* ---------- Modals ---------- */
   .modal-overlay{
@@ -363,6 +365,7 @@
 </section>
 
 <main class="wrap du-main">
+  <div id="duHome">
   <!-- 1. Core Subjects -->
   <div class="du-sec">
     <div class="du-sec-head">
@@ -411,18 +414,7 @@
     </button>
   </div>
   </div>
-
-  <section class="du-cat" id="cat-CORE">
-    <div class="du-cat-head core">
-      <div>
-        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
-        <h2>Core Subjects</h2>
-        <span class="sub">English, History, Economics, Political Science, Mathematics, Hindi</span>
-      </div>
-      <button class="upload-btn" onclick="openUpload('CORE','')">⬆ Upload</button>
-    </div>
-    <div class="subj-grid" id="subj-CORE"></div>
-  </section>
+  </div>
 
   <section class="du-cat" id="cat-SEC">
     <div class="du-cat-head sec">
@@ -471,6 +463,31 @@
     </div>
     <div class="subj-grid" id="subj-GE"></div>
   </section>
+
+  <!-- Core Subject drill-down: subject → Honours / As Major / As Minor -->
+  <section class="du-cat" id="viewCoreSubject">
+    <div class="du-cat-head core">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
+        <h2 id="coreSubjectTitle">Core Subject</h2>
+        <span class="sub" id="coreSubjectSub"></span>
+      </div>
+      <button class="upload-btn" onclick="uploadCoreSubject()">⬆ Upload</button>
+    </div>
+    <div class="core-grid" id="coreTracksGrid"></div>
+  </section>
+
+  <section class="du-cat" id="viewCoreTrack">
+    <div class="du-cat-head core">
+      <div>
+        <button class="back-btn" onclick="openCoreSubject(window.__coreSubject)">← Subject</button>
+        <h2 id="coreTrackTitle">Section</h2>
+        <span class="sub" id="coreTrackSub"></span>
+      </div>
+      <button class="upload-btn" onclick="uploadCoreTrack()">⬆ Upload</button>
+    </div>
+    <div class="file-list" id="coreTrackFiles"></div>
+  </section>
 </main>
 
 <footer>
@@ -517,6 +534,12 @@
       <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. Web Design, Environmental Science)" autocomplete="off">
       <div class="up-suggest" id="upSuggest"></div>
     </div>
+    <select id="upTrack" class="field sel" style="display:none;">
+      <option value="">Level / Track</option>
+      <option value="Honours">🎓 Honours</option>
+      <option value="As Major">📚 As Major</option>
+      <option value="As Minor">📘 As Minor</option>
+    </select>
     <input type="text" id="upTitle" class="field" placeholder="File title">
     <input type="text" id="upYear" class="field" placeholder="Year (optional)">
     <label class="imp-check"><input type="checkbox" id="upImp"> ⭐ Important Question</label>
@@ -576,6 +599,14 @@
     'Political Science':{ ico: '⚖️', tag: 'Core Queue' },
     'Mathematics':      { ico: '➗', tag: 'Core Queue' },
     'Hindi':            { ico: '📗', tag: 'Core Queue' },
+  };
+
+  const CORE_TRACKS = ['Honours', 'As Major', 'As Minor'];
+
+  const CORE_TRACK_META = {
+    'Honours':  { ico: '🎓', sub: 'BA/BSc (Hons)' },
+    'As Major': { ico: '📚', sub: 'Major track' },
+    'As Minor': { ico: '📘', sub: 'Minor track' },
   };
 
   const VAC_SUBJECTS = [
@@ -711,6 +742,8 @@
 
   const dynamicSubjects = {};
 
+  let coreMaterials = [];
+
   const upCatEl = document.getElementById('upCat');
   const upSubjectEl = document.getElementById('upSubject');
   const upSuggestEl = document.getElementById('upSuggest');
@@ -729,6 +762,7 @@
   }
   upSubjectEl.addEventListener('input', showSuggest);
   upCatEl.addEventListener('change', showSuggest);
+  upCatEl.addEventListener('change', syncTrackField);
   upSubjectEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideSuggest(); });
   upSubjectEl.addEventListener('blur', () => setTimeout(hideSuggest, 150));
   document.addEventListener('click', (e) => {
@@ -737,6 +771,7 @@
   });
 
   function openCategory(cat) {
+    document.getElementById('duHome').style.display = 'none';
     document.getElementById('catPicker').classList.add('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     document.getElementById('cat-' + cat).classList.add('active');
@@ -744,17 +779,101 @@
   }
   window.openCategory = openCategory;
 
-  function openCoreSubject(subject) {
+  function setCoreView(id) {
+    document.getElementById('duHome').style.display = 'none';
     document.getElementById('catPicker').classList.add('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
-    document.getElementById('cat-CORE').classList.add('active');
-    const target = document.querySelector(`.subj-card[data-key="CORE::${CSS.escape(subject)}"]`);
-    const el = target || document.getElementById('subj-CORE');
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function matsForCore(subject, track) {
+    return (coreMaterials || []).filter((m) =>
+      (m.subject || '') === subject && (m.track || '') === track
+    );
+  }
+
+  function renderCoreSubjectView(subject) {
+    window.__coreSubject = subject;
+    document.getElementById('coreSubjectTitle').textContent = subject;
+    document.getElementById('coreSubjectSub').textContent = 'Choose a track — Honours, As Major or As Minor';
+    document.getElementById('coreTracksGrid').innerHTML = CORE_TRACKS.map((track) => {
+      const n = matsForCore(subject, track).length;
+      const meta = CORE_TRACK_META[track] || { ico: '📁', sub: '' };
+      return `
+        <button class="core-card" onclick="openCoreTrack('${subject.replace(/'/g, "\\'")}','${track.replace(/'/g, "\\'")}')">
+          <div class="top">
+            <span class="core-ico">${meta.ico}</span>
+            <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
+          </div>
+          <span class="core-name">${track}</span>
+          <span class="core-desc">${meta.sub}</span>
+          <span class="core-count">${n} materials</span>
+          <span class="core-btn">Open →</span>
+        </button>`;
+    }).join('');
+  }
+
+  function renderCoreTrackView(subject, track) {
+    window.__coreSubject = subject;
+    window.__coreTrack = track;
+    const files = matsForCore(subject, track);
+    document.getElementById('coreTrackTitle').textContent = subject + ' — ' + track;
+    document.getElementById('coreTrackSub').textContent =
+      files.length + ' file' + (files.length === 1 ? '' : 's') + ' in this section';
+    const box = document.getElementById('coreTrackFiles');
+    if (!files.length) {
+      box.innerHTML = '<div class="mat-empty">No files in this section yet.' +
+        (state.isAdmin ? ' Use the Upload button above to add the first file.' : '') + '</div>';
+      return;
+    }
+    box.innerHTML = files.map(materialRow).join('');
+  }
+
+  function materialRow(m) {
+    const tags = [];
+    if (m.is_imp) tags.push('⭐ Important');
+    if (m.is_syllabus) tags.push('📑 Syllabus');
+    if (m.is_pyq) tags.push('📜 PYQ');
+    const safeTitle = escapeHtml(m.title);
+    return `
+      <div class="mat-item">
+        <div style="flex:1; min-width:0;">
+          <div class="t">${safeTitle}${m.year ? ' · ' + m.year : ''}</div>
+          ${tags.length ? `<div class="tags">${tags.join(' ')}</div>` : ''}
+        </div>
+        <div class="a">
+          <button onclick="viewMaterial('${m.id}')">👁 View</button>
+          <button onclick="downloadMaterial('${m.id}')">⬇ Download</button>
+          ${state.isAdmin ? `<button class="del-btn" onclick="deleteMaterial('${m.id}','${safeTitle.replace(/'/g, "\\'")}')">🗑 Delete</button>` : ''}
+        </div>
+      </div>`;
+  }
+
+  function openCoreSubject(subject) {
+    renderCoreSubjectView(subject);
+    setCoreView('viewCoreSubject');
   }
   window.openCoreSubject = openCoreSubject;
 
+  function openCoreTrack(subject, track) {
+    renderCoreTrackView(subject, track);
+    setCoreView('viewCoreTrack');
+  }
+  window.openCoreTrack = openCoreTrack;
+
+  function uploadCoreSubject() {
+    openUpload('CORE', window.__coreSubject || '', '');
+  }
+  window.uploadCoreSubject = uploadCoreSubject;
+
+  function uploadCoreTrack() {
+    openUpload('CORE', window.__coreSubject || '', window.__coreTrack || '');
+  }
+  window.uploadCoreTrack = uploadCoreTrack;
+
   function backToCategories() {
+    document.getElementById('duHome').style.display = '';
     document.getElementById('catPicker').classList.remove('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -843,10 +962,11 @@
   }
 
   // Upload
-  function openUpload(cat, subject) {
+  function openUpload(cat, subject, track) {
     if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
     document.getElementById('upCat').value = cat || 'SEC';
     document.getElementById('upSubject').value = subject ? decodeURIComponent(subject) : '';
+    document.getElementById('upTrack').value = track || '';
     document.getElementById('upTitle').value = '';
     document.getElementById('upYear').value = '';
     document.getElementById('upFile').value = '';
@@ -854,10 +974,16 @@
     document.getElementById('upSyl').checked = false;
     document.getElementById('upPyq').checked = false;
     setMsg(document.getElementById('uploadMsg'), '', false);
+    syncTrackField();
     hideSuggest();
     openModal('uploadOverlay');
   }
   window.openUpload = openUpload;
+
+  function syncTrackField() {
+    const el = document.getElementById('upTrack');
+    el.style.display = document.getElementById('upCat').value === 'CORE' ? '' : 'none';
+  }
 
   document.getElementById('uploadSubmit').addEventListener('click', doUpload);
   document.getElementById('upFile').addEventListener('change', () => {
@@ -880,6 +1006,11 @@
     fd.append('exam', 'DU & College');
     fd.append('category', category);
     fd.append('subject', subject);
+    const track = document.getElementById('upTrack').value.trim();
+    if (category === 'CORE' && !track) {
+      return setMsg(msg, 'Select a Level/Track (Honours, As Major or As Minor) for Core Subjects.', false);
+    }
+    if (track) fd.append('track', track);
     fd.append('is_imp', document.getElementById('upImp').checked ? 'true' : 'false');
     fd.append('is_syllabus', document.getElementById('upSyl').checked ? 'true' : 'false');
     fd.append('is_pyq', document.getElementById('upPyq').checked ? 'true' : 'false');
@@ -909,16 +1040,20 @@
       if (!res.ok) throw new Error();
       const data = await res.json();
       const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
+      coreMaterials = mats.filter((m) => (m.category || '').toUpperCase() === 'CORE');
       CATEGORIES.forEach((cat) => {
         const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
         dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
+        if (cat === 'CORE') return;
         renderCategory(cat, catMats);
         const countEl = document.getElementById('catCount-' + cat);
         if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
       });
       renderCoreGrid(mats);
     } catch (err) {
+      coreMaterials = [];
       CATEGORIES.forEach((cat) => {
+        if (cat === 'CORE') return;
         const staticList = STATIC_SUBJECTS[cat];
         if (staticList && staticList.length) {
           renderCategory(cat, []);

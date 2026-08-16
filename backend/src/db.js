@@ -58,6 +58,12 @@ if (!cols.some((c) => c.name === 'is_pyq')) {
   db.exec('ALTER TABLE materials ADD COLUMN is_pyq INTEGER NOT NULL DEFAULT 0');
   console.log('[db] Added is_pyq column to materials');
 }
+// track: section within a subject folder (e.g. Core Subjects → Honours / As
+// Major / As Minor). Nullable — existing materials are unaffected.
+if (!cols.some((c) => c.name === 'track')) {
+  db.exec('ALTER TABLE materials ADD COLUMN track TEXT');
+  console.log('[db] Added track column to materials');
+}
 
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_materials_exam ON materials(exam);
@@ -68,6 +74,7 @@ CREATE INDEX IF NOT EXISTS idx_materials_status ON materials(status);
 CREATE INDEX IF NOT EXISTS idx_materials_is_imp ON materials(is_imp);
 CREATE INDEX IF NOT EXISTS idx_materials_is_syllabus ON materials(is_syllabus);
 CREATE INDEX IF NOT EXISTS idx_materials_is_pyq ON materials(is_pyq);
+CREATE INDEX IF NOT EXISTS idx_materials_track ON materials(track);
 `);
 
 module.exports = db;
