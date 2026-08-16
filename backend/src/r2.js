@@ -5,6 +5,7 @@ const {
   DeleteObjectCommand,
   HeadObjectCommand,
 } = require('@aws-sdk/client-s3');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 require('dotenv').config();
 
@@ -31,6 +32,12 @@ const s3 = new S3Client({
   region: STORAGE_REGION || 'auto',
   endpoint: STORAGE_ENDPOINT,
   forcePathStyle: true,
+  maxAttempts: 4,
+  retryMode: 'standard',
+  requestHandler: new NodeHttpHandler({
+    connectionTimeout: 15000,
+    requestTimeout: 120000,
+  }),
   credentials: {
     accessKeyId: STORAGE_ACCESS_KEY_ID,
     secretAccessKey: STORAGE_SECRET_ACCESS_KEY,
