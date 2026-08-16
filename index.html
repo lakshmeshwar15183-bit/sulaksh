@@ -558,11 +558,13 @@
       <input type="text" id="upYear" class="field" placeholder="Year (optional)">
     </div>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
+    <div id="upOptInfo"></div>
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
   </div>
 </div>
 
+<script src="assets/js/optimize.js"></script>
 <script>
   // Mobile menu
   const hamburger = document.getElementById('hamburger');
@@ -852,6 +854,8 @@
     if (f && !t.value) t.value = f.name.replace(/\.pdf$/i, '');
   });
 
+  SulakshOptimizer.bind('upFile', 'upOptInfo');
+
   async function doUpload() {
     const msg = document.getElementById('uploadMsg');
     const title = document.getElementById('upTitle').value.trim();
@@ -859,8 +863,18 @@
     const category = document.getElementById('upCategory').value.trim();
     const subject = document.getElementById('upSubject').value.trim();
     const year = document.getElementById('upYear').value.trim();
-    const file = document.getElementById('upFile').files[0];
+    const fileInput = document.getElementById('upFile');
+    const file = fileInput.files[0];
     if (!title || !exam || !category || !file) return setMsg(msg, 'Title, exam, category and a PDF file are required.', false);
+
+    let uploadFile;
+    try {
+      const opt = fileInput.__getOptimized ? await fileInput.__getOptimized() : await SulakshOptimizer.prepare(file);
+      if (!opt || !opt.ok) throw new Error((opt && opt.error) || 'File optimization failed.');
+      uploadFile = opt.blob || file;
+    } catch (err) {
+      return setMsg(msg, err.message || 'File optimization failed.', false);
+    }
 
     const fd = new FormData();
     fd.append('title', title);
@@ -868,7 +882,7 @@
     fd.append('category', category);
     if (subject) fd.append('subject', subject);
     if (year) fd.append('year', year);
-    fd.append('file', file);
+    fd.append('file', uploadFile, uploadFile.name || file.name);
 
     try {
       const res = await postUpload(`${SULAKSH_API}/api/admin/materials`, {
