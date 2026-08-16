@@ -328,6 +328,55 @@
   .modal-close:hover{background:var(--bg);}
   .row-2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
 
+  /* ---------- DU & College info modal (bilingual) ---------- */
+  .du-info-modal{
+    background:var(--card); width:min(640px, 94vw); border-radius:18px;
+    box-shadow:0 24px 70px rgba(10,20,40,.35); border:1px solid var(--border);
+    display:flex; flex-direction:column; overflow:hidden; max-height:min(640px, 88vh);
+    position:relative; align-self:center;
+  }
+  .du-info-head{
+    font-family:'Sora',sans-serif; font-size:19px; font-weight:800; line-height:1.4;
+    color:var(--navy); margin:0; padding:20px 52px 16px 24px;
+    background:linear-gradient(180deg, #EEF2FA, transparent); border-bottom:1px solid var(--border);
+  }
+  .du-info-scroll{overflow-y:auto; -webkit-overflow-scrolling:touch; padding:18px 24px 20px;}
+  .du-info-sec{margin-bottom:20px;}
+  .du-info-sec:last-of-type{margin-bottom:0;}
+  .du-info-sec h4{
+    font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
+    color:var(--blue); margin:0 0 8px;
+  }
+  .du-info-sec p{font-size:14px; line-height:1.68; color:var(--text); margin:0 0 8px;}
+  .du-info-tags{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 12px;}
+  .du-info-tags span{
+    background:var(--bg); border:1px solid var(--border); border-radius:100px;
+    padding:6px 14px; font-size:13px; color:var(--text);
+  }
+  .du-info-tip{
+    background:linear-gradient(180deg, #EAF1FF, #F5F8FF); border:1px solid #C7D8F5;
+    border-radius:12px; padding:14px 16px;
+  }
+  .du-info-tip h4{font-size:13px; font-weight:800; color:var(--navy); margin:0 0 8px;}
+  .du-info-tip p{font-size:13.5px; line-height:1.6; color:var(--text); margin:0 0 6px;}
+  .du-info-ex{display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; margin-top:8px;}
+  .du-info-ex span{font-size:13px; color:var(--text); line-height:1.5;}
+  .du-info-ex b{color:var(--navy);}
+  .du-info-footer{
+    padding:14px 24px 18px; border-top:1px solid var(--border); background:var(--card);
+  }
+  .du-info-ok{
+    width:100%; justify-content:center; padding:13px; border:none; border-radius:12px;
+    background:var(--navy); color:#fff; font-size:15px; font-weight:700; cursor:pointer;
+  }
+  .du-info-ok:hover{background:var(--blue);}
+  @media (max-width:520px){
+    .du-info-head{font-size:17px; padding:16px 44px 12px 18px;}
+    .du-info-scroll{padding:14px 18px 16px;}
+    .du-info-footer{padding:12px 18px 16px;}
+    .du-info-ex{grid-template-columns:1fr;}
+  }
+
   .upload-btn{
     display:none; margin-top:12px; width:100%; padding:9px; border-radius:10px;
     background:var(--navy); color:#fff; font-size:13px; font-weight:600;
@@ -431,7 +480,7 @@
       <div class="cat-icon" style="background:rgba(30,142,90,.1); color:var(--green);">🎓</div>
       <h3 style="color:var(--green);">DU &amp; COLLEGE</h3>
       <p>BA Programme, Semester Notes, PYQs, Question Bank</p>
-      <a href="du.html" class="cat-link" style="color:var(--green);">View All →</a>
+      <a href="du.html" class="cat-link" style="color:var(--green);" onclick="return openDuInfo(event);">View All →</a>
       <button class="upload-btn" onclick="openUpload('DU &amp; College','Semester')">⬆ Upload Material</button>
     </div>
   </div>
@@ -561,6 +610,58 @@
     <div id="upOptInfo"></div>
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="duInfoOverlay">
+  <div class="du-info-modal">
+    <button class="modal-close" onclick="closeDuInfo()" aria-label="Close">×</button>
+    <h3 class="du-info-head">📚 Syllabus नहीं मिल रहा?<br>Can't Find Your Syllabus?</h3>
+    <div class="du-info-scroll">
+      <div class="du-info-sec">
+        <h4>🔎 English</h4>
+        <p><b>Can't find your SEC, VAC, AEC or GE syllabus? Don't worry!</b></p>
+        <p>If you are unable to find the syllabus for your <b>SEC, VAC, AEC or GE</b> course, check the <b>Core Subjects</b> section.</p>
+        <p>You may find the required syllabus there under:</p>
+        <div class="du-info-tags">
+          <span>📖 <b>Honours</b></span>
+          <span>🎓 <b>As Major</b></span>
+          <span>📘 <b>As Minor</b></span>
+        </div>
+        <p>Syllabus PDFs are available in <b>English 🇬🇧</b> and <b>Hindi 🇮🇳</b> wherever available.</p>
+      </div>
+
+      <div class="du-info-sec">
+        <h4>🇮🇳 हिंदी</h4>
+        <p><b>अपना SEC, VAC, AEC या GE का सिलेबस नहीं मिल रहा? चिंता मत कीजिए!</b></p>
+        <p>अगर आपको अपने <b>SEC, VAC, AEC या GE</b> विषय का सिलेबस यहाँ नहीं मिल रहा है, तो <b>Core Subjects</b> सेक्शन ज़रूर देखें।</p>
+        <p>वहाँ संबंधित विषय के अंतर्गत देखें:</p>
+        <div class="du-info-tags">
+          <span>📖 <b>Honours</b></span>
+          <span>🎓 <b>As Major</b></span>
+          <span>📘 <b>As Minor</b></span>
+        </div>
+        <p>जहाँ उपलब्ध हैं, वहाँ सिलेबस की <b>English 🇬🇧 और Hindi 🇮🇳 दोनों PDF</b> दी गई हैं।</p>
+      </div>
+
+      <div class="du-info-tip">
+        <h4>💡 Quick Tip | ज़रूरी सुझाव</h4>
+        <p><b>Your syllabus may be listed under the corresponding Core Subject.</b></p>
+        <p><b>आपका सिलेबस संबंधित Core Subject के अंदर मिल सकता है।</b></p>
+        <p>For example | जैसे:</p>
+        <div class="du-info-ex">
+          <span><b>English</b> → Honours / As Major / As Minor</span>
+          <span><b>History</b> → Honours / As Major / As Minor</span>
+          <span><b>Economics</b> → Honours / As Major / As Minor</span>
+          <span><b>Political Science</b> → Honours / As Major / As Minor</span>
+          <span><b>Mathematics</b> → Honours / As Major / As Minor</span>
+          <span><b>Hindi</b> → Honours / As Major / As Minor</span>
+        </div>
+      </div>
+    </div>
+    <div class="du-info-footer">
+      <button class="btn-primary du-info-ok" onclick="goDuCollege()">✓ OK, Got It | ठीक है, समझ गया</button>
+    </div>
   </div>
 </div>
 
@@ -766,6 +867,22 @@
 
   function openModal(id) { document.getElementById(id).classList.add('open'); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  // DU & College info modal — shown before leaving for du.html
+  function openDuInfo(event) {
+    event.preventDefault();
+    openModal('duInfoOverlay');
+    return false;
+  }
+  function closeDuInfo() {
+    closeModal('duInfoOverlay');
+  }
+  function goDuCollege() {
+    window.location.href = 'du.html';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDuInfo();
+  });
   window.closeModal = closeModal;
 
   function updateAuthUI() {
