@@ -113,6 +113,7 @@
   .cat-tile.gs{border-top-color:var(--green);}
   .cat-tile.gk{border-top-color:var(--blue);}
   .cat-tile.sc{border-top-color:var(--saffron);}
+  .cat-tile.co{border-top-color:#8C5CF6;}
   .cat-ico{font-size:26px;}
   .cat-name{font-family:'Sora',sans-serif; font-size:18px; font-weight:800; letter-spacing:.2px;}
   .cat-sub{font-size:13px; color:var(--muted);}
@@ -133,6 +134,7 @@
   .du-cat-head.gs{background:linear-gradient(90deg, var(--green), #146b44);}
   .du-cat-head.gk{background:linear-gradient(90deg, var(--blue), var(--navy-2));}
   .du-cat-head.sc{background:linear-gradient(90deg, var(--saffron), #e05a00);}
+  .du-cat-head.co{background:linear-gradient(90deg, #8C5CF6, #5A2EC8);}
   .du-cat-head h2{font-size:20px;}
   .du-cat-head .sub{font-size:12.5px; opacity:.85; font-weight:500; display:block; margin-top:2px;}
   .upload-btn{
@@ -308,7 +310,7 @@
   <div class="wrap">
     <div class="eyebrow">⚡ ONE DAY EXAMS</div>
     <h1>Subject-wise Study Folders</h1>
-    <p>RRB, SSC and other one-day exams — notes, PYQs and one-liners for General Studies, General Knowledge/Static GK and Science. Select a section to view its folders.</p>
+    <p>RRB, SSC and other one-day exams — notes, PYQs and one-liners for General Studies, General Knowledge/Static GK, Science and Computer. Select a section to view its folders.</p>
   </div>
 </section>
 
@@ -331,6 +333,12 @@
       <span class="cat-name">Science</span>
       <span class="cat-sub">Physics, Chemistry, Biology &amp; more</span>
       <span class="cat-count" id="catCount-SC">0 files</span>
+    </button>
+    <button class="cat-tile co" onclick="openCategory('CO')">
+      <span class="cat-ico">💻</span>
+      <span class="cat-name">Computer</span>
+      <span class="cat-sub">Computer Awareness, Basics &amp; more</span>
+      <span class="cat-count" id="catCount-CO">0 files</span>
     </button>
   </div>
 
@@ -368,6 +376,18 @@
       <button class="upload-btn" onclick="openUpload('SC','')">⬆ Upload</button>
     </div>
     <div class="subj-grid" id="subj-SC"></div>
+  </section>
+
+  <section class="du-cat" id="cat-CO">
+    <div class="du-cat-head co">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
+        <h2>Computer</h2>
+        <span class="sub">Computer Awareness, Basics &amp; more</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('CO','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-CO"></div>
   </section>
 </main>
 
@@ -408,6 +428,7 @@
       <option value="GS">General Studies</option>
       <option value="GK">General Knowledge / Static GK</option>
       <option value="SC">Science</option>
+      <option value="CO">Computer</option>
     </select>
     <div class="up-suggest-wrap">
       <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. History, Physics)" autocomplete="off">
@@ -428,8 +449,8 @@
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
   const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
-  const CATEGORIES = ['GS', 'GK', 'SC'];
-  const CAT_NAMES = { GS: 'General Studies', GK: 'General Knowledge/Static GK', SC: 'Science' };
+  const CATEGORIES = ['GS', 'GK', 'SC', 'CO'];
+  const CAT_NAMES = { GS: 'General Studies', GK: 'General Knowledge/Static GK', SC: 'Science', CO: 'Computer' };
 
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
