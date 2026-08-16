@@ -40,7 +40,7 @@ router.get('/materials', (req, res) => {
 // ---- Upload new material ----
 // POST /api/admin/materials  (multipart/form-data: file, title, exam, category, subject, year, description)
 router.post('/materials', upload.single('file'), async (req, res) => {
-  const { title, exam, category, subject, track, semester, year, description, is_imp, is_syllabus, is_pyq } = req.body || {};
+  const { title, exam, category, subject, track, semester, material_category, year, description, is_imp, is_syllabus, is_pyq } = req.body || {};
   if (!title || !exam || !category) {
     return res.status(400).json({ error: 'title, exam, and category are required.' });
   }
@@ -69,10 +69,10 @@ router.post('/materials', upload.single('file'), async (req, res) => {
   try {
     db.prepare(`
       INSERT INTO materials
-        (id, title, exam, category, subject, track, semester, year, description, file_name, file_size, content_type, r2_object_key, status, is_imp, is_syllabus, is_pyq, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, title, exam, category, subject, track, semester, material_category, year, description, file_name, file_size, content_type, r2_object_key, status, is_imp, is_syllabus, is_pyq, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `    ).run(
-      id, title, exam, category, subject || null, track || null, semester || null, year ? parseInt(year, 10) : null,
+      id, title, exam, category, subject || null, track || null, semester || null, material_category || null, year ? parseInt(year, 10) : null,
       description || null, safeFileName, req.file.size, contentType, objectKey, 'active',
       is_imp === 'true' || is_imp === '1' ? 1 : 0,
       is_syllabus === 'true' || is_syllabus === '1' ? 1 : 0,
@@ -101,7 +101,7 @@ router.patch('/materials/:id', (req, res) => {
   const existing = db.prepare('SELECT * FROM materials WHERE id = ?').get(req.params.id);
   if (!existing) return res.status(404).json({ error: 'Material not found.' });
 
-  const fields = ['title', 'exam', 'category', 'subject', 'track', 'semester', 'year', 'description', 'is_imp', 'is_syllabus', 'is_pyq'];
+  const fields = ['title', 'exam', 'category', 'subject', 'track', 'semester', 'material_category', 'year', 'description', 'is_imp', 'is_syllabus', 'is_pyq'];
   const updates = {};
   for (const f of fields) {
     if (req.body[f] !== undefined) {

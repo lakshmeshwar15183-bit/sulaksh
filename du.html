@@ -218,12 +218,29 @@
     font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
   }
   .pyq-btn:hover{background:var(--blue); color:#fff;}
-  .core-nav{display:flex; flex-wrap:wrap; gap:8px; margin:-6px 0 18px;}
-  .core-nav .pyq-btn,.core-nav .syl-btn,.core-nav .imp-btn{text-decoration:none;}
-  .core-sem-row{display:flex; align-items:center; gap:10px; margin:-6px 0 18px; flex-wrap:wrap;}
-  .core-sem-row label{font-weight:700; font-size:13px; color:var(--text);}
-  .core-sem-row .field{width:auto; min-width:200px; margin:0;}
+  .core-breadcrumb{font-size:12.5px; color:var(--muted); margin:-4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+  .core-breadcrumb button{background:none; border:none; color:var(--blue); font-size:12.5px; font-weight:600; cursor:pointer; padding:0; font-family:inherit;}
+  .core-breadcrumb button:hover{text-decoration:underline;}
+  .core-breadcrumb .sep{color:var(--muted);}
+  .core-breadcrumb .cur{font-weight:700; color:var(--text);}
+  .core-sem-pills{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px;}
+  .core-sem-pill{
+    padding:9px 18px; border-radius:100px; border:1.5px solid var(--border);
+    background:var(--card); color:var(--text); font-size:13.5px; font-weight:700; cursor:pointer;
+    font-family:inherit; transition:all .15s ease;
+  }
+  .core-sem-pill:hover{border-color:var(--blue); color:var(--blue);}
+  .core-sem-pill.active{background:var(--navy); border-color:var(--navy); color:#fff;}
   .core-sem-prompt{font-size:13px; color:var(--muted); margin:0 0 18px;}
+  .core-chips{display:flex; flex-wrap:wrap; gap:8px; margin:-6px 0 18px;}
+  .core-chip{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--card); border:1px solid var(--border); border-radius:100px;
+    padding:7px 14px; font-size:12.5px; font-weight:600; color:var(--text); cursor:pointer;
+    font-family:inherit; text-decoration:none; transition:all .15s ease;
+  }
+  .core-chip:hover{border-color:var(--blue); color:var(--blue);}
+  .core-chip.active{background:var(--navy); border-color:var(--navy); color:#fff;}
 
   .mat-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
@@ -470,7 +487,7 @@
     <div class="subj-grid" id="subj-GE"></div>
   </section>
 
-  <!-- Core Subject drill-down: subject → Honours / As Major / As Minor -->
+  <!-- Core Subject drill-down: subject → semester → material category → files -->
   <section class="du-cat" id="viewCoreSubject">
     <div class="du-cat-head core">
       <div>
@@ -480,36 +497,24 @@
       </div>
       <button class="upload-btn" onclick="uploadCoreSubject()">⬆ Upload</button>
     </div>
-    <div class="core-sem-row">
-      <label for="coreSemSelect">📅 Semester</label>
-      <select id="coreSemSelect" class="field sel">
-        <option value="">Select semester…</option>
-        <option value="1">Semester 1</option>
-        <option value="2">Semester 2</option>
-        <option value="3">Semester 3</option>
-        <option value="4">Semester 4</option>
-        <option value="5">Semester 5</option>
-        <option value="6">Semester 6</option>
-        <option value="7">Semester 7</option>
-        <option value="8">Semester 8</option>
-      </select>
-    </div>
-    <div class="core-nav" id="coreSubjectNav"></div>
-    <p class="core-sem-prompt" id="coreSemPrompt">Pick a semester above to see its tracks and files.</p>
-    <div class="core-grid" id="coreTracksGrid"></div>
+    <div class="core-breadcrumb" id="coreBreadcrumb"></div>
+    <div class="core-sem-pills" id="coreSemPills"></div>
+    <p class="core-sem-prompt" id="coreSemPrompt">Pick a semester to see its material categories.</p>
+    <div class="core-grid" id="coreCatGrid"></div>
   </section>
 
-  <section class="du-cat" id="viewCoreTrack">
+  <section class="du-cat" id="viewCoreCategory">
     <div class="du-cat-head core">
       <div>
-        <button class="back-btn" onclick="openCoreSubject(window.__coreSubject)">← Subject</button>
-        <h2 id="coreTrackTitle">Section</h2>
-        <span class="sub" id="coreTrackSub"></span>
+        <button class="back-btn" onclick="openCoreSubject(window.__coreSubject)">← Semester</button>
+        <h2 id="coreCatTitle">Category</h2>
+        <span class="sub" id="coreCatSub"></span>
       </div>
-      <button class="upload-btn" onclick="uploadCoreTrack()">⬆ Upload</button>
+      <button class="upload-btn" onclick="uploadCoreCategory()">⬆ Upload</button>
     </div>
-    <div class="core-nav" id="coreTrackNav"></div>
-    <div class="file-list" id="coreTrackFiles"></div>
+    <div class="core-breadcrumb" id="coreCatBreadcrumb"></div>
+    <div class="core-chips" id="coreCatChips"></div>
+    <div class="file-list" id="coreCatFiles"></div>
   </section>
 </main>
 
@@ -557,11 +562,12 @@
       <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. Web Design, Environmental Science)" autocomplete="off">
       <div class="up-suggest" id="upSuggest"></div>
     </div>
-    <select id="upTrack" class="field sel" style="display:none;">
-      <option value="">Level / Track</option>
+<select id="upTrack" class="field sel" style="display:none;">
+      <option value="">Track (internal, optional)</option>
       <option value="Honours">🎓 Honours</option>
       <option value="As Major">📚 As Major</option>
       <option value="As Minor">📘 As Minor</option>
+      <option value="General">General / Not specified</option>
     </select>
     <select id="upSem" class="field sel" style="display:none;">
       <option value="">Semester</option>
@@ -571,14 +577,24 @@
       <option value="4">Sem 4</option>
       <option value="5">Sem 5</option>
       <option value="6">Sem 6</option>
-      <option value="7">Sem 7</option>
-      <option value="8">Sem 8</option>
     </select>
     <input type="text" id="upTitle" class="field" placeholder="File title">
     <input type="text" id="upYear" class="field" placeholder="Year (optional)">
-    <label class="imp-check"><input type="checkbox" id="upImp"> ⭐ Important Question</label>
-    <label class="imp-check syl"><input type="checkbox" id="upSyl"> 📑 Syllabus</label>
-    <label class="imp-check pyq"><input type="checkbox" id="upPyq"> 📜 PYQ</label>
+    <select id="upCategory" class="field sel" style="display:none;">
+      <option value="">Material Category</option>
+      <option value="syllabus">📗 Syllabus</option>
+      <option value="notes">📚 Notes</option>
+      <option value="pyqs">📄 PYQs</option>
+      <option value="important-questions">⭐ Important Questions</option>
+      <option value="question-bank">📕 Question Bank</option>
+      <option value="books">📖 Books &amp; Readings</option>
+      <option value="exam-preparation">🎯 Exam Preparation</option>
+    </select>
+    <div id="upFlagsRow">
+      <label class="imp-check"><input type="checkbox" id="upImp"> ⭐ Important Question</label>
+      <label class="imp-check syl"><input type="checkbox" id="upSyl"> 📑 Syllabus</label>
+      <label class="imp-check pyq"><input type="checkbox" id="upPyq"> 📜 PYQ</label>
+    </div>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
     <div id="upOptInfo"></div>
     <button class="btn-primary" id="uploadSubmit">Upload</button>
@@ -823,73 +839,123 @@
     document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function matsForCore(subject, sem, track) {
+  const CORE_CATEGORIES = [
+    { id: 'syllabus', label: 'Syllabus', ico: '📗', desc: 'Official syllabus and paper structure' },
+    { id: 'notes', label: 'Notes', ico: '📚', desc: 'Unit-wise notes and study material' },
+    { id: 'pyqs', label: 'PYQs', ico: '📄', desc: 'Previous year question papers' },
+    { id: 'important-questions', label: 'Important Questions', ico: '⭐', desc: 'Most important and repeated questions' },
+    { id: 'question-bank', label: 'Question Bank', ico: '📕', desc: 'Practice questions and question banks' },
+    { id: 'books', label: 'Books & Readings', ico: '📖', desc: 'Recommended books and references' },
+    { id: 'exam-preparation', label: 'Exam Preparation', ico: '🎯', desc: 'Revision material and preparation resources' },
+  ];
+  const CORE_CAT_BY_ID = {};
+  CORE_CATEGORIES.forEach((c) => { CORE_CAT_BY_ID[c.id] = c; });
+  const CORE_SEMS = [1, 2, 3, 4, 5, 6];
+
+  function catOf(m) {
+    if (m.material_category && CORE_CAT_BY_ID[m.material_category]) return m.material_category;
+    if (m.is_syllabus) return 'syllabus';
+    if (m.is_pyq) return 'pyqs';
+    if (m.is_imp) return 'important-questions';
+    return 'notes';
+  }
+
+  function matsForCore(subject, sem, matCat) {
     return (coreMaterials || []).filter((m) =>
+      (m.category || '').toUpperCase() === 'CORE' &&
       (m.subject || '') === subject &&
       (!sem || String(m.semester || '') === sem) &&
-      (!track || (m.track || '') === track)
+      (!matCat || catOf(m) === matCat)
     );
   }
 
-  function coreNavBtns(subject, sem, track) {
-    const enc = encodeURIComponent;
-    const base = `exam=${enc('DU & College')}&category=${enc('CORE')}&subject=${enc(subject)}`;
-    const s = sem ? `&sem=${enc(sem)}` : '';
-    const t = track ? `&track=${enc(track)}` : '';
-    const back = `back=${enc('du.html')}`;
-    const label = [subject, sem ? 'Sem ' + sem : null, track].filter(Boolean).join(' · ');
-    return `
-      <a class="pyq-btn" target="_blank" rel="noopener" href="pyq.html?${base}${s}${t}&${back}" title="PYQs for ${label}">📜 PYQ</a>
-      <a class="syl-btn" target="_blank" rel="noopener" href="syllabus.html?${base}${s}${t}&${back}" title="Syllabus for ${label}">📑 Syllabus</a>
-      <a class="imp-btn" target="_blank" rel="noopener" href="imp.html?${base}${s}${t}&${back}" title="Important Questions for ${label}">⭐ Imp Questions</a>`;
+  function coreBreadcrumb(subject, sem, matCat) {
+    const esc = (s) => String(s).replace(/[<>&]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    const sId = subject.replace(/'/g, "\\'");
+    const parts = ['<button onclick="backToCategories()">Core Subjects</button>', '<span class="sep">›</span>'];
+    if (!sem) {
+      parts.push('<span class="cur">' + esc(subject) + '</span>');
+      return parts.join(' ');
+    }
+    parts.push(`<button onclick="goCoreSem('${sId}','${sem}')">${esc(subject)}</button>`, '<span class="sep">›</span>');
+    if (!matCat) {
+      parts.push('<span class="cur">Semester ' + sem + '</span>');
+      return parts.join(' ');
+    }
+    parts.push(`<button onclick="goCoreSem('${sId}','${sem}')">Semester ${sem}</button>`, '<span class="sep">›</span>');
+    const meta = CORE_CAT_BY_ID[matCat];
+    parts.push('<span class="cur">' + (meta ? esc(meta.label) : esc(matCat)) + '</span>');
+    return parts.join(' ');
   }
+
+  function renderSemPills(subject, activeSem) {
+    document.getElementById('coreSemPills').innerHTML = CORE_SEMS.map((n) =>
+      `<button class="core-sem-pill${n === activeSem ? ' active' : ''}" onclick="selectCoreSem('${n}')">Semester ${n}</button>`
+    ).join('');
+  }
+
+  function selectCoreSem(sem) {
+    const subject = window.__coreSubject || '';
+    renderCoreSubjectSem(subject, String(sem));
+  }
+  window.selectCoreSem = selectCoreSem;
 
   function renderCoreSubjectView(subject) {
     window.__coreSubject = subject;
     window.__coreSem = null;
-    document.getElementById('coreSemSelect').value = '';
+    window.__coreCat = null;
     document.getElementById('coreSubjectTitle').textContent = subject;
-    document.getElementById('coreSubjectSub').textContent = 'Pick a semester to see its tracks and files';
-    document.getElementById('coreSubjectNav').innerHTML = '';
+    document.getElementById('coreSubjectSub').textContent = 'BA Programme / relevant programme';
+    document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, null, null);
+    renderSemPills(subject, null);
     document.getElementById('coreSemPrompt').style.display = '';
-    document.getElementById('coreTracksGrid').innerHTML = '';
+    document.getElementById('coreCatGrid').innerHTML = '';
   }
 
   function renderCoreSubjectSem(subject, sem) {
     window.__coreSem = sem;
-    document.getElementById('coreSubjectTitle').textContent = subject;
-    document.getElementById('coreSubjectSub').textContent = 'Semester ' + sem + ' — choose a track';
-    document.getElementById('coreSubjectNav').innerHTML = coreNavBtns(subject, sem, null);
+    document.getElementById('coreSubjectSub').textContent = 'Semester ' + sem + ' — choose a material category';
+    renderSemPills(subject, Number(sem));
+    document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, null);
     document.getElementById('coreSemPrompt').style.display = 'none';
-    document.getElementById('coreTracksGrid').innerHTML = CORE_TRACKS.map((track) => {
-      const n = matsForCore(subject, sem, track).length;
-      const meta = CORE_TRACK_META[track] || { ico: '📁', sub: '' };
+    document.getElementById('coreCatGrid').innerHTML = CORE_CATEGORIES.map((c) => {
+      const n = matsForCore(subject, sem, c.id).length;
       return `
-        <button class="core-card" onclick="openCoreTrack('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${track.replace(/'/g, "\\'")}')">
+        <button class="core-card" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">
           <div class="top">
-            <span class="core-ico">${meta.ico}</span>
+            <span class="core-ico">${c.ico}</span>
             <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
           </div>
-          <span class="core-name">${track}</span>
-          <span class="core-desc">${meta.sub}</span>
+          <span class="core-name">${c.label}</span>
+          <span class="core-desc">${c.desc}</span>
           <span class="core-count">${n} materials</span>
           <span class="core-btn">Open →</span>
         </button>`;
     }).join('');
   }
 
-  function renderCoreTrackView(subject, sem, track) {
+  function openCoreCategory(subject, sem, matCat) {
+    renderCoreCategoryView(subject, sem, matCat);
+    setCoreView('viewCoreCategory');
+  }
+  window.openCoreCategory = openCoreCategory;
+
+  function renderCoreCategoryView(subject, sem, matCat) {
     window.__coreSubject = subject;
     window.__coreSem = sem;
-    window.__coreTrack = track;
-    const files = matsForCore(subject, sem, track);
-    document.getElementById('coreTrackTitle').textContent = subject + ' — ' + track + ' · Sem ' + sem;
-    document.getElementById('coreTrackSub').textContent =
-      files.length + ' file' + (files.length === 1 ? '' : 's') + ' in this section';
-    document.getElementById('coreTrackNav').innerHTML = coreNavBtns(subject, sem, track);
-    const box = document.getElementById('coreTrackFiles');
+    window.__coreCat = matCat;
+    const meta = CORE_CAT_BY_ID[matCat] || { label: matCat, ico: '📁' };
+    const files = matsForCore(subject, sem, matCat);
+    document.getElementById('coreCatTitle').textContent = meta.label;
+    document.getElementById('coreCatSub').textContent =
+      subject + ' · Semester ' + sem + ' — ' + files.length + ' file' + (files.length === 1 ? '' : 's');
+    document.getElementById('coreCatBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, matCat);
+    document.getElementById('coreCatChips').innerHTML = CORE_CATEGORIES.map((c) =>
+      `<button class="core-chip${c.id === matCat ? ' active' : ''}" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">${c.ico} ${c.label}</button>`
+    ).join('');
+    const box = document.getElementById('coreCatFiles');
     if (!files.length) {
-      box.innerHTML = '<div class="mat-empty">No files in this section yet.' +
+      box.innerHTML = '<div class="mat-empty">No ' + meta.label.toLowerCase() + ' files in this semester yet.' +
         (state.isAdmin ? ' Use the Upload button above to add the first file.' : '') + '</div>';
       return;
     }
@@ -898,6 +964,7 @@
 
   function materialRow(m) {
     const tags = [];
+    if (m.track && m.track !== 'General') tags.push('🎓 ' + m.track);
     if (m.is_imp) tags.push('⭐ Important');
     if (m.is_syllabus) tags.push('📑 Syllabus');
     if (m.is_pyq) tags.push('📜 PYQ');
@@ -922,28 +989,22 @@
   }
   window.openCoreSubject = openCoreSubject;
 
-  function openCoreTrack(subject, sem, track) {
-    renderCoreTrackView(subject, sem, track);
-    setCoreView('viewCoreTrack');
+  function goCoreSem(subject, sem) {
+    window.__coreSubject = subject;
+    renderCoreSubjectSem(subject, sem);
+    setCoreView('viewCoreSubject');
   }
-  window.openCoreTrack = openCoreTrack;
-
-  document.getElementById('coreSemSelect').addEventListener('change', () => {
-    const sem = document.getElementById('coreSemSelect').value;
-    const subject = window.__coreSubject || '';
-    if (sem) renderCoreSubjectSem(subject, sem);
-    else renderCoreSubjectView(subject);
-  });
+  window.goCoreSem = goCoreSem;
 
   function uploadCoreSubject() {
-    openUpload('CORE', window.__coreSubject || '', '', window.__coreSem || '');
+    openUpload('CORE', window.__coreSubject || '', '', window.__coreSem || '', window.__coreCat || '');
   }
   window.uploadCoreSubject = uploadCoreSubject;
 
-  function uploadCoreTrack() {
-    openUpload('CORE', window.__coreSubject || '', window.__coreTrack || '', window.__coreSem || '');
+  function uploadCoreCategory() {
+    openUpload('CORE', window.__coreSubject || '', '', window.__coreSem || '', window.__coreCat || '');
   }
-  window.uploadCoreTrack = uploadCoreTrack;
+  window.uploadCoreCategory = uploadCoreCategory;
 
   function backToCategories() {
     document.getElementById('duHome').style.display = '';
@@ -1035,12 +1096,13 @@
   }
 
   // Upload
-  function openUpload(cat, subject, track, sem) {
+  function openUpload(cat, subject, track, sem, matCat) {
     if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
     document.getElementById('upCat').value = cat || 'SEC';
     document.getElementById('upSubject').value = subject ? decodeURIComponent(subject) : '';
     document.getElementById('upTrack').value = track || '';
     document.getElementById('upSem').value = sem || '';
+    document.getElementById('upCategory').value = matCat || '';
     document.getElementById('upTitle').value = '';
     document.getElementById('upYear').value = '';
     document.getElementById('upFile').value = '';
@@ -1058,6 +1120,8 @@
     const isCore = document.getElementById('upCat').value === 'CORE';
     document.getElementById('upTrack').style.display = isCore ? '' : 'none';
     document.getElementById('upSem').style.display = isCore ? '' : 'none';
+    document.getElementById('upCategory').style.display = isCore ? '' : 'none';
+    document.getElementById('upFlagsRow').style.display = isCore ? 'none' : '';
   }
 
   document.getElementById('uploadSubmit').addEventListener('click', doUpload);
@@ -1095,15 +1159,23 @@
     fd.append('subject', subject);
     const track = document.getElementById('upTrack').value.trim();
     const sem = document.getElementById('upSem').value.trim();
+    const matCat = document.getElementById('upCategory').value.trim();
+    let isImp = document.getElementById('upImp').checked;
+    let isSyl = document.getElementById('upSyl').checked;
+    let isPyq = document.getElementById('upPyq').checked;
     if (category === 'CORE') {
-      if (!track) return setMsg(msg, 'Select a Level/Track (Honours, As Major or As Minor) for Core Subjects.', false);
-      if (!sem) return setMsg(msg, 'Select a Semester (1–8) for Core Subjects — every upload needs a clear semester.', false);
+      if (!sem) return setMsg(msg, 'Select a Semester (1–6) for Core Subjects — every upload needs a clear semester.', false);
+      if (!matCat) return setMsg(msg, 'Select a Material Category (Syllabus, Notes, PYQs, etc.) for Core Subjects.', false);
+      isImp = matCat === 'important-questions';
+      isSyl = matCat === 'syllabus';
+      isPyq = matCat === 'pyqs';
     }
     if (track) fd.append('track', track);
     if (sem) fd.append('semester', sem);
-    fd.append('is_imp', document.getElementById('upImp').checked ? 'true' : 'false');
-    fd.append('is_syllabus', document.getElementById('upSyl').checked ? 'true' : 'false');
-    fd.append('is_pyq', document.getElementById('upPyq').checked ? 'true' : 'false');
+    if (category === 'CORE' && matCat) fd.append('material_category', matCat);
+    fd.append('is_imp', isImp ? 'true' : 'false');
+    fd.append('is_syllabus', isSyl ? 'true' : 'false');
+    fd.append('is_pyq', isPyq ? 'true' : 'false');
     if (year) fd.append('year', year);
     fd.append('file', uploadFile, uploadFile.name || file.name);
 
