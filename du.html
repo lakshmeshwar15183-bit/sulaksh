@@ -218,6 +218,8 @@
     font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
   }
   .pyq-btn:hover{background:var(--blue); color:#fff;}
+  .core-nav{display:flex; flex-wrap:wrap; gap:8px; margin:-6px 0 18px;}
+  .core-nav .pyq-btn,.core-nav .syl-btn,.core-nav .imp-btn{text-decoration:none;}
 
   .mat-item{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
@@ -474,6 +476,7 @@
       </div>
       <button class="upload-btn" onclick="uploadCoreSubject()">⬆ Upload</button>
     </div>
+    <div class="core-nav" id="coreSubjectNav"></div>
     <div class="core-grid" id="coreTracksGrid"></div>
   </section>
 
@@ -486,6 +489,7 @@
       </div>
       <button class="upload-btn" onclick="uploadCoreTrack()">⬆ Upload</button>
     </div>
+    <div class="core-nav" id="coreTrackNav"></div>
     <div class="file-list" id="coreTrackFiles"></div>
   </section>
 </main>
@@ -795,10 +799,23 @@
     );
   }
 
+  function coreNavBtns(subject, track) {
+    const enc = encodeURIComponent;
+    const base = `exam=${enc('DU & College')}&category=${enc('CORE')}&subject=${enc(subject)}`;
+    const t = track ? `&track=${enc(track)}` : '';
+    const back = `back=${enc('du.html')}`;
+    const label = track ? `${subject} · ${track}` : subject;
+    return `
+      <a class="pyq-btn" target="_blank" rel="noopener" href="pyq.html?${base}${t}&${back}" title="PYQs for ${label}">📜 PYQ</a>
+      <a class="syl-btn" target="_blank" rel="noopener" href="syllabus.html?${base}${t}&${back}" title="Syllabus for ${label}">📑 Syllabus</a>
+      <a class="imp-btn" target="_blank" rel="noopener" href="imp.html?${base}${t}&${back}" title="Important Questions for ${label}">⭐ Imp Questions</a>`;
+  }
+
   function renderCoreSubjectView(subject) {
     window.__coreSubject = subject;
     document.getElementById('coreSubjectTitle').textContent = subject;
     document.getElementById('coreSubjectSub').textContent = 'Choose a track — Honours, As Major or As Minor';
+    document.getElementById('coreSubjectNav').innerHTML = coreNavBtns(subject, null);
     document.getElementById('coreTracksGrid').innerHTML = CORE_TRACKS.map((track) => {
       const n = matsForCore(subject, track).length;
       const meta = CORE_TRACK_META[track] || { ico: '📁', sub: '' };
@@ -823,6 +840,7 @@
     document.getElementById('coreTrackTitle').textContent = subject + ' — ' + track;
     document.getElementById('coreTrackSub').textContent =
       files.length + ' file' + (files.length === 1 ? '' : 's') + ' in this section';
+    document.getElementById('coreTrackNav').innerHTML = coreNavBtns(subject, track);
     const box = document.getElementById('coreTrackFiles');
     if (!files.length) {
       box.innerHTML = '<div class="mat-empty">No files in this section yet.' +
