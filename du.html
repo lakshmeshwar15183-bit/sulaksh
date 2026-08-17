@@ -1353,7 +1353,7 @@
     return `
       <div class="subj-card" data-key="${escapeHtml(key)}">
         <div class="subj-head">
-          <div class="subj-title">${s === 'Others' ? '🗂️' : '📁'} <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
+          <div class="subj-title">${s === 'Others' ? '📦' : '📁'} <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span></div>
           <div style="display:flex; gap:6px; flex-shrink:0;">
             <a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a>
             <a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a>
