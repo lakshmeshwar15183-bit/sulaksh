@@ -337,7 +337,7 @@
   }
   .du-info-head{
     font-family:'Sora',sans-serif; font-size:19px; font-weight:800; line-height:1.4;
-    color:var(--navy); margin:0; padding:20px 52px 16px 24px;
+    color:var(--text); margin:0; padding:20px 52px 16px 24px;
     background:linear-gradient(180deg, #EEF2FA, transparent); border-bottom:1px solid var(--border);
   }
   .du-info-scroll{overflow-y:auto; -webkit-overflow-scrolling:touch; padding:18px 24px 20px;}
@@ -357,14 +357,17 @@
     background:linear-gradient(180deg, #EAF1FF, #F5F8FF); border:1px solid #C7D8F5;
     border-radius:12px; padding:14px 16px;
   }
-  .du-info-tip h4{font-size:13px; font-weight:800; color:var(--navy); margin:0 0 8px;}
+  .du-info-tip h4{font-size:13px; font-weight:800; color:var(--text); margin:0 0 8px;}
   .du-info-tip p{font-size:13.5px; line-height:1.6; color:var(--text); margin:0 0 6px;}
   .du-info-ex{display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; margin-top:8px;}
   .du-info-ex span{font-size:13px; color:var(--text); line-height:1.5;}
-  .du-info-ex b{color:var(--navy);}
+  .du-info-ex b{color:var(--text);}
   .du-info-ex.vert{grid-template-columns:1fr;}
   .du-info-exlabel{font-size:12.5px; font-weight:700; color:var(--text); margin:12px 0 0;}
   .du-info-or{text-align:center; color:var(--muted); font-size:12.5px;}
+  [data-theme="dark"] .du-info-head{background:linear-gradient(180deg, #16233C, transparent);}
+  [data-theme="dark"] .du-info-tip{background:linear-gradient(180deg, #152238, #101B2E); border-color:#1E3A5F;}
+  [data-theme="dark"] .du-info-tip h4{color:#9DB8E8;}
   .du-info-footer{
     padding:14px 24px 18px; border-top:1px solid var(--border); background:var(--card);
   }
@@ -473,10 +476,10 @@
       <button class="upload-btn" onclick="openUpload('One Day Exams','RRB / SSC')">⬆ Upload Material</button>
     </div>
     <div class="cat-card">
-      <div class="cat-icon" style="background:rgba(12,35,64,.08); color:var(--navy);">🏛️</div>
-      <h3 style="color:var(--navy);">UPSC</h3>
+      <div class="cat-icon" style="background:rgba(12,35,64,.08); color:var(--text);">🏛️</div>
+      <h3 style="color:var(--text);">UPSC</h3>
       <p>Prelims, Mains, Current Affairs, NCERT &amp; more</p>
-      <a href="upsc.html" class="cat-link" style="color:var(--navy);">View All →</a>
+      <a href="upsc.html" class="cat-link" style="color:var(--text);">View All →</a>
       <button class="upload-btn" onclick="openUpload('UPSC','Prelims')">⬆ Upload Material</button>
     </div>
     <div class="cat-card">
