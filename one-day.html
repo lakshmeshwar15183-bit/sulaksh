@@ -521,6 +521,7 @@
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     document.getElementById('cat-' + cat).classList.add('active');
     document.getElementById('cat-' + cat).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', '#' + 'cat-' + cat);
   }
   window.openCategory = openCategory;
 
@@ -528,6 +529,7 @@
     document.getElementById('catPicker').classList.remove('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', location.pathname + location.search);
   }
   window.backToCategories = backToCategories;
 
@@ -797,6 +799,17 @@
 
   updateAuthUI();
   loadMaterials();
+
+  // Restore the active section on refresh (e.g. #cat-GS keeps you in GS).
+  (function restoreFromHash() {
+    const h = location.hash.replace(/^#/, '');
+    if (!h) return;
+    const el = document.getElementById('cat-' + h);
+    if (!el) return;
+    document.getElementById('catPicker').classList.add('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    el.classList.add('active');
+  })();
 </script>
 
 </body>
