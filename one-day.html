@@ -479,6 +479,9 @@
   const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
   const CATEGORIES = ['GS', 'GK', 'SC', 'CO'];
   const CAT_NAMES = { GS: 'General Studies', GK: 'General Knowledge/Static GK', SC: 'Science', CO: 'Computer' };
+  const GS_SUBJECTS = ['History', 'Polity', 'Geography', 'Economics'];
+  const SC_SUBJECTS = ['Physics', 'Biology', 'Chemistry', 'Environment'];
+  const STATIC_SUBJECTS = { GS: GS_SUBJECTS, SC: SC_SUBJECTS };
 
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
@@ -493,7 +496,7 @@
   const upSuggestEl = document.getElementById('upSuggest');
 
   function getSubjectsFor(cat) {
-    return Array.from(new Set((dynamicSubjects[cat] || [])));
+    return Array.from(new Set((STATIC_SUBJECTS[cat] || []).concat(dynamicSubjects[cat] || [])));
   }
   function hideSuggest() { upSuggestEl.innerHTML = ''; upSuggestEl.classList.remove('show'); }
   function showSuggest() {
@@ -698,7 +701,14 @@
       });
     } catch (err) {
       CATEGORIES.forEach((cat) => {
-        document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+        const staticList = STATIC_SUBJECTS[cat];
+        if (staticList && staticList.length) {
+          renderCategory(cat, []);
+          const countEl = document.getElementById('catCount-' + cat);
+          if (countEl) countEl.textContent = staticList.length + ' subject' + (staticList.length === 1 ? '' : 's');
+        } else {
+          document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+        }
       });
     }
   }
@@ -707,7 +717,15 @@
     const grid = document.getElementById('subj-' + cat);
     const bySubject = {};
     mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
-    const subjectNames = Object.keys(bySubject).sort();
+
+    let subjectNames;
+    const staticList = STATIC_SUBJECTS[cat];
+    if (staticList) {
+      subjectNames = staticList.slice();
+      Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s)) subjectNames.push(s); });
+    } else {
+      subjectNames = Object.keys(bySubject).sort();
+    }
 
     if (!subjectNames.length) {
       grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
