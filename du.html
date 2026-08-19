@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DU &amp; College — Sulaksh</title>
+<meta name="author" content="Lakshmeshwar Pandey">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Sulaksh",
+  "url": "https://sulaksh.netlify.app",
+  "author": { "@type": "Person", "name": "Lakshmeshwar Pandey" }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2340;
+    --navy-2:#123467;
+    --blue:#1E5FFF;
+    --saffron:#FF7A1A;
+    --green:#1E8E5A;
+    --bg:#F6F8FC;
+    --card:#FFFFFF;
+    --text:#1A2433;
+    --muted:#5B6B80;
+    --border:#E4E9F1;
+    --radius:16px;
+    --shadow: 0 4px 24px rgba(12,35,64,0.06);
+  }
+  [data-theme="dark"]{
+    --navy:#0A192E;
+    --navy-2:#0F2647;
+    --bg:#0B1424;
+    --card:#101B2E;
+    --text:#EAF0FA;
+    --muted:#8FA0B8;
+    --border:#1E2C42;
+    --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.brand-name{font-family:'Sora',sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1280px; margin:0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .brand-emblem{height:44px; width:auto; display:block; flex-shrink:0;}
+  .brand-wordmark{height:26px; width:auto; display:block; flex-shrink:0;}
+
+  .nav-links{display:flex; align-items:center; gap:28px; list-style:none;}
+  .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
+  .nav-links a.active{color:var(--blue); opacity:1; font-weight:600;}
+  .nav-links a:hover{opacity:1;}
+
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg); border:1px solid var(--border);
+    color:var(--muted); transition:all .2s;
+  }
+  .icon-btn:hover{background:var(--border);}
+  .btn-primary{
+    background:var(--navy); color:#fff; padding:10px 20px; border-radius:10px;
+    font-size:14.5px; font-weight:600; display:flex; align-items:center; gap:8px;
+    transition:background .2s, transform .15s;
+  }
+  .btn-primary:hover{background:var(--blue); transform:translateY(-1px);}
+  .hamburger{display:none; flex-direction:column; gap:5px; width:38px; height:38px; align-items:center; justify-content:center;}
+  .hamburger span{width:20px; height:2px; background:var(--text); border-radius:2px;}
+
+  .mobile-menu{
+    display:none; flex-direction:column; background:var(--card); border-top:1px solid var(--border);
+    padding:10px 24px 20px;
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{padding:12px 0; font-size:15px; font-weight:500; border-bottom:1px solid var(--border);}
+
+  /* ---------- Page hero ---------- */
+  .du-hero{
+    background:linear-gradient(180deg, #EEF2FA 0%, var(--bg) 100%);
+    padding:52px 0 40px;
+  }
+  [data-theme="dark"] .du-hero{background:linear-gradient(180deg, #0D1B30 0%, var(--bg) 100%);}
+  .du-hero .eyebrow{color:var(--green); font-weight:700; font-size:12.5px; letter-spacing:.4px; margin-bottom:12px;}
+  .du-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
+  .du-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:560px; margin-top:10px;}
+
+  /* ---------- Category sections ---------- */
+  .du-main{padding:36px 0 64px;}
+  .du-cat{margin-bottom:36px; display:none;}
+  .du-cat.active{display:block;}
+
+  /* ---------- Category picker tiles ---------- */
+  .du-cats{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-bottom:16px;}
+  .cat-tile{
+    text-align:left; background:var(--card); border:1px solid var(--border); border-top:4px solid transparent;
+    border-radius:var(--radius); padding:22px; cursor:pointer; transition:transform .15s, box-shadow .2s, border-color .2s;
+    display:flex; flex-direction:column; gap:6px; color:var(--text);
+  }
+  .cat-tile:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
+  .cat-tile.sec{border-top-color:var(--blue);}
+  .cat-tile.vac{border-top-color:var(--saffron);}
+  .cat-tile.aec{border-top-color:var(--navy-2);}
+  .cat-tile.ge{border-top-color:var(--green);}
+  .cat-ico{font-size:26px;}
+  .cat-name{font-family:'Sora',sans-serif; font-size:20px; font-weight:800; letter-spacing:.2px;}
+  .cat-sub{font-size:13px; color:var(--muted);}
+  .cat-count{font-size:12.5px; font-weight:600; color:var(--blue); margin-top:6px;}
+  #catPicker.hidden{display:none;}
+
+  /* ---------- Page section headings (1. / 2.) ---------- */
+  .du-sec{margin-bottom:44px;}
+  .du-sec-head{display:flex; align-items:center; gap:14px; margin-bottom:18px;}
+  .du-sec-head .num{
+    width:34px; height:34px; border-radius:10px; flex-shrink:0;
+    background:var(--navy); color:#fff; font-family:'Sora',sans-serif;
+    font-weight:800; font-size:16px; display:flex; align-items:center; justify-content:center;
+  }
+  .du-sec-head h2{font-size:clamp(18px, 2.4vw, 22px); font-weight:800; letter-spacing:-.3px;}
+  .du-sec-head .sub{font-size:13px; color:var(--muted); margin-top:2px;}
+
+  /* ---------- Core Subjects grid ---------- */
+  .core-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px;}
+  .core-card{
+    text-align:left; position:relative; overflow:hidden;
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px 22px; cursor:pointer; color:var(--text);
+    display:flex; flex-direction:column; gap:8px;
+    transition:transform .15s, box-shadow .2s, border-color .2s;
+  }
+  .core-card:hover{transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--blue);}
+  .core-card .top{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .core-ico{font-size:28px; line-height:1;}
+  .core-badge{
+    font-size:11px; font-weight:700; letter-spacing:.3px; padding:4px 9px; border-radius:100px;
+    background:var(--bg); border:1px solid var(--border); color:var(--muted);
+  }
+  .core-name{font-family:'Sora',sans-serif; font-size:19px; font-weight:800; letter-spacing:.2px;}
+  .core-desc{font-size:13px; color:var(--muted); line-height:1.5;}
+  .core-count{font-size:12.5px; font-weight:600; color:var(--blue);}
+  .core-btn{
+    display:inline-flex; align-items:center; gap:6px; margin-top:6px;
+    color:var(--blue); font-weight:700; font-size:13.5px;
+  }
+  .core-card:hover .core-btn{color:var(--saffron);}
+
+  .back-btn{
+    display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); color:#fff;
+    border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:8px;
+    font-size:12.5px; font-weight:600; margin-bottom:10px;
+  }
+  .back-btn:hover{background:rgba(255,255,255,.3);}
+
+  .du-cat-head{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    padding:18px 22px; border-radius:var(--radius); color:#fff; margin-bottom:18px;
+  }
+  .du-cat-head.sec{background:linear-gradient(90deg, var(--blue), var(--navy-2));}
+  .du-cat-head.vac{background:linear-gradient(90deg, var(--saffron), #e05a00);}
+  .du-cat-head.aec{background:linear-gradient(90deg, var(--navy), var(--navy-2));}
+  .du-cat-head.ge{background:linear-gradient(90deg, var(--green), #146b44);}
+  .du-cat-head.core{background:linear-gradient(90deg, var(--navy), #2d5bd6);}
+  .du-cat-head h2{font-size:20px;}
+  .du-cat-head .sub{font-size:12.5px; opacity:.85; font-weight:500; display:block; margin-top:2px;}
+  .upload-btn{
+    display:none; background:rgba(255,255,255,.18); color:#fff; padding:9px 16px; border-radius:10px;
+    font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,.35);
+  }
+  body.is-admin .upload-btn{display:inline-flex; align-items:center; gap:6px;}
+  .upload-btn:hover{background:rgba(255,255,255,.3);}
+
+  /* ---------- Subject folders ---------- */
+  .subj-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .subj-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px;
+  }
+  .subj-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; cursor:pointer; user-select:none;}
+  .subj-title{font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .subj-title .chev{font-size:9px; color:var(--muted); transition:transform .2s ease;}
+  .subj-card.closed .subj-title .chev{transform:rotate(-90deg);}
+  .subj-card.closed .mat-list{display:none;}
+  .subj-title .count{
+    font-size:11.5px; font-weight:600; color:var(--muted); background:var(--bg);
+    padding:3px 9px; border-radius:100px; border:1px solid var(--border);
+  }
+  .subj-head .upload-btn{width:auto; padding:6px 12px; font-size:12px;}
+  .imp-btn{
+    display:inline-flex; align-items:center; gap:4px;
+    background:rgba(255,122,26,.12); color:var(--saffron);
+    border:1px solid rgba(255,122,26,.35); padding:6px 12px; border-radius:8px;
+    font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
+  }
+  .imp-btn:hover{background:var(--saffron); color:#fff;}
+  .syl-btn{
+    display:inline-flex; align-items:center; gap:4px;
+    background:rgba(30,142,90,.12); color:var(--green);
+    border:1px solid rgba(30,142,90,.35); padding:6px 12px; border-radius:8px;
+    font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
+  }
+  .syl-btn:hover{background:var(--green); color:#fff;}
+  .pyq-btn{
+    display:inline-flex; align-items:center; gap:4px;
+    background:rgba(38,82,164,.12); color:var(--blue);
+    border:1px solid rgba(38,82,164,.35); padding:6px 12px; border-radius:8px;
+    font-size:12px; font-weight:700; white-space:nowrap; cursor:pointer;
+  }
+  .pyq-btn:hover{background:var(--blue); color:#fff;}
+  .core-breadcrumb{font-size:12.5px; color:var(--muted); margin:-4px 0 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+  .core-breadcrumb button{background:none; border:none; color:var(--blue); font-size:12.5px; font-weight:600; cursor:pointer; padding:0; font-family:inherit;}
+  .core-breadcrumb button:hover{text-decoration:underline;}
+  .core-breadcrumb .sep{color:var(--muted);}
+  .core-breadcrumb .cur{font-weight:700; color:var(--text);}
+  .core-sem-pills{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px;}
+  .core-sem-pill{
+    padding:9px 18px; border-radius:100px; border:1.5px solid var(--border);
+    background:var(--card); color:var(--text); font-size:13.5px; font-weight:700; cursor:pointer;
+    font-family:inherit; transition:all .15s ease;
+  }
+  .core-sem-pill:hover{border-color:var(--blue); color:var(--blue);}
+  .core-sem-pill.active{background:var(--navy); border-color:var(--navy); color:#fff;}
+  .core-sem-prompt{font-size:13px; color:var(--muted); margin:0 0 18px;}
+  .core-chips{display:flex; flex-wrap:wrap; gap:8px; margin:-6px 0 18px;}
+  .core-chip{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--card); border:1px solid var(--border); border-radius:100px;
+    padding:7px 14px; font-size:12.5px; font-weight:600; color:var(--text); cursor:pointer;
+    font-family:inherit; text-decoration:none; transition:all .15s ease;
+  }
+  .core-chip:hover{border-color:var(--blue); color:var(--blue);}
+  .core-chip.active{background:var(--navy); border-color:var(--navy); color:#fff;}
+
+  .mat-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:9px 10px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; font-size:13px;
+  }
+  .mat-item .t{font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .mat-item .a{display:flex; gap:6px; flex-shrink:0;}
+  .mat-item button{
+    padding:5px 10px; border-radius:7px; font-size:12px; font-weight:600;
+    background:var(--bg); border:1px solid var(--border); color:var(--text);
+  }
+  .mat-item button:hover{border-color:var(--green); color:var(--green);}
+  .mat-item button.del-btn:hover{border-color:#d64545; color:#d64545;}
+  .mat-empty{font-size:13px; color:var(--muted); text-align:center; padding:14px; border:1px dashed var(--border); border-radius:10px;}
+  .file-list{display:flex; flex-direction:column; gap:8px;}
+  .mat-item .tags{font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; display:flex; gap:8px; flex-wrap:wrap;}
+
+  /* ---------- Modals ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(10,20,40,.5); display:none;
+    align-items:flex-start; justify-content:center; padding-top:12vh; z-index:200;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--card); width:min(420px, 92vw); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.3);
+    padding:24px; position:relative;
+  }
+  .modal-box h3{font-size:18px; margin-bottom:16px;}
+  .modal-box .field{
+    width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:10px;
+    background:var(--bg); color:var(--text); font-size:14.5px; font-family:inherit; margin-bottom:12px;
+    outline:none;
+  }
+  .modal-box .field:focus{border-color:var(--blue);}
+  .pass-wrap{position:relative;}
+  .pass-wrap .field{padding-right:42px;}
+  .pass-toggle{position:absolute; right:4px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:17px; color:var(--muted); padding:8px; line-height:1; border-radius:8px;}
+  .pass-toggle:hover{color:var(--text); background:var(--bg);}
+  .modal-box .btn-primary{width:100%; justify-content:center; padding:12px;}
+  .modal-msg{font-size:13px; margin-top:10px; min-height:18px;}
+  .modal-msg.ok{color:var(--green);} .modal-msg.err{color:#d64545;}
+  .modal-close{
+    position:absolute; top:12px; right:14px; font-size:20px; color:var(--muted);
+    width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{background:var(--bg);}
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .sel{appearance:none;}
+  .up-suggest-wrap{position:relative;}
+  .up-suggest{
+    position:absolute; top:100%; left:0; right:0; z-index:50; margin-top:3px;
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    box-shadow:var(--shadow); max-height:190px; overflow:auto; display:none;
+  }
+  .up-suggest.show{display:block;}
+  .up-suggest-item{padding:10px 14px; font-size:13.5px; cursor:pointer;}
+  .up-suggest-item:hover{background:var(--bg); color:var(--blue);}
+  .imp-check{
+    display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600;
+    color:var(--saffron); margin:4px 0 12px; cursor:pointer; user-select:none;
+  }
+  .imp-check input{width:17px; height:17px; accent-color:var(--saffron); cursor:pointer;}
+  .imp-check.syl{color:var(--green);}
+  .imp-check.syl input{accent-color:var(--green);}
+  .imp-check.pyq{color:var(--blue);}
+  .imp-check.pyq input{accent-color:var(--blue);}
+
+  footer{
+    background:var(--navy); color:#cfd9ec; padding:40px 0 36px; text-align:center; font-size:13px;
+  }
+  footer a{color:#fff; font-weight:600;}
+  footer a:hover{color:var(--saffron);}
+  .footer-links{display:flex; flex-wrap:wrap; justify-content:center; gap:8px 22px; margin:18px 0; list-style:none;}
+  .footer-links a{color:#cfd9ec; font-weight:600;}
+  .footer-links a:hover{color:#fff;}
+  .footer-copy{line-height:1.8;}
+
+  @media (max-width:800px){
+    .subj-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:960px){
+    .core-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  }
+  @media (max-width:540px){
+    .core-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .brand-emblem{height:38px;}
+    .brand-wordmark{height:22px;}
+  }
+  @media (max-width:520px){
+    .brand{gap:8px;}
+    .brand-emblem{height:32px;}
+    .brand-wordmark{height:18px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem" width="782" height="665">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark" width="1115" height="203">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#exams">Exams</a></li>
+      <li><a href="one-day.html">ONE DAY EXAMS</a></li>
+      <li><a href="upsc.html">UPSC</a></li>
+      <li><a href="du.html" class="active">DU &amp; College</a></li>
+      <li><a href="index.html#study">Study Material</a></li>
+      <li><a href="index.html#pyqs">PYQs</a></li>
+      <li><a href="index.html#about">About Us</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
+      <button class="btn-primary" id="loginBtn">👤 Login</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="index.html#exams">Exams</a>
+    <a href="one-day.html">ONE DAY EXAMS</a>
+    <a href="upsc.html">UPSC</a>
+    <a href="du.html">DU &amp; College</a>
+    <a href="index.html#study">Study Material</a>
+    <a href="index.html#pyqs">PYQs</a>
+    <a href="index.html#about">About Us</a>
+  </div>
+</header>
+
+<section class="du-hero">
+  <div class="wrap">
+    <div class="eyebrow">🎓 DU &amp; COLLEGE</div>
+    <h1>Subject-wise Study Folders</h1>
+    <p>Notes, PYQs and question banks for Core Subjects and SEC, VAC, AEC and GE courses — organised by subject. Select a folder to view its files.</p>
+  </div>
+</section>
+
+<main class="wrap du-main">
+  <div id="duHome">
+  <!-- 1. Core Subjects -->
+  <div class="du-sec">
+    <div class="du-sec-head">
+      <span class="num">1</span>
+      <div>
+        <h2>Core Subjects</h2>
+        <span class="sub">Notes, PYQs, Question Banks &amp; more</span>
+      </div>
+    </div>
+    <div class="core-grid" id="coreGrid"></div>
+  </div>
+
+  <!-- 2. Common / University Courses -->
+  <div class="du-sec">
+    <div class="du-sec-head">
+      <span class="num">2</span>
+      <div>
+        <h2>Common / University Courses</h2>
+        <span class="sub">SEC, VAC, AEC &amp; GE</span>
+      </div>
+    </div>
+    <div class="du-cats" id="catPicker">
+    <button class="cat-tile sec" onclick="openCategory('SEC')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">SEC</span>
+      <span class="cat-sub">Skill Enhancement Courses</span>
+      <span class="cat-count" id="catCount-SEC">0 files</span>
+    </button>
+    <button class="cat-tile vac" onclick="openCategory('VAC')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">VAC</span>
+      <span class="cat-sub">Value Addition Courses</span>
+      <span class="cat-count" id="catCount-VAC">0 files</span>
+    </button>
+    <button class="cat-tile aec" onclick="openCategory('AEC')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">AEC</span>
+      <span class="cat-sub">Ability Enhancement Courses</span>
+      <span class="cat-count" id="catCount-AEC">0 files</span>
+    </button>
+    <button class="cat-tile ge" onclick="openCategory('GE')">
+      <span class="cat-ico">📁</span>
+      <span class="cat-name">GE</span>
+      <span class="cat-sub">Generic Elective Courses</span>
+      <span class="cat-count" id="catCount-GE">0 files</span>
+    </button>
+  </div>
+  </div>
+  </div>
+
+  <section class="du-cat" id="cat-SEC">
+    <div class="du-cat-head sec">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
+        <h2>SEC</h2>
+        <span class="sub">Skill Enhancement Courses</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('SEC','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-SEC"></div>
+  </section>
+
+  <section class="du-cat" id="cat-VAC">
+    <div class="du-cat-head vac">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
+        <h2>VAC</h2>
+        <span class="sub">Value Addition Courses</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('VAC','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-VAC"></div>
+  </section>
+
+  <section class="du-cat" id="cat-AEC">
+    <div class="du-cat-head aec">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
+        <h2>AEC</h2>
+        <span class="sub">Ability Enhancement Courses</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('AEC','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-AEC"></div>
+  </section>
+
+  <section class="du-cat" id="cat-GE">
+    <div class="du-cat-head ge">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Categories</button>
+        <h2>GE</h2>
+        <span class="sub">Generic Elective Courses</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('GE','')">⬆ Upload</button>
+    </div>
+    <div class="subj-grid" id="subj-GE"></div>
+  </section>
+
+  <!-- Core Subject drill-down: subject → track → semester → material category → files -->
+  <section class="du-cat" id="viewCoreTrack">
+    <div class="du-cat-head core">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
+        <h2 id="coreTrackTitle">Core Subject</h2>
+        <span class="sub" id="coreTrackSub">Choose your course type</span>
+      </div>
+      <button class="upload-btn" onclick="uploadCoreSubject()">⬆ Upload</button>
+    </div>
+    <div class="core-breadcrumb" id="coreTrackBreadcrumb"></div>
+    <p class="core-sem-prompt">Select how you study this subject to see its materials.</p>
+    <div class="core-grid" id="coreTrackGrid"></div>
+  </section>
+
+  <section class="du-cat" id="viewCoreSubject">
+    <div class="du-cat-head core">
+      <div>
+        <button class="back-btn" onclick="goCoreTrack(window.__coreSubject)">← Course Type</button>
+        <h2 id="coreSubjectTitle">Core Subject</h2>
+        <span class="sub" id="coreSubjectSub"></span>
+      </div>
+      <button class="upload-btn" onclick="uploadCoreSubject()">⬆ Upload</button>
+    </div>
+    <div class="core-breadcrumb" id="coreBreadcrumb"></div>
+    <div class="core-sem-pills" id="coreSemPills"></div>
+    <p class="core-sem-prompt" id="coreSemPrompt">Pick a semester to see its material categories.</p>
+    <div class="core-grid" id="coreCatGrid"></div>
+  </section>
+
+  <section class="du-cat" id="viewCoreCategory">
+    <div class="du-cat-head core">
+      <div>
+        <button class="back-btn" onclick="goCoreSem(window.__coreSubject, window.__coreSem)">← Semester</button>
+        <h2 id="coreCatTitle">Category</h2>
+        <span class="sub" id="coreCatSub"></span>
+      </div>
+      <button class="upload-btn" onclick="uploadCoreCategory()">⬆ Upload</button>
+    </div>
+    <div class="core-breadcrumb" id="coreCatBreadcrumb"></div>
+    <div class="core-chips" id="coreCatChips"></div>
+    <div class="file-list" id="coreCatFiles"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand-name" style="color:#fff; margin-bottom:8px;">SULAKSH</div>
+    <p class="footer-copy">© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+    <ul class="footer-links">
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      <li><a href="disclaimer.html">Disclaimer</a></li>
+    </ul>
+    <p>Contact: <a href="mailto:supportlumixo@gmail.com">supportlumixo@gmail.com</a></p>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('loginOverlay')" aria-label="Close">×</button>
+    <h3>Admin Login</h3>
+    <input type="email" id="loginEmail" class="field" placeholder="Email" autocomplete="email">
+    <div class="pass-wrap">
+      <input type="password" id="loginPassword" class="field" placeholder="Password" autocomplete="current-password">
+      <button type="button" class="pass-toggle" id="passToggle" aria-label="Show password">👁</button>
+    </div>
+    <button class="btn-primary" id="loginSubmit">Login</button>
+    <div class="modal-msg" id="loginMsg"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="uploadOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('uploadOverlay')" aria-label="Close">×</button>
+    <h3>Upload Material</h3>
+    <select id="upCat" class="field sel">
+      <option value="CORE">Core Subjects</option>
+      <option value="SEC">SEC — Skill Enhancement</option>
+      <option value="VAC">VAC — Value Addition</option>
+      <option value="AEC">AEC — Ability Enhancement</option>
+      <option value="GE">GE — Generic Elective</option>
+    </select>
+    <div class="up-suggest-wrap">
+      <input type="text" id="upSubject" class="field" placeholder="Subject folder (e.g. Web Design, Environmental Science)" autocomplete="off">
+      <div class="up-suggest" id="upSuggest"></div>
+    </div>
+<select id="upTrack" class="field sel" style="display:none;">
+      <option value="">Track (internal, optional)</option>
+      <option value="Honours">🎓 Honours</option>
+      <option value="As Major">📚 As Major</option>
+      <option value="As Minor">📘 As Minor</option>
+      <option value="General">General / Not specified</option>
+    </select>
+    <select id="upSem" class="field sel" style="display:none;">
+      <option value="">Semester</option>
+      <option value="1">Sem 1</option>
+      <option value="2">Sem 2</option>
+      <option value="3">Sem 3</option>
+      <option value="4">Sem 4</option>
+      <option value="5">Sem 5</option>
+      <option value="6">Sem 6</option>
+    </select>
+    <input type="text" id="upTitle" class="field" placeholder="File title">
+    <input type="text" id="upYear" class="field" placeholder="Year (optional)">
+    <select id="upCategory" class="field sel" style="display:none;">
+      <option value="">Material Category</option>
+      <option value="syllabus">📗 Syllabus</option>
+      <option value="notes">📚 Notes</option>
+      <option value="pyqs">📄 PYQs</option>
+      <option value="books">📖 Books &amp; Readings</option>
+    </select>
+    <div id="upFlagsRow">
+      <label class="imp-check"><input type="checkbox" id="upImp"> ⭐ Important Question</label>
+      <label class="imp-check syl"><input type="checkbox" id="upSyl"> 📑 Syllabus</label>
+      <label class="imp-check pyq"><input type="checkbox" id="upPyq"> 📜 PYQ</label>
+    </div>
+    <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
+    <div id="upOptInfo"></div>
+    <button class="btn-primary" id="uploadSubmit">Upload</button>
+    <div class="modal-msg" id="uploadMsg"></div>
+  </div>
+</div>
+
+<script src="assets/js/optimize.js"></script>
+<script>
+  // ---------- Config ----------
+  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+
+  // Upload with timeout + retry on transient network AND server (5xx) errors.
+  async function postUpload(url, options) {
+    const attempts = 3;
+    let lastErr;
+    for (let i = 0; i < attempts; i++) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 60000);
+      try {
+        const res = await fetch(url, Object.assign({}, options, { signal: ctrl.signal }));
+        clearTimeout(timer);
+        if (res.status >= 500 && i < attempts - 1) {
+          const body = await res.json().catch(() => ({}));
+          lastErr = new Error(body.error || 'Server temporarily unavailable. Retrying…');
+          await new Promise((r) => setTimeout(r, 1200));
+          continue;
+        }
+        return res;
+      } catch (err) {
+        clearTimeout(timer);
+        lastErr = err.name === 'AbortError' ? new Error('Upload timed out. Retrying…') : err;
+        if (i < attempts - 1) await new Promise((r) => setTimeout(r, 1200));
+      }
+    }
+    throw lastErr;
+  }
+  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
+  const CATEGORIES = ['CORE', 'SEC', 'VAC', 'AEC', 'GE'];
+
+  const CORE_SUBJECTS = [
+    'English',
+    'History',
+    'Economics',
+    'Political Science',
+    'Mathematics',
+    'Hindi',
+  ];
+
+  const CORE_META = {
+    'English':          { ico: '📖', tag: 'Core Queue' },
+    'History':          { ico: '🏛️', tag: 'Core Queue' },
+    'Economics':        { ico: '📊', tag: 'Core Queue' },
+    'Political Science':{ ico: '⚖️', tag: 'Core Queue' },
+    'Mathematics':      { ico: '➗', tag: 'Core Queue' },
+    'Hindi':            { ico: '📗', tag: 'Core Queue' },
+  };
+
+  const CORE_TRACKS = ['Honours', 'As Major', 'As Minor'];
+
+  const CORE_TRACK_META = {
+    'Honours':  { ico: '🎓', sub: 'BA/BSc (Hons)' },
+    'As Major': { ico: '📚', sub: 'Major track' },
+    'As Minor': { ico: '📘', sub: 'Minor track' },
+  };
+
+  const VAC_SUBJECTS = [
+    'Ayurveda and Nutrition',
+    'Constitutional Values and Fundamental Duties',
+    'Culture and Communication',
+    'Emotional Intelligence',
+    'Envisaging Viksit Bharat: Perspectives and Challenges',
+    'Ethics and Culture',
+    'Ethics and Values in Ancient Indian Traditions',
+    'Financial Literacy',
+    'Gandhi and Education',
+    'Ecology and Literature',
+    'National Cadet Corps-I*',
+    'National Cadet Corps-II*',
+    'National Cadet Corps-III*',
+    'National Cadet Corps-IV*',
+    'Panchkosha: Holistic Development of Personality',
+    'Reading Indian Fiction in English',
+    'Science and Society',
+    'Social and Emotional Learning',
+    'Swachh Bharat',
+    'Tribes of India',
+    'The Art of Being Happy',
+    'The Gita for Holistic Life',
+    'The Gita for Sustainable Universe',
+    'The Gita: Navigating Life Challenges',
+    'Leadership Excellence Through the Gita',
+    'Vedic Mathematics-I**',
+    'Vedic Mathematics-II**',
+    'Vedic Mathematics-III**',
+    'Vedic Mathematics-IV**',
+    'Yoga: Philosophy and Practice',
+    'The Science of Happiness',
+    'भारतीय भक्ति परम्परा और मानव मूल्य',
+    'साहित्य संस्कृति और सिनेमा',
+    'सृजनात्मक लेख के आयाम',
+    'Digital Empowerment',
+    'Fit India',
+    'Sports for Life***',
+    'Indigenous Sports',
+    'Sports - Diversity and Inclusivity',
+    'Others',
+  ];
+
+  const SEC_SUBJECTS = [
+    'Advanced Spreadsheets Tools',
+    'Analytics/ Computing With Python',
+    'APP Development using Flutter',
+    'Back-End Web Development',
+    'Basic IT Tools',
+    'Big Data Analytics',
+    'Beginners Course to Calligraphy',
+    'Business Communication',
+    'Business Intelligence and Data Visualisation',
+    'CAD for Fashion',
+    'Communication in Everyday Life',
+    'Communication in Professional Life',
+    'Creative Writing',
+    'Cyber Sphere and Security: Global Concern',
+    'Developing sustainability plans for a business',
+    'Digital Film Production',
+    'Digital Marketing',
+    'Essentials of Python',
+    'E-Tourism',
+    'Finance for Everyone',
+    'Financial Database and Analysis Software',
+    'Front End Web Design and Development',
+    'Graphics Design & Animation',
+    'Harmonium',
+    'Introduction to Arabic Calligraphy',
+    'Introduction to Blockchain',
+    'Introduction to Cloud Computing (AWS)',
+    'Negotiations and Leadership',
+    'Personal Financial Planning',
+    'Personality Development and Communication',
+    'Political Leadership and Communication',
+    'Programing with Python',
+    'Prospecting E-Waste for Sustainability',
+    'Public Speaking in English Language and Leadership',
+    'Statistical Software Package',
+    "Statistics with 'R'",
+    'Sustainable Ecotourism and Entrepreneurship',
+    'Visual Communication and Photography',
+    'पटकथा लेखन',
+    'रंगमंच',
+    'रचनात्मक लेखन',
+    'Museum and Museology',
+    'Reading the Archive',
+    'Fundamentals of Indian Manuscriptology',
+    'Others',
+  ];
+
+  const AEC_SUBJECTS = [
+    'हिंदी औपचारिक लेखन (ख)',
+    'EVS Theory into Practice I',
+    'EVS Theory into Practice II',
+    'जनसंचार एवं रचनात्मक लेखन हिंदी (ख)',
+    'हिंदी भाषा : सम्प्रेषण और संचार (क)',
+    'सोशल मीडिया और ब्लॉग लेखन',
+    'व्यावहारिक हिंदी',
+    'जनसंचार और रचनात्मक लेखन',
+    'हिंदी भाषा और तकनीक',
+    'Others',
+  ];
+
+  const GE_SUBJECTS = [
+    'Introduction to the Indian Constitution',
+    'हिन्दी गद्य, उद्भव और विकास – ख',
+    'Introduction to Public Policy',
+    'Business Management',
+    'Media & Communication Skill',
+    'Principles of Macroeconomics',
+    'Public Finance',
+    'Indian Economy',
+    'Basic Statistics for Economy',
+    'भाषा और समाज',
+    'हिन्दी भाषा और साहित्य क',
+    'हिन्दी भाषा और साहित्य ख',
+    'हिन्दी भाषा और साहित्य ग',
+    'Delhi Through the Ages',
+    'Introduction to Linear Algebra',
+    'Analytical Geometry',
+    'Nationalism in India',
+    'Introductory Probability',
+    'Applied Statistics',
+    'Stress Management',
+    'Fitness and Wellness',
+    'Introduction to Physical Education',
+    'Others',
+  ];
+
+  const STATIC_SUBJECTS = { CORE: CORE_SUBJECTS, VAC: VAC_SUBJECTS, SEC: SEC_SUBJECTS, AEC: AEC_SUBJECTS, GE: GE_SUBJECTS };
+
+  const state = {
+    email: localStorage.getItem('sulaksh-email') || null,
+    token: localStorage.getItem('sulaksh-token') || null,
+    isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
+  };
+
+  const dynamicSubjects = {};
+
+  let coreMaterials = [];
+
+  const upCatEl = document.getElementById('upCat');
+  const upSubjectEl = document.getElementById('upSubject');
+  const upSuggestEl = document.getElementById('upSuggest');
+
+  function getSubjectsFor(cat) {
+    return Array.from(new Set((STATIC_SUBJECTS[cat] || []).concat(dynamicSubjects[cat] || [])));
+  }
+  function hideSuggest() { upSuggestEl.innerHTML = ''; upSuggestEl.classList.remove('show'); }
+  function showSuggest() {
+    const q = upSubjectEl.value.trim().toLowerCase();
+    if (!q) return hideSuggest();
+    const matches = getSubjectsFor(upCatEl.value).filter((s) => s.toLowerCase().includes(q)).slice(0, 8);
+    if (!matches.length) return hideSuggest();
+    upSuggestEl.innerHTML = matches.map((s) => `<div class="up-suggest-item" data-v="${escapeHtml(s)}">${escapeHtml(s)}</div>`).join('');
+    upSuggestEl.classList.add('show');
+  }
+  upSubjectEl.addEventListener('input', showSuggest);
+  upCatEl.addEventListener('change', showSuggest);
+  upCatEl.addEventListener('change', syncCoreFields);
+  upSubjectEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideSuggest(); });
+  upSubjectEl.addEventListener('blur', () => setTimeout(hideSuggest, 150));
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('.up-suggest-item');
+    if (item) { upSubjectEl.value = item.dataset.v; hideSuggest(); }
+  });
+
+  function openCategory(cat) {
+    document.getElementById('duHome').style.display = 'none';
+    document.getElementById('catPicker').classList.add('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    document.getElementById('cat-' + cat).classList.add('active');
+    document.getElementById('cat-' + cat).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', '#' + 'cat-' + cat);
+  }
+  window.openCategory = openCategory;
+
+  function setCoreView(id) {
+    document.getElementById('duHome').style.display = 'none';
+    document.getElementById('catPicker').classList.add('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  const CORE_CATEGORIES = [
+    { id: 'syllabus', label: 'Syllabus', ico: '📗', desc: 'Official syllabus and paper structure' },
+    { id: 'notes', label: 'Notes', ico: '📚', desc: 'Unit-wise notes and study material' },
+    { id: 'pyqs', label: 'PYQs', ico: '📄', desc: 'Previous year question papers' },
+    { id: 'books', label: 'Books & Readings', ico: '📖', desc: 'Recommended books and references' },
+  ];
+  const CORE_CAT_BY_ID = {};
+  CORE_CATEGORIES.forEach((c) => { CORE_CAT_BY_ID[c.id] = c; });
+  const CORE_SEMS = [1, 2, 3, 4, 5, 6];
+
+  function catOf(m) {
+    if (m.material_category && CORE_CAT_BY_ID[m.material_category]) return m.material_category;
+    if (m.is_syllabus) return 'syllabus';
+    if (m.is_pyq) return 'pyqs';
+    if (m.is_imp) return 'important-questions';
+    return 'notes';
+  }
+
+  function matsForCore(subject, sem, matCat, track) {
+    return (coreMaterials || []).filter((m) =>
+      (m.category || '').toUpperCase() === 'CORE' &&
+      (m.subject || '') === subject &&
+      (!sem || String(m.semester || '') === sem) &&
+      (!matCat || catOf(m) === matCat) &&
+      (!track || (m.track || 'General') === track || (m.track || 'General') === 'General')
+    );
+  }
+
+  function coreBreadcrumb(subject, sem, matCat, track) {
+    const esc = (s) => String(s).replace(/[<>&]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    const sId = subject.replace(/'/g, "\\'");
+    const parts = ['<button onclick="backToCategories()">Core Subjects</button>', '<span class="sep">›</span>'];
+    if (!track) {
+      parts.push('<span class="cur">' + esc(subject) + '</span>');
+      return parts.join(' ');
+    }
+    parts.push(`<button onclick="goCoreTrack('${sId}')">${esc(subject)}</button>`, '<span class="sep">›</span>');
+    if (!sem) {
+      parts.push('<span class="cur">' + esc(track) + '</span>');
+      return parts.join(' ');
+    }
+    parts.push(`<button onclick="goCoreSem('${sId}','${sem}')">${esc(track)}</button>`, '<span class="sep">›</span>');
+    if (!matCat) {
+      parts.push('<span class="cur">Semester ' + sem + '</span>');
+      return parts.join(' ');
+    }
+    parts.push(`<button onclick="goCoreSem('${sId}','${sem}')">Semester ${sem}</button>`, '<span class="sep">›</span>');
+    const meta = CORE_CAT_BY_ID[matCat];
+    parts.push('<span class="cur">' + (meta ? esc(meta.label) : esc(matCat)) + '</span>');
+    return parts.join(' ');
+  }
+
+  function renderSemPills(subject, activeSem) {
+    document.getElementById('coreSemPills').innerHTML = CORE_SEMS.map((n) =>
+      `<button class="core-sem-pill${n === activeSem ? ' active' : ''}" onclick="selectCoreSem('${n}')">Semester ${n}</button>`
+    ).join('');
+  }
+
+  function selectCoreSem(sem) {
+    const subject = window.__coreSubject || '';
+    renderCoreSubjectSem(subject, String(sem));
+  }
+  window.selectCoreSem = selectCoreSem;
+
+  function renderCoreTrackView(subject) {
+    window.__coreSubject = subject;
+    window.__coreTrack = null;
+    window.__coreSem = null;
+    window.__coreCat = null;
+    document.getElementById('coreTrackTitle').textContent = subject;
+    document.getElementById('coreTrackSub').textContent = 'Choose your course type';
+    document.getElementById('coreTrackBreadcrumb').innerHTML = coreBreadcrumb(subject, null, null, null);
+    document.getElementById('coreTrackGrid').innerHTML = CORE_TRACKS.map((t) => {
+      const meta = CORE_TRACK_META[t] || { ico: '📁', sub: '' };
+      const n = matsForCore(subject, null, null, t).length;
+      return `
+        <button class="core-card" onclick="selectCoreTrack('${t.replace(/'/g, "\\'")}')">
+          <div class="top">
+            <span class="core-ico">${meta.ico}</span>
+            <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
+          </div>
+          <span class="core-name">${escapeHtml(subject)} — ${escapeHtml(t)}</span>
+          <span class="core-desc">${escapeHtml(meta.sub)}</span>
+          <span class="core-count">${n} materials</span>
+          <span class="core-btn">Select →</span>
+        </button>`;
+    }).join('');
+  }
+
+  function selectCoreTrack(track) {
+    const subject = window.__coreSubject || '';
+    renderCoreSubjectView(subject, track);
+    setCoreView('viewCoreSubject');
+  }
+  window.selectCoreTrack = selectCoreTrack;
+
+  function renderCoreSubjectView(subject, track) {
+    window.__coreSubject = subject;
+    window.__coreTrack = track;
+    window.__coreSem = null;
+    window.__coreCat = null;
+    document.getElementById('coreSubjectTitle').textContent = subject + (track ? ' — ' + track : '');
+    document.getElementById('coreSubjectSub').textContent = track ? track + ' track — pick a semester' : 'BA Programme / relevant programme';
+    document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, null, null, track);
+    renderSemPills(subject, null);
+    document.getElementById('coreSemPrompt').style.display = '';
+    document.getElementById('coreCatGrid').innerHTML = '';
+  }
+
+  function renderCoreSubjectSem(subject, sem) {
+    const track = window.__coreTrack || '';
+    window.__coreSem = sem;
+    document.getElementById('coreSubjectSub').textContent = (track ? track + ' · ' : '') + 'Semester ' + sem + ' — choose a material category';
+    renderSemPills(subject, Number(sem));
+    document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, null, track);
+    document.getElementById('coreSemPrompt').style.display = 'none';
+    document.getElementById('coreCatGrid').innerHTML = CORE_CATEGORIES.map((c) => {
+      const n = matsForCore(subject, sem, c.id, track).length;
+      return `
+        <button class="core-card" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">
+          <div class="top">
+            <span class="core-ico">${c.ico}</span>
+            <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
+          </div>
+          <span class="core-name">${c.label}</span>
+          <span class="core-desc">${c.desc}</span>
+          <span class="core-count">${n} materials</span>
+          <span class="core-btn">Open →</span>
+        </button>`;
+    }).join('');
+  }
+
+  function openCoreCategory(subject, sem, matCat) {
+    renderCoreCategoryView(subject, sem, matCat);
+    setCoreView('viewCoreCategory');
+  }
+  window.openCoreCategory = openCoreCategory;
+
+  function renderCoreCategoryView(subject, sem, matCat) {
+    const track = window.__coreTrack || '';
+    window.__coreSubject = subject;
+    window.__coreSem = sem;
+    window.__coreCat = matCat;
+    const meta = CORE_CAT_BY_ID[matCat] || { label: matCat, ico: '📁' };
+    const files = matsForCore(subject, sem, matCat, track);
+    document.getElementById('coreCatTitle').textContent = meta.label;
+    document.getElementById('coreCatSub').textContent =
+      subject + (track ? ' · ' + track : '') + ' · Semester ' + sem + ' — ' + files.length + ' file' + (files.length === 1 ? '' : 's');
+    document.getElementById('coreCatBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, matCat, track);
+    document.getElementById('coreCatChips').innerHTML = CORE_CATEGORIES.map((c) =>
+      `<button class="core-chip${c.id === matCat ? ' active' : ''}" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">${c.ico} ${c.label}</button>`
+    ).join('');
+    const box = document.getElementById('coreCatFiles');
+    if (!files.length) {
+      box.innerHTML = '<div class="mat-empty">No ' + meta.label.toLowerCase() + ' files in this semester yet.' +
+        (state.isAdmin ? ' Use the Upload button above to add the first file.' : '') + '</div>';
+      return;
+    }
+    box.innerHTML = files.map(materialRow).join('');
+  }
+
+  function materialRow(m) {
+    const tags = [];
+    if (m.track && m.track !== 'General') tags.push('🎓 ' + m.track);
+    if (m.is_imp) tags.push('⭐ Important');
+    if (m.is_syllabus) tags.push('📑 Syllabus');
+    if (m.is_pyq) tags.push('📜 PYQ');
+    const safeTitle = escapeHtml(m.title);
+    return `
+      <div class="mat-item">
+        <div style="flex:1; min-width:0;">
+          <div class="t">${safeTitle}${m.year ? ' · ' + m.year : ''}</div>
+          ${tags.length ? `<div class="tags">${tags.join(' ')}</div>` : ''}
+        </div>
+        <div class="a">
+          <button onclick="viewMaterial('${m.id}')">👁 View</button>
+          <button onclick="downloadMaterial('${m.id}')">⬇ Download</button>
+          ${state.isAdmin ? `<button class="del-btn" onclick="deleteMaterial('${m.id}','${safeTitle.replace(/'/g, "\\'")}')">🗑 Delete</button>` : ''}
+        </div>
+      </div>`;
+  }
+
+  function openCoreSubject(subject) {
+    renderCoreTrackView(subject);
+    setCoreView('viewCoreTrack');
+  }
+  window.openCoreSubject = openCoreSubject;
+
+  function goCoreTrack(subject) {
+    window.__coreSubject = subject;
+    renderCoreTrackView(subject);
+    setCoreView('viewCoreTrack');
+  }
+  window.goCoreTrack = goCoreTrack;
+
+  function goCoreSem(subject, sem) {
+    window.__coreSubject = subject;
+    renderCoreSubjectSem(subject, sem);
+    setCoreView('viewCoreSubject');
+  }
+  window.goCoreSem = goCoreSem;
+
+  function uploadCoreSubject() {
+    openUpload('CORE', window.__coreSubject || '', window.__coreTrack || '', window.__coreSem || '', window.__coreCat || '');
+  }
+  window.uploadCoreSubject = uploadCoreSubject;
+
+  function uploadCoreCategory() {
+    openUpload('CORE', window.__coreSubject || '', window.__coreTrack || '', window.__coreSem || '', window.__coreCat || '');
+  }
+  window.uploadCoreCategory = uploadCoreCategory;
+
+  function backToCategories() {
+    document.getElementById('duHome').style.display = '';
+    document.getElementById('catPicker').classList.remove('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+  window.backToCategories = backToCategories;
+
+  function setMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = 'modal-msg' + (ok ? ' ok' : (text ? ' err' : ''));
+  }
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  window.closeModal = closeModal;
+
+  function updateAuthUI() {
+    const btn = document.getElementById('loginBtn');
+    btn.textContent = state.email ? '👤 ' + state.email.split('@')[0] : '👤 Login';
+    document.body.classList.toggle('is-admin', state.isAdmin);
+  }
+
+  // Theme
+  const themeBtn = document.getElementById('themeBtn');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('sulaksh-theme', t);
+  }
+  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  themeBtn.addEventListener('click', () => {
+    setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  // Mobile menu
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+
+  // Login / logout
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    if (state.email) { logout(); return; }
+    setMsg(document.getElementById('loginMsg'), '', false);
+    openModal('loginOverlay');
+  });
+  document.getElementById('loginSubmit').addEventListener('click', doLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('passToggle').addEventListener('click', () => {
+    const input = document.getElementById('loginPassword');
+    const btn = document.getElementById('passToggle');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+    btn.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
+  });
+
+  async function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMsg');
+    if (!email || !password) return setMsg(msg, 'Enter both email and password.', false);
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Login failed.');
+      state.email = email;
+      state.token = data.token;
+      state.isAdmin = ADMIN_EMAILS.includes(email);
+      localStorage.setItem('sulaksh-email', email);
+      localStorage.setItem('sulaksh-token', data.token);
+      updateAuthUI();
+      closeModal('loginOverlay');
+      loadMaterials();
+    } catch (err) {
+      setMsg(msg, err.message, false);
+    }
+  }
+
+  async function logout() {
+    state.email = null; state.token = null; state.isAdmin = false;
+    localStorage.removeItem('sulaksh-email');
+    localStorage.removeItem('sulaksh-token');
+    updateAuthUI();
+    loadMaterials();
+  }
+
+  // Upload
+  function openUpload(cat, subject, track, sem, matCat) {
+    if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
+    document.getElementById('upCat').value = cat || 'SEC';
+    document.getElementById('upSubject').value = subject ? decodeURIComponent(subject) : '';
+    document.getElementById('upTrack').value = track || '';
+    document.getElementById('upSem').value = sem || '';
+    document.getElementById('upCategory').value = matCat || '';
+    document.getElementById('upTitle').value = '';
+    document.getElementById('upYear').value = '';
+    document.getElementById('upFile').value = '';
+    document.getElementById('upImp').checked = false;
+    document.getElementById('upSyl').checked = false;
+    document.getElementById('upPyq').checked = false;
+    setMsg(document.getElementById('uploadMsg'), '', false);
+    syncCoreFields();
+    hideSuggest();
+    openModal('uploadOverlay');
+  }
+  window.openUpload = openUpload;
+
+  function syncCoreFields() {
+    const isCore = document.getElementById('upCat').value === 'CORE';
+    document.getElementById('upTrack').style.display = isCore ? '' : 'none';
+    document.getElementById('upSem').style.display = isCore ? '' : 'none';
+    document.getElementById('upCategory').style.display = isCore ? '' : 'none';
+    document.getElementById('upFlagsRow').style.display = isCore ? 'none' : '';
+  }
+
+  document.getElementById('uploadSubmit').addEventListener('click', doUpload);
+  document.getElementById('upFile').addEventListener('change', () => {
+    const f = document.getElementById('upFile').files[0];
+    const t = document.getElementById('upTitle');
+    if (f && !t.value) t.value = f.name.replace(/\.pdf$/i, '');
+  });
+
+  SulakshOptimizer.bind('upFile', 'upOptInfo');
+
+  async function doUpload() {
+    const msg = document.getElementById('uploadMsg');
+    const category = document.getElementById('upCat').value;
+    const subject = document.getElementById('upSubject').value.trim();
+    const title = document.getElementById('upTitle').value.trim();
+    const year = document.getElementById('upYear').value.trim();
+    const fileInput = document.getElementById('upFile');
+    const file = fileInput.files[0];
+    if (!subject || !title || !file) return setMsg(msg, 'Subject folder, file title and a PDF are required.', false);
+
+    let uploadFile;
+    try {
+      const opt = fileInput.__getOptimized ? await fileInput.__getOptimized() : await SulakshOptimizer.prepare(file);
+      if (!opt || !opt.ok) throw new Error((opt && opt.error) || 'File optimization failed.');
+      uploadFile = opt.blob || file;
+    } catch (err) {
+      return setMsg(msg, err.message || 'File optimization failed.', false);
+    }
+
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('exam', 'DU & College');
+    fd.append('category', category);
+    fd.append('subject', subject);
+    const track = document.getElementById('upTrack').value.trim();
+    const sem = document.getElementById('upSem').value.trim();
+    const matCat = document.getElementById('upCategory').value.trim();
+    let isImp = document.getElementById('upImp').checked;
+    let isSyl = document.getElementById('upSyl').checked;
+    let isPyq = document.getElementById('upPyq').checked;
+    if (category === 'CORE') {
+      if (!sem) return setMsg(msg, 'Select a Semester (1–6) for Core Subjects — every upload needs a clear semester.', false);
+      if (!matCat) return setMsg(msg, 'Select a Material Category (Syllabus, Notes, PYQs, etc.) for Core Subjects.', false);
+      isImp = matCat === 'important-questions';
+      isSyl = matCat === 'syllabus';
+      isPyq = matCat === 'pyqs';
+    }
+    if (track) fd.append('track', track);
+    if (sem) fd.append('semester', sem);
+    if (category === 'CORE' && matCat) fd.append('material_category', matCat);
+    fd.append('is_imp', isImp ? 'true' : 'false');
+    fd.append('is_syllabus', isSyl ? 'true' : 'false');
+    fd.append('is_pyq', isPyq ? 'true' : 'false');
+    if (year) fd.append('year', year);
+    fd.append('file', uploadFile, uploadFile.name || file.name);
+
+    try {
+      const res = await postUpload(`${SULAKSH_API}/api/admin/materials`, {
+        method: 'POST',
+        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+        body: fd,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Upload failed.');
+      setMsg(msg, 'Uploaded successfully!', true);
+      setTimeout(() => closeModal('uploadOverlay'), 1200);
+      loadMaterials();
+    } catch (err) {
+      setMsg(msg, err.message, false);
+    }
+  }
+
+  // Materials
+  async function loadMaterials() {
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/materials`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
+      coreMaterials = mats.filter((m) => (m.category || '').toUpperCase() === 'CORE');
+      CATEGORIES.forEach((cat) => {
+        const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
+        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
+        if (cat === 'CORE') return;
+        renderCategory(cat, catMats);
+        const countEl = document.getElementById('catCount-' + cat);
+        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
+      });
+      renderCoreGrid(mats);
+    } catch (err) {
+      coreMaterials = [];
+      CATEGORIES.forEach((cat) => {
+        if (cat === 'CORE') return;
+        const staticList = STATIC_SUBJECTS[cat];
+        if (staticList && staticList.length) {
+          renderCategory(cat, []);
+          const countEl = document.getElementById('catCount-' + cat);
+          if (countEl) countEl.textContent = staticList.length + ' subject' + (staticList.length === 1 ? '' : 's');
+        } else {
+          document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+        }
+      });
+      renderCoreGrid([]);
+    }
+  }
+
+  function renderCoreGrid(mats) {
+    const grid = document.getElementById('coreGrid');
+    if (!grid) return;
+    grid.innerHTML = CORE_SUBJECTS.map((s) => {
+      const meta = CORE_META[s] || { ico: '📘', tag: 'Core' };
+      const files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
+      const n = files.length;
+      return `
+        <button class="core-card" onclick="openCoreSubject('${s.replace(/'/g, "\\'")}')">
+          <div class="top">
+            <span class="core-ico">${meta.ico}</span>
+            <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
+          </div>
+          <span class="core-name">${s}</span>
+          <span class="core-desc">Notes, PYQs, Question Banks &amp; More</span>
+          <span class="core-count" id="coreCount-${s}">${n} materials</span>
+          <span class="core-btn">Explore →</span>
+        </button>`;
+    }).join('');
+  }
+
+  function renderCategory(cat, mats) {
+    const grid = document.getElementById('subj-' + cat);
+    const bySubject = {};
+    mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
+
+    let subjectNames;
+    const staticList = STATIC_SUBJECTS[cat];
+    if (staticList) {
+      subjectNames = staticList.slice();
+      Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s)) subjectNames.push(s); });
+    } else {
+      subjectNames = Object.keys(bySubject).sort();
+    }
+
+    if (!subjectNames.length) {
+      grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
+      return;
+    }
+
+    grid.innerHTML = subjectNames.map((s) => subjectCard(cat, s, bySubject[s] || [])).join('');
+  }
+
+  function subjectCard(cat, s, files) {
+    const key = cat + '::' + s;
+    const impUrl = `imp.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent(cat)}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
+    const sylUrl = `syllabus.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent(cat)}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
+    const pyqUrl = `pyq.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent(cat)}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
+    return `
+      <div class="subj-card" data-key="${escapeHtml(key)}">
+        <div class="subj-head">
+          <div class="subj-title">${s === 'Others' ? '📦' : '📁'} <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span>${s === 'Others' ? '<div style="font-size:11.5px; font-weight:500; color:var(--muted); margin-top:3px;">Can’t find your subject? Check here.</div>' : ''}</div>
+          <div style="display:flex; gap:6px; flex-shrink:0;">
+            <a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a>
+            <a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a>
+            <a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>
+            ${state.isAdmin ? `<button class="upload-btn" onclick="openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  async function deleteMaterial(id, title) {
+    if (!state.isAdmin) { alert('Only the site admin can delete materials.'); return; }
+    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/admin/materials/${id}`, {
+        method: 'DELETE',
+        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Delete failed.');
+      loadMaterials();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  async function materialLink(id, mode) {
+    const res = await fetch(`${SULAKSH_API}/api/materials/${id}/download?disposition=${mode}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not open this file.');
+    return data.url;
+  }
+  async function viewMaterial(id) {
+    try { window.open(await materialLink(id, 'inline'), '_blank'); } catch (e) { alert(e.message); }
+  }
+  async function downloadMaterial(id) {
+    try { window.open(await materialLink(id, 'attachment'), '_blank'); } catch (e) { alert(e.message); }
+  }
+
+  updateAuthUI();
+  loadMaterials();
+
+  // Restore the active section on refresh (e.g. #cat-AEC keeps you in AEC).
+  (function restoreFromHash() {
+    const h = location.hash.replace(/^#/, '');
+    if (!h) return;
+    const el = document.getElementById(h);
+    if (!el) return;
+    document.getElementById('duHome').style.display = 'none';
+    document.getElementById('catPicker').classList.add('hidden');
+    document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
+    el.classList.add('active');
+    el.scrollIntoView({ block: 'start' });
+  })();
+</script>
+
+</body>
+</html>

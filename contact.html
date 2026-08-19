@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — Sulaksh</title>
+<meta name="description" content="Get in touch with the Sulaksh team. We welcome your questions, feedback about our notes, PYQs and study materials, suggestions and partnership enquiries.">
+<meta name="author" content="Lakshmeshwar Pandey">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Sulaksh",
+  "url": "https://sulaksh.netlify.app",
+  "author": { "@type": "Person", "name": "Lakshmeshwar Pandey" }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2340;
+    --navy-2:#123467;
+    --blue:#1E5FFF;
+    --saffron:#FF7A1A;
+    --green:#1E8E5A;
+    --bg:#F6F8FC;
+    --card:#FFFFFF;
+    --text:#1A2433;
+    --muted:#5B6B80;
+    --border:#E4E9F1;
+    --radius:16px;
+    --shadow: 0 4px 24px rgba(12,35,64,0.06);
+  }
+  [data-theme="dark"]{
+    --navy:#0A192E;
+    --navy-2:#0F2647;
+    --bg:#0B1424;
+    --card:#101B2E;
+    --text:#EAF0FA;
+    --muted:#8FA0B8;
+    --border:#1E2C42;
+    --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.brand-name{font-family:'Sora',sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:1280px; margin:0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .brand-emblem{height:44px; width:auto; display:block; flex-shrink:0;}
+  .brand-wordmark{height:26px; width:auto; display:block; flex-shrink:0;}
+
+  .nav-links{display:flex; align-items:center; gap:28px; list-style:none;}
+  .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
+  .nav-links a.active{color:var(--blue); opacity:1; font-weight:600;}
+  .nav-links a:hover{opacity:1;}
+
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg); border:1px solid var(--border);
+    color:var(--muted); transition:all .2s;
+  }
+  .icon-btn:hover{background:var(--border);}
+  .hamburger{display:none; flex-direction:column; gap:5px; width:38px; height:38px; align-items:center; justify-content:center;}
+  .hamburger span{width:20px; height:2px; background:var(--text); border-radius:2px;}
+
+  .mobile-menu{
+    display:none; flex-direction:column; background:var(--card); border-top:1px solid var(--border);
+    padding:10px 24px 20px;
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{padding:12px 0; font-size:15px; font-weight:500; border-bottom:1px solid var(--border);}
+
+  /* ---------- Page hero ---------- */
+  .page-hero{
+    background:linear-gradient(180deg, #EEF2FA 0%, var(--bg) 100%);
+    padding:52px 0 40px;
+  }
+  [data-theme="dark"] .page-hero{background:linear-gradient(180deg, #0D1B30 0%, var(--bg) 100%);}
+  .page-hero .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,122,26,.1); color:var(--saffron);
+    padding:6px 14px; border-radius:100px; font-size:12.5px; font-weight:700;
+    letter-spacing:.4px; margin-bottom:14px;
+  }
+  .page-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
+  .page-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:680px; margin-top:10px;}
+
+  /* ---------- Contact ---------- */
+  .page-main{padding:40px 0 64px;}
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;}
+  @media (max-width:800px){.contact-grid{grid-template-columns:1fr;}}
+  .contact-info{display:flex; flex-direction:column; gap:14px;}
+  .info-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px; box-shadow:var(--shadow); display:flex; gap:16px; align-items:flex-start;
+  }
+  .info-icon{
+    width:44px; height:44px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .info-card h3{font-size:15.5px; margin-bottom:4px;}
+  .info-card p{font-size:14px; color:var(--muted); line-height:1.6;}
+  .info-card a{color:var(--blue); font-weight:600;}
+  .info-card a:hover{text-decoration:underline;}
+
+  .contact-form{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:28px; box-shadow:var(--shadow);
+  }
+  .contact-form h2{font-size:20px; font-weight:800; margin-bottom:6px;}
+  .contact-form .sub{font-size:14px; color:var(--muted); margin-bottom:20px;}
+  .field{
+    width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:10px;
+    background:var(--bg); color:var(--text); font-size:14.5px; font-family:inherit; margin-bottom:12px;
+    outline:none; transition:border-color .2s;
+  }
+  .field:focus{border-color:var(--blue);}
+  textarea.field{resize:vertical; min-height:120px;}
+  .btn-primary{
+    background:var(--navy); color:#fff; padding:12px 24px; border-radius:10px;
+    font-size:14.5px; font-weight:600; cursor:pointer; width:100%;
+    transition:background .2s, transform .15s;
+  }
+  .btn-primary:hover{background:var(--blue); transform:translateY(-1px);}
+  .form-msg{font-size:13px; margin-top:10px; min-height:18px;}
+  .form-msg.ok{color:var(--green);} .form-msg.err{color:#d64545;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    background:var(--navy); color:#cfd9ec; padding:40px 0 36px; text-align:center; font-size:13px;
+  }
+  footer a{color:#fff; font-weight:600;}
+  footer a:hover{color:var(--saffron);}
+  .footer-brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;}
+  .footer-brand img.brand-emblem{height:36px;}
+  .footer-brand img.brand-wordmark{height:20px;}
+  .footer-links{display:flex; flex-wrap:wrap; justify-content:center; gap:8px 22px; margin:18px 0; list-style:none;}
+  .footer-links a{color:#cfd9ec; font-weight:600;}
+  .footer-links a:hover{color:#fff;}
+  .footer-copy{opacity:.85; line-height:1.8;}
+  .footer-contact{margin-top:6px;}
+  .footer-contact a{color:#fff;}
+
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .brand-emblem{height:38px;}
+    .brand-wordmark{height:22px;}
+  }
+  @media (max-width:520px){
+    .brand{gap:8px;}
+    .brand-emblem{height:32px;}
+    .brand-wordmark{height:18px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem" width="782" height="665">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark" width="1115" height="203">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="one-day.html">ONE DAY EXAMS</a></li>
+      <li><a href="upsc.html">UPSC</a></li>
+      <li><a href="du.html">DU &amp; College</a></li>
+      <li><a href="index.html#study">Study Material</a></li>
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="one-day.html">ONE DAY EXAMS</a>
+    <a href="upsc.html">UPSC</a>
+    <a href="du.html">DU &amp; College</a>
+    <a href="index.html#study">Study Material</a>
+    <a href="index.html#about">About Us</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">💬 Contact Us</div>
+    <h1>Get in Touch</h1>
+    <p>We'd love to hear from you. Whether you have a question about our notes and PYQs, want to request study material, offer feedback, or discuss a partnership, reach out and we'll get back to you.</p>
+  </div>
+</section>
+
+<main class="page-main">
+  <div class="wrap">
+    <div class="contact-grid">
+
+      <div class="contact-info">
+        <div class="info-card">
+          <div class="info-icon" style="background:rgba(30,95,255,.1);">📧</div>
+          <div>
+            <h3>Email</h3>
+            <p>For questions, feedback and general enquiries:<br><a href="mailto:supportlumixo@gmail.com">supportlumixo@gmail.com</a></p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon" style="background:rgba(255,122,26,.1);">📚</div>
+          <div>
+            <h3>Study Material Requests</h3>
+            <p>Can't find the notes, syllabus or PYQ you need? Let us know the exam, subject and category, and we'll do our best to help.</p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon" style="background:rgba(30,142,90,.1);">🤝</div>
+          <div>
+            <h3>Collaborations</h3>
+            <p>Interested in contributing material, partnering with us, or advertising? Get in touch and we'll be happy to discuss.</p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon" style="background:rgba(160,80,255,.1);">🕒</div>
+          <div>
+            <h3>Response Time</h3>
+            <p>We typically respond within 1–2 business days. For urgent or exam-related queries, please mention your exam in the subject line.</p>
+          </div>
+        </div>
+      </div>
+
+      <form class="contact-form" id="contactForm">
+        <h2>Send us a message</h2>
+        <p class="sub">Fill in the form below and we'll get back to you as soon as we can.</p>
+        <input type="text" id="cfName" class="field" placeholder="Your name" required>
+        <input type="email" id="cfEmail" class="field" placeholder="Your email" required>
+        <input type="text" id="cfSubject" class="field" placeholder="Subject (e.g. Study material request)">
+        <textarea id="cfMessage" class="field" placeholder="Your message..." required></textarea>
+        <button type="submit" class="btn-primary">Send Message</button>
+        <div class="form-msg" id="cfMsg"></div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark">
+    </div>
+    <p class="footer-copy">© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+    <ul class="footer-links">
+      <li><a href="index.html#about">About Us</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      <li><a href="disclaimer.html">Disclaimer</a></li>
+    </ul>
+    <p class="footer-contact">Contact: <a href="mailto:supportlumixo@gmail.com">supportlumixo@gmail.com</a></p>
+  </div>
+</footer>
+
+<script>
+  const themeBtn = document.getElementById('themeBtn');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('sulaksh-theme', t);
+  }
+  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  themeBtn.addEventListener('click', () => {
+    setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+
+  // Contact form (mailto fallback)
+  document.getElementById('contactForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const name = document.getElementById('cfName').value.trim();
+    const email = document.getElementById('cfEmail').value.trim();
+    const subject = document.getElementById('cfSubject').value.trim() || 'Contact form message';
+    const message = document.getElementById('cfMessage').value.trim();
+    const msg = document.getElementById('cfMsg');
+    if (!name || !email || !message) { msg.className = 'form-msg err'; msg.textContent = 'Please fill in your name, email and message.'; return; }
+    const body = 'Name: ' + name + '\nEmail: ' + email + '\n\n' + message;
+    const link = 'mailto:supportlumixo@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.location.href = link;
+    msg.className = 'form-msg ok';
+    msg.textContent = 'Opening your email app to send the message. Thank you!';
+    this.reset();
+  });
+</script>
+
+</body>
+</html>
