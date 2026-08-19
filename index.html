@@ -738,7 +738,11 @@
       if (!res.ok) return;
       const data = await res.json();
       materialIndex = (data.materials || []).map((m) => ({
+        id: m.id,
         title: m.title,
+        exam: m.exam || '',
+        category: m.category || '',
+        subject: m.subject || '',
         sub: `${m.exam || ''}${m.subject ? ' · ' + m.subject : ''}${m.is_pyq ? ' · PYQ' : ''}${m.is_syllabus ? ' · Syllabus' : ''}${m.is_imp ? ' · Imp Q' : ''}`,
         url: materialUrl(m),
         icon: m.is_pyq ? '📜' : (m.is_syllabus ? '📑' : (m.is_imp ? '⭐' : '📄')),
@@ -756,9 +760,23 @@
     SEARCH_PAGES.forEach((p) => { const hay = [p.title, p.sub].join(' ').toLowerCase(); if (hay.includes(q)) push({ type: 'Page', icon: '📄', title_lc: p.title.toLowerCase(), title: p.title, sub: p.sub, url: p.url }); });
     SUBJECT_GROUPS.forEach((g) => g.subs.forEach((s) => {
       const hay = [g.exam, s].join(' ').toLowerCase();
-      if (hay.includes(q)) push({ type: 'Subject', icon: '📁', title_lc: s.toLowerCase(), title: s, sub: g.exam + ' subject', url: g.url });
+      if (hay.includes(q)) push({ type: 'Subject', icon: '📁', title_lc: s.toLowerCase(), title: s, sub: g.exam + ' subject', url: g.url, g });
     }));
     materialIndex.forEach((m) => { if (m.hay.includes(q)) push({ type: 'Material', icon: m.icon, title_lc: m.title_lc, title: m.title, sub: m.sub, url: m.url, m }); });
+
+    function resultUrl(r) {
+      if (r.type === 'Material') return r.url;
+      if (r.type === 'Subject' && r.g && r.g.exam === 'DU & College') {
+        const sub = (r.title || '').toLowerCase();
+        const cats = new Set(materialIndex.filter((m) => (m.subject || '').toLowerCase() === sub).map((m) => m.category).filter(Boolean));
+        if (cats.size === 1) return r.g.url + '#cat-' + [...cats][0];
+      }
+      return r.url;
+    }
+    function resultOnclick(r) {
+      if (r.type === 'Material') return `return openSearchMaterial('${r.m.id}');`;
+      return '';
+    }
 
     const seen = new Set();
     const deduped = res.filter((r) => { const k = r.title.toLowerCase() + '|' + r.url; if (seen.has(k)) return false; seen.add(k); return true; });
@@ -766,7 +784,7 @@
 
     if (!deduped.length) { searchResults.innerHTML = '<div class="search-empty">No results found</div>'; return; }
     searchResults.innerHTML = deduped.slice(0, 10).map((r) => `
-      <a class="search-result" href="${r.url}" data-h="${escapeHtml(r.title).replace(/"/g, '&quot;')}" target="_self">
+      <a class="search-result" href="${resultUrl(r)}" onclick="${resultOnclick(r)}" target="_self">
         <div class="r-icon" style="background:rgba(30,95,255,.1);">${r.icon}</div>
         <div class="r-main">
           <div class="r-title">${escapeHtml(r.title)}</div>
@@ -774,6 +792,11 @@
         </div>
         <span class="r-type">${r.type}</span>
       </a>`).join('');
+  }
+
+  async function openSearchMaterial(id) {
+    try { window.open(await materialLink(id, 'inline'), '_blank'); } catch (e) {}
+    return false;
   }
 
   searchBtn.addEventListener('click', () => {
