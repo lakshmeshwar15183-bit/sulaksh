@@ -1406,12 +1406,13 @@
   (function restoreFromHash() {
     const h = location.hash.replace(/^#/, '');
     if (!h) return;
-    const el = document.getElementById('cat-' + h);
+    const el = document.getElementById(h);
     if (!el) return;
     document.getElementById('duHome').style.display = 'none';
     document.getElementById('catPicker').classList.add('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     el.classList.add('active');
+    el.scrollIntoView({ block: 'start' });
   })();
 </script>
 
