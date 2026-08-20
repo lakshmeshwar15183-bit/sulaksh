@@ -190,6 +190,11 @@
   }
   body.is-admin .upload-btn{display:inline-flex; align-items:center; gap:6px;}
   .upload-btn:hover{background:rgba(255,255,255,.3);}
+  body.is-admin .add-subj-btn{margin-right:8px;}
+  .icon-btn{display:none; background:transparent; color:var(--muted); width:30px; height:30px;
+    border-radius:8px; border:1px solid var(--border); font-size:14px; cursor:pointer; flex-shrink:0;}
+  body.is-admin .icon-btn{display:inline-flex; align-items:center; justify-content:center;}
+  .icon-btn:hover{background:var(--bg); color:var(--text);}
 
   /* ---------- Subject folders ---------- */
   .subj-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
@@ -456,6 +461,7 @@
         <h2>SEC</h2>
         <span class="sub">Skill Enhancement Courses</span>
       </div>
+      <button class="upload-btn add-subj-btn" onclick="openAddSubject('SEC')">📝 Add Subject</button>
       <button class="upload-btn" onclick="openUpload('SEC','')">⬆ Upload</button>
     </div>
     <div class="subj-grid" id="subj-SEC"></div>
@@ -468,6 +474,7 @@
         <h2>VAC</h2>
         <span class="sub">Value Addition Courses</span>
       </div>
+      <button class="upload-btn add-subj-btn" onclick="openAddSubject('VAC')">📝 Add Subject</button>
       <button class="upload-btn" onclick="openUpload('VAC','')">⬆ Upload</button>
     </div>
     <div class="subj-grid" id="subj-VAC"></div>
@@ -480,6 +487,7 @@
         <h2>AEC</h2>
         <span class="sub">Ability Enhancement Courses</span>
       </div>
+      <button class="upload-btn add-subj-btn" onclick="openAddSubject('AEC')">📝 Add Subject</button>
       <button class="upload-btn" onclick="openUpload('AEC','')">⬆ Upload</button>
     </div>
     <div class="subj-grid" id="subj-AEC"></div>
@@ -492,6 +500,7 @@
         <h2>GE</h2>
         <span class="sub">Generic Elective Courses</span>
       </div>
+      <button class="upload-btn add-subj-btn" onclick="openAddSubject('GE')">📝 Add Subject</button>
       <button class="upload-btn" onclick="openUpload('GE','')">⬆ Upload</button>
     </div>
     <div class="subj-grid" id="subj-GE"></div>
@@ -821,6 +830,9 @@
   };
 
   const dynamicSubjects = {};
+
+  let subjectDB = [];
+  let materialsCache = [];
 
   let coreMaterials = [];
 
@@ -1273,10 +1285,20 @@
   // Materials
   async function loadMaterials() {
     try {
-      const res = await fetch(`${SULAKSH_API}/api/materials`);
+      const [res, subRes] = await Promise.all([
+        fetch(`${SULAKSH_API}/api/materials`),
+        fetch(`${SULAKSH_API}/api/subjects?exam=${encodeURIComponent('DU & College')}`),
+      ]);
       if (!res.ok) throw new Error();
       const data = await res.json();
+      if (subRes.ok) {
+        const sdata = await subRes.json().catch(() => ({}));
+        subjectDB = sdata.subjects || [];
+      } else {
+        subjectDB = [];
+      }
       const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
+      materialsCache = mats;
       coreMaterials = mats.filter((m) => (m.category || '').toUpperCase() === 'CORE');
       CATEGORIES.forEach((cat) => {
         const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
@@ -1330,14 +1352,20 @@
     const bySubject = {};
     mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
 
-    let subjectNames;
-    const staticList = STATIC_SUBJECTS[cat];
-    if (staticList) {
-      subjectNames = staticList.slice();
-      Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s)) subjectNames.push(s); });
+    let base;
+    const dbNames = subjectDB.filter((s) => s.category === cat).map((s) => s.name);
+    if (dbNames.length) {
+      base = dbNames;
+    } else if (STATIC_SUBJECTS[cat]) {
+      base = STATIC_SUBJECTS[cat].slice();
     } else {
-      subjectNames = Object.keys(bySubject).sort();
+      base = [];
     }
+
+    let subjectNames = base.slice();
+    Object.keys(bySubject).forEach((s) => { if (s !== 'Others' && !subjectNames.includes(s)) subjectNames.push(s); });
+    subjectNames = subjectNames.filter((s) => s !== 'Others');
+    if (base.includes('Others') || (bySubject['Others'] || []).length) subjectNames.push('Others');
 
     if (!subjectNames.length) {
       grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
@@ -1361,10 +1389,109 @@
             <a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a>
             <a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>
             ${state.isAdmin ? `<button class="upload-btn" onclick="openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
+            ${state.isAdmin ? `<button class="icon-btn" onclick="editSubject('${cat}','${encodeURIComponent(s)}')" title="Rename subject">✏️</button>` : ''}
+            ${state.isAdmin ? `<button class="icon-btn" onclick="deleteSubjectUI('${cat}','${encodeURIComponent(s)}')" title="Delete subject">🗑️</button>` : ''}
           </div>
         </div>
       </div>`;
   }
+
+  async function openAddSubject(cat) {
+    if (!state.isAdmin) { alert('Only the site admin can add subjects.'); return; }
+    const name = prompt('Add a new subject folder to ' + cat, '');
+    if (!name || !name.trim()) return;
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/admin/subjects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+        body: JSON.stringify({ exam: 'DU & College', category: cat, name: name.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not add the subject.');
+      loadMaterials();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+  window.openAddSubject = openAddSubject;
+
+  async function editSubject(cat, encName) {
+    if (!state.isAdmin) return;
+    const oldName = decodeURIComponent(encName);
+    const newName = prompt('Rename "' + oldName + '" in ' + cat, oldName);
+    if (!newName) return;
+    const clean = newName.trim();
+    if (!clean || clean === oldName) return;
+    try {
+      const dbRow = subjectDB.find((s) => s.category === cat && s.name === oldName);
+      if (dbRow) {
+        const res = await fetch(`${SULAKSH_API}/api/admin/subjects/${dbRow.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+          body: JSON.stringify({ name: clean }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Rename failed.');
+      } else {
+        const cre = await fetch(`${SULAKSH_API}/api/admin/subjects`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+          body: JSON.stringify({ exam: 'DU & College', category: cat, name: clean }),
+        });
+        const cdata = await cre.json().catch(() => ({}));
+        if (cre.status !== 201 && cre.status !== 409) throw new Error(cdata.error || 'Could not create the subject.');
+        const mats = materialsCache.filter((m) => (m.category || '').toUpperCase() === cat && (m.subject || '') === oldName);
+        for (const m of mats) {
+          const r = await fetch(`${SULAKSH_API}/api/admin/materials/${m.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+            body: JSON.stringify({ subject: clean }),
+          });
+          const d = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(d.error || 'Could not move a file to the renamed subject.');
+        }
+        const newRow = { category: cat, name: clean };
+        subjectDB = subjectDB.filter((s) => !(s.category === cat && s.name === oldName));
+        subjectDB.push(newRow);
+      }
+      loadMaterials();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+  window.editSubject = editSubject;
+
+  async function deleteSubjectUI(cat, encName) {
+    if (!state.isAdmin) return;
+    const name = decodeURIComponent(encName);
+    if (!window.confirm(`Delete "${name}" from ${cat}? Any files inside it will also be removed.`)) return;
+    try {
+      const dbRow = subjectDB.find((s) => s.category === cat && s.name === name);
+      if (dbRow) {
+        const res = await fetch(`${SULAKSH_API}/api/admin/subjects/${dbRow.id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${state.token}` },
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Delete failed.');
+      } else {
+        const mats = materialsCache.filter((m) => (m.category || '').toUpperCase() === cat && (m.subject || '') === name);
+        if (!mats.length) { alert('No files found for that subject.'); return; }
+        for (const m of mats) {
+          const r = await fetch(`${SULAKSH_API}/api/admin/materials/${m.id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${state.token}` },
+          });
+          const d = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(d.error || 'Could not delete a file in this subject.');
+        }
+      }
+      loadMaterials();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+  window.deleteSubjectUI = deleteSubjectUI;
 
   async function deleteMaterial(id, title) {
     if (!state.isAdmin) { alert('Only the site admin can delete materials.'); return; }
