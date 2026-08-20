@@ -883,9 +883,13 @@
   function openModal(id) { document.getElementById(id).classList.add('open'); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-  // DU & College info modal — shown before leaving for du.html
+  // DU & College info modal — shown once before leaving for du.html
   function openDuInfo(event) {
     event.preventDefault();
+    if (localStorage.getItem('sulaksh-du-info-seen')) {
+      window.location.href = 'du.html';
+      return false;
+    }
     openModal('duInfoOverlay');
     return false;
   }
@@ -893,6 +897,7 @@
     closeModal('duInfoOverlay');
   }
   function goDuCollege() {
+    localStorage.setItem('sulaksh-du-info-seen', '1');
     window.location.href = 'du.html';
   }
   document.addEventListener('keydown', (e) => {
