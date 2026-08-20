@@ -6,6 +6,7 @@ const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const materialsRoutes = require('./routes/materials');
+const subjectsRoutes = require('./routes/subjects');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(cors({
 // ---- API routes ----
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialsRoutes);
+app.use('/api/subjects', subjectsRoutes);
 app.use('/api/admin', adminRoutes);
 
 // ---- Admin panel static UI (separate from the public marketing site) ----
