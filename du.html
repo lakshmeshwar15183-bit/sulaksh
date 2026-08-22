@@ -956,6 +956,9 @@
     const d = CORE_DISPLAY[subject];
     return d ? d.sub : '';
   }
+  function coreCatsFor(subject) {
+    return CORE_DISPLAY[subject] ? [CORE_CAT_BY_ID.syllabus] : CORE_CATEGORIES;
+  }
 
   function coreBreadcrumb(subject, sem, matCat, track) {
     const esc = (s) => String(s).replace(/[<>&]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
@@ -1041,6 +1044,7 @@
     document.getElementById('coreSubjectSub').textContent = coreSubText(subject) || (track ? track + ' track — pick a semester' : 'BA Programme / relevant programme');
     document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, null, null, track);
     renderSemPills(subject, null);
+    document.getElementById('coreSemPrompt').textContent = CORE_DISPLAY[subject] ? 'Pick a semester to get its syllabus.' : 'Pick a semester to see its material categories.';
     document.getElementById('coreSemPrompt').style.display = '';
     document.getElementById('coreCatGrid').innerHTML = '';
   }
@@ -1052,7 +1056,7 @@
     renderSemPills(subject, Number(sem));
     document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, null, track);
     document.getElementById('coreSemPrompt').style.display = 'none';
-    document.getElementById('coreCatGrid').innerHTML = CORE_CATEGORIES.map((c) => {
+    document.getElementById('coreCatGrid').innerHTML = coreCatsFor(subject).map((c) => {
       const n = matsForCore(subject, sem, c.id, track).length;
       return `
         <button class="core-card" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">
@@ -1085,7 +1089,7 @@
     document.getElementById('coreCatSub').textContent =
       coreLabel(subject) + (track && track !== 'General' ? ' · ' + track : '') + ' · Semester ' + sem + ' — ' + files.length + ' file' + (files.length === 1 ? '' : 's');
     document.getElementById('coreCatBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, matCat, track);
-    document.getElementById('coreCatChips').innerHTML = CORE_CATEGORIES.map((c) =>
+    document.getElementById('coreCatChips').innerHTML = coreCatsFor(subject).map((c) =>
       `<button class="core-chip${c.id === matCat ? ' active' : ''}" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">${c.ico} ${c.label}</button>`
     ).join('');
     const box = document.getElementById('coreCatFiles');
