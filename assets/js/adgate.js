@@ -99,7 +99,12 @@
     var fn = pending;
     pending = null;
     close();
-    if (fn) fn();
+    if (!fn) return;
+    // Open the tab synchronously inside the click gesture so popup blockers
+    // allow it; the callback then navigates this pre-opened tab to the file.
+    var win = null;
+    try { win = window.open('', '_blank'); } catch (e) { win = null; }
+    fn(win);
   }
 
   function close() {
