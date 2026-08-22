@@ -3,8 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Terms &amp; Conditions — Sulaksh</title>
-<meta name="description" content="Review the Sulaksh Terms and Conditions covering acceptable use, study materials, intellectual property, user responsibilities and limitation of liability.">
+<title>About Us — Sulaksh</title>
+<meta name="description" content="Learn about Sulaksh — a free student-run study platform offering notes, previous year question papers (PYQs), syllabus and question banks for DU & college students, one-day exams and UPSC aspirants.">
+<meta name="author" content="Lakshmeshwar Pandey">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Sulaksh",
+  "url": "https://sulaksh.online",
+  "author": { "@type": "Person", "name": "Lakshmeshwar Pandey" }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -95,27 +105,41 @@
     letter-spacing:.4px; margin-bottom:14px;
   }
   .page-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
-  .page-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:680px; margin-top:10px;}
-  .updated{font-size:13px; color:var(--muted); margin-top:14px; font-weight:600;}
+  .page-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:720px; margin-top:10px;}
 
-  /* ---------- Content ---------- */
+  /* ---------- About content ---------- */
   .page-main{padding:40px 0 64px;}
-  .page-main .wrap{max-width:860px;}
-  .policy-grid{display:flex; flex-direction:column; gap:18px;}
-  .policy-card{
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px;}
+  @media (max-width:800px){.about-grid{grid-template-columns:1fr;}}
+  .about-card{
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:26px; box-shadow:var(--shadow);
+    padding:24px; box-shadow:var(--shadow);
   }
-  .policy-card h2{
-    font-size:19px; font-weight:800; letter-spacing:-.2px; margin-bottom:12px;
-    display:flex; align-items:center; gap:10px; color:var(--navy);
+  .about-card h2{font-size:18px; margin-bottom:10px; display:flex; align-items:center; gap:10px;}
+  .about-card p{font-size:14.5px; color:var(--muted); line-height:1.75;}
+  .about-story{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:28px; box-shadow:var(--shadow); margin-bottom:28px;
   }
-  .policy-card p, .policy-card li{font-size:14.5px; line-height:1.75; color:var(--muted);}
-  .policy-card p + p{margin-top:10px;}
-  .policy-card ul, .policy-card ol{padding-left:20px; margin:8px 0;}
-  .policy-card li{margin-bottom:6px;}
-  .policy-card a{color:var(--blue); font-weight:600;}
-  .policy-card a:hover{text-decoration:underline;}
+  .about-story h2{font-size:20px; margin-bottom:14px;}
+  .about-story p{font-size:15px; line-height:1.85; color:var(--muted); margin-bottom:14px;}
+  .about-story p:last-child{margin-bottom:0;}
+  .about-story b{color:var(--text);}
+  .offer-list{list-style:none; display:flex; flex-direction:column; gap:10px;}
+  .offer-list li{font-size:14.5px; color:var(--muted); line-height:1.7; padding-left:26px; position:relative;}
+  .offer-list li::before{content:"✓"; position:absolute; left:0; top:0; color:var(--green); font-weight:800;}
+  .about-cta{
+    background:linear-gradient(135deg, rgba(255,153,51,.10), rgba(30,95,255,.08));
+    border:1px solid var(--border); border-radius:var(--radius);
+    padding:26px; text-align:center;
+  }
+  .about-cta h2{font-size:19px; margin-bottom:8px;}
+  .about-cta p{font-size:14.5px; color:var(--muted); line-height:1.7; margin-bottom:16px;}
+  .btn-primary{
+    display:inline-block; background:var(--navy); color:#fff; padding:12px 26px; border-radius:10px;
+    font-size:14.5px; font-weight:600; transition:background .2s, transform .15s;
+  }
+  .btn-primary:hover{background:var(--blue); transform:translateY(-1px);}
 
   /* ---------- Footer ---------- */
   footer{
@@ -143,7 +167,6 @@
     .brand{gap:8px;}
     .brand-emblem{height:32px;}
     .brand-wordmark{height:18px;}
-    .policy-card{padding:20px;}
   }
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;}
@@ -164,7 +187,7 @@
       <li><a href="upsc.html">UPSC</a></li>
       <li><a href="du.html">DU &amp; College</a></li>
       <li><a href="index.html#study">Study Material</a></li>
-      <li><a href="about.html">About Us</a></li>
+      <li><a href="about.html" class="active">About Us</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <div class="nav-actions">
@@ -185,87 +208,49 @@
 
 <section class="page-hero">
   <div class="wrap">
-    <div class="eyebrow">📜 Terms &amp; Conditions</div>
-    <h1>Terms &amp; Conditions</h1>
-    <p>These Terms and Conditions govern your use of the Sulaksh website and the educational content, notes, PYQs and study materials we provide.</p>
-    <p class="updated">Last updated: 15 August 2026</p>
+    <div class="eyebrow">👋 About Us</div>
+    <h1>Who We Are</h1>
+    <p>Sulaksh is a free, student-first study platform built by students, for students. We organise notes, previous year question papers, syllabi and question banks so that you spend less time searching and more time studying.</p>
   </div>
 </section>
 
 <main class="page-main">
   <div class="wrap">
-    <div class="policy-grid">
 
-      <div class="policy-card">
-        <h2>1. Acceptance of Terms</h2>
-        <p>By accessing or using the Sulaksh website, you agree to be bound by these Terms and Conditions and our <a href="privacy-policy.html">Privacy Policy</a>. If you do not agree with any part of these terms, please do not use the website.</p>
-        <p>These terms apply to all visitors, users and others who access the website. You should review these terms periodically, as continued use after changes are posted constitutes acceptance of the updated terms.</p>
-      </div>
-
-      <div class="policy-card">
-        <h2>2. Acceptable Use</h2>
-        <p>When using Sulaksh, you agree not to:</p>
-        <ul>
-          <li>Use the website for any unlawful or unauthorized purpose, or in any way that violates applicable laws;</li>
-          <li>Copy, reproduce, redistribute, resell or commercially exploit the content for purposes other than personal study without prior permission;</li>
-          <li>Attempt to gain unauthorized access to any part of the website, its servers or connected systems;</li>
-          <li>Interfere with or disrupt the proper functioning of the website; or</li>
-          <li>Upload, post or transmit any content that is false, misleading, defamatory or infringing on the rights of others.</li>
-        </ul>
-      </div>
-
-      <div class="policy-card">
-        <h2>3. Study Materials</h2>
-        <p>The materials provided on Sulaksh, including notes, previous year questions (PYQs), syllabi and other study resources, are offered for personal, non-commercial, educational use. Please note:</p>
-        <ul>
-          <li>Materials are provided for reference and study purposes only.</li>
-          <li>Some resources are created by us, while others may be compiled or shared from publicly available sources, with attribution where applicable.</li>
-          <li>We make reasonable efforts to keep content accurate and up to date, but you should always verify important examination-related information with the official sources.</li>
-        </ul>
-      </div>
-
-      <div class="policy-card">
-        <h2>4. Intellectual Property &amp; Copyright</h2>
-        <p>Unless otherwise stated, the name "Sulaksh", the website design, branding and original content published by us are our intellectual property and are protected by applicable copyright and trademark laws. You may view and use content for personal, non-commercial study purposes, but you may not reproduce, distribute or create derivative works from our original content without our prior written permission.</p>
-        <p>If any material hosted on the website belongs to a third party and you believe its use infringes your rights, please send a takedown request to <a href="mailto:supportlumixo@gmail.com">supportlumixo@gmail.com</a> identifying the work and its location on this website. Valid requests are reviewed and, where appropriate, the material is removed promptly — typically within 48 hours.</p>
-      </div>
-
-      <div class="policy-card">
-        <h2>5. User Responsibilities</h2>
-        <p>You are responsible for how you use the website and the materials you access. You agree to use the content at your own discretion and to independently verify exam notifications, syllabi, dates and other official information with the relevant authorities or institutions before relying on it.</p>
-      </div>
-
-      <div class="policy-card">
-        <h2>6. External Links</h2>
-        <p>The website may contain links to external websites that are not operated by us. We have no control over their content and assume no responsibility for them. The inclusion of any external link does not imply endorsement. You access external sites entirely at your own risk.</p>
-      </div>
-
-      <div class="policy-card">
-        <h2>7. Availability of the Website</h2>
-        <p>We aim to keep the website available at all times, but we do not guarantee that it will be uninterrupted, secure or free from errors. We may suspend, modify or discontinue any part of the website at any time, with or without notice, without liability to you.</p>
-      </div>
-
-      <div class="policy-card">
-        <h2>8. Limitation of Liability</h2>
-        <p>To the fullest extent permitted by law, Sulaksh and its operators shall not be liable for any indirect, incidental, special, consequential or punitive damages, or any loss of profits, data or other intangible losses, arising out of or related to your use of, or inability to use, the website and its content.</p>
-        <p>Because examination patterns, syllabi and notifications may change, we accept no liability for decisions made based on the content provided on this website. You are advised to confirm all official details with the issuing authority.</p>
-      </div>
-
-      <div class="policy-card">
-        <h2>9. Changes to These Terms</h2>
-        <p>We may update these Terms and Conditions from time to time. Updated versions will be posted on this page with a revised "Last updated" date. Your continued use of the website after any changes means you accept the revised terms.</p>
-      </div>
-
-      <div class="policy-card">
-        <h2>10. Contact Us</h2>
-        <p>If you have any questions about these Terms and Conditions, please contact us:</p>
-        <ul>
-          <li>Email: <a href="mailto:supportlumixo@gmail.com">supportlumixo@gmail.com</a></li>
-          <li>Website: <a href="contact.html">Contact Us</a></li>
-        </ul>
-      </div>
-
+    <div class="about-story">
+      <h2>🎯 Our Story &amp; Mission</h2>
+      <p>Sulaksh started with a simple observation: students preparing for Delhi University courses, one-day government exams and UPSC waste countless hours hunting for reliable study material across Telegram groups, random Drive folders and dead links. The material usually exists — it is just scattered, unorganised and hard to trust.</p>
+      <p>Our mission is to fix that. Every subject on Sulaksh is organised into clean folders — <b>Syllabus, Notes, PYQs and Question Banks</b> — semester by semester, exam by exam. Whether you are looking for a DU SEC, VAC, AEC or GE paper, a B.A. or B.Com Programme syllabus, or last year's question paper for a competitive exam, everything sits exactly where you expect it to be.</p>
+      <p>We keep the platform <b>completely free</b>. No paywalls, no sign-up walls for study content. Sulaksh is run by students who have been through the same struggle, funded by nothing more than passion (and maybe a few ads someday to cover server costs).</p>
     </div>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <h2>📚 What We Offer</h2>
+        <ul class="offer-list">
+          <li><b>Du &amp; College section</b> — SEC, VAC, AEC and GE course materials plus Core Subjects with semester-wise syllabus, notes and PYQs.</li>
+          <li><b>One-Day Exams section</b> — curated material for SSC, banking, railways and other government exams.</li>
+          <li><b>UPSC section</b> — organised resources for civil services preparation.</li>
+          <li><b>Quick tools</b> — dedicated pages for notes, PYQs, syllabus and important questions.</li>
+        </ul>
+      </div>
+      <div class="about-card">
+        <h2>🤝 Why Students Trust Us</h2>
+        <ul class="offer-list">
+          <li>Clean, predictable structure — no endless scrolling through chats.</li>
+          <li>Community-driven: anyone can report wrong or suspicious content instantly via our contact page.</li>
+          <li>We respect creators — if any material infringes your rights, we remove it promptly.</li>
+          <li>Built and maintained by students who actually use it.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="about-cta">
+      <h2>Have a suggestion or found an issue?</h2>
+      <p>We read every message. Reach out and help us make Sulaksh better for everyone.</p>
+      <a href="contact.html" class="btn-primary">Get in Touch →</a>
+    </div>
+
   </div>
 </main>
 
