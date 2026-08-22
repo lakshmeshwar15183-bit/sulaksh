@@ -890,7 +890,7 @@
   ];
   const CORE_CAT_BY_ID = {};
   CORE_CATEGORIES.forEach((c) => { CORE_CAT_BY_ID[c.id] = c; });
-  const CORE_SEMS = [1, 2, 3, 4, 5, 6];
+  const CORE_SEMS = [1, 2, 3, 4, 5, 6, 7, 8];
 
   function catOf(m) {
     if (m.material_category && CORE_CAT_BY_ID[m.material_category]) return m.material_category;
@@ -1262,7 +1262,7 @@
     let isSyl = document.getElementById('upSyl').checked;
     let isPyq = document.getElementById('upPyq').checked;
     if (category === 'CORE') {
-      if (!sem) return setMsg(msg, 'Select a Semester (1–6) for Core Subjects — every upload needs a clear semester.', false);
+      if (!sem) return setMsg(msg, 'Select a Semester (1–8) for Core Subjects — every upload needs a clear semester.', false);
       if (!matCat) return setMsg(msg, 'Select a Material Category (Syllabus, Notes, PYQs, etc.) for Core Subjects.', false);
       isImp = matCat === 'important-questions';
       isSyl = matCat === 'syllabus';
