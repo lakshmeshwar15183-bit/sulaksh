@@ -658,6 +658,7 @@
 </div>
 
 <script src="assets/js/optimize.js?v=3"></script>
+<script src="assets/js/adgate.js?v=1"></script>
 <script>
   // Mobile menu
   const hamburger = document.getElementById('hamburger');
@@ -1081,10 +1082,14 @@
     return data.url;
   }
   async function viewMaterial(id) {
-    try { window.open(await materialLink(id, 'inline'), '_blank'); } catch (e) { alert(e.message); }
+    adGate.open(async function () {
+      try { window.open(await materialLink(id, 'inline'), '_blank'); } catch (e) { alert(e.message); }
+    });
   }
   async function downloadMaterial(id) {
-    try { window.open(await materialLink(id, 'attachment'), '_blank'); } catch (e) { alert(e.message); }
+    adGate.open(async function () {
+      try { window.open(await materialLink(id, 'attachment'), '_blank'); } catch (e) { alert(e.message); }
+    });
   }
 
   async function deleteMaterial(id, title) {
