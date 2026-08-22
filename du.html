@@ -672,7 +672,6 @@
     'Political Science',
     'Mathematics',
     'Hindi',
-    'B.Com',
     'B.Com (Hons)',
   ];
 
@@ -683,8 +682,7 @@
     'Political Science':{ ico: '⚖️', tag: 'Core Queue' },
     'Mathematics':      { ico: '➗', tag: 'Core Queue' },
     'Hindi':            { ico: '📗', tag: 'Core Queue' },
-    'B.Com':            { ico: '💼', tag: 'Core Queue' },
-    'B.Com (Hons)':     { ico: '🎓', tag: 'Core Queue' },
+    'B.Com (Hons)':     { ico: '💼', tag: 'Core Queue' },
   };
 
   const CORE_TRACKS = ['Honours', 'As Major', 'As Minor'];
@@ -1067,6 +1065,11 @@
   }
 
   function openCoreSubject(subject) {
+    if (subject === 'B.Com (Hons)') {
+      renderCoreSubjectView(subject, 'Honours');
+      setCoreView('viewCoreSubject');
+      return;
+    }
     renderCoreTrackView(subject);
     setCoreView('viewCoreTrack');
   }
@@ -1074,6 +1077,10 @@
 
   function goCoreTrack(subject) {
     window.__coreSubject = subject;
+    if (subject === 'B.Com (Hons)') {
+      backToCategories();
+      return;
+    }
     renderCoreTrackView(subject);
     setCoreView('viewCoreTrack');
   }
