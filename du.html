@@ -142,6 +142,14 @@
   .du-sec-head .sub{font-size:13px; color:var(--muted); margin-top:2px;}
 
   /* ---------- Core Subjects grid ---------- */
+  .core-note{
+    display:flex; gap:14px; align-items:flex-start;
+    background:linear-gradient(135deg, rgba(255,153,51,.10), rgba(19,161,85,.08));
+    border:1px solid rgba(255,153,51,.45); border-radius:var(--radius);
+    padding:16px 18px; margin-bottom:18px; font-size:14px; line-height:1.6;
+  }
+  .core-note-ico{font-size:24px; line-height:1;}
+  .core-note .core-note-en{color:var(--muted);}
   .core-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px;}
   .core-card{
     text-align:left; position:relative; overflow:hidden;
@@ -417,6 +425,13 @@
       <div>
         <h2>Core Subjects</h2>
         <span class="sub">Notes, PYQs, Question Banks &amp; more</span>
+      </div>
+    </div>
+    <div class="core-note">
+      <span class="core-note-ico">😊</span>
+      <div>
+        <b>Syllabus में DU SOL दिखे तो घबराइए नहीं!</b> Regular colleges भी यही syllabus follow करती हैं — भरोसा रखिए, पढ़ाई का मज़ा लीजिए!
+        <br><span class="core-note-en">If your syllabus shows <b>DU SOL</b>, don't worry! It's the exact same syllabus that regular colleges also follow — trust us and enjoy studying!</span>
       </div>
     </div>
     <div class="core-grid" id="coreGrid"></div>
