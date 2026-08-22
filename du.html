@@ -165,6 +165,12 @@
     color:var(--blue); font-weight:700; font-size:13.5px;
   }
   .core-card:hover .core-btn{color:var(--saffron);}
+  .core-prog{
+    background:linear-gradient(135deg, rgba(255,153,51,.08), rgba(19,61,110,.10));
+    border:1.5px dashed var(--saffron);
+  }
+  .core-prog:hover{border-color:var(--navy);}
+  .core-prog .core-desc{color:var(--text); font-weight:600;}
 
   .back-btn{
     display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); color:#fff;
@@ -506,7 +512,21 @@
     <div class="subj-grid" id="subj-GE"></div>
   </section>
 
-  <!-- Core Subject drill-down: subject → track → semester → material category → files -->
+  <!-- Programme catch-all chooser: BA / B.Com -->
+  <section class="du-cat" id="viewCoreProgramme">
+    <div class="du-cat-head core">
+      <div>
+        <button class="back-btn" onclick="backToCategories()">← All Sections</button>
+        <h2>BA / B.Com Programme</h2>
+        <span class="sub">नहीं मिला? इसमें सब कुछ मिलेगा! — Not found? Everything is here!</span>
+      </div>
+      <button class="upload-btn" onclick="uploadCoreProgramme()">⬆ Upload</button>
+    </div>
+    <div class="core-breadcrumb" id="coreProgrammeBreadcrumb"></div>
+    <p class="core-sem-prompt">Choose your programme to see everything (all core + common syllabus &amp; materials).</p>
+    <div class="core-grid" id="coreProgrammeGrid"></div>
+  </section>
+
   <section class="du-cat" id="viewCoreTrack">
     <div class="du-cat-head core">
       <div>
@@ -686,6 +706,22 @@
     'Hindi':            { ico: '📗', tag: 'Core Queue' },
     'B.Com (Hons)':     { ico: '💼', tag: 'Core Queue' },
   };
+
+  // ---- Programme catch-all section ----
+  // Opens to two options (B.Com Programme / BA Programme). Both contain ALL
+  // core + common syllabus/material, so file names are the short tags:
+  // 'BCom prg' and 'BAprog'.
+  const CORE_PROGRAMME_SECTION = {
+    name: 'BA / B.Com Programme',
+    ico: '📦',
+    desc: 'नहीं मिला? इसमें सब कुछ मिलेगा!<br>Not found? Everything is here!',
+  };
+  const CORE_PROGRAMMES = [
+    { label: 'B.Com Programme', file: 'BCom prg', ico: '💼', desc: 'सब कुछ मिलेगा — Everything is here', sub: 'सभी Core + Common syllabus — All core & common syllabus' },
+    { label: 'BA Programme', file: 'BAprog', ico: '🎓', desc: 'सब कुछ मिलेगा — Everything is here', sub: 'सभी Core + Common syllabus — All core & common syllabus' },
+  ];
+  const CORE_DISPLAY = {};
+  CORE_PROGRAMMES.forEach((p) => { CORE_DISPLAY[p.file] = p; });
 
   const CORE_TRACKS = ['Honours', 'As Major', 'As Minor'];
 
@@ -912,15 +948,29 @@
     );
   }
 
+  function coreLabel(subject) {
+    const d = CORE_DISPLAY[subject];
+    return d ? d.label : subject;
+  }
+  function coreSubText(subject) {
+    const d = CORE_DISPLAY[subject];
+    return d ? d.sub : '';
+  }
+
   function coreBreadcrumb(subject, sem, matCat, track) {
     const esc = (s) => String(s).replace(/[<>&]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
     const sId = subject.replace(/'/g, "\\'");
-    const parts = ['<button onclick="backToCategories()">Core Subjects</button>', '<span class="sep">›</span>'];
-    if (!track) {
-      parts.push('<span class="cur">' + esc(subject) + '</span>');
+    const lbl = esc(coreLabel(subject));
+    const parts = ['<button onclick="goCoreTrack(' + "'" + sId + "'" + ')">Core Subjects</button>', '<span class="sep">›</span>'];
+    if (CORE_DISPLAY[subject]) {
+      parts.push('<button onclick="openCoreProgrammes()">Programmes</button>', '<span class="sep">›</span>', '<span class="cur">' + lbl + '</span>');
       return parts.join(' ');
     }
-    parts.push(`<button onclick="goCoreTrack('${sId}')">${esc(subject)}</button>`, '<span class="sep">›</span>');
+    if (!track) {
+      parts.push('<span class="cur">' + lbl + '</span>');
+      return parts.join(' ');
+    }
+    parts.push(`<button onclick="goCoreTrack('${sId}')">${lbl}</button>`, '<span class="sep">›</span>');
     if (!sem) {
       parts.push('<span class="cur">' + esc(track) + '</span>');
       return parts.join(' ');
@@ -985,8 +1035,10 @@
     window.__coreTrack = track;
     window.__coreSem = null;
     window.__coreCat = null;
-    document.getElementById('coreSubjectTitle').textContent = subject + (track ? ' — ' + track : '');
-    document.getElementById('coreSubjectSub').textContent = track ? track + ' track — pick a semester' : 'BA Programme / relevant programme';
+    document.getElementById('coreSubjectTitle').textContent = coreLabel(subject) + (track && track !== 'General' ? ' — ' + track : '');
+    const backBtn = document.querySelector('#viewCoreSubject .back-btn');
+    if (backBtn) backBtn.textContent = CORE_DISPLAY[subject] ? '← Programmes' : '← Course Type';
+    document.getElementById('coreSubjectSub').textContent = coreSubText(subject) || (track ? track + ' track — pick a semester' : 'BA Programme / relevant programme');
     document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, null, null, track);
     renderSemPills(subject, null);
     document.getElementById('coreSemPrompt').style.display = '';
@@ -996,7 +1048,7 @@
   function renderCoreSubjectSem(subject, sem) {
     const track = window.__coreTrack || '';
     window.__coreSem = sem;
-    document.getElementById('coreSubjectSub').textContent = (track ? track + ' · ' : '') + 'Semester ' + sem + ' — choose a material category';
+    document.getElementById('coreSubjectSub').textContent = coreSubText(subject) || ((track ? track + ' · ' : '') + 'Semester ' + sem + ' — choose a material category');
     renderSemPills(subject, Number(sem));
     document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, null, track);
     document.getElementById('coreSemPrompt').style.display = 'none';
@@ -1031,7 +1083,7 @@
     const files = matsForCore(subject, sem, matCat, track);
     document.getElementById('coreCatTitle').textContent = meta.label;
     document.getElementById('coreCatSub').textContent =
-      subject + (track ? ' · ' + track : '') + ' · Semester ' + sem + ' — ' + files.length + ' file' + (files.length === 1 ? '' : 's');
+      coreLabel(subject) + (track && track !== 'General' ? ' · ' + track : '') + ' · Semester ' + sem + ' — ' + files.length + ' file' + (files.length === 1 ? '' : 's');
     document.getElementById('coreCatBreadcrumb').innerHTML = coreBreadcrumb(subject, sem, matCat, track);
     document.getElementById('coreCatChips').innerHTML = CORE_CATEGORIES.map((c) =>
       `<button class="core-chip${c.id === matCat ? ' active' : ''}" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">${c.ico} ${c.label}</button>`
@@ -1083,6 +1135,10 @@
       backToCategories();
       return;
     }
+    if (CORE_DISPLAY[subject]) {
+      openCoreProgrammes();
+      return;
+    }
     renderCoreTrackView(subject);
     setCoreView('viewCoreTrack');
   }
@@ -1098,6 +1154,47 @@
   function uploadCoreSubject() {
     openUpload('CORE', window.__coreSubject || '', window.__coreTrack || '', window.__coreSem || '', window.__coreCat || '');
   }
+
+  // ---- Programme catch-all: two options → semester system ----
+  function openCoreProgrammes() {
+    window.__coreSubject = '';
+    window.__coreTrack = '';
+    window.__coreSem = '';
+    window.__coreCat = '';
+    document.getElementById('coreProgrammeGrid').innerHTML = CORE_PROGRAMMES.map((p) => {
+      const n = (coreMaterials || []).filter((m) => m.category && m.category.toUpperCase() === 'CORE' && (m.subject || '') === p.file).length;
+      return `
+        <button class="core-card" onclick="openCoreProgramme('${p.file.replace(/'/g, "\\'")}')">
+          <div class="top">
+            <span class="core-ico">${p.ico}</span>
+            <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
+          </div>
+          <span class="core-name">${p.label}</span>
+          <span class="core-desc">${p.desc}</span>
+          <span class="core-count">${n} materials</span>
+          <span class="core-btn">Open →</span>
+        </button>`;
+    }).join('');
+    setCoreView('viewCoreProgramme');
+    document.getElementById('viewCoreProgramme').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.openCoreProgrammes = openCoreProgrammes;
+
+  function openCoreProgramme(file) {
+    renderCoreSubjectView(file, 'General');
+    setCoreView('viewCoreSubject');
+  }
+  window.openCoreProgramme = openCoreProgramme;
+
+  function uploadCoreProgramme() {
+    const file = window.__coreSubject;
+    if (file && CORE_DISPLAY[file]) {
+      openUpload('CORE', file, 'General', window.__coreSem || '', window.__coreCat || '');
+    } else {
+      alert('Open either B.Com Programme or BA Programme first, then use Upload.');
+    }
+  }
+  window.uploadCoreProgramme = uploadCoreProgramme;
   window.uploadCoreSubject = uploadCoreSubject;
 
   function uploadCoreCategory() {
@@ -1342,6 +1439,8 @@
   function renderCoreGrid(mats) {
     const grid = document.getElementById('coreGrid');
     if (!grid) return;
+    const proFiles = CORE_PROGRAMMES.map((p) => p.file);
+    const proCount = (mats || []).filter((m) => m.category && m.category.toUpperCase() === 'CORE' && proFiles.includes(m.subject || '')).length;
     grid.innerHTML = CORE_SUBJECTS.map((s) => {
       const meta = CORE_META[s] || { ico: '📘', tag: 'Core' };
       const files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
@@ -1357,7 +1456,17 @@
           <span class="core-count" id="coreCount-${s}">${n} materials</span>
           <span class="core-btn">Explore →</span>
         </button>`;
-    }).join('');
+    }).join('') + `
+      <button class="core-card core-prog" onclick="openCoreProgrammes()">
+        <div class="top">
+          <span class="core-ico">${CORE_PROGRAMME_SECTION.ico}</span>
+          <span class="core-badge">${proCount} file${proCount === 1 ? '' : 's'}</span>
+        </div>
+        <span class="core-name">${CORE_PROGRAMME_SECTION.name}</span>
+        <span class="core-desc">नहीं मिला? इसमें सब कुछ मिलेगा!<br>Not found? Everything is here!</span>
+        <span class="core-count">${proCount} materials</span>
+        <span class="core-btn">Open →</span>
+      </button>`;
   }
 
   function renderCategory(cat, mats) {
