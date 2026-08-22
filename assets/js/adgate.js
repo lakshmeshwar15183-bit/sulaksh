@@ -96,8 +96,10 @@
   }
 
   function proceed() {
+    var fn = pending;
+    pending = null;
     close();
-    if (pending) { var fn = pending; pending = null; fn(); }
+    if (fn) fn();
   }
 
   function close() {
