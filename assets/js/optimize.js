@@ -1,5 +1,5 @@
 /* Sulaksh upload optimizer — client-side file optimization before upload.
- * Images (JPG/PNG/WebP): resize + iterative compression, target ~150 KB.
+ * Images (JPG/PNG/WebP): resize + iterative compression, target ~400 KB.
  * PDFs: safe pdf-lib round-trip (readability & structure preserved), keep
  * original if it cannot be safely reduced. Runs entirely in the browser;
  * the optimized blob is what gets uploaded to the existing backend.
@@ -9,7 +9,7 @@
 
   var KB = 1024;
   var MB = KB * 1024;
-  var TARGET = 150 * KB;
+  var TARGET = 400 * KB;
   var MAX_DIM = 2048;
   var MIN_Q = 0.55;
   var MIN_SCALE = 0.5;
@@ -94,8 +94,8 @@
 
     if (!best) return { ok: false, error: 'Could not optimize this image.' };
     var note = best.blob.size <= TARGET
-      ? 'Optimized to ≤ 150 KB.'
-      : 'Optimized for readability; 150 KB target not possible without significant quality loss.';
+      ? 'Optimized to ≤ 400 KB.'
+      : 'Optimized for readability; 400 KB target not possible without significant quality loss.';
     return { ok: true, blob: best.blob, changed: true, size: best.blob.size, mime: best.mime, note: note };
   }
 
@@ -103,7 +103,7 @@
     if (file.size <= TARGET) {
       return Promise.resolve({
         ok: true, blob: file, changed: false, size: file.size,
-        note: 'Already ≤ 150 KB — uploaded unchanged.',
+        note: 'Already ≤ 400 KB — uploaded unchanged.',
       });
     }
     return loadImage(file).then(function (img) {
@@ -133,7 +133,7 @@
     if (file.size <= TARGET) {
       return Promise.resolve({
         ok: true, blob: file, changed: false, size: file.size,
-        note: 'Already ≤ 150 KB — uploaded unchanged.',
+        note: 'Already ≤ 400 KB — uploaded unchanged.',
       });
     }
     return loadPdfLib()
@@ -146,8 +146,8 @@
           if (bytes.byteLength < file.size) {
             var blob = new Blob([bytes], { type: 'application/pdf' });
             var note = blob.size <= TARGET
-              ? 'Optimized to ≤ 150 KB.'
-              : 'Optimized for readability; 150 KB target not possible without significant quality loss.';
+              ? 'Optimized to ≤ 400 KB.'
+              : 'Optimized for readability; 400 KB target not possible without significant quality loss.';
             return { ok: true, blob: blob, changed: true, size: blob.size, note: note };
           }
           return {
