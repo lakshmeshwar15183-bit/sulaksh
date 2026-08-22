@@ -658,7 +658,7 @@
 </div>
 
 <script src="assets/js/optimize.js?v=3"></script>
-<script src="assets/js/adgate.js?v=1"></script>
+<script src="assets/js/adgate.js?v=2"></script>
 <script>
   // Mobile menu
   const hamburger = document.getElementById('hamburger');
@@ -1082,13 +1082,19 @@
     return data.url;
   }
   async function viewMaterial(id) {
-    adGate.open(async function () {
-      try { window.open(await materialLink(id, 'inline'), '_blank'); } catch (e) { alert(e.message); }
+    adGate.open(async function (win) {
+      try {
+        var url = await materialLink(id, 'inline');
+        if (win && !win.closed) { win.location.href = url; } else { window.open(url, '_blank'); }
+      } catch (e) { if (win && !win.closed) win.close(); alert(e.message); }
     });
   }
   async function downloadMaterial(id) {
-    adGate.open(async function () {
-      try { window.open(await materialLink(id, 'attachment'), '_blank'); } catch (e) { alert(e.message); }
+    adGate.open(async function (win) {
+      try {
+        var url = await materialLink(id, 'attachment');
+        if (win && !win.closed) { win.location.href = url; } else { window.open(url, '_blank'); }
+      } catch (e) { if (win && !win.closed) win.close(); alert(e.message); }
     });
   }
 
