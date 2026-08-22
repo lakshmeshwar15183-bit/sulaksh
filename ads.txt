@@ -1,0 +1,4 @@
+# Google AdSense ads.txt — replace pub-0000000000000000 with your real
+# publisher ID (found in AdSense under Account > Settings > Account information)
+# after your site is approved, then commit + sync to gh-pages.
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
