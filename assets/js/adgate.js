@@ -10,7 +10,7 @@
   'use strict';
 
   var ADSENSE = { client: '', slot: '' };
-  var GATE_EVERY = 3; // 1 = every View/Download click; set to e.g. 3 to gate only every 3rd click
+  var GATE_EVERY = 2; // 1 = every View/Download click; set higher to throttle
 
   var clicks = 0;
   var els = null;
