@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 const { uploadObject, deleteObject, objectExists } = require('../r2');
+const { stampPdf } = require('../stamp');
 const { validateUpload, buildObjectKey, sanitizeFileName, detectFileType, MAX_FILE_SIZE_BYTES } = require('../utils/validate');
 
 const router = express.Router();
