@@ -1,9 +1,24 @@
 const express = require('express');
 const db = require('../db');
+const { rateLimit } = require('express-rate-limit');
 const { getPresignedDownloadUrl } = require('../r2');
 const { getStaff } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Download URLs are the scrape target — cap hard. Real students open a
+// handful of papers per session; bulk agents need hundreds.
+const downloadLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  limit: parseInt(process.env.DOWNLOAD_DAILY_LIMIT || '80', 10),
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Daily download limit reached. Please come back tomorrow.' },
+  skip: (req) => Boolean(getStaff(req)), // admins never throttled
+});
+
+// Staff bypass the cap (admins never get throttled while working).
+router.use('/:id/download', downloadLimiter);
 
 // Fields exposed publicly — r2_object_key is intentionally never sent to
 // the client; downloads only ever happen via a short-lived presigned URL.
