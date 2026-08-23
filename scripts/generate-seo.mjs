@@ -73,7 +73,7 @@ async function openMat(id){try{const r=await fetch(API+'/api/materials/'+id+'/do
 }
 
 // ---------- CORE: subject × track × semester ----------
-const core = materials.filter(m => m.category === 'CORE' && String(m.subject||'').trim());
+const core = materials.filter(m => m.category === 'CORE' && String(m.subject||'').trim() && slug(m.subject));
 const bySubjTrack = new Map();
 for (const m of core) {
   const track = TRACK[m.track] || 'General';
@@ -112,7 +112,7 @@ for (const [key, semMap] of bySubjTrack) {
 // ---------- GE / VAC / AEC / SEC: subject pages ----------
 const cats = [['GE', 'Generic Elective'], ['VAC', 'Value Added Course'], ['AEC', 'Ability Enhancement Course'], ['SEC', 'Skill Enhancement Course']];
 for (const [cat, label] of cats) {
-  const ms = materials.filter(m => (m.category || '').toUpperCase() === cat && String(m.subject||'').trim());
+  const ms = materials.filter(m => (m.category || '').toUpperCase() === cat && String(m.subject||'').trim() && slug(m.subject));
   const bySubj = new Map();
   for (const m of ms) {
     if (!bySubj.has(m.subject)) bySubj.set(m.subject, []);
@@ -140,6 +140,8 @@ for (const [cat, label] of cats) {
 // ---------- Hub page ----------
 const hubGroups = new Map();
 pages.sort((a, b) => a.title.localeCompare(b.title));
+const __seen=new Set();
+for(let i=pages.length-1;i>=0;i--){if(__seen.has(pages[i].file))pages.splice(i,1);else __seen.add(pages[i].file);}
 hubGroups.set('All Pages', pages.map(p => ({ id: null, title: p.title.replace(' | Sulaksh', ''), file: p.file })));
 const hubIntro = `<p>Browse every Delhi University previous year question paper available on Sulaksh — BA Programme majors, minors, honours, GE, VAC, AEC and SEC courses. All free, always.</p>`;
 page('index.html', 'All DU Previous Year Question Papers (PYQs) – Free | Sulaksh',
@@ -148,8 +150,10 @@ page('index.html', 'All DU Previous Year Question Papers (PYQs) – Free | Sulak
   [['How many PYQs does Sulaksh have?', 'Hundreds of official DU question papers across dozens of subjects and semesters, growing every week.']], 'Master Index');
 
 // ---------- sitemap ----------
+const seen=new Set();
+const uniq=pages.filter(p=>!seen.has(p.file)&&seen.add(p.file));
 const urls = ['', 'index.html', 'du.html', 'one-day.html', 'upsc.html', 'guides.html', 'contact.html',
-  ...pages.filter(p => p.file !== 'index.html').map(p => 'pyq/' + p.file)];
+  ...uniq.filter(p => p.file !== 'index.html').map(p => 'pyq/' + p.file)];
 const sm = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(u => `  <url><loc>${SITE}/${u}</loc></url>`).join('\n')}
