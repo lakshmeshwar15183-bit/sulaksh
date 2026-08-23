@@ -19,12 +19,22 @@ router.use((req, res, next) => {
 });
 
 // ---- Maintenance mode ----
+// Only these emails (plus role='maintenance' accounts) may toggle the flag.
+// Override with a comma-separated MAINTENANCE_EMAILS env var.
+const MAINTENANCE_EMAILS = (process.env.MAINTENANCE_EMAILS || 'lakshmeshwar15183@gmail.com')
+  .split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+
 // GET current state (staff only)
 router.get('/maintenance', (req, res) => {
   res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
 });
-// POST { enabled: true|false } — super admins and maintenance-role accounts
+// POST { enabled: true|false } — site owner and maintenance-role accounts only
 router.post('/maintenance', (req, res) => {
+  const email = (req.admin.email || '').toLowerCase();
+  const isMaintainer = (req.admin.role || 'super') === 'maintenance';
+  if (!isMaintainer && !MAINTENANCE_EMAILS.includes(email)) {
+    return res.status(403).json({ error: 'Only the site owner can toggle maintenance mode.' });
+  }
   const enabled = req.body && (req.body.enabled === true || req.body.enabled === 'true');
   db.setSetting('maintenance_mode', enabled ? '1' : '0');
   res.json({ enabled });
