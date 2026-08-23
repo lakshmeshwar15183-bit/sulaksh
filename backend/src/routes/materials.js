@@ -36,7 +36,7 @@ router.get('/', (req, res) => {
   }
 
   const rows = db.prepare(
-    `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${clauses.join(' AND ')} ORDER BY created_at DESC LIMIT 200`
+    `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${clauses.join(' AND ')} ORDER BY created_at DESC LIMIT 5000`
   ).all(...params);
 
   res.json({ materials: rows });

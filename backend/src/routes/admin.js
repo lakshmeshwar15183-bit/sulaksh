@@ -64,7 +64,7 @@ router.get('/materials', (req, res) => {
   if (q) { clauses.push('(title LIKE ? OR description LIKE ?)'); params.push(`%${q}%`, `%${q}%`); }
 
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
-  const rows = db.prepare(`SELECT * FROM materials ${where} ORDER BY created_at DESC LIMIT 500`).all(...params);
+  const rows = db.prepare(`SELECT * FROM materials ${where} ORDER BY created_at DESC LIMIT 5000`).all(...params);
   res.json({ materials: rows });
 });
 
