@@ -68,8 +68,11 @@ router.get('/:id/download', async (req, res) => {
   // Fast path: stream through the Cloudflare CDN worker when configured.
   if (process.env.PUBLIC_CDN_BASE && material.r2_object_key) {
     const encodedKey = material.r2_object_key.split('/').map(encodeURIComponent).join('/');
+    const params = new URLSearchParams();
+    params.set('disposition', req.query.disposition === 'attachment' ? 'attachment' : 'inline');
+    if (material.file_name) params.set('filename', material.file_name);
     return res.json({
-      url: `${process.env.PUBLIC_CDN_BASE}/file/${encodedKey}`,
+      url: `${process.env.PUBLIC_CDN_BASE}/file/${encodedKey}?${params.toString()}`,
       cdn: true,
     });
   }
