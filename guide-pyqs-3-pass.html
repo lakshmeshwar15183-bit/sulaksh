@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Use PYQs Effectively: The 3-Pass Method — Sulaksh</title>
+<meta name="description" content="Learn the three-pass method for using previous year question papers: map units by frequency before studying, rehearse per-unit during preparation, and simulate full papers in the final weeks.">
+<meta name="author" content="Lakshmeshwar Pandey">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775"
+     crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2340; --navy-2:#123467; --blue:#1E5FFF; --saffron:#FF7A1A; --green:#1E8E5A;
+    --bg:#F6F8FC; --card:#FFFFFF; --text:#1A2433; --muted:#5B6B80; --border:#E4E9F1;
+    --radius:16px; --shadow: 0 4px 24px rgba(12,35,64,0.06);
+  }
+  [data-theme="dark"]{
+    --navy:#0A192E; --navy-2:#0F2647; --bg:#0B1424; --card:#101B2E;
+    --text:#EAF0FA; --muted:#8FA0B8; --border:#1E2C42; --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; transition:background .3s ease, color .3s ease;}
+  h1,h2,h3{font-family:'Sora',sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+
+  header{position:sticky; top:0; z-index:100; background:var(--card); border-bottom:1px solid var(--border);}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 24px; max-width:1280px; margin:0 auto;}
+  .brand{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .brand-emblem{height:44px; width:auto; display:block; flex-shrink:0;}
+  .brand-wordmark{height:26px; width:auto; display:block; flex-shrink:0;}
+  .nav-links{display:flex; align-items:center; gap:26px; list-style:none;}
+  .nav-links a{font-size:14.5px; font-weight:500; color:var(--text); opacity:.85; transition:opacity .2s;}
+  .nav-links a.active{color:var(--blue); opacity:1; font-weight:600;}
+  .nav-links a:hover{opacity:1;}
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .icon-btn{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--bg); border:1px solid var(--border); color:var(--muted); transition:all .2s;}
+  .icon-btn:hover{background:var(--border);}
+  .hamburger{display:none; flex-direction:column; gap:5px; width:38px; height:38px; align-items:center; justify-content:center;}
+  .hamburger span{width:20px; height:2px; background:var(--text); border-radius:2px;}
+  .mobile-menu{display:none; flex-direction:column; background:var(--card); border-top:1px solid var(--border); padding:10px 24px 20px;}
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{padding:12px 0; font-size:15px; font-weight:500; border-bottom:1px solid var(--border);}
+
+  .page-hero{background:linear-gradient(180deg, #EEF2FA 0%, var(--bg) 100%); padding:52px 0 40px;}
+  [data-theme="dark"] .page-hero{background:linear-gradient(180deg, #0D1B30 0%, var(--bg) 100%);}
+  .page-hero .eyebrow{display:inline-flex; align-items:center; gap:8px; background:rgba(255,122,26,.1); color:var(--saffron); padding:6px 14px; border-radius:100px; font-size:12.5px; font-weight:700; letter-spacing:.4px; margin-bottom:14px;}
+  .page-hero h1{font-size:clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.5px;}
+  .page-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:720px; margin-top:10px;}
+
+  .page-main{padding:40px 0 64px;}
+  .guides-intro{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:26px; box-shadow:var(--shadow); margin-bottom:28px;}
+  .guides-intro h2{font-size:20px; margin-bottom:10px;}
+  .guides-intro p{font-size:14.5px; line-height:1.8; color:var(--muted); margin-bottom:10px;}
+  .guides-intro p:last-child{margin-bottom:0;}
+
+  .guide-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;}
+  .guide-card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:9px; transition:transform .15s, box-shadow .2s, border-color .2s;}
+  .guide-card:hover{transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--blue);}
+  .guide-card .ico{font-size:26px;}
+  .guide-card h3{font-size:16.5px; line-height:1.4;}
+  .guide-card p{font-size:13.5px; color:var(--muted); line-height:1.65; flex:1;}
+  .guide-card .meta{font-size:12px; color:var(--muted); opacity:.85;}
+  .guide-card .read{color:var(--blue); font-weight:700; font-size:13.5px;}
+
+  .article{max-width:800px; margin:0 auto;}
+  .article > p{font-size:15px; line-height:1.85; color:var(--text); margin-bottom:16px;}
+  .article h2{font-size:21px; margin:30px 0 12px;}
+  .article ul,.article ol{margin:0 0 16px 22px; font-size:15px; line-height:1.85;}
+  .article li{margin-bottom:8px;}
+  .article b{color:var(--text);}
+  .tip-box{background:rgba(30,142,90,.08); border-left:4px solid var(--green); border-radius:10px; padding:14px 18px; margin:18px 0; font-size:14px; line-height:1.7; color:var(--muted);}
+  .tip-box b{color:var(--text);}
+  .back-link{display:inline-block; color:var(--blue); font-weight:700; font-size:13.5px; margin-bottom:18px;}
+
+  footer{background:var(--navy); color:#cfd9ec; padding:40px 0 36px; text-align:center; font-size:13px;}
+  footer a{color:#fff; font-weight:600;}
+  footer a:hover{color:var(--saffron);}
+  .footer-brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;}
+  .footer-brand img.brand-emblem{height:36px;}
+  .footer-brand img.brand-wordmark{height:20px;}
+  .footer-links{display:flex; flex-wrap:wrap; justify-content:center; gap:8px 22px; margin:18px 0; list-style:none;}
+  .footer-links a{color:#cfd9ec; font-weight:600;}
+  .footer-links a:hover{color:#fff;}
+  .footer-copy{opacity:.85; line-height:1.8;}
+  .footer-contact{margin-top:6px;}
+  .footer-contact a{color:#fff;}
+
+  @media (max-width:900px){
+    .nav-links{display:none;} .hamburger{display:flex;}
+    .brand-emblem{height:38px;} .brand-wordmark{height:22px;}
+  }
+  @media (max-width:520px){ .brand{gap:8px;} .brand-emblem{height:32px;} .brand-wordmark{height:18px;} }
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem" width="782" height="665">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark" width="1115" height="203">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="one-day.html">ONE DAY EXAMS</a></li>
+      <li><a href="upsc.html">UPSC</a></li>
+      <li><a href="du.html">DU &amp; College</a></li>
+      <li><a href="guides.html" class="active">Guides</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="one-day.html">ONE DAY EXAMS</a>
+    <a href="upsc.html">UPSC</a>
+    <a href="du.html">DU &amp; College</a>
+    <a href="guides.html">Guides</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">📖 Guides</div>
+    <h1>The 3-Pass PYQ Method</h1>
+    <p>Previous year papers are the highest-information material you own. Here is the three-pass system that converts them into a prediction tool, practice set and revision filter.</p>
+  </div>
+</section>
+
+<main class="page-main">
+  <div class="wrap">
+    <div class="article">
+      <a class="back-link" href="guides.html">← All Guides</a>
+
+      <p>Ask any serious aspirant about previous year questions and they will nod wisely. Then watch what they actually do: download fifteen PDFs, scroll through them once, and go back to their notes. PYQs are the highest-information study material you own, and this is the system that turns them into marks.</p>
+
+      <h2>Why PYQs matter more than any prediction video</h2>
+      <p>Every exam — DU semesters, SSC, banking, UPSC prelims — has patterns. Not the questions themselves, but the <b>shape</b> of questions: which units get repeated, how marks are distributed between theory and application, whether options in MCQs are designed to trap specific mistakes. A prediction video guesses. Three years of papers prove.</p>
+
+      <h2>Pass 1: The map (before you start studying)</h2>
+      <p>Do this at the very start of preparation:</p>
+      <ul>
+        <li>Take the last 3–5 years of papers and your official syllabus side by side.</li>
+        <li>For every question, mark its unit on the syllabus copy.</li>
+        <li>Count. Now rank units by frequency.</li>
+      </ul>
+      <p>This produces your personal priority list. Units with constant appearances get first reading; units that appeared once in five years get skimmed or skipped if time is short. Most students discover 30–50% of their syllabus barely gets examined.</p>
+
+      <h2>Pass 2: The rehearsal (during preparation)</h2>
+      <p>As you finish each unit, immediately attempt that unit's questions from past papers — without notes first, then verify.</p>
+      <ul>
+        <li><b>Written exams:</b> write full answers for at least two questions per unit, timed. Reading a solution feels like knowing; writing reveals the truth.</li>
+        <li><b>MCQ exams:</b> attempt in blocks of 25–50 questions. Log every wrong answer in an "error notebook" with one line on <i>why</i> you got it wrong — concept gap, silly mistake, or misread question.</li>
+      </ul>
+      <p>The error notebook becomes your most valuable document by the end. It is literally a list of your marks leaking out.</p>
+
+      <h2>Pass 3: The simulation (last weeks)</h2>
+      <p>In the final phase, solve full papers in one sitting, strictly timed — morning slot if your exam is in the morning. This trains three things no chapter can: stamina, time allocation across sections, and the decision-making of skipping a question instead of bleeding minutes on it.</p>
+
+      <div class="tip-box"><b>Scoring rule:</b> after each simulated paper, spend equal time reviewing it. An unreviewed mock is entertainment; a reviewed one is training.</div>
+
+      <h2>Where to keep everything</h2>
+      <p>Keep your PYQ collection organised by subject and year in one place rather than scattered across chats and downloads folders. On Sulaksh every subject folder already separates 📄 PYQs from notes and syllabus, so the Pass 1 mapping takes minutes, not evenings.</p>
+
+      <p>Three passes: map it, rehearse it, simulate it. That's the entire method — and it converts a pile of old PDFs into a scoring system.</p>
+    </div>
+      <h2>FAQ</h2>
+      <p><b>How many years of PYQs should I solve?</b> Three years minimum for pattern mapping, five if the exam format changed recently. Older papers still help for practice volume after the mapping pass.</p>
+      <p><b>Solving PYQs before studying feels useless since I know nothing. True?</b> Pass 1 is not about solving — it is about counting which units get asked. You are building a map, not testing yourself.</p>
+      <p><b>Do PYQs repeat verbatim?</b> Rarely word-for-word, but concepts and question shapes repeat constantly. That is precisely why pattern recognition beats memorising old answers.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-brand">
+      <img src="assets/images/sulaksh-emblem.png" alt="Sulaksh emblem" class="brand-emblem">
+      <img src="assets/images/sulaksh-wordmark.png" alt="Sulaksh" class="brand-wordmark">
+    </div>
+    <p class="footer-copy">© 2026 Sulaksh · Learn. Prepare. Achieve.</p>
+    <ul class="footer-links">
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      <li><a href="disclaimer.html">Disclaimer</a></li>
+    </ul>
+    <p class="footer-contact">Contact: <a href="mailto:supportlumixo@gmail.com">supportlumixo@gmail.com</a></p>
+  </div>
+</footer>
+
+<script>
+  const themeBtn = document.getElementById('themeBtn');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('sulaksh-theme', t);
+  }
+  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  themeBtn.addEventListener('click', () => {
+    setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>
