@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const { rateLimit } = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth');
 const materialsRoutes = require('./routes/materials');
@@ -29,7 +30,27 @@ app.use(cors({
   credentials: true,
 }));
 
+// ---- Rate limiting ----
+// Login: strict cap to make password brute-forcing impractical.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 10,                // max 10 login attempts per window per IP
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
+});
+// General API: generous ceiling against abuse without affecting real users.
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+});
+
 // ---- API routes ----
+app.use('/api/auth/login', loginLimiter);
+app.use('/api', apiLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialsRoutes);
 app.use('/api/subjects', subjectsRoutes);
