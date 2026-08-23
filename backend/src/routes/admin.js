@@ -9,6 +9,27 @@ const { validateUpload, buildObjectKey, sanitizeFileName, detectFileType, MAX_FI
 const router = express.Router();
 router.use(requireAdmin);
 
+// ---- Role gate: 'maintenance' accounts may ONLY use the maintenance toggle.
+// Everything else in /api/admin requires role 'super'.
+const MAINTENANCE_ROUTES = new Set(['/maintenance']);
+router.use((req, res, next) => {
+  if ((req.admin.role || 'super') === 'super') return next();
+  if (MAINTENANCE_ROUTES.has(req.path)) return next();
+  return res.status(403).json({ error: 'This account does not have permission for that action.' });
+});
+
+// ---- Maintenance mode ----
+// GET current state (staff only)
+router.get('/maintenance', (req, res) => {
+  res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
+});
+// POST { enabled: true|false } — super admins and maintenance-role accounts
+router.post('/maintenance', (req, res) => {
+  const enabled = req.body && (req.body.enabled === true || req.body.enabled === 'true');
+  db.setSetting('maintenance_mode', enabled ? '1' : '0');
+  res.json({ enabled });
+});
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_FILE_SIZE_BYTES },

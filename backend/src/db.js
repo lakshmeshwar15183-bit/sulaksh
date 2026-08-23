@@ -88,7 +88,33 @@ CREATE TABLE IF NOT EXISTS subjects (
   updated_at TEXT NOT NULL,
   UNIQUE(exam, category, name)
 );
+
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
 `);
+
+// ---- Admin roles ----
+// 'super' = full control (uploads, deletes, subjects). 'maintenance' = may
+// only toggle maintenance mode. Existing admins default to 'super'.
+const adminCols = db.prepare('PRAGMA table_info(admins)').all();
+if (!adminCols.some((c) => c.name === 'role')) {
+  db.exec("ALTER TABLE admins ADD COLUMN role TEXT NOT NULL DEFAULT 'super'");
+  console.log('[db] Added role column to admins');
+}
+
+// ---- Settings helpers ----
+function getSetting(key) {
+  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key);
+  return row ? row.value : null;
+}
+function setSetting(key, value) {
+  db.prepare(
+    `INSERT INTO settings (key, value) VALUES (?, ?)
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value`
+  ).run(key, String(value));
+}
 
 // ---- Seed default subject folders for the DU & College "Common / University
 // Courses" categories (SEC, VAC, AEC, GE). These are exposed as editable
@@ -170,3 +196,5 @@ CREATE INDEX IF NOT EXISTS idx_materials_material_category ON materials(material
 `);
 
 module.exports = db;
+module.exports.getSetting = getSetting;
+module.exports.setSetting = setSetting;

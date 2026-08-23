@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { getPresignedDownloadUrl } = require('../r2');
+const { getStaff } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -14,6 +15,10 @@ const PUBLIC_FIELDS = `
 // GET /api/materials?exam=&category=&subject=&track=&semester=&material_category=&year=&q=
 // Lightweight listing — no file bytes touched, just metadata rows.
 router.get('/', (req, res) => {
+  const staff = getStaff(req);
+  if (db.getSetting('maintenance_mode') === '1' && !staff) {
+    return res.status(503).json({ maintenance: true });
+  }
   const { exam, category, subject, track, semester, material_category, year, q } = req.query;
   const clauses = ["status = 'active'"];
   const params = [];
@@ -49,6 +54,10 @@ router.get('/:id', (req, res) => {
 // Returns a short-lived presigned URL. The browser downloads directly
 // from R2 — the file is never proxied through this server.
 router.get('/:id/download', async (req, res) => {
+  const staff = getStaff(req);
+  if (db.getSetting('maintenance_mode') === '1' && !staff) {
+    return res.status(503).json({ maintenance: true });
+  }
   const material = db.prepare(
     `SELECT * FROM materials WHERE id = ? AND status = 'active'`
   ).get(req.params.id);

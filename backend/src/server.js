@@ -51,6 +51,14 @@ const apiLimiter = rateLimit({
 // ---- API routes ----
 app.use('/api/auth/login', loginLimiter);
 app.use('/api', apiLimiter);
+
+// Public maintenance flag — the static frontend polls this to show the
+// maintenance overlay. Always allowed, even while other routes are gated.
+const db = require('./db');
+app.get('/api/maintenance-status', (req, res) => {
+  res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialsRoutes);
 app.use('/api/subjects', subjectsRoutes);
