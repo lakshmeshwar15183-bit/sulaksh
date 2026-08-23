@@ -122,7 +122,9 @@ router.get('/:id/wm', async (req, res) => {
   try {
     const bytes = await getObject(material.r2_object_key);
     let out = bytes;
-    try {
+    if (!String(material.content_type||'').includes('pdf')) {
+      out = bytes;
+    } else try {
       const pdfDoc = await PDFDocument.load(bytes);
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
       const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
@@ -135,8 +137,10 @@ router.get('/:id/wm', async (req, res) => {
       });
       out = Buffer.from(await pdfDoc.save());
     } catch (e) { /* unparsable — serve original */ }
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="${(material.file_name||'document.pdf').replace(/"/g,'')}"`);
+    const ct = material.content_type && material.content_type !== 'application/pdf'
+      ? material.content_type : 'application/pdf';
+    res.setHeader('Content-Type', ct);
+    res.setHeader('Content-Disposition', `inline; filename="${(material.file_name||'document').replace(/"/g,'')}"`);
     res.send(out);
   } catch (e) {
     console.error('[wm] failed:', e.message);
