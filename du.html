@@ -1513,12 +1513,13 @@
     const proCount = (mats || []).filter((m) => m.category && m.category.toUpperCase() === 'CORE' && proFiles.includes(m.subject || '')).length;
     grid.innerHTML = CORE_SUBJECTS.map((s) => {
       const meta = CORE_META[s] || { ico: '📘', tag: 'Core' };
+      const PROG_TAG = ({ 'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Mathematics':'BA/BSc' })[s] || '';
       const files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
       const n = files.length;
       return `
         <button class="core-card" onclick="openCoreSubject('${s.replace(/'/g, "\\'")}')">
           <div class="top">
-            <span class="core-ico">${meta.ico}</span>
+            <span class="core-ico">${meta.ico}</span>${PROG_TAG ? `<span style="font-size:10.5px;font-weight:800;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:100px;letter-spacing:.5px;">${PROG_TAG}</span>` : ''}
             <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
           </div>
           <span class="core-name">${s}</span>
