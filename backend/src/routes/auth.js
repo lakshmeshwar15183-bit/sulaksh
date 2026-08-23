@@ -64,6 +64,32 @@ router.post('/bootstrap-maintainer', (req, res) => {
   res.json({ ok: true, email: email.toLowerCase().trim(), role: 'maintenance' });
 });
 
+
+// ---- One-time owner bootstrap ----
+// Header x-setup-key must equal JWT_SECRET. Creates/upserts a SUPER admin.
+router.post('/bootstrap-owner', (req, res) => {
+  if (!req.get('x-setup-key') || req.get('x-setup-key') !== process.env.JWT_SECRET) {
+    return res.status(403).json({ error: 'Forbidden.' });
+  }
+  const { email, password } = req.body || {};
+  if (!email || !password || password.length < 10) {
+    return res.status(400).json({ error: 'Email and a password of at least 10 characters are required.' });
+  }
+  const bcrypt = require('bcryptjs');
+  const { v4: uuidv4 } = require('uuid');
+  const em = String(email).toLowerCase().trim();
+  const hash = bcrypt.hashSync(password, 12);
+  const ts = new Date().toISOString();
+  const existing = db.prepare('SELECT id FROM admins WHERE email = ?').get(em);
+  if (existing) {
+    db.prepare("UPDATE admins SET password_hash = ?, role = 'super' WHERE id = ?").run(hash, existing.id);
+  } else {
+    db.prepare("INSERT INTO admins (id, email, password_hash, role, created_at) VALUES (?, ?, ?, 'super', ?)")
+      .run(uuidv4(), em, hash, ts);
+  }
+  res.json({ ok: true, email: em, role: 'super' });
+});
+
 router.post('/logout', (req, res) => {
   res.clearCookie(COOKIE_NAME);
   res.json({ ok: true });

@@ -303,4 +303,24 @@ router.delete('/subjects/:id', async (req, res) => {
   res.json({ ok: true, removed_materials: materials.length });
 });
 
+
+// ---- Download kill-switch ----
+// GET current state; POST { enabled: false } suspends public downloads.
+router.get('/downloads-toggle', (req, res) => {
+  res.json({ enabled: db.getSetting('downloads_disabled') !== '1' });
+});
+
+// Only these emails may flip the download kill-switch.
+const DOWNLOADS_TOGGLE = (process.env.DOWNLOADS_TOGGLE_EMAILS || 'lakshmeshwar15183@gmail.com')
+  .split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+router.post('/downloads-toggle', (req, res) => {
+  const email = String(req.admin.email || '').toLowerCase();
+  if (!DOWNLOADS_TOGGLE.includes(email)) {
+    return res.status(403).json({ error: 'Only the site owner can change this.' });
+  }
+  const disable = !(req.body && req.body.enabled);
+  db.setSetting('downloads_disabled', disable ? '1' : '0');
+  res.json({ enabled: !disable });
+});
+
 module.exports = router;

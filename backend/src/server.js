@@ -55,6 +55,7 @@ app.use('/api', apiLimiter);
 // Public maintenance flag — the static frontend polls this to show the
 // maintenance overlay. Always allowed, even while other routes are gated.
 const db = require('./db');
+const backup = require('./backup');
 app.get('/api/maintenance-status', (req, res) => {
   res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
 });
@@ -82,6 +83,8 @@ app.use((err, req, res, next) => {
   console.error('[server] Unhandled error:', err.message);
   res.status(500).json({ error: 'Something went wrong.' });
 });
+
+backup.schedule(process.env.DATABASE_PATH || './data/sulaksh.db');
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

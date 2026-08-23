@@ -70,6 +70,9 @@ router.get('/:id', (req, res) => {
 // from R2 — the file is never proxied through this server.
 router.get('/:id/download', async (req, res) => {
   const staff = getStaff(req);
+  if (db.getSetting('downloads_disabled') === '1' && !staff) {
+    return res.status(403).json({ error: 'Downloads are temporarily paused. Please check back soon.' });
+  }
   if (db.getSetting('maintenance_mode') === '1' && !staff) {
     return res.status(503).json({ maintenance: true });
   }
