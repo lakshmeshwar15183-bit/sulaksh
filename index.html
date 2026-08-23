@@ -411,6 +411,7 @@
     *{transition:none !important;}
   }
 </style>
+<script src="assets/js/maintenance.js?v=1"></script>
 </head>
 <body>
 
@@ -431,6 +432,7 @@
     </ul>
     <div class="nav-actions">
       <button class="icon-btn" id="searchBtn" aria-label="Search">🔍</button>
+      <button class="icon-btn" id="maintBtn" style="display:none;" title="Toggle maintenance mode">🚧</button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
       <button class="btn-primary" id="loginBtn">👤 Login</button>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -920,6 +922,44 @@
       btn.title = 'Admin login';
     }
     document.body.classList.toggle('is-admin', state.isAdmin);
+    updateMaintUI();
+  }
+
+  // Maintenance toggle — visible to super admins and maintenance-role accounts
+  async function updateMaintUI() {
+    const btn = document.getElementById('maintBtn');
+    if (!btn) return;
+    const role = localStorage.getItem('sulaksh-role');
+    const can = state.isAdmin || role === 'maintenance';
+    btn.style.display = (state.token && can) ? '' : 'none';
+    if (!can || !state.token) return;
+    try {
+      const r = await fetch(`${SULAKSH_API}/api/admin/maintenance`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      });
+      if (r.ok) { const s = await r.json(); btn.textContent = s.enabled ? '🛠️' : '🚧'; }
+    } catch (e) {}
+  }
+  async function toggleMaintenance() {
+    const btn = document.getElementById('maintBtn');
+    try {
+      const cur = await fetch(`${SULAKSH_API}/api/admin/maintenance`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      }).then((r) => r.json());
+      const next = !cur.enabled;
+      if (!confirm(next ? 'Put the site under maintenance?' : 'Bring the site back online?')) return;
+      const r = await fetch(`${SULAKSH_API}/api/admin/maintenance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+        body: JSON.stringify({ enabled: next }),
+      });
+      if (!r.ok) throw new Error('Failed');
+      btn.textContent = next ? '🛠️' : '🚧';
+      alert(next ? 'Site is now UNDER MAINTENANCE 🛠️' : 'Site is back ONLINE ✅');
+      loadMaterials();
+    } catch (e) {
+      alert('Could not toggle maintenance mode.');
+    }
   }
 
   // Login / logout
@@ -929,6 +969,7 @@
     setMsg(document.getElementById('loginMsg'), '', false);
     openModal('loginOverlay');
   });
+  document.getElementById('maintBtn').addEventListener('click', toggleMaintenance);
   document.getElementById('loginSubmit').addEventListener('click', doLogin);
   document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
   document.getElementById('passToggle').addEventListener('click', () => {
@@ -957,6 +998,7 @@
       state.isAdmin = ADMIN_EMAILS.includes(email);
       localStorage.setItem('sulaksh-email', email);
       localStorage.setItem('sulaksh-token', data.token);
+      localStorage.setItem('sulaksh-role', data.role || 'super');
       updateAuthUI();
       closeModal('loginOverlay');
       loadMaterials();
@@ -971,6 +1013,7 @@
     state.isAdmin = false;
     localStorage.removeItem('sulaksh-email');
     localStorage.removeItem('sulaksh-token');
+    localStorage.removeItem('sulaksh-role');
     updateAuthUI();
     loadMaterials();
   }
