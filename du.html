@@ -1252,12 +1252,13 @@
     updateMaintUI();
   }
 
-  // Maintenance toggle — visible to super admins and maintenance-role accounts
+  // Maintenance toggle — visible ONLY to the site owner and maintenance-role accounts
+  const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];
   async function updateMaintUI() {
     const btn = document.getElementById('maintBtn');
     if (!btn) return;
     const role = localStorage.getItem('sulaksh-role');
-    const can = state.isAdmin || role === 'maintenance';
+    const can = MAINTENANCE_EMAILS.includes((state.email || '').toLowerCase()) || role === 'maintenance';
     btn.style.display = (state.token && can) ? '' : 'none';
     if (!can || !state.token) return;
     try {
