@@ -73,7 +73,7 @@ async function openMat(id){try{const r=await fetch(API+'/api/materials/'+id+'/do
 }
 
 // ---------- CORE: subject × track × semester ----------
-const core = materials.filter(m => m.category === 'CORE' && m.subject);
+const core = materials.filter(m => m.category === 'CORE' && String(m.subject||'').trim());
 const bySubjTrack = new Map();
 for (const m of core) {
   const track = TRACK[m.track] || 'General';
@@ -112,7 +112,7 @@ for (const [key, semMap] of bySubjTrack) {
 // ---------- GE / VAC / AEC / SEC: subject pages ----------
 const cats = [['GE', 'Generic Elective'], ['VAC', 'Value Added Course'], ['AEC', 'Ability Enhancement Course'], ['SEC', 'Skill Enhancement Course']];
 for (const [cat, label] of cats) {
-  const ms = materials.filter(m => (m.category || '').toUpperCase() === cat && m.subject);
+  const ms = materials.filter(m => (m.category || '').toUpperCase() === cat && String(m.subject||'').trim());
   const bySubj = new Map();
   for (const m of ms) {
     if (!bySubj.has(m.subject)) bySubj.set(m.subject, []);
