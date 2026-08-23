@@ -108,7 +108,13 @@ async function getPresignedDownloadUrl(key, { fileName, disposition = 'inline', 
   return getSignedUrl(s3, command, { expiresIn });
 }
 
+async function getObject(key) {
+  const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
+  return Buffer.from(await res.Body.transformToByteArray());
+}
+
 module.exports = {
+  getObject,
   s3,
   BUCKET,
   uploadObject,

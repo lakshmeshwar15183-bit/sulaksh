@@ -323,4 +323,19 @@ router.post('/downloads-toggle', (req, res) => {
   res.json({ enabled: !disable });
 });
 
+
+// ---- Watermark toggle (owner only) ----
+router.get('/watermark-toggle', (req, res) => {
+  res.json({ enabled: db.getSetting('watermark_enabled') === '1' });
+});
+router.post('/watermark-toggle', (req, res) => {
+  const email = String(req.admin.email || '').toLowerCase();
+  if (!DOWNLOADS_TOGGLE.includes(email)) {
+    return res.status(403).json({ error: 'Only the site owner can change this.' });
+  }
+  const enabled = !!(req.body && req.body.enabled);
+  db.setSetting('watermark_enabled', enabled ? '1' : '0');
+  res.json({ enabled });
+});
+
 module.exports = router;
