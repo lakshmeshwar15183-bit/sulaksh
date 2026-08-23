@@ -478,13 +478,15 @@
 
 <section class="cats wrap" id="exams">
   <div class="cats-grid">
-    <div class="cat-card">
-      <div class="cat-icon" style="background:rgba(255,122,26,.1); color:var(--saffron);">⚡</div>
-      <h3 style="color:var(--saffron);">ONE DAY EXAMS</h3>
-      <p>RRB NTPC, Group D, JE, ALP · SSC CGL, CHSL, MTS, GD &amp; more</p>
-      <a href="one-day.html" class="cat-link" style="color:var(--saffron);">View All →</a>
-      <button class="upload-btn" onclick="openUpload('One Day Exams','RRB / SSC')">⬆ Upload Material</button>
+    <div class="cat-card" style="position:relative;">
+      <span style="position:absolute; top:10px; right:14px; font-size:22px; transform:rotate(-15deg); filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));" title="pookie 🎀">🎀</span>
+      <div class="cat-icon" style="background:#fff; padding:3px; overflow:hidden;"><img src="assets/images/du-logo.jpeg" alt="DU logo" style="width:100%; height:100%; object-fit:contain; border-radius:11px;"></div>
+      <h3 style="color:var(--green);">DU &amp; COLLEGE</h3>
+      <p>BA, BSc, BCom — Semester Notes, PYQs, Question Bank</p>
+      <a href="du.html" class="cat-link" style="color:var(--green);" onclick="return openDuInfo(event);">View All →</a>
+      <button class="upload-btn" onclick="openUpload('DU &amp; College','Semester')">⬆ Upload Material</button>
     </div>
+  </div>
     <div class="cat-card">
       <div class="cat-icon" style="background:rgba(12,35,64,.08); color:var(--text);">🏛️</div>
       <h3 style="color:var(--text);">UPSC</h3>
@@ -495,12 +497,16 @@
     <div class="cat-card" style="position:relative;">
       <span style="position:absolute; top:10px; right:14px; font-size:22px; transform:rotate(-15deg); filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));" title="pookie 🎀">🎀</span>
       <div class="cat-icon" style="background:#fff; padding:3px; overflow:hidden;"><img src="assets/images/du-logo.jpeg" alt="DU logo" style="width:100%; height:100%; object-fit:contain; border-radius:11px;"></div>
-      <h3 style="color:var(--green);">DU &amp; COLLEGE</h3>
-      <p>BA, BSc, BCom — Semester Notes, PYQs, Question Bank</p>
-      <a href="du.html" class="cat-link" style="color:var(--green);" onclick="return openDuInfo(event);">View All →</a>
-      <button class="upload-btn" onclick="openUpload('DU &amp; College','Semester')">⬆ Upload Material</button>
+    <div class="cat-card">
+      <div class="cat-icon" style="background:rgba(255,122,26,.1); color:var(--saffron);">⚡</div>
+      <h3 style="color:var(--saffron);">ONE DAY EXAMS</h3>
+      <p>RRB NTPC, Group D, JE, ALP · SSC CGL, CHSL, MTS, GD &amp; more</p>
+      <a href="one-day.html" class="cat-link" style="color:var(--saffron);">View All →</a>
+      <button class="upload-btn" onclick="openUpload('One Day Exams','RRB / SSC')">⬆ Upload Material</button>
     </div>
-  </div>
+    <div class="cat-card">
+      <div class="cat-icon" style="background:rgba(12,35,64,.08); color:var(--text);">🏛️</div>
+  
 
   <div class="split">
     <div class="panel" id="study">
