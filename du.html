@@ -1744,10 +1744,8 @@
   }
   async function viewMaterial(id) {
     adGate.open(async function (win) {
-      try {
-        var url = await materialLink(id, 'inline');
-        if (win && !win.closed) { win.location.href = url; } else { window.open(url, '_blank'); }
-      } catch (e) { if (win && !win.closed) win.close(); alert(e.message); }
+      const vurl = '/view.html?id=' + encodeURIComponent(id);
+      if (win && !win.closed) { win.location.href = vurl; } else { window.location.href = vurl; }
     });
   }
   async function downloadMaterial(id) {
