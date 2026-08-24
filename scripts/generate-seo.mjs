@@ -57,7 +57,7 @@ function pageHTML(o) {
 <style>${CSS}</style></head>
 <body>
 <header><div class="nav">
-<a class="brand" href="/"><img class="e" src="/assets/images/sulaksh-emblem.png" alt=""><img class="w" src="/assets/images/sulaksh-wordmark.png" alt="SULAKSH"></a>
+<a class="brand" href="/"><img class="e" src="/assets/images/sulaksh-emblem.png" alt="Sulaksh - Delhi University previous year question papers and study material"><img class="w" src="/assets/images/sulaksh-wordmark.png" alt="SULAKSH - DU PYQs syllabus notes free download"></a>
 <span class="spacer"></span>
 <a class="b" href="/pyq/index.html">All PYQs</a>
 <a class="b" href="/du.html">DU &amp; College</a>
@@ -71,6 +71,7 @@ ${o.intro}
 ${o.body}
 <div class="ad"><ins class="adsbygoogle" style="display:block;margin-top:20px" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.relHtml}
+${o.aboutBlock || ""}
 <div class="faq"><h2>FAQs</h2>${o.faqH}</div>
 </div>
 <footer><b>SULAKSH</b> — Learn. Prepare. Achieve.<br>Free study material for every DU aspirant · <a href="/">Home</a> · <a href="/du.html">DU &amp; College</a> · <a href="/pyq/index.html">All PYQs</a></footer>
@@ -91,7 +92,12 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs) {
   ]).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const relHtml = (relItems && relItems.length)
     ? '<h2>Related Papers</h2><div class="rel">' + relItems.map(r => `<a href="${SITE}/pyq/${r.file}">${esc(r.label)}</a>`).join('') + '</div>' : '';
-  const html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file });
+  const aboutBlock = `
+    <h2>About This Collection</h2>
+    <p>These <strong>Delhi University previous year question papers and study materials</strong> are among the most searched resources by BA, BSc and BCom students under the <strong>NEP/UGCF framework</strong>. Solving previous year question papers is the single most effective way to understand DU's exam pattern, marking scheme and frequently repeated questions. Every paper here is free to view.</p>
+    <p>Pair these papers with semester notes, the official DU syllabus and timed practice for maximum scores. Recent years' papers carry the most weight as they follow the latest pattern.</p>
+    <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a></p>`;
+  const html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock });
   fs.mkdirSync(path.dirname(path.join(OUT, file)), { recursive: true });
   fs.writeFileSync(path.join(OUT, file), html);
   pages.set(file, title);
