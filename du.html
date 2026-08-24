@@ -944,7 +944,35 @@
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.__coreViewId = id;
+    if (!window.__restoring) {
+      const st = [window.__coreSubject || '', window.__coreTrack || '', window.__coreSem || '', window.__coreCat || '', id];
+      try { history.pushState({ sulaksh: st }, '', '#c=' + st.map(encodeURIComponent).join('~')); } catch (e) {}
+    }
   }
+
+  // ---- Deep-link restore: refresh & browser-back support (view-aware) ----
+  function replayCoreFromParts(p) {
+    const [subject, track, sem, cat, view] = p;
+    if (!subject) { backToCategories(); return; }
+    window.__restoring = true;
+    try {
+      if (view === 'viewCoreTrack' || !track) { goCoreTrack(subject); }
+      else if (view === 'viewCoreSubject' || !sem) { goCoreTrack(subject); selectCoreTrack(track); }
+      else if (view === 'viewCoreCategory' || !cat) { goCoreSem(subject, sem || ''); }
+      else { goCoreSem(subject, sem); openCoreCategory(subject, sem, cat); }
+    } finally { setTimeout(() => { window.__restoring = false; }, 0); }
+  }
+  function partsFromHash() {
+    if (!location.hash.startsWith('#c=')) return null;
+    try { return decodeURIComponent(location.hash.slice(3)).split('~'); } catch { return null; }
+  }
+  function restoreFromHash() {
+    const p = partsFromHash();
+    if (p && p[0]) replayCoreFromParts(p);
+  }
+  window.addEventListener('popstate', () => { restoreFromHash(); });
+  if (location.hash.startsWith('#c=')) { const __p = partsFromHash(); if (__p && __p[0]) { window.__restoring = true; try { replayCoreFromParts(__p); } finally { setTimeout(() => { window.__restoring = false; }, 300); } } }
 
   const CORE_CATEGORIES = [
     { id: 'syllabus', label: 'Syllabus', ico: '📗', desc: 'Official syllabus and paper structure' },
@@ -1732,10 +1760,12 @@
   }
 
   updateAuthUI();
-  loadMaterials();
+  loadMaterials().then(() => {
+    if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
+  });
 
   // Restore the active section on refresh (e.g. #cat-AEC keeps you in AEC).
-  (function restoreFromHash() {
+  (function restoreSectionHash() {
     const h = location.hash.replace(/^#/, '');
     if (!h) return;
     const el = document.getElementById(h);
