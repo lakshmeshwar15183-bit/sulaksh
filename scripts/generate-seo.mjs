@@ -270,8 +270,10 @@ emit('index.html',
   '<p>Use browser search (Ctrl+F) or pick your subject from <a href="/du.html">DU & College sections</a>.</p>');
 
 // ===== sitemap =====
+const INFO_EXTRA = ['where-to-find-du-pyqs.html', 'where-to-find-du-syllabus.html', 'best-website-for-du-pyqs-study-material.html'];
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + ['', 'index.html', 'du.html', 'one-day.html', 'upsc.html', 'guides.html', 'contact.html']
+    .concat(INFO_EXTRA)
     .concat([...pages.keys()].map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc></url>').join('\n')
   + '\n</urlset>\n');
