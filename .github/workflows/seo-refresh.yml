@@ -1,0 +1,53 @@
+name: SEO refresh
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch:          # manual "Run workflow" button
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate SEO pages from live catalog
+        env:
+          SULAKSH_API: https://sulaksh-backend-production.up.railway.app
+        run: node scripts/generate-seo.mjs
+
+      - name: Commit new pages (main)
+        run: |
+          git config user.name "sulaksh-seo-bot"
+          git config user.email "bot@sulaksh.online"
+          git add -A
+          git diff --cached --quiet || git commit -m "SEO auto-refresh $(date -u '+%F %H:%M') UTC"
+          git push origin main
+
+      - name: Deploy FULL tree to gh-pages (nothing missed)
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          git reset --hard origin/gh-pages
+          # sync ENTIRE tree from main except backend source folder
+          git checkout main -- . ':!backend'
+          git add -A
+          git diff --cached --quiet || git commit -m "full sync $(date -u '+%F %H:%M') UTC"
+          git push origin gh-pages
+
+      - name: Smoke test key pages
+        run: |
+          sleep 60
+          for u in "" view.html du.html pyq/index.html sitemap.xml; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://sulaksh.online/$u")
+            echo "$u → $code"
+          done
