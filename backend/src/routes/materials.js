@@ -1,8 +1,7 @@
 const express = require('express');
-const { PDFDocument, StandardFonts, degrees, rgb } = require('pdf-lib');
 const db = require('../db');
 const { rateLimit } = require('express-rate-limit');
-const { getPresignedDownloadUrl, getObject } = require('../r2');
+const { getPresignedDownloadUrl } = require('../r2');
 const { getStaff } = require('../middleware/auth');
 
 const router = express.Router();
@@ -71,9 +70,6 @@ router.get('/:id', (req, res) => {
 // from R2 — the file is never proxied through this server.
 router.get('/:id/download', async (req, res) => {
   const staff = getStaff(req);
-  if (db.getSetting('downloads_disabled') === '1' && !staff && req.query.disposition === 'attachment') {
-    return res.status(403).json({ error: 'Downloads are temporarily paused. Please check back soon.' });
-  }
   if (db.getSetting('maintenance_mode') === '1' && !staff) {
     return res.status(503).json({ maintenance: true });
   }
@@ -106,42 +102,6 @@ router.get('/:id/download', async (req, res) => {
   } catch (err) {
     console.error('[materials] presign error for', material.id, err.message);
     res.status(502).json({ error: 'Could not generate a download link right now. Please try again.' });
-  }
-});
-
-
-// ---- Watermarked inline stream ----
-function material_id_ok(id){ return /^[0-9a-f-]{36}$/i.test(id||''); }
-
-router.get('/:id/wm', async (req, res) => {
-  const material = db.prepare(`SELECT * FROM materials WHERE id = ? AND status = 'active'`).get(req.params.id);
-  if (!material || !material.r2_object_key) return res.status(404).json({ error: 'Material not found.' });
-  try {
-    const bytes = await getObject(material.r2_object_key);
-    let out = bytes;
-    if (!String(material.content_type||'').includes('pdf')) {
-      out = bytes;
-    } else try {
-      const pdfDoc = await PDFDocument.load(bytes);
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const ip = String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
-      const day = new Date().toISOString().slice(0,10);
-      const txt = `sulaksh.online · ${ip} · ${day}`;
-      pdfDoc.getPages().forEach(p => {
-        const w = p.getWidth(), h = p.getHeight();
-        const ang = Math.atan(h / w) * 180 / Math.PI;
-        p.drawText(txt, { x: w * 0.08, y: h * 0.5, size: Math.max(16, Math.round(w / 34)), font, color: rgb(0.55,0.55,0.62), opacity: 0.3, rotate: degrees(ang) });
-      });
-      out = Buffer.from(await pdfDoc.save());
-    } catch (e) { /* unparsable — serve original */ }
-    const ct = material.content_type && material.content_type !== 'application/pdf'
-      ? material.content_type : 'application/pdf';
-    res.setHeader('Content-Type', ct);
-    res.setHeader('Content-Disposition', `inline; filename="${(material.file_name||'document').replace(/"/g,'')}"`);
-    res.send(out);
-  } catch (e) {
-    console.error('[wm] failed:', e.message);
-    res.status(500).json({ error: 'Could not process file.' });
   }
 });
 

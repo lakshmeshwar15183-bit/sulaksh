@@ -22,7 +22,7 @@ router.post('/login', (req, res) => {
   }
 
   const token = jwt.sign(
-    { sub: admin.id, email: admin.email, role: admin.role || 'super' },
+    { sub: admin.id, email: admin.email },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '12h' }
   );
@@ -34,60 +34,7 @@ router.post('/login', (req, res) => {
     maxAge: 12 * 60 * 60 * 1000,
   });
 
-  res.json({ email: admin.email, role: admin.role || 'super', token });
-});
-
-// ---- One-time bootstrap for limited-role accounts ----
-// Creates or updates an account with role 'maintenance' (can only toggle
-// maintenance mode). Requires the ADMIN_SETUP_KEY env value in the
-// x-setup-key header. Delete the env var after use to disable this route.
-router.post('/bootstrap-maintainer', (req, res) => {
-  if (!process.env.ADMIN_SETUP_KEY || req.get('x-setup-key') !== process.env.ADMIN_SETUP_KEY) {
-    return res.status(403).json({ error: 'Forbidden.' });
-  }
-  const { email, password } = req.body || {};
-  if (!email || !password || password.length < 8) {
-    return res.status(400).json({ error: 'Email and a password of at least 8 characters are required.' });
-  }
-  const bcrypt = require('bcryptjs');
-  const { v4: uuidv4 } = require('uuid');
-  const existing = db.prepare('SELECT id FROM admins WHERE email = ?').get(email.toLowerCase().trim());
-  const ts = new Date().toISOString();
-  if (existing) {
-    db.prepare("UPDATE admins SET password_hash = ?, role = 'maintenance' WHERE id = ?")
-      .run(bcrypt.hashSync(password, 10), existing.id);
-  } else {
-    db.prepare(
-      "INSERT INTO admins (id, email, password_hash, role, created_at) VALUES (?, ?, ?, 'maintenance', ?)"
-    ).run(uuidv4(), email.toLowerCase().trim(), bcrypt.hashSync(password, 10), ts);
-  }
-  res.json({ ok: true, email: email.toLowerCase().trim(), role: 'maintenance' });
-});
-
-
-// ---- One-time owner bootstrap ----
-// Header x-setup-key must equal JWT_SECRET. Creates/upserts a SUPER admin.
-router.post('/bootstrap-owner', (req, res) => {
-  if (!req.get('x-setup-key') || req.get('x-setup-key') !== process.env.JWT_SECRET) {
-    return res.status(403).json({ error: 'Forbidden.' });
-  }
-  const { email, password } = req.body || {};
-  if (!email || !password || password.length < 10) {
-    return res.status(400).json({ error: 'Email and a password of at least 10 characters are required.' });
-  }
-  const bcrypt = require('bcryptjs');
-  const { v4: uuidv4 } = require('uuid');
-  const em = String(email).toLowerCase().trim();
-  const hash = bcrypt.hashSync(password, 12);
-  const ts = new Date().toISOString();
-  const existing = db.prepare('SELECT id FROM admins WHERE email = ?').get(em);
-  if (existing) {
-    db.prepare("UPDATE admins SET password_hash = ?, role = 'super' WHERE id = ?").run(hash, existing.id);
-  } else {
-    db.prepare("INSERT INTO admins (id, email, password_hash, role, created_at) VALUES (?, ?, ?, 'super', ?)")
-      .run(uuidv4(), em, hash, ts);
-  }
-  res.json({ ok: true, email: em, role: 'super' });
+  res.json({ email: admin.email, token });
 });
 
 router.post('/logout', (req, res) => {
@@ -96,7 +43,7 @@ router.post('/logout', (req, res) => {
 });
 
 router.get('/me', requireAdmin, (req, res) => {
-  res.json({ email: req.admin.email, role: req.admin.role || 'super' });
+  res.json({ email: req.admin.email });
 });
 
 module.exports = router;
