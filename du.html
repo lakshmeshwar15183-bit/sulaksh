@@ -685,15 +685,18 @@
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
 
-  // All Sulaksh API calls carry the HttpOnly session cookie. Centralised here
-  // so no call site can forget credentials, and stale Bearer headers are
-  // stripped automatically.
+  // All Sulaksh API calls authenticate two ways: the session cookie where
+  // the browser allows it, plus a Bearer token fallback for browsers that
+  // block third-party cookies entirely (Chrome/Safari default now).
   const _apiFetch = window.fetch.bind(window);
   window.fetch = function (input, init) {
     const url = typeof input === 'string' ? input : (input && input.url) || '';
     if (url.startsWith(SULAKSH_API)) {
       init = Object.assign({}, init, { credentials: 'include' });
-      if (init.headers && !init.headers.forEach && init.headers.Authorization) delete init.headers.Authorization;
+      const tok = localStorage.getItem('sulaksh-token');
+      const hdrs = Object.assign({}, (init.headers && !init.headers.forEach) ? init.headers : {});
+      if (tok && !hdrs.Authorization) hdrs.Authorization = 'Bearer ' + tok;
+      init.headers = hdrs;
     }
     return _apiFetch(input, init);
   };
@@ -906,23 +909,26 @@
   // email lists or localStorage tokens.
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
-    token: null,
+    token: localStorage.getItem('sulaksh-token') || null,
     role: null,
     isAdmin: false,
     canMaintain: false,
   };
 
   async function restoreSession() {
-    try {
-      const r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { credentials: 'include' });
-      if (!r.ok) return;
-      const me = await r.json().catch(() => ({}));
-      state.email = me.email || null;
-      state.role = me.role || null;
-      state.isAdmin = state.role === 'super';
-      state.canMaintain = state.isAdmin || state.role === 'maintenance';
-      if (state.email) localStorage.setItem('sulaksh-email', state.email);
-    } catch (e) {}
+    let r = null;
+    try { r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { credentials: 'include' }); } catch (e) { return; }
+    if (!r.ok && state.token) {
+      // Cookie was blocked by the browser — fall back to the stored token.
+      try { r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { headers: { Authorization: 'Bearer ' + state.token } }); } catch (e) { return; }
+    }
+    if (!r || !r.ok) return;
+    const me = await r.json().catch(() => ({}));
+    state.email = me.email || null;
+    state.role = me.role || null;
+    state.isAdmin = state.role === 'super';
+    state.canMaintain = state.isAdmin || state.role === 'maintenance';
+    if (state.email) localStorage.setItem('sulaksh-email', state.email);
   }
 
   const dynamicSubjects = {};
@@ -1393,8 +1399,10 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Login failed.');
-      // Session is an HttpOnly cookie; ask the server who we are and what
-      // role we hold instead of trusting anything client-side.
+      // Keep the token for browsers that block third-party cookies; the
+      // wrapper attaches it to every API call automatically.
+      state.token = data.token || null;
+      if (state.token) localStorage.setItem('sulaksh-token', state.token);
       const me = await fetch(`${SULAKSH_API}/api/auth/me`)
         .then((r) => (r.ok ? r.json() : {}))
         .catch(() => ({}));
@@ -1403,7 +1411,6 @@
       state.isAdmin = state.role === 'super';
       state.canMaintain = state.isAdmin || state.role === 'maintenance';
       localStorage.setItem('sulaksh-email', state.email);
-      localStorage.removeItem('sulaksh-token');
       localStorage.removeItem('sulaksh-role');
       updateAuthUI();
       closeModal('loginOverlay');

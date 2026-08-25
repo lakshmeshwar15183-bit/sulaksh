@@ -41,9 +41,11 @@ router.post('/login', (req, res) => {
     maxAge: 12 * 60 * 60 * 1000,
   });
 
-  // Token lives only in the HttpOnly cookie above — never returned in the
-  // body, so browser JS (and any XSS) cannot read it.
-  res.json({ email: admin.email, role });
+  // Session travels two ways: the HttpOnly cookie works for same-origin
+  // clients (the /admin dashboard); the body token covers cross-origin
+  // pages (sulaksh.online) where browsers refuse to send third-party
+  // cookies at all. Both carry the identical signed JWT.
+  res.json({ email: admin.email, role, token });
 });
 
 // ---- One-time bootstrap for limited-role accounts ----

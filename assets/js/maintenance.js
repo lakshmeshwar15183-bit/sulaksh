@@ -28,8 +28,12 @@
   }
 
   function isStaff() {
-    // Session lives in an HttpOnly cookie; ask the API to confirm it.
-    return fetch(API + '/api/auth/me', { credentials: 'include' })
+    // Confirm via API — cookie first, stored token as fallback (browsers
+    // that block third-party cookies never send the cookie).
+    var h = {};
+    var t = localStorage.getItem('sulaksh-token');
+    if (t) h.Authorization = 'Bearer ' + t;
+    return fetch(API + '/api/auth/me', { credentials: 'include', headers: h })
       .then(function (r) { return r.ok; })
       .catch(function () { return false; });
   }
@@ -75,8 +79,8 @@
         .then(function (res) {
           if (!res.ok) throw new Error(res.j.error || 'Login failed.');
           localStorage.setItem('sulaksh-email', res.j.email);
-          localStorage.removeItem('sulaksh-token');
-          localStorage.removeItem('sulaksh-role');
+          if (res.j.token) localStorage.setItem('sulaksh-token', res.j.token);
+          if (res.j.role) localStorage.setItem('sulaksh-role', res.j.role);
           window.location.reload();
         })
         .catch(function (err) {
