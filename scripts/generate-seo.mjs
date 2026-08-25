@@ -344,10 +344,11 @@ emit('index.html',
    <p>Pick your programme from the <a href="/du.html">DU & College sections</a>, or go back <a href="/">Home</a>.</p>`);
 
 // ===== sitemap =====
+const TODAY = new Date().toISOString().slice(0, 10);
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + ['', 'index.html', 'du.html', 'one-day.html', 'upsc.html', 'guides.html', 'contact.html']
     .concat([...pages.keys()].map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
-    .map(u => '  <url><loc>' + SITE + '/' + u + '</loc></url>').join('\n')
+    .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
 
 console.log('TOTAL SITEMAP URLs:', 7 + pages.size);
