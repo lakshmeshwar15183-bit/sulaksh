@@ -5,6 +5,7 @@ const db = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 const { uploadObject, deleteObject, objectExists } = require('../r2');
 const { validateUpload, buildObjectKey, sanitizeFileName, detectFileType, MAX_FILE_SIZE_BYTES } = require('../utils/validate');
+const { stampPdf } = require('../stamp');
 
 const router = express.Router();
 router.use(requireAdmin);
@@ -72,12 +73,23 @@ router.post('/materials', upload.single('file'), async (req, res) => {
   }
 
   const contentType = detectFileType(req.file.buffer);
+  let fileBuffer = req.file.buffer;
+  // Brand PDFs at upload time — the stored object is watermarked once, so
+  // every download (CDN or presigned) serves the protected version.
+  if (contentType === 'application/pdf') {
+    try {
+      fileBuffer = await stampPdf(fileBuffer);
+    } catch (err) {
+      console.error('[admin] PDF stamping failed:', err.message);
+      return res.status(400).json({ error: 'This PDF could not be processed for watermarking. Try re-exporting or flattening it, then upload again.' });
+    }
+  }
   const objectKey = buildObjectKey({ exam, category, year }, contentType);
   const safeFileName = sanitizeFileName(req.file.originalname, contentType);
 
   // 1. Upload to R2 first. If this throws, we return before ever touching the DB.
   try {
-    await uploadObject(objectKey, req.file.buffer, contentType);
+    await uploadObject(objectKey, fileBuffer, contentType);
   } catch (err) {
     console.error('[admin] R2 upload failed:', err.message);
     return res.status(502).json({ error: 'Upload to storage failed. No record was created.' });
@@ -94,7 +106,7 @@ router.post('/materials', upload.single('file'), async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `    ).run(
       id, title, exam, category, subject || null, track || null, semester || null, material_category || null, year ? parseInt(year, 10) : null,
-      description || null, safeFileName, req.file.size, contentType, objectKey, 'active',
+      description || null, safeFileName, fileBuffer.length, contentType, objectKey, 'active',
       is_imp === 'true' || is_imp === '1' ? 1 : 0,
       is_syllabus === 'true' || is_syllabus === '1' ? 1 : 0,
       is_pyq === 'true' || is_pyq === '1' ? 1 : 0,
@@ -154,12 +166,22 @@ router.put('/materials/:id/file', upload.single('file'), async (req, res) => {
   }
 
   const contentType = detectFileType(req.file.buffer);
+  let fileBuffer = req.file.buffer;
+  // Same upload-time watermarking as the create route.
+  if (contentType === 'application/pdf') {
+    try {
+      fileBuffer = await stampPdf(fileBuffer);
+    } catch (err) {
+      console.error('[admin] PDF stamping failed during replace:', err.message);
+      return res.status(400).json({ error: 'This PDF could not be processed for watermarking. Nothing was changed.' });
+    }
+  }
   const newKey = buildObjectKey({ exam: existing.exam, category: existing.category, year: existing.year }, contentType);
   const safeFileName = sanitizeFileName(req.file.originalname, contentType);
 
   // 1. Upload the new file under a brand-new key (never overwrite in place).
   try {
-    await uploadObject(newKey, req.file.buffer, contentType);
+    await uploadObject(newKey, fileBuffer, contentType);
   } catch (err) {
     console.error('[admin] R2 upload failed during replace:', err.message);
     return res.status(502).json({ error: 'Upload of the replacement file failed. Nothing was changed.' });
@@ -173,7 +195,7 @@ router.put('/materials/:id/file', upload.single('file'), async (req, res) => {
       UPDATE materials
       SET r2_object_key = ?, file_name = ?, file_size = ?, content_type = ?, updated_at = ?
       WHERE id = ?
-    `).run(newKey, safeFileName, req.file.size, contentType, nowIso(), req.params.id);
+    `).run(newKey, safeFileName, fileBuffer.length, contentType, nowIso(), req.params.id);
   } catch (err) {
     console.error('[admin] DB update failed after replace-upload, cleaning up new object:', newKey, err.message);
     try {
