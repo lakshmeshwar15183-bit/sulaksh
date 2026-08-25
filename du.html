@@ -685,6 +685,19 @@
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
 
+  // All Sulaksh API calls carry the HttpOnly session cookie. Centralised here
+  // so no call site can forget credentials, and stale Bearer headers are
+  // stripped automatically.
+  const _apiFetch = window.fetch.bind(window);
+  window.fetch = function (input, init) {
+    const url = typeof input === 'string' ? input : (input && input.url) || '';
+    if (url.startsWith(SULAKSH_API)) {
+      init = Object.assign({}, init, { credentials: 'include' });
+      if (init.headers && !init.headers.forEach && init.headers.Authorization) delete init.headers.Authorization;
+    }
+    return _apiFetch(input, init);
+  };
+
   // Upload with timeout + retry on transient network AND server (5xx) errors.
   async function postUpload(url, options) {
     const attempts = 3;
@@ -710,7 +723,6 @@
     }
     throw lastErr;
   }
-  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
   const CATEGORIES = ['CORE', 'SEC', 'VAC', 'AEC', 'GE'];
 
   const CORE_SUBJECTS = [
@@ -889,11 +901,29 @@
 
   const STATIC_SUBJECTS = { CORE: CORE_SUBJECTS, VAC: VAC_SUBJECTS, SEC: SEC_SUBJECTS, AEC: AEC_SUBJECTS, GE: GE_SUBJECTS };
 
+  // Session state lives in an HttpOnly cookie owned by the API. The UI only
+  // mirrors what the server confirms via /api/auth/me — never client-side
+  // email lists or localStorage tokens.
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
-    token: localStorage.getItem('sulaksh-token') || null,
-    isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
+    token: null,
+    role: null,
+    isAdmin: false,
+    canMaintain: false,
   };
+
+  async function restoreSession() {
+    try {
+      const r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { credentials: 'include' });
+      if (!r.ok) return;
+      const me = await r.json().catch(() => ({}));
+      state.email = me.email || null;
+      state.role = me.role || null;
+      state.isAdmin = state.role === 'super';
+      state.canMaintain = state.isAdmin || state.role === 'maintenance';
+      if (state.email) localStorage.setItem('sulaksh-email', state.email);
+    } catch (e) {}
+  }
 
   const dynamicSubjects = {};
 
@@ -1284,33 +1314,27 @@
     updateMaintUI();
   }
 
-  // Maintenance toggle — visible ONLY to the site owner and maintenance-role accounts
-  const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];
+  // Maintenance toggle — visibility follows the server-confirmed role.
   async function updateMaintUI() {
     const btn = document.getElementById('maintBtn');
     if (!btn) return;
-    const role = localStorage.getItem('sulaksh-role');
-    const can = MAINTENANCE_EMAILS.includes((state.email || '').toLowerCase()) || role === 'maintenance';
-    btn.style.display = (state.token && can) ? '' : 'none';
-    if (!can || !state.token) return;
+    const can = state.canMaintain;
+    btn.style.display = can ? '' : 'none';
+    if (!can) return;
     try {
-      const r = await fetch(`${SULAKSH_API}/api/admin/maintenance`, {
-        headers: { Authorization: `Bearer ${state.token}` },
-      });
+      const r = await fetch(`${SULAKSH_API}/api/admin/maintenance`);
       if (r.ok) { const s = await r.json(); btn.textContent = s.enabled ? '🛠️' : '🚧'; }
     } catch (e) {}
   }
   async function toggleMaintenance() {
     const btn = document.getElementById('maintBtn');
     try {
-      const cur = await fetch(`${SULAKSH_API}/api/admin/maintenance`, {
-        headers: { Authorization: `Bearer ${state.token}` },
-      }).then((r) => r.json());
+      const cur = await fetch(`${SULAKSH_API}/api/admin/maintenance`).then((r) => r.json());
       const next = !cur.enabled;
       if (!confirm(next ? 'Put the site under maintenance?' : 'Bring the site back online?')) return;
       const r = await fetch(`${SULAKSH_API}/api/admin/maintenance`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: next }),
       });
       if (!r.ok) throw new Error('Failed');
@@ -1369,12 +1393,18 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Login failed.');
-      state.email = email;
-      state.token = data.token;
-      state.isAdmin = ADMIN_EMAILS.includes(email);
-      localStorage.setItem('sulaksh-email', email);
-      localStorage.setItem('sulaksh-token', data.token);
-      localStorage.setItem('sulaksh-role', data.role || 'super');
+      // Session is an HttpOnly cookie; ask the server who we are and what
+      // role we hold instead of trusting anything client-side.
+      const me = await fetch(`${SULAKSH_API}/api/auth/me`)
+        .then((r) => (r.ok ? r.json() : {}))
+        .catch(() => ({}));
+      state.email = me.email || email;
+      state.role = me.role || null;
+      state.isAdmin = state.role === 'super';
+      state.canMaintain = state.isAdmin || state.role === 'maintenance';
+      localStorage.setItem('sulaksh-email', state.email);
+      localStorage.removeItem('sulaksh-token');
+      localStorage.removeItem('sulaksh-role');
       updateAuthUI();
       closeModal('loginOverlay');
       loadMaterials();
@@ -1384,7 +1414,9 @@
   }
 
   async function logout() {
-    state.email = null; state.token = null; state.isAdmin = false;
+    try { await fetch(`${SULAKSH_API}/api/auth/logout`, { method: 'POST' }); } catch (e) {}
+    state.email = null; state.token = null; state.role = null;
+    state.isAdmin = false; state.canMaintain = false;
     localStorage.removeItem('sulaksh-email');
     localStorage.removeItem('sulaksh-token');
     localStorage.removeItem('sulaksh-role');
@@ -1479,7 +1511,7 @@
     try {
       const res = await postUpload(`${SULAKSH_API}/api/admin/materials`, {
         method: 'POST',
-        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+        headers: {},
         body: fd,
       });
       const data = await res.json().catch(() => ({}));
@@ -1653,7 +1685,7 @@
     try {
       const res = await fetch(`${SULAKSH_API}/api/admin/subjects`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ exam: 'DU & College', category: cat, name: name.trim() }),
       });
       const data = await res.json().catch(() => ({}));
@@ -1677,7 +1709,7 @@
       if (dbRow) {
         const res = await fetch(`${SULAKSH_API}/api/admin/subjects/${dbRow.id}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: clean }),
         });
         const data = await res.json().catch(() => ({}));
@@ -1685,7 +1717,7 @@
       } else {
         const cre = await fetch(`${SULAKSH_API}/api/admin/subjects`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ exam: 'DU & College', category: cat, name: clean }),
         });
         const cdata = await cre.json().catch(() => ({}));
@@ -1694,7 +1726,7 @@
         for (const m of mats) {
           const r = await fetch(`${SULAKSH_API}/api/admin/materials/${m.id}`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ subject: clean }),
           });
           const d = await r.json().catch(() => ({}));
@@ -1720,7 +1752,6 @@
       if (dbRow) {
         const res = await fetch(`${SULAKSH_API}/api/admin/subjects/${dbRow.id}`, {
           method: 'DELETE',
-          headers: { Authorization: `Bearer ${state.token}` },
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || 'Delete failed.');
@@ -1730,7 +1761,6 @@
         for (const m of mats) {
           const r = await fetch(`${SULAKSH_API}/api/admin/materials/${m.id}`, {
             method: 'DELETE',
-            headers: { Authorization: `Bearer ${state.token}` },
           });
           const d = await r.json().catch(() => ({}));
           if (!r.ok) throw new Error(d.error || 'Could not delete a file in this subject.');
@@ -1749,7 +1779,7 @@
     try {
       const res = await fetch(`${SULAKSH_API}/api/admin/materials/${id}`, {
         method: 'DELETE',
-        headers: state.token ? { Authorization: `Bearer ${state.token}` } : {},
+        headers: {},
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Delete failed.');
@@ -1785,6 +1815,7 @@
   }
 
   updateAuthUI();
+  restoreSession().then(updateAuthUI);
   loadMaterials().then(() => {
     if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
   });

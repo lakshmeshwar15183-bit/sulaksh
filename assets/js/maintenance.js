@@ -28,7 +28,10 @@
   }
 
   function isStaff() {
-    return !!(localStorage.getItem('sulaksh-token') && localStorage.getItem('sulaksh-role'));
+    // Session lives in an HttpOnly cookie; ask the API to confirm it.
+    return fetch(API + '/api/auth/me', { credentials: 'include' })
+      .then(function (r) { return r.ok; })
+      .catch(function () { return false; });
   }
 
   function showOverlay() {
@@ -61,6 +64,7 @@
       msg.textContent = 'Signing in…';
       fetch(API + '/api/auth/login', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: ov.querySelector('#sgmEmail').value.trim(),
@@ -71,8 +75,8 @@
         .then(function (res) {
           if (!res.ok) throw new Error(res.j.error || 'Login failed.');
           localStorage.setItem('sulaksh-email', res.j.email);
-          localStorage.setItem('sulaksh-token', res.j.token);
-          localStorage.setItem('sulaksh-role', res.j.role || 'super');
+          localStorage.removeItem('sulaksh-token');
+          localStorage.removeItem('sulaksh-role');
           window.location.reload();
         })
         .catch(function (err) {
@@ -87,11 +91,9 @@
       .then(function (r) { return r.json(); })
       .then(function (s) {
         if (!s || !s.enabled) return;
-        if (!isStaff()) { showOverlay(); return; }
-        // Token present — verify it is still valid, else show the login form.
-        fetch(API + '/api/auth/me', {
-          headers: { Authorization: 'Bearer ' + localStorage.getItem('sulaksh-token') },
-        }).then(function (r) { if (r.status === 401) showOverlay(); }).catch(function () {});
+        // Confirm staff status against the API (cookie-based); anyone else
+        // sees the login overlay.
+        isStaff().then(function (staff) { if (!staff) showOverlay(); });
       })
       .catch(function () {});
   });
