@@ -67,6 +67,7 @@ app.use('/api', apiLimiter);
 // Public maintenance flag — the static frontend polls this to show the
 // maintenance overlay. Always allowed, even while other routes are gated.
 const db = require('./db');
+require('./backup').schedule(db);
 app.get('/api/maintenance-status', (req, res) => {
   res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
 });
