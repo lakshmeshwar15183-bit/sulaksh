@@ -92,4 +92,37 @@ CREATE INDEX IF NOT EXISTS idx_materials_semester ON materials(semester);
 CREATE INDEX IF NOT EXISTS idx_materials_material_category ON materials(material_category);
 `);
 
-module.exports = db;
+db.exec(`
+CREATE TABLE IF NOT EXISTS app_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS subjects (
+  id TEXT PRIMARY KEY,
+  exam TEXT NOT NULL,
+  category TEXT NOT NULL,
+  name TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_subjects_exam ON subjects(exam);
+CREATE INDEX IF NOT EXISTS idx_subjects_category ON subjects(category);
+`);
+
+function getSetting(key) {
+  const row = db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key);
+  return row ? row.value : null;
+}
+
+function setSetting(key, value) {
+  db.prepare(`
+    INSERT INTO app_settings (key, value, updated_at)
+    VALUES (?, ?, ?)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+  `).run(key, value, new Date().toISOString());
+}
+
+module.exports = Object.assign(db, { getSetting, setSetting });

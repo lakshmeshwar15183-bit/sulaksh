@@ -18,4 +18,19 @@ function requireAdmin(req, res, next) {
   }
 }
 
-module.exports = { requireAdmin, COOKIE_NAME };
+// Non-throwing variant for optional-staff checks (maintenance bypass,
+// rate-limit skip). Returns { id, email } for a valid admin token
+// (cookie or Bearer header), or null when absent/invalid.
+function getStaff(req) {
+  const bearer = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  const token = req.cookies?.[COOKIE_NAME] || bearer;
+  if (!token) return null;
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    return { id: payload.sub, email: payload.email };
+  } catch {
+    return null;
+  }
+}
+
+module.exports = { requireAdmin, getStaff, COOKIE_NAME };

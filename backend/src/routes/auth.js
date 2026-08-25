@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { rateLimit } = require('express-rate-limit');
 const db = require('../db');
 const { requireAdmin, COOKIE_NAME } = require('../middleware/auth');
 
@@ -8,7 +9,17 @@ const router = express.Router();
 
 const isProd = process.env.NODE_ENV === 'production';
 
-router.post('/login', (req, res) => {
+// Counts failed attempts only; successful logins never consume budget.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: parseInt(process.env.LOGIN_ATTEMPTS_LIMIT || '10', 10),
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  message: { error: 'Too many failed login attempts. Please try again later.' },
+});
+
+router.post('/login', loginLimiter, (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
@@ -34,7 +45,9 @@ router.post('/login', (req, res) => {
     maxAge: 12 * 60 * 60 * 1000,
   });
 
-  res.json({ email: admin.email, token });
+  // Token lives only in the HttpOnly cookie above — never returned in the
+  // body, so browser JS (and any XSS) cannot read it.
+  res.json({ email: admin.email });
 });
 
 router.post('/logout', (req, res) => {
