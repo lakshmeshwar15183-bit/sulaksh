@@ -922,7 +922,12 @@
       // Cookie was blocked by the browser — fall back to the stored token.
       try { r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { headers: { Authorization: 'Bearer ' + state.token } }); } catch (e) { return; }
     }
-    if (!r || !r.ok) return;
+    if (!r || !r.ok) {
+      // No valid session — stop showing a ghost logged-in name.
+      state.email = null; state.role = null; state.isAdmin = false; state.canMaintain = false;
+      localStorage.removeItem('sulaksh-email');
+      return;
+    }
     const me = await r.json().catch(() => ({}));
     state.email = me.email || null;
     state.role = me.role || null;
@@ -1371,7 +1376,8 @@
 
   // Login / logout
   document.getElementById('loginBtn').addEventListener('click', () => {
-    if (state.email) { logout(); return; }
+    if (!state.email) { setMsg(document.getElementById('loginMsg'), '', false); openModal('loginOverlay'); return; }
+    if (confirm('Log out of ' + state.email + '?')) logout();
     setMsg(document.getElementById('loginMsg'), '', false);
     openModal('loginOverlay');
   });
