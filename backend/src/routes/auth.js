@@ -30,10 +30,14 @@ router.post('/login', (req, res) => {
     { expiresIn: process.env.JWT_EXPIRES_IN || '12h' }
   );
 
+  // SameSite must be 'none' in production: the admin panel on sulaksh.online
+  // talks to this API cross-origin, so the session cookie has to travel with
+  // cross-site fetches (credentials:'include'). Secure is mandatory then.
+  // CSRF is mitigated by the Origin allowlist check in server.js.
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     secure: isProd,
-    sameSite: 'lax',
+    sameSite: isProd ? 'none' : 'lax',
     maxAge: 12 * 60 * 60 * 1000,
   });
 

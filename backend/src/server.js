@@ -40,6 +40,18 @@ app.use(cors({
   credentials: true,
 }));
 
+// ---- CSRF guard ----
+// The session cookie is SameSite=None (cross-origin admin panel), so block
+// any state-changing browser request whose Origin isn't explicitly allowed.
+// Requests without an Origin header (curl, server-to-server, same-origin)
+// are unaffected.
+app.use((req, res, next) => {
+  const safeMethod = ['GET', 'HEAD', 'OPTIONS'].includes(req.method);
+  if (safeMethod || !req.headers.origin) return next();
+  if (allowedOrigins.includes(req.headers.origin)) return next();
+  return res.status(403).json({ error: 'Origin not allowed.' });
+});
+
 // ---- Rate limiting ----
 // Login: strict cap to make password brute-forcing impractical.
 // Counts failed attempts only; successful logins never consume budget.
