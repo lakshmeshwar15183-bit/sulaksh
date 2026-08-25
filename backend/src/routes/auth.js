@@ -75,7 +75,15 @@ router.post('/bootstrap-maintainer', (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-  res.clearCookie(COOKIE_NAME);
+  // Deletion must mirror the Set-Cookie attributes EXACTLY (sameSite/
+  // secure/path), otherwise browsers keep the original cookie alive and
+  // the next request looks logged back in.
+  res.clearCookie(COOKIE_NAME, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    path: '/',
+  });
   res.json({ ok: true });
 });
 
