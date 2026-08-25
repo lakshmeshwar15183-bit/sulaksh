@@ -1814,11 +1814,16 @@
     });
   }
 
-  updateAuthUI();
-  restoreSession().then(updateAuthUI);
-  loadMaterials().then(() => {
-    if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
-  });
+  // Session MUST resolve before first render, otherwise subject cards draw
+  // without admin controls and never redraw.
+  restoreSession()
+    .catch(() => {})
+    .then(() => {
+      updateAuthUI();
+      loadMaterials().then(() => {
+        if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
+      });
+    });
 
   // Restore the active section on refresh (e.g. #cat-AEC keeps you in AEC).
   (function restoreSectionHash() {
