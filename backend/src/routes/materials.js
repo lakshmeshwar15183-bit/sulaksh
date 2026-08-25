@@ -46,8 +46,10 @@ router.get('/', (req, res) => {
   if (material_category) { clauses.push('material_category = ?'); params.push(material_category); }
   if (year) { clauses.push('year = ?'); params.push(year); }
   if (q) {
-    clauses.push('(title LIKE ? OR description LIKE ?)');
-    params.push(`%${q}%`, `%${q}%`);
+    // Escape LIKE wildcards so user input can't craft pathological scans.
+    clauses.push("(title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')");
+    const like = `%${q.replace(/[\\%_]/g, (c) => '\\' + c)}%`;
+    params.push(like, like);
   }
 
   const rows = db.prepare(

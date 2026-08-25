@@ -51,7 +51,7 @@ router.get('/materials', (req, res) => {
   if (category) { clauses.push('category = ?'); params.push(category); }
   if (subject) { clauses.push('subject = ?'); params.push(subject); }
   if (year) { clauses.push('year = ?'); params.push(year); }
-  if (q) { clauses.push('(title LIKE ? OR description LIKE ?)'); params.push(`%${q}%`, `%${q}%`); }
+  if (q) { clauses.push("(title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')"); params.push(`%${q.replace(/[\\%_]/g, (c) => '\\' + c)}%`, `%${q.replace(/[\\%_]/g, (c) => '\\' + c)}%`); }
 
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
   const rows = db.prepare(`SELECT * FROM materials ${where} ORDER BY created_at DESC LIMIT 500`).all(...params);
@@ -235,8 +235,15 @@ router.post('/subjects', (req, res) => {
 
   const id = uuidv4();
   const ts = nowIso();
-  db.prepare('INSERT INTO subjects (id, exam, category, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
-    .run(id, exam, category, clean, ts, ts);
+  try {
+    db.prepare('INSERT INTO subjects (id, exam, category, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(id, exam, category, clean, ts, ts);
+  } catch (err) {
+    if (String(err.code || '').startsWith('SQLITE_CONSTRAINT')) {
+      return res.status(409).json({ error: 'That subject already exists in this category.' });
+    }
+    throw err;
+  }
   const subject = db.prepare('SELECT * FROM subjects WHERE id = ?').get(id);
   res.status(201).json({ subject });
 });
