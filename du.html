@@ -1493,45 +1493,71 @@
   }
 
   // Materials
+  // Fetch with one automatic retry — a single dropped request should never
+  // leave sections of the page empty.
+  async function fetchJsonRetry(url, tries = 2) {
+    for (let i = 0; i < tries; i++) {
+      try {
+        const r = await fetch(url);
+        if (r.ok) return await r.json();
+      } catch (e) { /* network blip — retry */ }
+      if (i < tries - 1) await new Promise((res) => setTimeout(res, 400));
+    }
+    return null;
+  }
+
   async function loadMaterials() {
+    let data = null;
+    let subjectDBLocal = [];
     try {
-      const [res, subRes] = await Promise.all([
-        fetch(`${SULAKSH_API}/api/materials`),
-        fetch(`${SULAKSH_API}/api/subjects?exam=${encodeURIComponent('DU & College')}`),
+      const [d, sd] = await Promise.all([
+        fetchJsonRetry(`${SULAKSH_API}/api/materials`),
+        fetchJsonRetry(`${SULAKSH_API}/api/subjects?exam=${encodeURIComponent('DU & College')}`),
       ]);
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      if (subRes.ok) {
-        const sdata = await subRes.json().catch(() => ({}));
-        subjectDB = sdata.subjects || [];
-      } else {
-        subjectDB = [];
-      }
-      const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
-      materialsCache = mats;
-      coreMaterials = mats.filter((m) => (m.category || '').toUpperCase() === 'CORE');
-      CATEGORIES.forEach((cat) => {
-        const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
-        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
-        if (cat === 'CORE') return;
-        renderCategory(cat, catMats);
-        const countEl = document.getElementById('catCount-' + cat);
-        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
-      });
-      renderCoreGrid(mats);
+      if (!d) throw new Error();
+      data = d;
+      subjectDBLocal = (sd && sd.subjects) || [];
     } catch (err) {
+      data = null;
+    }
+    subjectDB = subjectDBLocal;
+
+    if (!data) {
+      // Full fallback: static lists so nothing ever disappears completely.
       coreMaterials = [];
       CATEGORIES.forEach((cat) => {
         if (cat === 'CORE') return;
         const staticList = STATIC_SUBJECTS[cat];
         if (staticList && staticList.length) {
-          renderCategory(cat, []);
+          try { renderCategory(cat, []); } catch (e) { console.error('[du] render ' + cat, e); }
           const countEl = document.getElementById('catCount-' + cat);
           if (countEl) countEl.textContent = staticList.length + ' subject' + (staticList.length === 1 ? '' : 's');
         } else {
-          document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+          const g = document.getElementById('subj-' + cat);
+          if (g) g.innerHTML = '<div class="mat-empty">Could not load materials.</div>';
         }
       });
+      renderCoreGrid([]);
+      return;
+    }
+
+    try {
+      const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
+      materialsCache = mats;
+      coreMaterials = mats.filter((m) => (m.category || '').toUpperCase() === 'CORE');
+      // Core grid renders FIRST — it must never be left blank because a
+      // later category failed.
+      renderCoreGrid(mats);
+      CATEGORIES.forEach((cat) => {
+        const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
+        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
+        if (cat === 'CORE') return;
+        try { renderCategory(cat, catMats); } catch (e) { console.error('[du] render ' + cat, e); }
+        const countEl = document.getElementById('catCount-' + cat);
+        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
+      });
+    } catch (err) {
+      console.error('[du] loadMaterials render error:', err);
       renderCoreGrid([]);
     }
   }
@@ -1572,6 +1598,7 @@
 
   function renderCategory(cat, mats) {
     const grid = document.getElementById('subj-' + cat);
+    if (!grid) return;
     const bySubject = {};
     mats.forEach((m) => { const s = m.subject || 'General'; (bySubject[s] = bySubject[s] || []).push(m); });
 
