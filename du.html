@@ -1827,15 +1827,18 @@
     });
   }
 
-  // Session MUST resolve before first render, otherwise subject cards draw
-  // without admin controls and never redraw.
+  // Content renders IMMEDIATELY; the session resolves in parallel and only
+  // re-renders if the role changes (admin controls appear/disappear).
+  updateAuthUI();
+  loadMaterials().then(() => {
+    if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
+  });
   restoreSession()
     .catch(() => {})
     .then(() => {
+      const wasAdmin = document.body.classList.contains('is-admin');
       updateAuthUI();
-      loadMaterials().then(() => {
-        if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
-      });
+      if ((state.isAdmin || state.canMaintain) !== wasAdmin && !window.__restoring) loadMaterials();
     });
 
   // Restore the active section on refresh (e.g. #cat-AEC keeps you in AEC).

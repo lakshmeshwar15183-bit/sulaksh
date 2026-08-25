@@ -66,7 +66,7 @@ const loginLimiter = rateLimit({
 // General API: generous ceiling against abuse without affecting real users.
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 120,
+  limit: parseInt(process.env.API_RATE_LIMIT || '300', 10),
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: { error: 'Too many requests. Please slow down.' },
