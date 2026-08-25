@@ -399,6 +399,8 @@
       <li><a href="about.html">About Us</a></li>
     </ul>
     <div class="nav-actions">
+      <button class="icon-btn" id="secLogBtn" style="display:none;" title="Security log">📜</button>
+      <button class="icon-btn" id="pwBtn" style="display:none;" title="Change password">🔑</button>
       <button class="icon-btn" id="maintBtn" style="display:none;" title="Toggle maintenance mode">🚧</button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
       <button class="btn-primary" id="loginBtn">👤 Login</button>
@@ -1331,7 +1333,35 @@
     const btn = document.getElementById('loginBtn');
     btn.textContent = state.email ? '👤 ' + state.email.split('@')[0] : '👤 Login';
     document.body.classList.toggle('is-admin', state.isAdmin);
+    const pw = document.getElementById('pwBtn');
+    if (pw) pw.style.display = state.isAdmin ? '' : 'none';
+    const sl = document.getElementById('secLogBtn');
+    if (sl) sl.style.display = state.isAdmin ? '' : 'none';
     updateMaintUI();
+  }
+
+  // ---- Security tools (super admins) ----
+  async function changePasswordFlow() {
+    const cur = prompt('Current password:');
+    if (!cur) return;
+    const next = prompt('New password (min 10 chars, letters + numbers).\nNOTE: every OTHER device will be logged out:');
+    if (!next) return;
+    try {
+      const r = await fetch(`${SULAKSH_API}/api/auth/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: cur, newPassword: next }),
+      });
+      const d = await r.json().catch(() => ({}));
+      alert(r.ok ? '✅ Password changed. Other devices logged out.' : (d.error || 'Failed.'));
+    } catch (e) { alert('Could not reach the API.'); }
+  }
+  async function showSecurityLog() {
+    try {
+      const d = await fetch(`${SULAKSH_API}/api/auth/security-log`).then((r) => r.json());
+      const rows = (d.log || []).map((l) => `${l.at.replace('T', ' ').slice(0, 16)}  ${l.ok ? '✅' : '❌'}  ${l.event.padEnd(15)} ${l.email || '-'}${l.ip ? ' · ' + l.ip : ''}`);
+      alert(rows.length ? rows.join('\n').slice(0, 2800) : 'No events yet.');
+    } catch (e) { alert('Could not reach the API.'); }
   }
 
   // Maintenance toggle — visibility follows the server-confirmed role.
@@ -1391,6 +1421,10 @@
     openModal('loginOverlay');
   });
   document.getElementById('maintBtn').addEventListener('click', toggleMaintenance);
+  const pwBtn = document.getElementById('pwBtn');
+  if (pwBtn) pwBtn.addEventListener('click', changePasswordFlow);
+  const secLogBtn = document.getElementById('secLogBtn');
+  if (secLogBtn) secLogBtn.addEventListener('click', showSecurityLog);
   document.getElementById('loginSubmit').addEventListener('click', doLogin);
   document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
   document.getElementById('passToggle').addEventListener('click', () => {

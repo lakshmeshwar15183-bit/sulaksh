@@ -95,6 +95,45 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 `);
 
+// ---- Auth sessions (server-side revocation + sliding expiry) ----
+db.exec(`
+CREATE TABLE IF NOT EXISTS auth_sessions (
+  id TEXT PRIMARY KEY,
+  admin_id TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  last_seen TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  revoked INTEGER NOT NULL DEFAULT 0,
+  ip TEXT,
+  user_agent TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_auth_sessions_admin ON auth_sessions(admin_id);
+`);
+
+// ---- Security audit log ----
+db.exec(`
+CREATE TABLE IF NOT EXISTS auth_log (
+  at TEXT NOT NULL,
+  email TEXT,
+  event TEXT NOT NULL,
+  ok INTEGER NOT NULL,
+  ip TEXT,
+  user_agent TEXT
+);
+`);
+
+function logAuthEvent(email, event, ok, req) {
+  try {
+    const ip = (req && (req.headers['x-forwarded-for'] || '').split(',')[0].trim()) ||
+      (req && req.socket && req.socket.remoteAddress) || null;
+    db.prepare('INSERT INTO auth_log (at, email, event, ok, ip, user_agent) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(new Date().toISOString(), email || null, event, ok ? 1 : 0, ip,
+        (req && req.headers['user-agent']) || null);
+  } catch (e) {
+    console.error('[auth-log] failed:', e.message);
+  }
+}
+
 // ---- Admin roles ----
 // 'super' = full control (uploads, deletes, subjects). 'maintenance' = may
 // only toggle maintenance mode. Existing admins default to 'super'.
@@ -198,3 +237,4 @@ CREATE INDEX IF NOT EXISTS idx_materials_material_category ON materials(material
 module.exports = db;
 module.exports.getSetting = getSetting;
 module.exports.setSetting = setSetting;
+module.exports.logAuthEvent = logAuthEvent;
