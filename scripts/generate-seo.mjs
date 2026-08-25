@@ -17,6 +17,12 @@ const typeOf = m => m.material_category === 'syllabus' || m.is_syllabus ? 'sylla
 const res = await fetch(`${API}/api/materials`);
 const { materials } = await res.json();
 
+// material.id -> its static SEO page, so every listing can deep-link to it.
+const idToFile = new Map(materials.map(m => [m.id, `paper/${slug(m.title)}-${m.id.slice(0, 8)}.html`]));
+// Subject-level hub pages collected while generating — used to build the
+// master index so crawlers can reach every hub with one hop.
+const HUBS = [];
+
 const CSS = `
 :root{--navy:#0C2340;--blue:#1E5FFF;--bg:#F6F8FC;--card:#fff;--text:#1A2433;--muted:#5B6B80;--border:#E4E9F1}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -34,7 +40,7 @@ h1{font-family:'Sora',system-ui,sans-serif;font-size:23px;line-height:1.3;margin
 h2{font-family:'Sora',system-ui;font-size:17px;margin-top:24px}
 .plist{list-style:none;padding:0}
 .plist li{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0}
-.pt{font-weight:600}.ty{font-size:10px;font-weight:800;background:rgba(30,95,255,.08);color:var(--blue);border-radius:100px;padding:2px 8px;margin-left:6px}
+.pt{font-weight:600}.pt a{color:var(--text);text-decoration:none}.pt a:hover{text-decoration:underline}.ty{font-size:10px;font-weight:800;background:rgba(30,95,255,.08);color:var(--blue);border-radius:100px;padding:2px 8px;margin-left:6px}
 .plist button{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer}
 .rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.rel a{background:var(--card);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text)}
 footer{background:var(--navy);color:#cfd9ec;margin-top:40px;padding:26px 20px;text-align:center;font-size:13px}
@@ -106,7 +112,9 @@ const listItem = m => {
   const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'SYLLABUS'
     : (m.material_category === 'pyqs' || m.is_pyq) ? 'PYQ'
     : (m.material_category === 'important-questions' || m.is_imp) ? 'IMP Q' : 'NOTES';
-  return `<li><span class="pt">${esc(m.title)}</span><span class="ty">${t}</span><button onclick="openMat('${m.id}')">Open</button></li>`;
+  // Real <a href> to the document's own SEO page — crawlable, not JS.
+  const pageLink = idToFile.get(m.id);
+  return `<li><span class="pt"><a href="/pyq/${pageLink}">${esc(m.title)}</a></span><span class="ty">${t}</span><button onclick="openMat('${m.id}')">Open</button></li>`;
 };
 
 // ===== 1) PER-PAPER =====
@@ -147,6 +155,7 @@ const ovFile = (s, t) => `${slug(s)}-${slug(t)}-pyqs.html`;
 for (const [key, semMap] of bySubjTrack) {
   const [subject, track] = key.split('||');
   const total = [...semMap.values()].reduce((a, v) => a + v.length, 0);
+  HUBS.push({ file: ovFile(subject, track), label: `${subject} ${track}` });
   emit(ovFile(subject, track),
     `${subject} ${track} PYQs, Syllabus & Notes – DU ${total} Docs | Sulaksh`,
     `All ${subject} ${track.toLowerCase()} material for Delhi University — ${total} docs, semester-wise PYQs, syllabus & notes. Free.`,
@@ -251,6 +260,7 @@ for (const [k, arr] of ncByYear) {
 }
 for (const [k, v] of ncCombined) {
   if (v.items.length < 2) continue;
+  HUBS.push({ file: v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html', label: `${v.subject} (${v.label})` });
   emit(v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html',
     v.subject + ' Study Material - ' + v.label + ' PYQs, Syllabus & Notes | Sulaksh',
     v.items.length + ' ' + v.subject + ' documents (' + v.label + ') - PYQs, syllabus & notes. Delhi University. Free.',
@@ -260,20 +270,82 @@ for (const [k, v] of ncCombined) {
     '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>');
 }
 
-// ===== hub =====
+// ===== info pages — classic search-intent guides =====
+// These were listed in the sitemap before the pages existed (404s). Emitted
+// through emit() so they land in pyq/ and auto-enter the sitemap.
+const topHubLinks = () => {
+  const picks = HUBS.filter(h => /economics|english|history|political/i.test(h.label)).slice(0, 6);
+  return picks.map(h => `<a href="/pyq/${h.file}">${esc(h.label)}</a>`).join('');
+};
+emit('where-to-find-du-pyqs.html',
+  'Where to Find DU Previous Year Question Papers Online (Free) | Sulaksh',
+  'Exactly where to find Delhi University previous year question papers - free, semester-wise, UGCF/NEP pattern. No signup needed.',
+  'Where to Find DU Previous Year Question Papers',
+  'Delhi University · Guide',
+  '<p>Every DU student hunts for PYQs the week before exams. Here is the honest answer: where they live, and which source has the most papers.</p>',
+  `<h2>The Short Answer</h2>
+   <p>The fastest source is <a href="/pyq/index.html">Sulaksh's complete PYQ index</a> — every paper is organised by course, semester and year, free to view instantly.</p>
+   <h2>Other Places to Check</h2>
+   <ul class="plist">
+     <li><span class="pt"><a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a></span><span class="ty">OFFICIAL</span></li>
+     <li><span class="pt">Your college library / department notice boards</span><span class="ty">OFFLINE</span></li>
+     <li><span class="pt">Senior WhatsApp groups (quality varies a lot)</span><span class="ty">HIT-OR-MISS</span></li>
+   </ul>
+   <h2>Popular Collections to Start With</h2>
+   <div class="rel">${topHubLinks()}</div>
+   <h2>Why Solving PYQs Works</h2>
+   <p>Roughly 40–60% of DU exam questions repeat concepts from previous years. Solving even three past papers per subject gives you the exact question style, marking scheme and time pressure of the real exam.</p>`,
+  [['Are these really free?', 'Yes. Every paper on Sulaksh is free to view, no sign-up.'],
+   ['Do you have my semester?', 'Papers are organised semester-wise from Sem 1 to Sem 8 for Honours, Programme and GE/VAC/AEC/SEC courses.']]);
+emit('where-to-find-du-syllabus.html',
+  'Where to Find DU Syllabus (UGCF/NEP) for Every Course | Sulaksh',
+  'Where to download the official Delhi University syllabus for BA, BSc, BCom - Honours, Programme, GE, VAC, AEC and SEC courses.',
+  'Where to Find the DU Syllabus for Your Course',
+  'Delhi University · Guide',
+  '<p>DUs syllabus moved to the UGCF/NEP framework, and outdated PDFs still circulate everywhere. Here is where the current one lives.</p>',
+  `<h2>Official Source First</h2>
+   <p>The university publishes the current syllabus on the <a href="https://www.du.ac.in" target="_blank" rel="noopener">DU website</a>. The catch: it is split across dozens of PDFs and hard to navigate.</p>
+   <h2>The Easy Way</h2>
+   <p>On <a href="/pyq/index.html">Sulaksh</a>, every subjects page pairs its syllabus with matching PYQs and notes — so you see exactly what to study and what gets asked:</p>
+   <div class="rel">${topHubLinks()}</div>
+   <h2>Tip</h2>
+   <p>Always check the "Learning Objectives" and "List of Readings" sections of your syllabus — examiners pull questions directly from them.</p>`,
+  [['Is this the new NEP syllabus?', 'Yes — material follows the current UGCF/NEP structure used across DU colleges.']]);
+emit('best-website-for-du-pyqs-study-material.html',
+  'Best Website for DU PYQs & Study Material (2026) | Sulaksh',
+  'Comparing every place to get DU previous year papers and notes - and why Sulaksh beats Telegram groups and random Drive folders.',
+  'The Best Website for DU PYQs & Study Material',
+  'Delhi University · Guide',
+  '<p>An honest comparison of every option DU students use for past papers and notes.</p>',
+  `<h2>Your Options, Ranked</h2>
+   <ul class="plist">
+     <li><span class="pt"><a href="/pyq/index.html">Sulaksh</a> — 1000+ organised papers, semester & course-wise, instant view</span><span class="ty">FREE</span></li>
+     <li><span class="pt">Telegram groups — fast but unorganised, files expire</span><span class="ty">MESSY</span></li>
+     <li><span class="pt">Google Drive folders — dead links after one semester</span><span class="ty">UNRELIABLE</span></li>
+     <li><span class="pt">Paid coaching PDFs — expensive for the same content</span><span class="ty">PAID</span></li>
+   </ul>
+   <h2>What Makes a Good PYQ Source</h2>
+   <p>Organisation by course and semester, correct year labels, and no paywall halfway through. That is exactly how <a href="/pyq/index.html">the Sulaksh library</a> is built — start with your course:</p>
+   <div class="rel">${topHubLinks()}</div>`,
+  [['Is registration required?', 'No. Open any paper and start solving.']]);
+
+// ===== hub (master index) — emitted LAST so every hub link exists =====
+const hubChips = HUBS.slice().sort((a, b) => a.label.localeCompare(b.label))
+  .map(h => `<a href="/pyq/${h.file}">${esc(h.label)}</a>`).join('');
 emit('index.html',
   'All DU Previous Year Question Papers, Syllabus & Notes - Free | Sulaksh',
   'Complete DU PYQs, syllabus & study material - BA/BSc/BCom majors, minors, honours, GE, VAC, AEC, SEC. Free.',
   'Delhi University PYQs & Study Material - Complete Index',
   'Master Index',
   '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p>',
-  '<p>Use browser search (Ctrl+F) or pick your subject from <a href="/du.html">DU & College sections</a>.</p>');
+  `<h2>Browse by Subject (${HUBS.length} collections)</h2>
+   <div class="rel">${hubChips}</div>
+   <h2>More Ways In</h2>
+   <p>Pick your programme from the <a href="/du.html">DU & College sections</a>, or go back <a href="/">Home</a>.</p>`);
 
 // ===== sitemap =====
-const INFO_EXTRA = ['where-to-find-du-pyqs.html', 'where-to-find-du-syllabus.html', 'best-website-for-du-pyqs-study-material.html'];
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + ['', 'index.html', 'du.html', 'one-day.html', 'upsc.html', 'guides.html', 'contact.html']
-    .concat(INFO_EXTRA)
     .concat([...pages.keys()].map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc></url>').join('\n')
   + '\n</urlset>\n');
