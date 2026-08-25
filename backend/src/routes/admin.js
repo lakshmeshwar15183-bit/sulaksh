@@ -9,6 +9,27 @@ const { validateUpload, buildObjectKey, sanitizeFileName, detectFileType, MAX_FI
 const router = express.Router();
 router.use(requireAdmin);
 
+// ---- Role gate: 'maintenance' accounts may ONLY use the maintenance toggle.
+// Everything else in /api/admin requires role 'super'.
+const MAINTENANCE_ROUTES = new Set(['/maintenance']);
+router.use((req, res, next) => {
+  if ((req.admin.role || 'super') === 'super') return next();
+  if (MAINTENANCE_ROUTES.has(req.path)) return next();
+  return res.status(403).json({ error: 'This account does not have permission for that action.' });
+});
+
+// ---- Maintenance mode ----
+// GET current state (staff only)
+router.get('/maintenance', (req, res) => {
+  res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
+});
+// POST { enabled: true|false } — super admins and maintenance-role accounts
+router.post('/maintenance', (req, res) => {
+  const enabled = req.body && (req.body.enabled === true || req.body.enabled === 'true');
+  db.setSetting('maintenance_mode', enabled ? '1' : '0');
+  res.json({ enabled });
+});
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_FILE_SIZE_BYTES },
@@ -196,6 +217,80 @@ router.delete('/materials/:id', async (req, res) => {
 
   db.prepare('DELETE FROM materials WHERE id = ?').run(req.params.id);
   res.json({ ok: true });
+});
+
+// ---- Subjects (editable subject folders) ----
+
+// ---- Create subject folder ----
+// POST /api/admin/subjects  { exam, category, name }
+router.post('/subjects', (req, res) => {
+  const { exam, category, name } = req.body || {};
+  const clean = (name || '').trim();
+  if (!exam || !category || !clean) {
+    return res.status(400).json({ error: 'exam, category and a subject name are required.' });
+  }
+  const existing = db.prepare('SELECT id FROM subjects WHERE exam = ? AND category = ? AND name = ?')
+    .get(exam, category, clean);
+  if (existing) return res.status(409).json({ error: 'That subject already exists in this category.' });
+
+  const id = uuidv4();
+  const ts = nowIso();
+  db.prepare('INSERT INTO subjects (id, exam, category, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(id, exam, category, clean, ts, ts);
+  const subject = db.prepare('SELECT * FROM subjects WHERE id = ?').get(id);
+  res.status(201).json({ subject });
+});
+
+// ---- Rename subject folder (and move its materials along) ----
+// PATCH /api/admin/subjects/:id  { name }
+router.patch('/subjects/:id', (req, res) => {
+  const existing = db.prepare('SELECT * FROM subjects WHERE id = ?').get(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Subject not found.' });
+
+  const newName = (req.body.name || '').trim();
+  if (!newName) return res.status(400).json({ error: 'A new subject name is required.' });
+
+  const dup = db.prepare('SELECT id FROM subjects WHERE exam = ? AND category = ? AND name = ? AND id != ?')
+    .get(existing.exam, existing.category, newName, existing.id);
+  if (dup) return res.status(409).json({ error: 'A subject with that name already exists in this category.' });
+
+  const oldName = existing.name;
+  db.prepare('UPDATE subjects SET name = ?, updated_at = ? WHERE id = ?')
+    .run(newName, nowIso(), existing.id);
+
+  // Move any materials tagged with the old subject name so files follow it.
+  db.prepare('UPDATE materials SET subject = ?, updated_at = ? WHERE exam = ? AND category = ? AND subject = ?')
+    .run(newName, nowIso(), existing.exam, existing.category, oldName);
+
+  const subject = db.prepare('SELECT * FROM subjects WHERE id = ?').get(existing.id);
+  res.json({ subject });
+});
+
+// ---- Delete subject folder (and everything filed under it) ----
+// DELETE /api/admin/subjects/:id
+router.delete('/subjects/:id', async (req, res) => {
+  const subject = db.prepare('SELECT * FROM subjects WHERE id = ?').get(req.params.id);
+  if (!subject) return res.status(404).json({ error: 'Subject not found.' });
+
+  const materials = db.prepare('SELECT * FROM materials WHERE exam = ? AND category = ? AND subject = ?')
+    .all(subject.exam, subject.category, subject.name);
+
+  // Delete every R2 object first (never leave orphaned files if any step fails).
+  for (const m of materials) {
+    try {
+      await deleteObject(m.r2_object_key);
+    } catch (err) {
+      console.error('[admin] R2 delete failed for material on subject delete:', m.id, err.message);
+      return res.status(502).json({
+        error: 'Could not remove a file from storage — no subject was deleted. Please retry.',
+      });
+    }
+  }
+  for (const m of materials) {
+    db.prepare('DELETE FROM materials WHERE id = ?').run(m.id);
+  }
+  db.prepare('DELETE FROM subjects WHERE id = ?').run(subject.id);
+  res.json({ ok: true, removed_materials: materials.length });
 });
 
 module.exports = router;

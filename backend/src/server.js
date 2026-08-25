@@ -3,16 +3,27 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const { rateLimit } = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth');
 const materialsRoutes = require('./routes/materials');
-const adminRoutes = require('./routes/admin');
 const subjectsRoutes = require('./routes/subjects');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
 // ---- Core middleware ----
 app.use(express.json());
+
+// ---- Basic security headers ----
+app.use((req, res, next) => {
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
 app.use(cookieParser());
 
 const allowedOrigins = (process.env.CORS_ORIGINS || '')
@@ -29,11 +40,41 @@ app.use(cors({
   credentials: true,
 }));
 
+// ---- Rate limiting ----
+// Login: strict cap to make password brute-forcing impractical.
+// Counts failed attempts only; successful logins never consume budget.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: parseInt(process.env.LOGIN_ATTEMPTS_LIMIT || '10', 10),
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
+});
+// General API: generous ceiling against abuse without affecting real users.
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+});
+
 // ---- API routes ----
+app.use('/api/auth/login', loginLimiter);
+app.use('/api', apiLimiter);
+
+// Public maintenance flag — the static frontend polls this to show the
+// maintenance overlay. Always allowed, even while other routes are gated.
+const db = require('./db');
+app.get('/api/maintenance-status', (req, res) => {
+  res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialsRoutes);
-app.use('/api/admin', adminRoutes);
 app.use('/api/subjects', subjectsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // ---- Admin panel static UI (separate from the public marketing site) ----
 app.use('/admin', express.static(path.join(__dirname, '..', 'public', 'admin')));

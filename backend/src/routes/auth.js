@@ -1,7 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { rateLimit } = require('express-rate-limit');
 const db = require('../db');
 const { requireAdmin, COOKIE_NAME } = require('../middleware/auth');
 
@@ -9,17 +8,9 @@ const router = express.Router();
 
 const isProd = process.env.NODE_ENV === 'production';
 
-// Counts failed attempts only; successful logins never consume budget.
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: parseInt(process.env.LOGIN_ATTEMPTS_LIMIT || '10', 10),
-  standardHeaders: 'draft-8',
-  legacyHeaders: false,
-  skipSuccessfulRequests: true,
-  message: { error: 'Too many failed login attempts. Please try again later.' },
-});
-
-router.post('/login', loginLimiter, (req, res) => {
+// Login is rate-limited at the app level (server.js) — 10 failed attempts
+// per 15 minutes per IP; successful logins never consume budget.
+router.post('/login', (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
@@ -32,8 +23,9 @@ router.post('/login', loginLimiter, (req, res) => {
     return res.status(401).json({ error: 'Invalid email or password.' });
   }
 
+  const role = admin.role || 'super';
   const token = jwt.sign(
-    { sub: admin.id, email: admin.email },
+    { sub: admin.id, email: admin.email, role },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '12h' }
   );
@@ -47,7 +39,33 @@ router.post('/login', loginLimiter, (req, res) => {
 
   // Token lives only in the HttpOnly cookie above — never returned in the
   // body, so browser JS (and any XSS) cannot read it.
-  res.json({ email: admin.email });
+  res.json({ email: admin.email, role });
+});
+
+// ---- One-time bootstrap for limited-role accounts ----
+// Creates or updates an account with role 'maintenance' (can only toggle
+// maintenance mode). Requires the ADMIN_SETUP_KEY env value in the
+// x-setup-key header. Delete the env var after use to disable this route.
+router.post('/bootstrap-maintainer', (req, res) => {
+  if (!process.env.ADMIN_SETUP_KEY || req.get('x-setup-key') !== process.env.ADMIN_SETUP_KEY) {
+    return res.status(403).json({ error: 'Forbidden.' });
+  }
+  const { email, password } = req.body || {};
+  if (!email || !password || password.length < 8) {
+    return res.status(400).json({ error: 'Email and a password of at least 8 characters are required.' });
+  }
+  const { v4: uuidv4 } = require('uuid');
+  const existing = db.prepare('SELECT id FROM admins WHERE email = ?').get(email.toLowerCase().trim());
+  const ts = new Date().toISOString();
+  if (existing) {
+    db.prepare("UPDATE admins SET password_hash = ?, role = 'maintenance' WHERE id = ?")
+      .run(bcrypt.hashSync(password, 10), existing.id);
+  } else {
+    db.prepare(
+      "INSERT INTO admins (id, email, password_hash, role, created_at) VALUES (?, ?, ?, 'maintenance', ?)"
+    ).run(uuidv4(), email.toLowerCase().trim(), bcrypt.hashSync(password, 10), ts);
+  }
+  res.json({ ok: true, email: email.toLowerCase().trim(), role: 'maintenance' });
 });
 
 router.post('/logout', (req, res) => {
@@ -56,7 +74,7 @@ router.post('/logout', (req, res) => {
 });
 
 router.get('/me', requireAdmin, (req, res) => {
-  res.json({ email: req.admin.email });
+  res.json({ email: req.admin.email, role: req.admin.role || 'super' });
 });
 
 module.exports = router;
