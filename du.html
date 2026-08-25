@@ -915,6 +915,16 @@
     canMaintain: false,
   };
 
+  // ===== Permission structure (owner-defined) =====
+  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];      // upload / manage materials
+  const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];                     // maintenance toggle ONLY
+
+  function applyPermissions() {
+    const e = state.email || '';
+    state.isAdmin = ADMIN_EMAILS.includes(e);
+    state.canMaintain = MAINTENANCE_EMAILS.includes(e);
+  }
+
   async function restoreSession() {
     let r = null;
     try { r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { credentials: 'include' }); } catch (e) { return; }
@@ -931,8 +941,7 @@
     const me = await r.json().catch(() => ({}));
     state.email = me.email || null;
     state.role = me.role || null;
-    state.isAdmin = state.role === 'super';
-    state.canMaintain = state.isAdmin || state.role === 'maintenance';
+    applyPermissions();
     if (state.email) localStorage.setItem('sulaksh-email', state.email);
   }
 
@@ -1414,8 +1423,7 @@
         .catch(() => ({}));
       state.email = me.email || email;
       state.role = me.role || null;
-      state.isAdmin = state.role === 'super';
-      state.canMaintain = state.isAdmin || state.role === 'maintenance';
+      applyPermissions();
       localStorage.setItem('sulaksh-email', state.email);
       localStorage.removeItem('sulaksh-role');
       updateAuthUI();
