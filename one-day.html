@@ -457,6 +457,7 @@
 
 <script src="assets/js/optimize.js?v=3"></script>
 <script src="assets/js/adgate.js?v=2"></script>
+<script src="/assets/js/sulaksh-auth.js?v=1"></script>
 <script>
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
@@ -496,7 +497,7 @@
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
     token: localStorage.getItem('sulaksh-token') || null,
-    isAdmin: localStorage.getItem('sulaksh-email') && ADMIN_EMAILS.includes(localStorage.getItem('sulaksh-email')),
+isAdmin: false,
   };
 
   const dynamicSubjects = {};
@@ -831,6 +832,17 @@
     el.classList.add('active');
     el.scrollIntoView({ block: 'start' });
   })();
+
+  // Server-verified session display (shared module) — lists/handlers unchanged.
+  SulakshAuth.restore().then(function () {
+    var e = SulakshAuth.st.email || '';
+    state.email = e || null;
+    state.token = SulakshAuth.st.token || null;
+    state.isAdmin = (typeof ADMIN_EMAILS !== 'undefined') && ADMIN_EMAILS.includes(e);
+    if (typeof MAINTENANCE_EMAILS !== 'undefined') state.canMaintain = MAINTENANCE_EMAILS.includes(e);
+    if (typeof updateAuthUI === 'function') updateAuthUI();
+  });
+
 </script>
 
 </body>
