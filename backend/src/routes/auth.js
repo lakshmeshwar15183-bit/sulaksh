@@ -21,6 +21,8 @@ function emailLocked(email) {
   return rec.count >= EMAIL_LOCK_LIMIT;
 }
 function noteFail(email) {
+  // Hard cap so an attacker rotating fake emails cannot grow the map forever.
+  if (emailFails.size > 5000) emailFails.clear();
   const rec = emailFails.get(email) || { count: 0, resetAt: Date.now() + 15 * 60 * 1000 };
   rec.count++;
   emailFails.set(email, rec);
@@ -58,17 +60,21 @@ router.post('/login', (req, res) => {
     .run(jti, admin.id, new Date(now).toISOString(), new Date(now).toISOString(),
       new Date(now + IDLE_HOURS * 3600 * 1000).toISOString(), ip, req.headers['user-agent'] || null);
 
+  // The JWT itself carries a long absolute cap only; the REAL lifetime is
+  // governed by the auth_sessions row (12h idle window, sliding, revocable).
+  // Signing a short-lived JWT here would kill active sessions at 12h sharp
+  // regardless of the sliding extension.
   const token = jwt.sign(
     { sub: admin.id, email: admin.email, role, jti },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || `${IDLE_HOURS}h` }
+    { expiresIn: '30d' }
   );
 
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
-    maxAge: IDLE_HOURS * 60 * 60 * 1000,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
   db.logAuthEvent(admin.email, 'login', true, req);
