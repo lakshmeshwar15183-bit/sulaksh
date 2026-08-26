@@ -40,9 +40,12 @@ const id=params.get('id');
     const r=await fetch(`${API}/api/materials/${id}/download?disposition=inline`);
     const d=await r.json();
     if(!r.ok||!d.url){document.getElementById('msg').textContent=d.error||'Could not open this document.';document.querySelector('.spin').style.display='none';return;}
+    // Defense-in-depth: only embed URLs from our own CDN/storage hosts.
+    let safe=false;try{const u=new URL(d.url);safe=u.protocol==='https:'&&(u.hostname==='cdn.sulaksh.online'||u.hostname.endsWith('.backblazeb2.com'));}catch(e){}
+    if(!safe){document.getElementById('msg').textContent='Could not open this document.';document.querySelector('.spin').style.display='none';return;}
     document.getElementById('title').textContent='Sulaksh — Viewing document';
     const wrap=document.getElementById('iframeWrap');
-    wrap.innerHTML=`<iframe src="${d.url}" allow="autoplay"></iframe>`;
+    wrap.innerHTML=`<iframe src="${d.url}" allow="autoplay" referrerpolicy="no-referrer"></iframe>`;
     const f=wrap.querySelector('iframe');f.style.width='100%';f.style.height='100%';f.style.border='none';
   }catch(e){
     document.getElementById('msg').innerHTML='Could not load. <a href="javascript:location.reload()" style="color:#7fb0ff">Retry</a>';

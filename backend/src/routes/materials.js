@@ -52,6 +52,22 @@ router.get('/', (req, res) => {
     params.push(like, like);
   }
 
+  // Optional pagination: ?page=1&limit=50 (max 1000). With NO params the
+  // response is byte-identical to the legacy full listing — existing
+  // clients are unaffected.
+  let limit = parseInt(req.query.limit || '0', 10);
+  limit = Number.isFinite(limit) && limit > 0 ? Math.min(limit, 1000) : 0;
+  const page = Math.max(1, parseInt(req.query.page || '1', 10) || 1);
+
+  if (limit) {
+    const total = db.prepare(`SELECT COUNT(*) AS c FROM materials WHERE ${clauses.join(' AND ')}`)
+      .get(...params).c;
+    const rowsP = db.prepare(
+      `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${clauses.join(' AND ')} ORDER BY created_at DESC LIMIT ? OFFSET ?`
+    ).all(...params, limit, (page - 1) * limit);
+    return res.json({ materials: rowsP, page, limit, total });
+  }
+
   const rows = db.prepare(
     `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${clauses.join(' AND ')} ORDER BY created_at DESC LIMIT 5000`
   ).all(...params);
