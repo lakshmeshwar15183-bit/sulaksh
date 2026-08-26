@@ -1,0 +1,21 @@
+name: Keep Railway backend awake
+
+on:
+  schedule:
+    # Every 10 minutes. Railway's free (Hobby) tier sleeps its services
+    # after a period of inactivity, so the first request after a nap is slow
+    # or can fail — exact reason remote visitors sometimes see "0 materials".
+    # This lightweight ping to /api/health keeps the service warm for everyone.
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit health endpoint
+        run: curl -fsS --max-time 30 https://sulaksh-backend-production.up.railway.app/api/health || curl -fsS --max-time 30 https://sulaksh-backend-production.up.railway.app/api/health

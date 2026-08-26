@@ -64,12 +64,27 @@ const loginLimiter = rateLimit({
   message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
 });
 // General API: generous ceiling against abuse without affecting real users.
+//
+// Public read endpoints (materials, subjects, maintenance-health) are exempt
+// from the per-IP ceiling. This is critical on mobile networks (CGNAT / NAT444,
+// common in India) where many users share a single public IP — applying a
+// strict per-IP cap there makes the whole site appear empty to everyone behind
+// it. Abuse on downloads and login is already controlled by their own limiters.
+const PUBLIC_READ_PREFIXES = [
+  '/api/materials',
+  '/api/subjects',
+  '/api/maintenance-status',
+  '/api/health',
+];
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: parseInt(process.env.API_RATE_LIMIT || '300', 10),
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: { error: 'Too many requests. Please slow down.' },
+  skip: (req) =>
+    req.method === 'GET' &&
+    PUBLIC_READ_PREFIXES.some((p) => req.path.startsWith(p)),
 });
 
 // ---- API routes ----
