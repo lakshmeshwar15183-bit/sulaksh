@@ -954,19 +954,16 @@
     role: null,
     isAdmin: false,
     canMaintain: false,
-  canToggleDownloads: false,
   };
 
   // ===== Permission structure (owner-defined) =====
   const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];      // upload / manage materials
   const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];                     // maintenance toggle ONLY
-  const DOWNLOADS_EMAILS = ['lakshmeshwar15183@gmail.com'];                     // download buttons toggle ONLY
 
   function applyPermissions() {
     const e = state.email || '';
     state.isAdmin = ADMIN_EMAILS.includes(e);
     state.canMaintain = MAINTENANCE_EMAILS.includes(e);
-    state.canToggleDownloads = DOWNLOADS_EMAILS.includes(e);
   }
 
   async function restoreSession() {
@@ -1420,17 +1417,15 @@
     } catch (e) {}
     updateDownloadsUI();
   }
-  // Download buttons toggle (owner only) — mirrors the maintenance toggle.
+  // Download buttons toggle — visibility comes from the backend (super-admin only).
   async function updateDownloadsUI() {
     const btn = document.getElementById('dlBtn');
     if (!btn) return;
-    const can = state.canToggleDownloads;
-    btn.style.display = can ? '' : 'none';
-    if (!can) return;
     try {
-      const r = await fetch(`${SULAKSH_API}/api/admin/downloads`);
-      if (r.ok) { const s = await r.json(); btn.textContent = s.enabled ? '⬇️' : '⛔'; }
-    } catch (e) {}
+      const r = await fetch(`${SULAKSH_API}/api/admin/downloads`, { credentials: 'include' });
+      if (r.ok) { const s = await r.json(); btn.style.display = ''; btn.textContent = s.enabled ? '⬇️' : '⛔'; }
+      else { btn.style.display = 'none'; }
+    } catch (e) { btn.style.display = 'none'; }
   }
   async function toggleDownloads() {
     const btn = document.getElementById('dlBtn');
