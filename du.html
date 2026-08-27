@@ -1378,6 +1378,7 @@
     const sl = document.getElementById('secLogBtn');
     if (sl) sl.style.display = state.isAdmin ? '' : 'none';
     updateMaintUI();
+    updateDownloadsUI();
   }
 
   // ---- Security tools (super admins) ----
@@ -1415,7 +1416,6 @@
       const r = await fetch(`${SULAKSH_API}/api/admin/maintenance`);
       if (r.ok) { const s = await r.json(); btn.textContent = s.enabled ? '🛠️' : '🚧'; }
     } catch (e) {}
-    updateDownloadsUI();
   }
   // Download buttons toggle — visibility comes from the backend (super-admin only).
   async function updateDownloadsUI() {
