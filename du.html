@@ -285,6 +285,9 @@
   }
   .mat-item button:hover{border-color:var(--green); color:var(--green);}
   .mat-item button.del-btn:hover{border-color:#d64545; color:#d64545;}
+  .mat-item button.report-btn:hover{border-color:#e0a800; color:#b8860b;}
+  .report-byline{font-size:12.5px; color:var(--muted); margin:-8px 0 14px; line-height:1.5;}
+  #reportOverlay textarea.field{resize:vertical; min-height:70px; font-family:inherit;}
   .mat-empty{font-size:13px; color:var(--muted); text-align:center; padding:14px; border:1px dashed var(--border); border-radius:10px;}
   .du-load-error{
     display:flex; flex-wrap:wrap; align-items:center; gap:10px;
@@ -689,6 +692,30 @@
     <div id="upOptInfo"></div>
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reportOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('reportOverlay')" aria-label="Close">×</button>
+    <h3>⚠ Report this material</h3>
+    <p class="report-byline" id="reportTitle"></p>
+    <select id="reportReason" class="field sel">
+      <option value="">Select a reason…</option>
+      <option value="duplicate">Duplicate content</option>
+      <option value="copyright">Copyrighted / owned by someone else</option>
+      <option value="irrelevant">Not relevant to this subject/semester</option>
+      <option value="broken">File is broken or won't open</option>
+      <option value="inappropriate">Inappropriate content</option>
+      <option value="other">Other</option>
+    </select>
+    <textarea id="reportDetails" class="field" rows="3" placeholder="Details (optional)"></textarea>
+    <div class="row-2">
+      <input type="text" id="reportName" class="field" placeholder="Your name (optional)">
+      <input type="email" id="reportEmail" class="field" placeholder="Your email (optional)">
+    </div>
+    <button class="btn-primary" id="reportSubmit">Submit Report</button>
+    <div class="modal-msg" id="reportMsg"></div>
   </div>
 </div>
 
@@ -1234,6 +1261,7 @@
         <div class="a">
           <button onclick="viewMaterial('${m.id}')">👁 View</button>
           <button onclick="downloadMaterial('${m.id}')">⬇ Download</button>
+          <button class="report-btn" title="Report this material" onclick="openReportModal('${m.id}','${safeTitle.replace(/'/g, "\\'")}')">⚠ Report</button>
           ${state.isAdmin ? `<button class="del-btn" onclick="deleteMaterial('${m.id}','${safeTitle.replace(/'/g, "\\'")}')">🗑 Delete</button>` : ''}
         </div>
       </div>`;
@@ -1979,6 +2007,54 @@
         if (win && !win.closed) { win.location.href = url; } else { window.open(url, '_blank'); }
       } catch (e) { if (win && !win.closed) win.close(); alert(e.message); }
     });
+  }
+
+  // ---- Content reporting (visitor → admin) ----
+  // Any visitor can flag a material (duplicate / copyright / irrelevant / …).
+  // Visitors can ONLY create a report — they can never edit or delete a file.
+  let reportMaterialId = null;
+  function openReportModal(id, title) {
+    reportMaterialId = id;
+    document.getElementById('reportTitle').textContent =
+      'Flagging: "' + title + '" — tell us what is wrong. Only admins can remove content; your report just brings it to their attention.';
+    document.getElementById('reportReason').value = '';
+    document.getElementById('reportDetails').value = '';
+    document.getElementById('reportName').value = '';
+    document.getElementById('reportEmail').value = '';
+    setMsg(document.getElementById('reportMsg'), '', false);
+    openModal('reportOverlay');
+  }
+  window.openReportModal = openReportModal;
+
+  document.getElementById('reportSubmit').addEventListener('click', submitReport);
+
+  async function submitReport() {
+    const msg = document.getElementById('reportMsg');
+    if (!reportMaterialId) return setMsg(msg, 'Something went wrong. Please close and reopen the report.', false);
+    const reason = document.getElementById('reportReason').value;
+    if (!reason) return setMsg(msg, 'Please select a reason.', false);
+
+    const body = {
+      material_id: reportMaterialId,
+      reason,
+      details: document.getElementById('reportDetails').value.trim() || undefined,
+      reporter_name: document.getElementById('reportName').value.trim() || undefined,
+      reporter_email: document.getElementById('reportEmail').value.trim() || undefined,
+    };
+
+    try {
+      const res = await fetch(`${SULAKSH_API}/api/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not submit your report.');
+      setMsg(msg, 'Report submitted. Thank you — our team will review it.', true);
+      setTimeout(() => closeModal('reportOverlay'), 1500);
+    } catch (err) {
+      setMsg(msg, err.message || 'Could not submit your report.', false);
+    }
   }
 
   // Content renders IMMEDIATELY; the session resolves in parallel and only
