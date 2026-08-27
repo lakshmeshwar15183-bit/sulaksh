@@ -467,6 +467,7 @@
     <div class="nav-actions">
       <button class="icon-btn" id="searchBtn" aria-label="Search">🔍</button>
       <button class="icon-btn" id="maintBtn" style="display:none;" title="Toggle maintenance mode">🚧</button>
+      <button class="icon-btn" id="dlBtn" style="display:none;" title="Download buttons on/off">⬇️</button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
       <button class="btn-primary" id="loginBtn">👤 Login</button>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -963,6 +964,7 @@ isAdmin: false,
     }
     document.body.classList.toggle('is-admin', state.isAdmin);
     updateMaintUI();
+    updateDownloadsUI();
   }
 
   // Maintenance toggle — visible ONLY to the site owner and maintenance-role accounts
@@ -1003,6 +1005,42 @@ isAdmin: false,
     }
   }
 
+  // Download buttons toggle — visible ONLY to the site owner
+  async function updateDownloadsUI() {
+    const btn = document.getElementById('dlBtn');
+    if (!btn) return;
+    if (!state.token) { btn.style.display = 'none'; return; }
+    try {
+      const r = await fetch(`${SULAKSH_API}/api/admin/downloads`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      });
+      if (r.ok) { const s = await r.json(); btn.style.display = ''; btn.textContent = s.enabled ? '⬇️' : '⛔'; }
+      else { btn.style.display = 'none'; }
+    } catch (e) { btn.style.display = 'none'; }
+  }
+  async function toggleDownloads() {
+    const btn = document.getElementById('dlBtn');
+    try {
+      const cur = await fetch(`${SULAKSH_API}/api/admin/downloads`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      }).then((r) => r.json());
+      const next = !cur.enabled;
+      if (!confirm(next ? 'Turn DOWNLOAD buttons ON for visitors?' : 'Turn DOWNLOAD buttons OFF for visitors?')) return;
+      const r = await fetch(`${SULAKSH_API}/api/admin/downloads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${state.token}` },
+        body: JSON.stringify({ enabled: next }),
+      });
+      if (!r.ok) throw new Error('Failed');
+      const s = await r.json();
+      btn.textContent = s.enabled ? '⬇️' : '⛔';
+      alert(s.enabled ? 'Download buttons are now ON \u2705' : 'Download buttons are now OFF \u26d4');
+      if (typeof loadMaterials === 'function') loadMaterials();
+    } catch (e) {
+      alert('Could not toggle download buttons.');
+    }
+  }
+
   // Login / logout
   const loginBtn = document.getElementById('loginBtn');
   loginBtn.addEventListener('click', () => {
@@ -1011,6 +1049,7 @@ isAdmin: false,
     openModal('loginOverlay');
   });
   document.getElementById('maintBtn').addEventListener('click', toggleMaintenance);
+  document.getElementById('dlBtn').addEventListener('click', toggleDownloads);
   document.getElementById('loginSubmit').addEventListener('click', doLogin);
   document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
   document.getElementById('passToggle').addEventListener('click', () => {
