@@ -416,6 +416,7 @@
       <button class="icon-btn" id="secLogBtn" style="display:none;" title="Security log">📜</button>
       <button class="icon-btn" id="pwBtn" style="display:none;" title="Change password">🔑</button>
       <button class="icon-btn" id="maintBtn" style="display:none;" title="Toggle maintenance mode">🚧</button>
+      <button class="icon-btn" id="dlBtn" style="display:none;" title="Toggle download buttons">⬇️</button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
       <button class="btn-primary" id="loginBtn">👤 Login</button>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -953,16 +954,19 @@
     role: null,
     isAdmin: false,
     canMaintain: false,
+  canToggleDownloads: false,
   };
 
   // ===== Permission structure (owner-defined) =====
   const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];      // upload / manage materials
   const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];                     // maintenance toggle ONLY
+  const DOWNLOADS_EMAILS = ['lakshmeshwar15183@gmail.com'];                     // download buttons toggle ONLY
 
   function applyPermissions() {
     const e = state.email || '';
     state.isAdmin = ADMIN_EMAILS.includes(e);
     state.canMaintain = MAINTENANCE_EMAILS.includes(e);
+    state.canToggleDownloads = DOWNLOADS_EMAILS.includes(e);
   }
 
   async function restoreSession() {
@@ -1414,6 +1418,37 @@
       const r = await fetch(`${SULAKSH_API}/api/admin/maintenance`);
       if (r.ok) { const s = await r.json(); btn.textContent = s.enabled ? '🛠️' : '🚧'; }
     } catch (e) {}
+    updateDownloadsUI();
+  }
+  // Download buttons toggle (owner only) — mirrors the maintenance toggle.
+  async function updateDownloadsUI() {
+    const btn = document.getElementById('dlBtn');
+    if (!btn) return;
+    const can = state.canToggleDownloads;
+    btn.style.display = can ? '' : 'none';
+    if (!can) return;
+    try {
+      const r = await fetch(`${SULAKSH_API}/api/admin/downloads`);
+      if (r.ok) { const s = await r.json(); btn.textContent = s.enabled ? '⬇️' : '⛔'; }
+    } catch (e) {}
+  }
+  async function toggleDownloads() {
+    const btn = document.getElementById('dlBtn');
+    try {
+      const cur = await fetch(`${SULAKSH_API}/api/admin/downloads`).then((r) => r.json());
+      const next = !cur.enabled;
+      if (!confirm(next ? 'Turn OFF download buttons site-wide?' : 'Turn ON download buttons site-wide?')) return;
+      const r = await fetch(`${SULAKSH_API}/api/admin/downloads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: next }),
+      });
+      if (!r.ok) throw new Error('Failed');
+      btn.textContent = next ? '⬇️' : '⛔';
+      alert(next ? 'Download buttons are now HIDDEN site-wide.' : 'Download buttons are now VISIBLE site-wide.');
+    } catch (e) {
+      alert('Could not toggle download buttons.');
+    }
   }
   async function toggleMaintenance() {
     const btn = document.getElementById('maintBtn');
@@ -1460,6 +1495,7 @@
     openModal('loginOverlay');
   });
   document.getElementById('maintBtn').addEventListener('click', toggleMaintenance);
+  document.getElementById('dlBtn').addEventListener('click', toggleDownloads);
   const pwBtn = document.getElementById('pwBtn');
   if (pwBtn) pwBtn.addEventListener('click', changePasswordFlow);
   const secLogBtn = document.getElementById('secLogBtn');
