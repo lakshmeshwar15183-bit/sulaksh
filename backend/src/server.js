@@ -114,6 +114,13 @@ app.get('/api/maintenance-status', (req, res) => {
   res.json({ enabled: db.getSetting('maintenance_mode') === '1' });
 });
 
+// Public site config the frontend needs before rendering (e.g. feature flags).
+// No auth — safe to expose. Downloads are hidden on the client when disabled;
+// the download endpoint itself is NOT blocked (View always works).
+app.get('/api/config', (req, res) => {
+  res.json({ downloads_enabled: db.getSetting('downloads_enabled') !== '0' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialsRoutes);
 app.use('/api/subjects', subjectsRoutes);

@@ -1260,7 +1260,7 @@
         </div>
         <div class="a">
           <button onclick="viewMaterial('${m.id}')">👁 View</button>
-          <button onclick="downloadMaterial('${m.id}')">⬇ Download</button>
+          <button class="dl-btn" onclick="downloadMaterial('${m.id}')">⬇ Download</button>
           <button class="report-btn" title="Report this material" onclick="openReportModal('${m.id}','${safeTitle.replace(/'/g, "\\'")}')">⚠ Report</button>
           ${state.isAdmin ? `<button class="del-btn" onclick="deleteMaterial('${m.id}','${safeTitle.replace(/'/g, "\\'")}')">🗑 Delete</button>` : ''}
         </div>
@@ -2085,5 +2085,6 @@
   })();
 </script>
 
+  <script src="assets/js/download-flag.js"></script>
 </body>
 </html>

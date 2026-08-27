@@ -70,6 +70,15 @@
 </header>
 
 <main>
+  <section class="panel" id="downloadsPanel" style="display:none; margin-bottom:20px;">
+    <h2>Download Buttons (Site-wide)</h2>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Show or hide the &ldquo;Download / Save&rdquo; buttons on every material page. Opening a file to view always stays enabled.</p>
+    <label style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;cursor:pointer;">
+      <input type="checkbox" id="downloadsToggle" style="width:auto;flex:none;"> Downloads enabled
+    </label>
+    <div class="msg" id="downloadsMsg"></div>
+  </section>
+
   <div class="grid">
     <section class="panel">
       <h2 id="formTitle">Upload New Material</h2>
@@ -145,6 +154,39 @@
     if (!res.ok) { window.location.href = './login.html'; return; }
     const data = await res.json();
     $('adminEmail').textContent = data.email;
+    setupDownloadsToggle(data.email);
+  }
+
+
+  // ---- Download buttons toggle (only lakshmeshwar15183@gmail.com) ----
+  async function setupDownloadsToggle(email) {
+    if (!email || email !== 'lakshmeshwar15183@gmail.com') return;
+    $('downloadsPanel').style.display = '';
+    const toggle = $('downloadsToggle');
+    const msg = $('downloadsMsg');
+    try {
+      const res = await fetch(`${API}/api/admin/downloads`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Could not load setting.');
+      const data = await res.json();
+      toggle.checked = !!data.enabled;
+    } catch (e) { msg.textContent = e.message; msg.className = 'msg err'; }
+    toggle.addEventListener('change', async () => {
+      msg.textContent = ''; msg.className = 'msg';
+      try {
+        const res = await fetch(`${API}/api/admin/downloads`, {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: toggle.checked })
+        });
+        if (!res.ok) throw new Error('Update failed.');
+        const data = await res.json();
+        toggle.checked = !!data.enabled;
+        msg.textContent = 'Saved.'; msg.className = 'msg ok';
+      } catch (e) {
+        msg.textContent = e.message; msg.className = 'msg err';
+        toggle.checked = !toggle.checked;
+      }
+    });
   }
 
   $('logoutBtn').addEventListener('click', async () => {

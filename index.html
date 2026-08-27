@@ -1199,7 +1199,7 @@ isAdmin: false,
         <span class="t">${escapeHtml(m.title)}${m.year ? ' (' + m.year + ')' : ''}</span>
         <span class="a">
           <button onclick="viewMaterial('${m.id}')">View</button>
-          <button onclick="downloadMaterial('${m.id}')">Save</button>
+          <button class="dl-btn" onclick="downloadMaterial('${m.id}')">Save</button>
           ${state.isAdmin ? `<button class="del-btn" onclick="deleteMaterial('${m.id}', '${escapeHtml(m.title)}')">Delete</button>` : ''}
         </span>
       </div>`).join('');
@@ -1263,5 +1263,6 @@ isAdmin: false,
 
 </script>
 
+  <script src="assets/js/download-flag.js"></script>
 </body>
 </html>
