@@ -32,14 +32,13 @@ router.post('/maintenance', (req, res) => {
 });
 
 // ---- Download buttons toggle (site-wide) ----
-// Only lakshmeshwar15183@gmail.com may read/change this. Every other admin gets 403.
-const DOWNLOADS_ADMIN = 'lakshmeshwar15183@gmail.com';
+// Any super admin (owner-level) may read/change this.
 router.get('/downloads', (req, res) => {
-  if (req.admin.email !== DOWNLOADS_ADMIN) return res.status(403).json({ error: 'Forbidden' });
+  if (req.admin.role !== 'super') return res.status(403).json({ error: 'Forbidden' });
   res.json({ enabled: db.getSetting('downloads_enabled') !== '0' });
 });
 router.post('/downloads', (req, res) => {
-  if (req.admin.email !== DOWNLOADS_ADMIN) return res.status(403).json({ error: 'Forbidden' });
+  if (req.admin.role !== 'super') return res.status(403).json({ error: 'Forbidden' });
   const enabled = req.body && (req.body.enabled === true || req.body.enabled === '1' || req.body.enabled === 1);
   db.setSetting('downloads_enabled', enabled ? '1' : '0');
   res.json({ enabled });

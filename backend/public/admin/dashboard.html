@@ -154,22 +154,23 @@
     if (!res.ok) { window.location.href = './login.html'; return; }
     const data = await res.json();
     $('adminEmail').textContent = data.email;
-    setupDownloadsToggle(data.email);
+    setupDownloadsToggle();
   }
 
 
-  // ---- Download buttons toggle (only lakshmeshwar15183@gmail.com) ----
-  async function setupDownloadsToggle(email) {
-    if (!email || email !== 'lakshmeshwar15183@gmail.com') return;
-    $('downloadsPanel').style.display = '';
+  // ---- Download buttons toggle (super admins) ----
+  async function setupDownloadsToggle() {
+    const panel = $('downloadsPanel');
     const toggle = $('downloadsToggle');
     const msg = $('downloadsMsg');
     try {
       const res = await fetch(`${API}/api/admin/downloads`, { credentials: 'include' });
+      if (res.status === 403) { panel.style.display = 'none'; return; }
       if (!res.ok) throw new Error('Could not load setting.');
       const data = await res.json();
+      panel.style.display = '';
       toggle.checked = !!data.enabled;
-    } catch (e) { msg.textContent = e.message; msg.className = 'msg err'; }
+    } catch (e) { panel.style.display = 'none'; msg.textContent = e.message; msg.className = 'msg err'; }
     toggle.addEventListener('change', async () => {
       msg.textContent = ''; msg.className = 'msg';
       try {

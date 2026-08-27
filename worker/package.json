@@ -1,0 +1,18 @@
+{
+  "name": "sulaksh-worker",
+  "version": "1.0.0",
+  "description": "SULAKSH backend ported to Cloudflare Workers + D1 (storage stays in Backblaze B2)",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute sulaksh-db --file=./migrations/0001_init.sql",
+    "migrate": "node migrate.mjs"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "wrangler": "^4.126.0"
+  }
+}

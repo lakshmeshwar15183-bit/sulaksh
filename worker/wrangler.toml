@@ -1,0 +1,31 @@
+name = "sulaksh-backend"
+main = "src/index.js"
+compatibility_date = "2025-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+workers_dev = true
+
+# Environment variables read at runtime via env.X / ctx.env.
+[vars]
+# JWT_SECRET and the storage secret keys are set via `wrangler secret put`
+# so they never live in this file. Optional secrets: ADMIN_SETUP_KEY.
+CLIENT_ENDPOINT = "https://s3.ca-east-006.backblazeb2.com"
+CLIENT_REGION = "us-east-006"
+STORAGE_BUCKET = "sulaksh-materials"
+ADMIN_COOKIE_NAME = "sulaksh_admin_token"
+AUTH_IDLE_HOURS = "12"
+MAX_FILE_SIZE_MB = "25"
+DOWNLOAD_DAILY_LIMIT = "80"
+LOGIN_ATTEMPTS_LIMIT = "10"
+LOGIN_EMAIL_LOCK = "8"
+API_RATE_LIMIT = "300"
+PRESIGNED_URL_EXPIRY_SECONDS = "300"
+# Comma-separated list of allowed browser origins for state-changing requests.
+CORS_ORIGINS = "https://sulaksh.online,https://www.sulaksh.online"
+# PUBLIC_CDN_BASE (optional) — if set, downloads return the CDN link instead of presigned.
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sulaksh-db"
+database_id = "PLACEHOLDER_DATABASE_ID"
+migrations_dir = "migrations"
