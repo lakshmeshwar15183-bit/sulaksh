@@ -420,6 +420,28 @@
   }
 
   [data-theme="dark"] .brand-wordmark{filter:brightness(0) invert(1);opacity:.95;}
+
+  /* Mobile tip: shown only on small screens, suggests desktop mode */
+  .mobile-tip{
+    display:none;
+    background:linear-gradient(90deg,#FFF6E6,#FFFDF7);
+    color:#7A4B00;
+    border-bottom:1px solid #F1D9B2;
+    font-size:15px;
+    font-weight:500;
+    line-height:1.55;
+    text-align:center;
+    padding:11px 18px;
+  }
+  .mobile-tip b{color:#5A3500; font-weight:700;}
+  @media (max-width:768px){
+    .mobile-tip{display:block;}
+  }
+  [data-theme="dark"] .mobile-tip{
+    background:linear-gradient(90deg,#2A210E,#1A160A);
+    color:#E9C98C; border-bottom-color:#3A2F14;
+  }
+  [data-theme="dark"] .mobile-tip b{color:#F4D9A6;}
 </style>
 <script src="assets/js/maintenance.js?v=1"></script>
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -460,6 +482,10 @@
     <a href="#about">About Us</a>
   </div>
 </header>
+
+<div class="mobile-tip">
+  📱 For the best experience, please open Sulaksh in your browser's <b>Desktop Mode / Request Desktop Site</b>. The mobile view is limited.
+</div>
 
 <section class="hero">
   <div class="wrap">
