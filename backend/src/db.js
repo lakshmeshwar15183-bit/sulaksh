@@ -77,6 +77,19 @@ if (!cols.some((c) => c.name === 'material_category')) {
   db.exec('ALTER TABLE materials ADD COLUMN material_category TEXT');
   console.log('[db] Added material_category column to materials');
 }
+// uploaded_by: email of the admin who uploaded a file, so reports can say who
+// published the content. Populated from the upload token; legacy rows default
+// to null ("unknown").
+if (!cols.some((c) => c.name === 'uploaded_by')) {
+  db.exec('ALTER TABLE materials ADD COLUMN uploaded_by TEXT');
+  console.log('[db] Added uploaded_by column to materials');
+}
+// report_count: number of pending (unresolved) reports on a file, surfaced to
+// admins so frequently-flagged content is easy to spot.
+if (!cols.some((c) => c.name === 'report_count')) {
+  db.exec('ALTER TABLE materials ADD COLUMN report_count INTEGER NOT NULL DEFAULT 0');
+  console.log('[db] Added report_count column to materials');
+}
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS subjects (
@@ -93,6 +106,27 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+`);
+
+// ---- Content reports ----
+// A visitor can flag a material as duplicate / copyrighted / irrelevant, but
+// can NEVER modify or delete it — only admins review and resolve reports.
+// status: 'open' | 'resolved' | 'dismissed'.
+db.exec(`
+CREATE TABLE IF NOT EXISTS reports (
+  id TEXT PRIMARY KEY,
+  material_id TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  details TEXT,
+  reporter_name TEXT,
+  reporter_email TEXT,
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (material_id) REFERENCES materials(id)
+);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
+CREATE INDEX IF NOT EXISTS idx_reports_material ON reports(material_id);
+CREATE INDEX IF NOT EXISTS idx_reports_created ON reports(created_at);
 `);
 
 // ---- Auth sessions (server-side revocation + sliding expiry) ----

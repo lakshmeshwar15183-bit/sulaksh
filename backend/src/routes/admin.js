@@ -102,15 +102,15 @@ router.post('/materials', upload.single('file'), async (req, res) => {
   try {
     db.prepare(`
       INSERT INTO materials
-        (id, title, exam, category, subject, track, semester, material_category, year, description, file_name, file_size, content_type, r2_object_key, status, is_imp, is_syllabus, is_pyq, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, title, exam, category, subject, track, semester, material_category, year, description, file_name, file_size, content_type, r2_object_key, status, is_imp, is_syllabus, is_pyq, uploaded_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `    ).run(
       id, title, exam, category, subject || null, track || null, semester || null, material_category || null, year ? parseInt(year, 10) : null,
       description || null, safeFileName, fileBuffer.length, contentType, objectKey, 'active',
       is_imp === 'true' || is_imp === '1' ? 1 : 0,
       is_syllabus === 'true' || is_syllabus === '1' ? 1 : 0,
       is_pyq === 'true' || is_pyq === '1' ? 1 : 0,
-      ts, ts
+      (req.admin && req.admin.email) || null, ts, ts
     );
   } catch (err) {
     console.error('[admin] DB insert failed after R2 upload, cleaning up object:', objectKey, err.message);
@@ -320,6 +320,75 @@ router.delete('/subjects/:id', async (req, res) => {
   }
   db.prepare('DELETE FROM subjects WHERE id = ?').run(subject.id);
   res.json({ ok: true, removed_materials: materials.length });
+});
+
+const { REASON_LABELS } = require('./reports');
+
+// ---- List content reports ----
+// GET /api/admin/reports?status=open|resolved|dismissed|all
+// Joins with the material so admins see the flagged file's context and the
+// admin who uploaded it. Reports are read-only to everyone else.
+router.get('/reports', (req, res) => {
+  const status = req.query.status || 'open';
+  const where =
+    status === 'all' ? "WHERE 1 = 1" : "WHERE r.status = ?";
+  const params = status === 'all' ? [] : [status];
+
+  const rows = db.prepare(`
+    SELECT
+      r.id, r.reason, r.details, r.reporter_name, r.reporter_email, r.status,
+      r.created_at, r.material_id,
+      m.title AS material_title, m.exam, m.category, m.subject,
+      m.semester, m.material_category, m.is_pyq, m.uploaded_by
+    FROM reports r
+    LEFT JOIN materials m ON m.id = r.material_id
+    ${where}
+    ORDER BY r.created_at DESC
+    LIMIT 500
+  `).all(...params);
+
+  const reports = rows.map((r) => ({
+    ...r,
+    reason_label: REASON_LABELS[r.reason] || r.reason,
+  }));
+
+  // Aggregate counts by status for the admin filter tabs.
+  const counts = {};
+  for (const row of db.prepare('SELECT status, COUNT(*) AS n FROM reports GROUP BY status').all()) {
+    counts[row.status] = row.n;
+  }
+
+  res.json({ reports, counts, total: rows.length });
+});
+
+// ---- Resolve / dismiss a report (admin only) ----
+// PATCH /api/admin/reports/:id  { status: 'resolved' | 'dismissed' }
+// "resolved" means the admin agreed and acted (e.g. removed the material);
+// "dismissed" means the report was reviewed and rejected. Either way the
+// report is closed and stops counting toward the material's report_count.
+router.patch('/reports/:id', (req, res) => {
+  const report = db.prepare('SELECT * FROM reports WHERE id = ?').get(req.params.id);
+  if (!report) return res.status(404).json({ error: 'Report not found.' });
+
+  const status = req.body && req.body.status;
+  if (!['resolved', 'dismissed'].includes(status)) {
+    return res.status(400).json({ error: 'status must be "resolved" or "dismissed".' });
+  }
+  if (report.status !== 'open') {
+    return res.status(409).json({ error: 'This report has already been closed.' });
+  }
+
+  const ts = new Date().toISOString();
+  db.prepare("UPDATE reports SET status = ? WHERE id = ?").run(status, req.params.id);
+
+  // Decrement the material's live report count (floor at 0).
+  if (report.material_id) {
+    db.prepare("UPDATE materials SET report_count = MAX(0, report_count - 1), updated_at = ? WHERE id = ?")
+      .run(ts, report.material_id);
+  }
+
+  const updated = db.prepare('SELECT * FROM reports WHERE id = ?').get(req.params.id);
+  res.json({ report: updated });
 });
 
 module.exports = router;

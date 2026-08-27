@@ -40,6 +40,23 @@
   .row-actions button{ font-size:12px; padding:5px 9px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer; }
   .row-actions button.danger{ color:var(--danger); border-color:#F3C9C9; }
   .empty{ color:var(--muted); font-size:13px; padding:20px 0; text-align:center; }
+  .reports-panel{ margin-top:20px; }
+  .report-count-badge{ background:var(--danger); color:#fff; border-radius:100px; padding:2px 9px; font-size:12px; font-weight:700; }
+  .report-count-badge:empty{ display:none; }
+  .report-card{ border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:#fff; }
+  .report-card .rc-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .report-card .rc-title{ font-weight:700; font-size:14px; }
+  .report-card .rc-reason{ display:inline-block; margin-top:6px; padding:2px 8px; border-radius:100px; font-size:11.5px; font-weight:600; background:rgba(214,69,69,.1); color:var(--danger); }
+  .report-card .rc-meta{ font-size:12px; color:var(--muted); margin-top:6px; line-height:1.6; }
+  .report-card .rc-details{ font-size:13px; margin-top:8px; background:var(--bg); border-radius:8px; padding:8px 10px; color:var(--text); }
+  .report-card .rc-actions{ display:flex; gap:8px; margin-top:10px; }
+  .report-card .rc-actions button{ font-size:12.5px; padding:6px 12px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer; }
+  .report-card .rc-actions button.resolved{ background:var(--green); border-color:var(--green); color:#fff; }
+  .report-card .rc-actions button.dismissed{ background:var(--muted); border-color:var(--muted); color:#fff; }
+  .rc-status{ font-size:11px; font-weight:700; text-transform:uppercase; }
+  .rc-status.open{ color:var(--danger); }
+  .rc-status.resolved{ color:var(--green); }
+  .rc-status.dismissed{ color:var(--muted); }
 </style>
 </head>
 <body>
@@ -100,6 +117,22 @@
       <div id="tableWrap"><div class="empty">Loading…</div></div>
     </section>
   </div>
+
+  <section class="panel reports-panel">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <h2>Content Reports <span class="report-count-badge" id="reportOpenBadge"></span></h2>
+      <div class="filters" style="margin:0;">
+        <select id="reportStatus">
+          <option value="open">Open</option>
+          <option value="resolved">Resolved</option>
+          <option value="dismissed">Dismissed</option>
+          <option value="all">All</option>
+        </select>
+        <button id="reportRefreshBtn">Refresh</button>
+      </div>
+    </div>
+    <div id="reportWrap"><div class="empty">Loading reports…</div></div>
+  </section>
 </main>
 
 <script>
@@ -274,7 +307,68 @@
     loadMaterials();
   };
 
-  checkAuth().then(loadMaterials);
+  // ---- Reports (visitor-flagged content) ----
+  async function loadReports() {
+    const st = $('reportStatus').value;
+    const res = await fetch(`${API}/api/admin/reports?status=${st}`, { credentials: 'include' });
+    if (res.status === 401) { window.location.href = './login.html'; return; }
+    const data = await res.json();
+    const badge = $('reportOpenBadge');
+    if (data.counts && data.counts.open) badge.textContent = data.counts.open + ' open';
+    else badge.textContent = '';
+
+    const wrap = $('reportWrap');
+    const reports = data.reports || [];
+    if (!reports.length) { wrap.innerHTML = '<div class="empty">No reports in this filter.</div>'; return; }
+
+    wrap.innerHTML = reports.map((r) => `
+      <div class="report-card">
+        <div class="rc-top">
+          <div>
+            <div class="rc-title">${escapeHtml(r.material_title || 'Untitled')}</div>
+            <span class="rc-reason">⚠ ${escapeHtml(r.reason_label || r.reason)}</span>
+          </div>
+          <span class="rc-status ${escapeHtml(r.status)}">${escapeHtml(r.status)}</span>
+        </div>
+        <div class="rc-meta">
+          ${r.subject ? `Subject: <strong>${escapeHtml(r.subject)}</strong>` : 'No subject'} ·
+          ${r.exam ? escapeHtml(r.exam) : 'No exam'} ·
+          ${r.semester ? 'Sem ' + escapeHtml(r.semester) : ''}
+          ${r.material_category ? ' · ' + escapeHtml(r.material_category) : ''}
+          ${r.is_pyq ? ' · 📜 PYQ' : ''}<br>
+          Uploaded by: <strong>${escapeHtml(r.uploaded_by || 'unknown')}</strong><br>
+          Reported by: ${escapeHtml(r.reporter_name || '(anonymous)')}${r.reporter_email ? ' · ' + escapeHtml(r.reporter_email) : ''} · ${escapeHtml(r.created_at ? new Date(r.created_at).toLocaleString() : '')}
+        </div>
+        ${r.details ? `<div class="rc-details">${escapeHtml(r.details)}</div>` : ''}
+        ${r.status === 'open' ? `
+          <div class="rc-actions">
+            <button class="resolved" onclick="resolveReport('${r.id}', 'resolved')">✓ Resolve (content already removed/fixed)</button>
+            <button class="dismissed" onclick="resolveReport('${r.id}', 'dismissed')">✕ Dismiss (no issue found)</button>
+          </div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  window.resolveReport = async (id, status) => {
+    const label = status === 'resolved'
+      ? 'Mark this report as RESOLVED (content was removed/fixed)?'
+      : 'Dismiss this report (no issue found)?';
+    if (!confirm(label)) return;
+    const res = await fetch(`${API}/api/admin/reports/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ status }),
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Could not update the report.'); return; }
+    loadReports();
+  };
+
+  $('reportStatus').addEventListener('change', loadReports);
+  $('reportRefreshBtn').addEventListener('click', loadReports);
+
+  checkAuth().then(() => { loadMaterials(); loadReports(); });
 </script>
 </body>
 </html>

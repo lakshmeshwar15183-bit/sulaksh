@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const materialsRoutes = require('./routes/materials');
 const subjectsRoutes = require('./routes/subjects');
 const adminRoutes = require('./routes/admin');
+const reportsRoutes = require('./routes/reports');
 
 const app = express();
 
@@ -87,9 +88,21 @@ const apiLimiter = rateLimit({
     PUBLIC_READ_PREFIXES.some((p) => req.path.startsWith(p)),
 });
 
+// Report submission is open to anonymous visitors (they must be able to flag
+// content without logging in), but we cap how many a single IP can file in a
+// window so a bad actor can't drown admins in spam reports.
+const reportLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  limit: parseInt(process.env.REPORT_RATE_LIMIT || '20', 10),
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Too many reports submitted. Please try again later.' },
+});
+
 // ---- API routes ----
 app.use('/api/auth/login', loginLimiter);
 app.use('/api', apiLimiter);
+app.use('/api/reports', reportLimiter);
 
 // Public maintenance flag — the static frontend polls this to show the
 // maintenance overlay. Always allowed, even while other routes are gated.
@@ -104,6 +117,7 @@ app.get('/api/maintenance-status', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialsRoutes);
 app.use('/api/subjects', subjectsRoutes);
+app.use('/api/reports', reportsRoutes);
 app.use('/api/admin', adminRoutes);
 
 // ---- Admin panel static UI (separate from the public marketing site) ----
