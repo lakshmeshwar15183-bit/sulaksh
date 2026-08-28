@@ -6,7 +6,7 @@
 // the delete option regardless of this setting. The backend also enforces the
 // gate (403), so this is purely the UX layer.
 (function () {
-  var API = 'https://sulaksh-backend-production.up.railway.app';
+  var API = (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
   window.__deletesEnabled = true; // fail-open default
   window.__isSuper = false;
 
@@ -28,12 +28,9 @@
   function load() {
     // Determine whether the current user is the super/owner account by hitting
     // the super-only endpoint. It returns 200 (+ enabled state) for the owner,
-    // 403 for a regular admin, 401 if not logged in. Cookie auth is sent
-    // automatically; token-auth pages attach the Bearer header.
-    var headers = {};
-    var token = localStorage.getItem('sulaksh-token');
-    if (token) headers.Authorization = 'Bearer ' + token;
-    fetch(API + '/api/admin/deletes', { credentials: 'include', headers: headers })
+    // 403 for a regular admin, 401 if not logged in. Auth rides the HttpOnly
+    // session cookie (sent automatically via credentials: 'include').
+    fetch(API + '/api/admin/deletes', { credentials: 'include' })
       .then(function (r) {
         if (r.ok) {
           window.__isSuper = true;

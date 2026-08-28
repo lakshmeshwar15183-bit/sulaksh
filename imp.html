@@ -313,7 +313,7 @@
 <script src="/assets/js/sulaksh-auth.js?v=1"></script>
 <script>
   // ---------- Config ----------
-  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  const SULAKSH_API = localStorage.getItem('sulaksh-api') || (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
 
   // Upload with timeout + retry on transient network AND server (5xx) errors.
   async function postUpload(url, options) {
@@ -431,7 +431,7 @@ isAdmin: false,
       state.token = data.token;
       state.isAdmin = (data.role === 'admin' || data.role === 'super');
       localStorage.setItem('sulaksh-email', email);
-      localStorage.setItem('sulaksh-token', data.token);
+      // token is never persisted to localStorage — it lives only in the HttpOnly cookie
       updateAuthUI();
       closeModal('loginOverlay');
       loadMaterials();

@@ -74,6 +74,7 @@ router.post('/login', (req, res) => {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
+    domain: process.env.COOKIE_DOMAIN || undefined,
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
@@ -126,6 +127,7 @@ router.post('/logout', (req, res) => {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
+    domain: process.env.COOKIE_DOMAIN || undefined,
     path: '/',
   });
   res.json({ ok: true });
@@ -140,6 +142,7 @@ router.post('/logout-all', requireAdmin, (req, res) => {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
+    domain: process.env.COOKIE_DOMAIN || undefined,
     path: '/',
   });
   res.json({ ok: true });
