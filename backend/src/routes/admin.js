@@ -59,7 +59,10 @@ router.post('/downloads', (req, res) => {
 // account can always delete regardless of this setting.
 const SUPER_ADMIN = 'lakshmeshwar15183@gmail.com';
 function isSuper(req) {
-  return (req.admin.email || '').toLowerCase() === SUPER_ADMIN || (req.admin.role || '') === 'super';
+  // Deliberately email-only: the DB column defaults to 'super' for any admin
+  // row created without an explicit role, so trusting `role` would let every
+  // admin behave as super. Only the owner account is super.
+  return (req.admin.email || '').toLowerCase() === SUPER_ADMIN;
 }
 function deletesDisabled() {
   return db.getSetting('deletes_enabled') === '0';
