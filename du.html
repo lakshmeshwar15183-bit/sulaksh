@@ -417,6 +417,7 @@
       <button class="icon-btn" id="pwBtn" style="display:none;" title="Change password">🔑</button>
       <button class="icon-btn" id="maintBtn" style="display:none;" title="Toggle maintenance mode">🚧</button>
       <button class="icon-btn" id="dlBtn" style="display:none;" title="Toggle download buttons">⬇️</button>
+      <button class="icon-btn" id="delBtn" style="display:none;" title="Toggle delete for other admins">🗑️</button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
       <button class="btn-primary" id="loginBtn">👤 Login</button>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -957,7 +958,7 @@
   };
 
   // ===== Permission structure (owner-defined) =====
-  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];      // upload / manage materials
+  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com', 'lakshmeshwar15183@gmail.com'];      // upload / manage materials
   const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];                     // maintenance toggle ONLY
 
   function applyPermissions() {
@@ -1379,6 +1380,7 @@
     if (sl) sl.style.display = state.isAdmin ? '' : 'none';
     updateMaintUI();
     updateDownloadsUI();
+    updateDeletesUI();
   }
 
   // ---- Security tools (super admins) ----
@@ -1445,6 +1447,37 @@
       alert('Could not toggle download buttons.');
     }
   }
+  // Delete toggle — visible ONLY to the super/owner account. Controls whether
+  // the two regular admins may delete materials; the owner can always delete.
+  async function updateDeletesUI() {
+    const btn = document.getElementById('delBtn');
+    if (!btn) return;
+    try {
+      const r = await fetch(`${SULAKSH_API}/api/admin/deletes`, { credentials: 'include' });
+      if (r.ok) { const s = await r.json(); btn.style.display = ''; btn.textContent = s.enabled ? '🗑️' : '🚫'; }
+      else { btn.style.display = 'none'; }
+    } catch (e) { btn.style.display = 'none'; }
+  }
+  async function toggleDeletes() {
+    const btn = document.getElementById('delBtn');
+    try {
+      const cur = await fetch(`${SULAKSH_API}/api/admin/deletes`).then((r) => r.json());
+      const next = !cur.enabled;
+      if (!confirm(next ? 'Allow the other admins to DELETE materials?' : 'Stop the other admins from DELETING materials?')) return;
+      const r = await fetch(`${SULAKSH_API}/api/admin/deletes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: next }),
+      });
+      if (!r.ok) throw new Error('Failed');
+      const s = await r.json();
+      btn.textContent = s.enabled ? '🗑️' : '🚫';
+      alert(s.enabled ? 'Other admins can now DELETE materials ✅' : 'Other admins can no longer DELETE materials 🚫');
+      if (typeof loadMaterials === 'function') loadMaterials();
+    } catch (e) {
+      alert('Could not toggle delete access.');
+    }
+  }
   async function toggleMaintenance() {
     const btn = document.getElementById('maintBtn');
     try {
@@ -1491,6 +1524,7 @@
   });
   document.getElementById('maintBtn').addEventListener('click', toggleMaintenance);
   document.getElementById('dlBtn').addEventListener('click', toggleDownloads);
+  document.getElementById('delBtn').addEventListener('click', toggleDeletes);
   const pwBtn = document.getElementById('pwBtn');
   if (pwBtn) pwBtn.addEventListener('click', changePasswordFlow);
   const secLogBtn = document.getElementById('secLogBtn');
@@ -1898,7 +1932,7 @@
             <a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>
             ${state.isAdmin ? `<button class="upload-btn" onclick="openUpload('${cat}','${encodeURIComponent(s)}')">⬆ Add</button>` : ''}
             ${state.isAdmin ? `<button class="icon-btn" onclick="editSubject('${cat}','${encodeURIComponent(s)}')" title="Rename subject">✏️</button>` : ''}
-            ${state.isAdmin ? `<button class="icon-btn" onclick="deleteSubjectUI('${cat}','${encodeURIComponent(s)}')" title="Delete subject">🗑️</button>` : ''}
+            ${state.isAdmin ? `<button class="icon-btn del-subject-btn" onclick="deleteSubjectUI('${cat}','${encodeURIComponent(s)}')" title="Delete subject">🗑️</button>` : ''}
           </div>
         </div>
       </div>`;
@@ -2117,5 +2151,6 @@
 </script>
 
   <script src="assets/js/download-flag.js"></script>
+  <script src="assets/js/delete-flag.js"></script>
 </body>
 </html>
