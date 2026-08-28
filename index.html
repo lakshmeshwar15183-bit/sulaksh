@@ -916,7 +916,6 @@
     }
     throw lastErr;
   }
-  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com', 'lakshmeshwar15183@gmail.com'];
 
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
@@ -969,13 +968,12 @@ isAdmin: false,
     updateDeletesUI();
   }
 
-  // Maintenance toggle — visible ONLY to the site owner and maintenance-role accounts
-  const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];
+  // Maintenance toggle — visible ONLY to super admins and maintenance-role accounts
   async function updateMaintUI() {
     const btn = document.getElementById('maintBtn');
     if (!btn) return;
-    const role = localStorage.getItem('sulaksh-role');
-    const can = MAINTENANCE_EMAILS.includes((state.email || '').toLowerCase()) || role === 'maintenance';
+    const role = (SulakshAuth && SulakshAuth.st.role) || localStorage.getItem('sulaksh-role');
+    const can = role === 'super' || role === 'maintenance';
     btn.style.display = (state.token && can) ? '' : 'none';
     if (!can || !state.token) return;
     try {
@@ -1114,7 +1112,7 @@ isAdmin: false,
       if (!res.ok) throw new Error(data.error || 'Login failed.');
       state.email = email;
       state.token = data.token;
-      state.isAdmin = ADMIN_EMAILS.includes(email);
+      state.isAdmin = (data.role === 'admin' || data.role === 'super');
       localStorage.setItem('sulaksh-email', email);
       localStorage.setItem('sulaksh-token', data.token);
       localStorage.setItem('sulaksh-role', data.role || 'super');
@@ -1137,7 +1135,7 @@ isAdmin: false,
     loadMaterials();
   }
 
-  // Upload (admin only — gated to ADMIN_EMAILS in the UI)
+  // Upload (admin only — gated to server-verified role in the UI)
   function openUpload(exam, category) {
     if (!state.isAdmin) { alert('Only the site admin can upload materials.'); return; }
     document.getElementById('upExam').value = exam;
@@ -1334,8 +1332,8 @@ isAdmin: false,
     var e = SulakshAuth.st.email || '';
     state.email = e || null;
     state.token = SulakshAuth.st.token || null;
-    state.isAdmin = (typeof ADMIN_EMAILS !== 'undefined') && ADMIN_EMAILS.includes(e);
-    if (typeof MAINTENANCE_EMAILS !== 'undefined') state.canMaintain = MAINTENANCE_EMAILS.includes(e);
+    state.isAdmin = (SulakshAuth.st.role === 'admin' || SulakshAuth.st.role === 'super');
+    state.canMaintain = (SulakshAuth.st.role === 'super' || SulakshAuth.st.role === 'maintenance');
     if (typeof updateAuthUI === 'function') updateAuthUI();
   });
 

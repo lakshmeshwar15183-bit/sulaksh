@@ -12,6 +12,8 @@ const adminRoutes = require('./routes/admin');
 const reportsRoutes = require('./routes/reports');
 
 const app = express();
+// Express discloses itself via X-Powered-By; disable it.
+app.disable('x-powered-by');
 
 // Railway terminates TLS and forwards the real client IP in X-Forwarded-For.
 // Without this, express-rate-limit sees the proxy's IP for every request, so
@@ -22,13 +24,20 @@ app.set('trust proxy', 1);
 // ---- Core middleware ----
 app.use(express.json());
 
-// ---- Basic security headers ----
+// ---- Basic security headers + Content-Security-Policy ----
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  // CSP: JSON API responses carry a locked-down policy. The admin panel is
+  // inline-script based, so it gets a scoped policy that still stops
+  // clickjacking (frame-ancestors) and form-jacking.
+  const csp = req.path.startsWith('/admin')
+    ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://cdn.sulaksh.online https://*.backblazeb2.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    : "default-src 'none'; frame-ancestors 'none'; base-uri 'self'";
+  res.setHeader('Content-Security-Policy', csp);
   next();
 });
 app.use(cookieParser());

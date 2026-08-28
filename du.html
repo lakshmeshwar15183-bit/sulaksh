@@ -957,14 +957,12 @@
     canMaintain: false,
   };
 
-  // ===== Permission structure (owner-defined) =====
-  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com', 'lakshmeshwar15183@gmail.com'];      // upload / manage materials
-  const MAINTENANCE_EMAILS = ['lakshmeshwar15183@gmail.com'];                     // maintenance toggle ONLY
+  // ===== Permission structure (server-verified role) =====
 
   function applyPermissions() {
-    const e = state.email || '';
-    state.isAdmin = ADMIN_EMAILS.includes(e);
-    state.canMaintain = MAINTENANCE_EMAILS.includes(e);
+    const role = state.role || '';
+    state.isAdmin = (role === 'admin' || role === 'super');
+    state.canMaintain = (role === 'super' || role === 'maintenance');
   }
 
   async function restoreSession() {

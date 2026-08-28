@@ -24,7 +24,7 @@ router.use('/:id/download', downloadLimiter);
 // the client; downloads only ever happen via a short-lived presigned URL.
 const PUBLIC_FIELDS = `
   id, title, exam, category, subject, track, semester, material_category, year, description,
-  file_name, file_size, content_type, is_imp, is_syllabus, is_pyq, uploaded_by, created_at, updated_at
+  file_name, file_size, content_type, is_imp, is_syllabus, is_pyq, created_at, updated_at
 `;
 
 // GET /api/materials?exam=&category=&subject=&track=&semester=&material_category=&year=&q=
