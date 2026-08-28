@@ -10,12 +10,20 @@ const { stampPdf } = require('../stamp');
 const router = express.Router();
 router.use(requireAdmin);
 
-// ---- Role gate: 'maintenance' accounts may ONLY use the maintenance toggle.
-// Everything else in /api/admin requires role 'super'.
-const MAINTENANCE_ROUTES = new Set(['/maintenance']);
+// ---- Role gate ----
+// 'super'      : everything (materials, subjects, reports, toggles).
+// 'admin'      : materials / subjects / reports — NOT site-wide toggles.
+// 'maintenance': may ONLY toggle maintenance mode.
 router.use((req, res, next) => {
-  if ((req.admin.role || 'super') === 'super') return next();
-  if (MAINTENANCE_ROUTES.has(req.path)) return next();
+  const role = req.admin.role || 'super';
+  if (role === 'super') return next();
+  if (role === 'admin') {
+    if (req.path === '/maintenance' || req.path === '/downloads') {
+      return res.status(403).json({ error: 'This account does not have permission for that action.' });
+    }
+    return next();
+  }
+  if (role === 'maintenance' && req.path === '/maintenance') return next();
   return res.status(403).json({ error: 'This account does not have permission for that action.' });
 });
 
