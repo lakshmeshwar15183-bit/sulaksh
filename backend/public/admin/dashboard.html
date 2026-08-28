@@ -79,6 +79,15 @@
     <div class="msg" id="downloadsMsg"></div>
   </section>
 
+  <section class="panel" id="deletesPanel" style="display:none; margin-bottom:20px;">
+    <h2>Delete Access (Other Admins)</h2>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Allow or block the two regular admins from deleting materials. You (the owner) can always delete regardless of this setting.</p>
+    <label style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;cursor:pointer;">
+      <input type="checkbox" id="deletesToggle" style="width:auto;flex:none;"> Other admins may delete
+    </label>
+    <div class="msg" id="deletesMsg"></div>
+  </section>
+
   <div class="grid">
     <section class="panel">
       <h2 id="formTitle">Upload New Material</h2>
@@ -155,6 +164,7 @@
     const data = await res.json();
     $('adminEmail').textContent = data.email;
     setupDownloadsToggle();
+    setupDeletesToggle();
   }
 
 
@@ -195,6 +205,38 @@
     window.location.href = './login.html';
   });
 
+  // ---- Delete-access toggle (super admins) ----
+  async function setupDeletesToggle() {
+    const panel = $('deletesPanel');
+    const toggle = $('deletesToggle');
+    const msg = $('deletesMsg');
+    try {
+      const res = await fetch(`${API}/api/admin/deletes`, { credentials: 'include' });
+      if (res.status === 403) { panel.style.display = 'none'; return; }
+      if (!res.ok) throw new Error('Could not load setting.');
+      const data = await res.json();
+      panel.style.display = '';
+      toggle.checked = !!data.enabled;
+    } catch (e) { panel.style.display = 'none'; msg.textContent = e.message; msg.className = 'msg err'; }
+    toggle.addEventListener('change', async () => {
+      msg.textContent = ''; msg.className = 'msg';
+      try {
+        const res = await fetch(`${API}/api/admin/deletes`, {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: toggle.checked })
+        });
+        if (!res.ok) throw new Error('Update failed.');
+        const data = await res.json();
+        toggle.checked = !!data.enabled;
+        msg.textContent = 'Saved.'; msg.className = 'msg ok';
+      } catch (e) {
+        msg.textContent = e.message; msg.className = 'msg err';
+        toggle.checked = !toggle.checked;
+      }
+    });
+  }
+
   // ---- Load / render materials table ----
   async function loadMaterials() {
     const params = new URLSearchParams();
@@ -225,7 +267,7 @@
             <button onclick="editMaterial('${m.id}')">Edit</button>
             <button onclick="replaceFile('${m.id}')">Replace PDF</button>
             <button onclick="viewMaterial('${m.id}')">View</button>
-            <button class="danger" onclick="deleteMaterial('${m.id}', '${escapeHtml(m.title).replace(/'/g, "\\'")}')">Delete</button>
+            <button class="danger del-material-btn" onclick="deleteMaterial('${m.id}', '${escapeHtml(m.title).replace(/'/g, "\\'")}')">Delete</button>
           </div>
         </td>
       </tr>
@@ -413,5 +455,6 @@
 
   checkAuth().then(() => { loadMaterials(); loadReports(); });
 </script>
+  <script src="/admin/assets/js/delete-flag.js"></script>
 </body>
 </html>

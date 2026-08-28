@@ -118,7 +118,10 @@ app.get('/api/maintenance-status', (req, res) => {
 // No auth — safe to expose. Downloads are hidden on the client when disabled;
 // the download endpoint itself is NOT blocked (View always works).
 app.get('/api/config', (req, res) => {
-  res.json({ downloads_enabled: db.getSetting('downloads_enabled') !== '0' });
+  res.json({
+    downloads_enabled: db.getSetting('downloads_enabled') !== '0',
+    deletes_enabled: db.getSetting('deletes_enabled') !== '0',
+  });
 });
 
 app.use('/api/auth', authRoutes);

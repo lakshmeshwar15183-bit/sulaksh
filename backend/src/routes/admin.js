@@ -53,6 +53,28 @@ router.post('/downloads', (req, res) => {
   res.json({ enabled });
 });
 
+// ---- Material delete toggle (for non-super admins) ----
+// Only the owner / super account (lakshmeshwar15183@gmail.com) may read/change
+// this. When OFF, the two regular admins lose the delete option; the super
+// account can always delete regardless of this setting.
+const SUPER_ADMIN = 'lakshmeshwar15183@gmail.com';
+function isSuper(req) {
+  return (req.admin.email || '').toLowerCase() === SUPER_ADMIN || (req.admin.role || '') === 'super';
+}
+function deletesDisabled() {
+  return db.getSetting('deletes_enabled') === '0';
+}
+router.get('/deletes', (req, res) => {
+  if (!isSuper(req)) return res.status(403).json({ error: 'Forbidden' });
+  res.json({ enabled: !deletesDisabled() });
+});
+router.post('/deletes', (req, res) => {
+  if (!isSuper(req)) return res.status(403).json({ error: 'Forbidden' });
+  const enabled = req.body && (req.body.enabled === true || req.body.enabled === '1' || req.body.enabled === 1);
+  db.setSetting('deletes_enabled', enabled ? '1' : '0');
+  res.json({ enabled });
+});
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_FILE_SIZE_BYTES },
@@ -247,6 +269,12 @@ router.delete('/materials/:id', async (req, res) => {
   const existing = db.prepare('SELECT * FROM materials WHERE id = ?').get(req.params.id);
   if (!existing) return res.status(404).json({ error: 'Material not found.' });
 
+  // The site owner can disable deletion for the regular admins (but never for
+  // the super/owner account itself).
+  if (deletesDisabled() && !isSuper(req)) {
+    return res.status(403).json({ error: 'Deletion is currently disabled by the site owner.' });
+  }
+
   // Delete the R2 object first. Only remove the DB record once storage
   // deletion is confirmed (or confirmed already-gone) — never the reverse,
   // to avoid orphaned files that no metadata points to.
@@ -322,6 +350,12 @@ router.patch('/subjects/:id', (req, res) => {
 router.delete('/subjects/:id', async (req, res) => {
   const subject = db.prepare('SELECT * FROM subjects WHERE id = ?').get(req.params.id);
   if (!subject) return res.status(404).json({ error: 'Subject not found.' });
+
+  // Deleting a subject cascades to deleting its materials, so the same
+  // owner-controlled gate applies here.
+  if (deletesDisabled() && !isSuper(req)) {
+    return res.status(403).json({ error: 'Deletion is currently disabled by the site owner.' });
+  }
 
   const materials = db.prepare('SELECT * FROM materials WHERE exam = ? AND category = ? AND subject = ?')
     .all(subject.exam, subject.category, subject.name);
