@@ -154,8 +154,8 @@ async function routeMaterials(request, env, method, path, url) {
     if (cdnBase && material.r2_object_key) {
       const encodedKey = material.r2_object_key.split('/').map(encodeURIComponent).join('/');
       const sp = new URLSearchParams();
-      const safeName = material.file_name ? material.file_name.replace(/"/g, '') : 'document.pdf';
-      sp.set('response-content-disposition', `${disposition}; filename="${safeName}"`);
+      sp.set('disposition', disposition);
+      if (material.file_name) sp.set('filename', material.file_name);
       return json({ url: `${cdnBase}/file/${encodedKey}?${sp.toString()}`, cdn: true });
     }
     try {
