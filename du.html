@@ -727,18 +727,16 @@
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
 
-  // All Sulaksh API calls authenticate two ways: the session cookie where
-  // the browser allows it, plus a Bearer token fallback for browsers that
-  // block third-party cookies entirely (Chrome/Safari default now).
+  // All Sulaksh API calls authenticate via the HttpOnly session cookie only.
+  // The token is never exposed to JS (so XSS can't exfiltrate it), and any
+  // caller-supplied Authorization header is stripped.
   const _apiFetch = window.fetch.bind(window);
   window.fetch = function (input, init) {
     const url = typeof input === 'string' ? input : (input && input.url) || '';
     if (url.startsWith(SULAKSH_API)) {
       init = Object.assign({}, init, { credentials: 'include' });
-      const tok = localStorage.getItem('sulaksh-token');
-      const hdrs = Object.assign({}, (init.headers && !init.headers.forEach) ? init.headers : {});
-      if (tok && !hdrs.Authorization) hdrs.Authorization = 'Bearer ' + tok;
-      init.headers = hdrs;
+      if (init.headers && !init.headers.forEach) delete init.headers.Authorization;
+      else if (init.headers && init.headers.forEach) init.headers.delete('Authorization');
     }
     return _apiFetch(input, init);
   };
@@ -951,7 +949,7 @@
   // email lists or localStorage tokens.
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
-    token: localStorage.getItem('sulaksh-token') || null,
+    token: null, // truthy sentinel set from server role; real token lives in the HttpOnly cookie
     role: null,
     isAdmin: false,
     canMaintain: false,
@@ -968,10 +966,6 @@
   async function restoreSession() {
     let r = null;
     try { r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { credentials: 'include' }); } catch (e) { return; }
-    if (!r.ok && state.token) {
-      // Cookie was blocked by the browser — fall back to the stored token.
-      try { r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { headers: { Authorization: 'Bearer ' + state.token } }); } catch (e) { return; }
-    }
     if (!r || !r.ok) {
       // No valid session — stop showing a ghost logged-in name.
       state.email = null; state.role = null; state.isAdmin = false; state.canMaintain = false;
@@ -1550,10 +1544,9 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Login failed.');
-      // Keep the token for browsers that block third-party cookies; the
-      // wrapper attaches it to every API call automatically.
-      state.token = data.token || null;
-      if (state.token) localStorage.setItem('sulaksh-token', state.token);
+      // Session is established via the HttpOnly cookie — never store the token
+      // in JS/localStorage. `state.token` is just a truthy UI sentinel.
+      state.token = data.token ? '1' : null;
       const me = await fetch(`${SULAKSH_API}/api/auth/me`)
         .then((r) => (r.ok ? r.json() : {}))
         .catch(() => ({}));

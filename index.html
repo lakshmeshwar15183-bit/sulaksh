@@ -1114,7 +1114,7 @@ isAdmin: false,
       state.token = data.token;
       state.isAdmin = (data.role === 'admin' || data.role === 'super');
       localStorage.setItem('sulaksh-email', email);
-      localStorage.setItem('sulaksh-token', data.token);
+      // token is never persisted to localStorage — it lives only in the HttpOnly cookie
       localStorage.setItem('sulaksh-role', data.role || 'super');
       updateAuthUI();
       closeModal('loginOverlay');
