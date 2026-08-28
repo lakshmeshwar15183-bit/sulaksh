@@ -889,7 +889,7 @@
 
   // ---------- API config ----------
   // Change this to your deployed backend URL once Render is live.
-  const SULAKSH_API = localStorage.getItem('sulaksh-api') || (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
+  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
 
   // Upload with timeout + retry on transient network AND server (5xx) errors.
   async function postUpload(url, options) {
