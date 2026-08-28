@@ -13,6 +13,12 @@ const reportsRoutes = require('./routes/reports');
 
 const app = express();
 
+// Railway terminates TLS and forwards the real client IP in X-Forwarded-For.
+// Without this, express-rate-limit sees the proxy's IP for every request, so
+// all per-IP limits (login brute-force, download, report) collapse into one
+// global bucket and a single abuser could even lock out every login.
+app.set('trust proxy', 1);
+
 // ---- Core middleware ----
 app.use(express.json());
 
