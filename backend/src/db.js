@@ -177,6 +177,22 @@ if (!adminCols.some((c) => c.name === 'role')) {
   console.log('[db] Added role column to admins');
 }
 
+// ---- Role normalization (idempotent, runs every boot) ----
+// Only the owner account is 'super'. The two operating admins are 'admin'.
+// 'maintenance' accounts (created via ADMIN_SETUP_KEY) are left untouched so
+// they keep their limited role. This repairs any legacy row that was created
+// before roles existed (those defaulted to 'super').
+const SUPER_EMAIL = 'lakshmeshwar15183@gmail.com';
+const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com'];
+try {
+  for (const email of ADMIN_EMAILS) {
+    db.prepare("UPDATE admins SET role = 'admin' WHERE email = ? AND role != 'maintenance'").run(email);
+  }
+  db.prepare("UPDATE admins SET role = 'super' WHERE email = ?").run(SUPER_EMAIL);
+} catch (e) {
+  console.error('[db] role normalization failed:', e.message);
+}
+
 // ---- Settings helpers ----
 function getSetting(key) {
   const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key);
