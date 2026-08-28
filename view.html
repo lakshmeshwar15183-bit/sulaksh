@@ -31,7 +31,7 @@ iframe{width:100%;height:100%;border:none}
   <div id="msg" style="display:block"></div>
 </div>
 <script>
-const API = (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online')) ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app';
+const API='https://sulaksh-backend-production.up.railway.app';
 const params=new URLSearchParams(location.search);
 const id=params.get('id');
 (async()=>{

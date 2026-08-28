@@ -6,7 +6,7 @@
 // the delete option regardless of this setting. The backend also enforces the
 // gate (403), so this is purely the UX layer.
 (function () {
-  var API = (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
+  var API = 'https://sulaksh-backend-production.up.railway.app';
   window.__deletesEnabled = true; // fail-open default
   window.__isSuper = false;
 
