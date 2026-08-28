@@ -487,7 +487,6 @@
     }
     throw lastErr;
   }
-  const ADMIN_EMAILS = ['y1315544@gmail.com', 'suyashshukla530@gmail.com', 'lakshmeshwar15183@gmail.com'];
   const CATEGORIES = ['GS', 'GK', 'SC', 'CO'];
   const CAT_NAMES = { GS: 'General Studies', GK: 'General Knowledge/Static GK', SC: 'Science', CO: 'Computer' };
   const GS_SUBJECTS = ['History', 'Polity', 'Geography', 'Economics'];
@@ -606,7 +605,7 @@ isAdmin: false,
       if (!res.ok) throw new Error(data.error || 'Login failed.');
       state.email = email;
       state.token = data.token;
-      state.isAdmin = ADMIN_EMAILS.includes(email);
+      state.isAdmin = (data.role === 'admin' || data.role === 'super');
       localStorage.setItem('sulaksh-email', email);
       localStorage.setItem('sulaksh-token', data.token);
       updateAuthUI();
@@ -878,7 +877,7 @@ isAdmin: false,
     var e = SulakshAuth.st.email || '';
     state.email = e || null;
     state.token = SulakshAuth.st.token || null;
-    state.isAdmin = (typeof ADMIN_EMAILS !== 'undefined') && ADMIN_EMAILS.includes(e);
+    state.isAdmin = (SulakshAuth.st.role === 'admin' || SulakshAuth.st.role === 'super');
     if (typeof MAINTENANCE_EMAILS !== 'undefined') state.canMaintain = MAINTENANCE_EMAILS.includes(e);
     if (typeof updateAuthUI === 'function') updateAuthUI();
   });
