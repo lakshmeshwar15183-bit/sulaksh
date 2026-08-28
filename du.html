@@ -725,7 +725,7 @@
 <script src="assets/js/adgate.js?v=2"></script>
 <script>
   // ---------- Config ----------
-  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  const SULAKSH_API = localStorage.getItem('sulaksh-api') || (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
 
   // All Sulaksh API calls authenticate via the HttpOnly session cookie only.
   // The token is never exposed to JS (so XSS can't exfiltrate it), and any

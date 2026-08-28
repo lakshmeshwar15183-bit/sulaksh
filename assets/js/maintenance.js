@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  var API = localStorage.getItem('sulaksh-api') || (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
 
   var CSS = ''
     + '#sgmOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#0C2340,#123467);'
