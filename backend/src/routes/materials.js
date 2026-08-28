@@ -98,12 +98,15 @@ router.get('/:id/download', async (req, res) => {
 
   const disposition = req.query.disposition === 'attachment' ? 'attachment' : 'inline';
 
-  // Fast path: stream through the Cloudflare CDN worker when configured.
+  // Fast path: stream through the Cloudflare CDN (R2 public URL) when configured.
+  // R2 only honors the S3-style `response-content-disposition` query parameter
+  // (the bare `disposition` is ignored), so set that — otherwise every file is
+  // served as `attachment` and the browser downloads even when "View" asked for inline.
   if (process.env.PUBLIC_CDN_BASE && material.r2_object_key) {
     const encodedKey = material.r2_object_key.split('/').map(encodeURIComponent).join('/');
+    const safeName = material.file_name ? material.file_name.replace(/"/g, '') : 'document.pdf';
     const params = new URLSearchParams();
-    params.set('disposition', req.query.disposition === 'attachment' ? 'attachment' : 'inline');
-    if (material.file_name) params.set('filename', material.file_name);
+    params.set('response-content-disposition', `${disposition}; filename="${safeName}"`);
     return res.json({
       url: `${process.env.PUBLIC_CDN_BASE}/file/${encodedKey}?${params.toString()}`,
       cdn: true,
