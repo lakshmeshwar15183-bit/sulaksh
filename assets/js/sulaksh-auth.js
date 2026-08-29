@@ -94,9 +94,12 @@
     restore: function () {
       var st = this.st;
       var t = getToken();
-      var headers = {};
-      if (t) headers['Authorization'] = 'Bearer ' + t;
-      if (!_fetch) return Promise.resolve(st);
+      st.verified = false;
+      if (!_fetch) { st.verified = true; return Promise.resolve(st); }
+      // Anonymous visitors have no token: don't hit /api/auth/me (it 401s and
+      // logs a console error). Treat as logged-out without a network request.
+      if (!t) { st.verified = true; return Promise.resolve(st); }
+      var headers = { Authorization: 'Bearer ' + t };
       return _fetch(API + '/api/auth/me', { credentials: 'include', headers: headers })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (me) {
