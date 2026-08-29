@@ -133,22 +133,32 @@ function showFallback(url, note){
   const wrap = document.getElementById('iframeWrap');
   wrap.querySelectorAll('iframe,object,embed').forEach((e) => e.remove());
 
-  // Use <object>/<embed> (not <iframe>) so mobile browsers (Android Chrome /
-  // iOS Safari) render the PDF instead of blocking it as "content blocked".
-  const obj = document.createElement('object');
-  obj.data = url;
-  obj.type = 'application/pdf';
-  obj.style.width = '100%'; obj.style.height = '100%'; obj.style.border = 'none';
-  const emb = document.createElement('embed');
-  emb.src = url; emb.type = 'application/pdf';
-  emb.style.width = '100%'; emb.style.height = '100%'; emb.style.border = 'none';
-  obj.appendChild(emb);
   let loaded = false;
-  obj.addEventListener('load', () => { loaded = true; spin.style.display = 'none'; });
-  obj.addEventListener('error', () => {
-    if (!loaded) showFallback(url, 'The document failed to load. Use the direct link to open or download it.');
-  });
-  wrap.appendChild(obj);
+  function showDoc(blobUrl){
+    const f = document.createElement('iframe');
+    f.src = blobUrl;
+    f.setAttribute('referrerpolicy', 'no-referrer');
+    f.style.width = '100%'; f.style.height = '100%'; f.style.border = 'none';
+    f.addEventListener('load', () => { loaded = true; spin.style.display = 'none'; try { URL.revokeObjectURL(blobUrl); } catch (e) {} });
+    f.addEventListener('error', () => {
+      if (!loaded) showFallback(url, 'This document could not be displayed inline. Use the direct link to open or download it.');
+    });
+    wrap.appendChild(f);
+  }
+
+  // Android Chrome / iOS Safari block cross-origin PDF frames ("content blocked").
+  // So we fetch the file (the CDN sends Access-Control-Allow-Origin: *) and render
+  // it from a same-origin blob: URL, which the browser displays inline like on desktop.
+  try {
+    const r = await fetchRetry(url, { mode: 'cors' }, 2);
+    if (!r.ok) throw new Error('status ' + r.status);
+    const ct = (r.headers.get('content-type') || '').toLowerCase();
+    if (!ct.includes('application/pdf') && !ct.startsWith('image/')) throw new Error('type');
+    const blob = await r.blob();
+    showDoc(URL.createObjectURL(blob));
+  } catch (e) {
+    showFallback(url, 'This document could not be loaded inline. Use the direct link to open or download it.');
+  }
 
   // If the embed is slow or blocked, still offer a direct link.
   setTimeout(() => {
