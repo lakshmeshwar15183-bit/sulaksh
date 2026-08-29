@@ -282,7 +282,7 @@
 
   [data-theme="dark"] .brand-wordmark{filter:brightness(0) invert(1);opacity:.95;}
 </style>
-<script src="assets/js/maintenance.js?v=1"></script>
+<script src="assets/js/maintenance.js?v=1" defer></script>
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/favicon.png">
 </head>
@@ -460,9 +460,9 @@
   </div>
 </div>
 
-<script src="assets/js/optimize.js?v=3"></script>
-<script src="assets/js/adgate.js?v=2"></script>
-<script src="/assets/js/sulaksh-auth.js?v=3"></script>
+<script src="assets/js/optimize.js?v=3" defer></script>
+<script src="assets/js/adgate.js?v=2" defer></script>
+<script src="/assets/js/sulaksh-auth.js?v=3" defer></script>
 <script>
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
@@ -879,18 +879,21 @@ isAdmin: false,
   })();
 
   // Server-verified session display (shared module) — lists/handlers unchanged.
-  SulakshAuth.restore().then(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.SulakshAuth) return;
+    SulakshAuth.restore().then(function () {
     var e = SulakshAuth.st.email || '';
     state.email = e || null;
     state.token = SulakshAuth.st.token || null;
     state.isAdmin = (SulakshAuth.st.role === 'admin' || SulakshAuth.st.role === 'super');
     if (typeof MAINTENANCE_EMAILS !== 'undefined') state.canMaintain = MAINTENANCE_EMAILS.includes(e);
     if (typeof updateAuthUI === 'function') updateAuthUI();
+    });
   });
 
 </script>
 
-  <script src="assets/js/download-flag.js"></script>
-  <script src="assets/js/delete-flag.js"></script>
+  <script src="assets/js/download-flag.js" defer></script>
+  <script src="assets/js/delete-flag.js" defer></script>
 </body>
 </html>
