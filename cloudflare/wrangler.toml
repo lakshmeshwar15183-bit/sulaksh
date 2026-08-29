@@ -1,6 +1,7 @@
 name = "sulaksh-api-proxy"
 main = "proxy.js"
 compatibility_date = "2024-09-23"
+workers_dev = false
 
 [vars]
 BACKEND_URL = "https://sulaksh-backend-production.up.railway.app"
