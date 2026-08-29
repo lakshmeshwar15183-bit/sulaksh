@@ -931,7 +931,7 @@
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
     token: localStorage.getItem('sulaksh-token') || null,
-isAdmin: false,
+isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admin'||r==='super';})(),
   };
 
   function setMsg(el, text, ok) {
@@ -1126,7 +1126,9 @@ isAdmin: false,
       if (data.token) { try { localStorage.setItem('sulaksh-token', data.token); } catch (e) {} }
       state.isAdmin = (data.role === 'admin' || data.role === 'super');
       localStorage.setItem('sulaksh-email', email);
-      // token is never persisted to localStorage — it lives only in the HttpOnly cookie
+      // Real JWT is persisted to localStorage (see sulaksh-auth.js) so the
+      // session survives refreshes/back-navigation; the HttpOnly cookie is a
+      // same-credentials fallback the backend also accepts.
       localStorage.setItem('sulaksh-role', data.role || 'super');
       updateAuthUI();
       closeModal('loginOverlay');
@@ -1137,6 +1139,15 @@ isAdmin: false,
   }
 
   async function logout() {
+    const tok = state.token || localStorage.getItem('sulaksh-token');
+    // Best-effort: revoke the server session so the logout is real, not just
+    // client-side. Failure here must not block the local sign-out.
+    if (tok) {
+      fetch(`${SULAKSH_API}/api/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${tok}` },
+      }).catch(() => {});
+    }
     state.email = null;
     state.token = null;
     state.isAdmin = false;
