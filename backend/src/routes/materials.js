@@ -20,12 +20,28 @@ const downloadLimiter = rateLimit({
 // Staff bypass the cap (admins never get throttled while working).
 router.use('/:id/download', downloadLimiter);
 
-// Fields exposed publicly — r2_object_key is intentionally never sent to
-// the client; downloads only ever happen via a short-lived presigned URL.
+// Fields exposed publicly. `r2_object_key` is selected server-side only so we
+// can derive the public CDN URL; it is stripped from the response (we send
+// `cdnUrl` instead) so the raw storage key is never leaked to clients.
 const PUBLIC_FIELDS = `
   id, title, exam, category, subject, track, semester, material_category, year, description,
-  file_name, file_size, content_type, is_imp, is_syllabus, is_pyq, created_at, updated_at
+  file_name, file_size, content_type, is_imp, is_syllabus, is_pyq, created_at, updated_at, r2_object_key
 `;
+
+// Build the public, always-available CDN URL for a material and strip the
+// internal storage key. Viewing opens this directly from the CDN, so it works
+// even when the API backend is temporarily down.
+function publicRow(row) {
+  if (!row) return row;
+  const out = { ...row };
+  const key = out.r2_object_key;
+  delete out.r2_object_key;
+  if (process.env.PUBLIC_CDN_BASE && key) {
+    const encodedKey = String(key).split('/').map(encodeURIComponent).join('/');
+    out.cdnUrl = `${process.env.PUBLIC_CDN_BASE}/file/${encodedKey}?disposition=inline`;
+  }
+  return out;
+}
 
 // GET /api/materials?exam=&category=&subject=&track=&semester=&material_category=&year=&q=
 // Lightweight listing — no file bytes touched, just metadata rows.
@@ -65,14 +81,14 @@ router.get('/', (req, res) => {
     const rowsP = db.prepare(
       `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${clauses.join(' AND ')} ORDER BY created_at DESC LIMIT ? OFFSET ?`
     ).all(...params, limit, (page - 1) * limit);
-    return res.json({ materials: rowsP, page, limit, total });
+    return res.json({ materials: rowsP.map(publicRow), page, limit, total });
   }
 
   const rows = db.prepare(
     `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${clauses.join(' AND ')} ORDER BY created_at DESC LIMIT 5000`
   ).all(...params);
 
-  res.json({ materials: rows });
+  res.json({ materials: rows.map(publicRow) });
 });
 
 router.get('/:id', (req, res) => {
@@ -80,7 +96,7 @@ router.get('/:id', (req, res) => {
     `SELECT ${PUBLIC_FIELDS} FROM materials WHERE id = ? AND status = 'active'`
   ).get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Material not found.' });
-  res.json({ material: row });
+  res.json({ material: publicRow(row) });
 });
 
 // GET /api/materials/:id/download?disposition=inline|attachment
