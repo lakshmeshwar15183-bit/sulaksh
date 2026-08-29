@@ -641,7 +641,21 @@ isAdmin: false,
   }
 
   updateAuthUI();
-  loadMaterials();
+  (function () {
+    var first = document.querySelector('.mat-list');
+    function go() {
+      if (window.requestIdleCallback) requestIdleCallback(loadMaterials, { timeout: 2000 });
+      else setTimeout(loadMaterials, 200);
+    }
+    if (first && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (e) { if (e.isIntersecting) { obs.disconnect(); go(); } });
+      }, { rootMargin: '300px' });
+      io.observe(first);
+    } else {
+      go();
+    }
+  })();
 
   // Server-verified session display (shared module) — lists/handlers unchanged.
   document.addEventListener('DOMContentLoaded', function () {

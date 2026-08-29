@@ -2150,9 +2150,22 @@
   // Content renders IMMEDIATELY; the session resolves in parallel and only
   // re-renders if the role changes (admin controls appear/disappear).
   updateAuthUI();
-  loadMaterials().then(() => {
-    if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
-  });
+  (function () {
+    var first = document.querySelector('.mat-list');
+    function go() {
+      loadMaterials().then(function () {
+        if (location.hash.startsWith('#c=')) setTimeout(restoreFromHash, 60);
+      });
+    }
+    if (first && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (e) { if (e.isIntersecting) { obs.disconnect(); go(); } });
+      }, { rootMargin: '300px' });
+      io.observe(first);
+    } else {
+      go();
+    }
+  })();
   restoreSession()
     .catch(() => {})
     .then(() => {
