@@ -26,28 +26,32 @@
   }
 
   function load() {
-    // Determine whether the current user is the super/owner account by hitting
-    // the super-only endpoint. It returns 200 (+ enabled state) for the owner,
-    // 403 for a regular admin, 401 if not logged in. Auth rides the HttpOnly
-    // session cookie (sent automatically via credentials: 'include').
+    // Probe the super-only endpoint ONLY when we already know the visitor is the
+    // owner (role populated earlier by sulaksh-auth restore). For everyone else
+    // we skip it entirely, so anonymous visitors never hit a 401 and regular
+    // admins never hit a 403 — both would log console errors (hurts PageSpeed).
+    // The public /api/config (always 200) drives the toggle for non-owner users.
+    var auth = window.SulakshAuth;
+    var isSuper = !!(auth && auth.st && (auth.st.role === 'super' || auth.st.role === 'owner'));
+    window.__isSuper = isSuper;
+
+    function applyConfig() {
+      fetch(API + '/api/config', { credentials: 'include' })
+        .then(function (c) { return c.json(); })
+        .then(function (c) { window.__deletesEnabled = !!(c && c.deletes_enabled); })
+        .catch(function () { window.__deletesEnabled = true; }) // fail-open
+        .then(apply);
+    }
+
+    if (!isSuper) { applyConfig(); return; }
+
     fetch(API + '/api/admin/deletes', { credentials: 'include' })
-      .then(function (r) {
-        if (r.ok) {
-          window.__isSuper = true;
-          return r.json().then(function (d) { window.__deletesEnabled = !!d.enabled; apply(); });
-        }
-        // Not the owner (or not logged in): fall back to the public config flag.
-        window.__isSuper = false;
-        return fetch(API + '/api/config').then(function (c) { return c.json(); }).then(function (c) {
-          window.__deletesEnabled = !!(c && c.deletes_enabled);
-          apply();
-        });
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (d) { window.__deletesEnabled = !!d.enabled; apply(); }
+        else applyConfig();
       })
-      .catch(function () {
-        window.__isSuper = false;
-        window.__deletesEnabled = true; // fail-open
-        apply();
-      });
+      .catch(applyConfig);
   }
 
   if (document.readyState === 'loading') {
