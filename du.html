@@ -1729,7 +1729,19 @@
       }
       if (i < tries - 1) await new Promise((res) => setTimeout(res, 500 * (i + 1)));
     }
+    window.__duLastErr = lastErr ? lastErr.message : 'unknown';
     return null;
+  }
+
+  // Try the primary API base, then fall back to the backend directly so the
+  // materials page keeps working even if the same-origin worker proxy is
+  // unreachable from a given client/network.
+  const RAILWAY_API_FALLBACK = 'https://sulaksh-backend-production.up.railway.app';
+  async function apiGet(path) {
+    let d = await fetchJsonRetry(SULAKSH_API + path);
+    if (d) return d;
+    try { d = await fetchJsonRetry(RAILWAY_API_FALLBACK + path); } catch (e) { d = null; }
+    return d;
   }
 
   function showDuErrorBanner() {
@@ -1740,8 +1752,9 @@
     banner.className = 'du-load-error';
     banner.innerHTML =
       '<strong>Could not load the latest materials.</strong> ' +
-      'Your connection to our server hit a snag. ' +
-      '<button type="button" onclick="window.__duRetryLoad()">Retry</button>';
+      'Your connection to our server hit a snag' +
+      (window.__duLastErr ? ' (' + String(window.__duLastErr).replace(/[<>]/g, '') + ')' : '') +
+      '. <button type="button" onclick="window.__duRetryLoad()">Retry</button>';
     const hero = document.querySelector('.du-main');
     if (hero) hero.insertBefore(banner, hero.firstChild);
   }
@@ -1752,8 +1765,8 @@
     let fromCache = false;
     try {
       const [d, sd] = await Promise.all([
-        fetchJsonRetry(`${SULAKSH_API}/api/materials`),
-        fetchJsonRetry(`${SULAKSH_API}/api/subjects?exam=${encodeURIComponent('DU & College')}`),
+        apiGet('/api/materials'),
+        apiGet('/api/subjects?exam=' + encodeURIComponent('DU & College')),
       ]);
       if (d) {
         data = d;
