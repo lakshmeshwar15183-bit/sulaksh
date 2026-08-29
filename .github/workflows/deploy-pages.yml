@@ -1,0 +1,49 @@
+name: Deploy static site to gh-pages
+
+# Auto-publishes the hand-maintained static site (view.html, du.html, assets/, etc.)
+# from `main` to the `gh-pages` branch that GitHub Pages actually serves.
+# Generated content owned by other workflows (assets/data/*, pyq/*) is left untouched
+# so the every-15-min materials snapshot keeps working.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Sync static files from main
+        run: |
+          git config user.name "sulaksh-bot"
+          git config user.email "bot@sulaksh.online"
+          git fetch origin main
+
+          # Every tracked file in main EXCEPT dev/generated paths.
+          mapfile -t FILES < <(git ls-tree -r --name-only origin/main \
+            | grep -vE '^(worker/|scripts/|\.github/|pyq/|assets/data/)')
+
+          if [ ${#FILES[@]} -eq 0 ]; then echo "nothing to sync"; exit 0; fi
+
+          git checkout origin/main -- "${FILES[@]}"
+
+          # Keep generated/owned content exactly as it is on gh-pages.
+          git checkout origin/gh-pages -- assets/data pyq 2>/dev/null || true
+
+          if git diff --cached --quiet; then echo "no changes to deploy"; exit 0; fi
+
+          git commit -m "Auto-sync static site from main ($(date -u '+%F %H:%M') UTC)"
+          for i in 1 2 3 4 5; do
+            git fetch origin gh-pages
+            git rebase origin/gh-pages || git reset --hard origin/gh-pages
+            if git push origin gh-pages 2>/dev/null; then echo "pushed (attempt $i)"; break; fi
+            echo "retry $i"; sleep 5
+          done
