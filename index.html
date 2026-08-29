@@ -1239,12 +1239,20 @@ isAdmin: false,
     return null;
   }
 
+  const RAILWAY_API_FALLBACK = 'https://sulaksh-backend-production.up.railway.app';
+  async function apiGet(path) {
+    let d = await fetchJsonRetry(SULAKSH_API + path);
+    if (d) return d;
+    try { d = await fetchJsonRetry(RAILWAY_API_FALLBACK + path); } catch (e) { d = null; }
+    return d;
+  }
+
   async function loadMaterials() {
     const lists = document.querySelectorAll('.mat-list');
     const errMsg = 'Materials will appear here once the backend is connected.';
     let mats = null;
     try {
-      const data = await fetchJsonRetry(`${SULAKSH_API}/api/materials`);
+      const data = await apiGet('/api/materials');
       if (data) {
         mats = data.materials || [];
         homeCacheSet(mats);
