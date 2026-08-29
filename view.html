@@ -97,17 +97,10 @@ function isSafe(u){
   } catch (e) { return false; }
 }
 
-// HEAD-check the URL before embedding. The CDN (Cloudflare -> Backblaze B2) can
-// occasionally return an error PAGE (HTTP 200, text/html) instead of the PDF
-// when the origin is slow/rate-limited. Embedding that page shows a confusing
-// "contact the site owner" Cloudflare error, so we detect it and fall back.
-async function verifyPdf(url){
-  try {
-    const r = await fetchRetry(url, { method: 'HEAD' }, 2);
-    const ct = (r.headers.get('content-type') || '').toLowerCase();
-    return { ok: r.ok && ct.indexOf('application/pdf') === 0, status: r.status, ct };
-  } catch (e) { return { ok: false, err: true }; }
-}
+// We no longer pre-flight with a HEAD request: it doubled load on B2 (which is
+// rate-limited) and wrongly rejected image notes (JPEG/PNG/WebP). The CDN worker
+// returns a clean 502 (never an HTML error page) on origin failure, so the
+// <iframe> 'error' event below is enough to show a graceful fallback.
 
 function showFallback(url, note){
   openLink.style.display = 'none';
@@ -133,18 +126,6 @@ function showFallback(url, note){
 
   const url = res.url;
   if (!isSafe(url)){ setMsg('Could not open this document.' + retryLink()); return; }
-
-  // Verify we actually got a PDF. If the CDN returned an error page, fall back
-  // to a direct link instead of embedding the "contact the site owner" page.
-  const check = await verifyPdf(url);
-  if (!check.ok){
-    if (check.err || check.status >= 500){
-      showFallback(url, 'The document host is temporarily unavailable. Please try the direct link or retry in a moment.');
-    } else {
-      showFallback(url, 'This document could not be loaded. Use the direct link to open or download it.');
-    }
-    return;
-  }
 
   titleEl.textContent = 'Sulaksh — Viewing document';
   openLink.href = url;
