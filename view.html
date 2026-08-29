@@ -133,6 +133,20 @@ function showFallback(url, note){
   const wrap = document.getElementById('iframeWrap');
   wrap.querySelectorAll('iframe,object,embed').forEach((e) => e.remove());
 
+  // Touch devices (phones/tablets) block in-page PDF frames, and the blob: trick
+  // still errors on some. Rather than show a failing embed, offer a direct open —
+  // the "Open document" button the user confirmed works perfectly.
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (isTouch) {
+    spin.style.display = 'none';
+    const panel = document.createElement('div');
+    panel.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;color:#cfd9ec';
+    panel.innerHTML = '<div style="font-size:15px;max-width:280px">Tap below to open this document in a new tab.</div>' +
+      '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-block;padding:13px 22px;background:#4d8dff;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">Open document ↗</a>';
+    wrap.appendChild(panel);
+    return;
+  }
+
   let loaded = false;
   function showDoc(blobUrl){
     const f = document.createElement('iframe');
