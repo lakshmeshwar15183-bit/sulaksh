@@ -310,7 +310,7 @@
 
 <script src="assets/js/optimize.js?v=3"></script>
 <script src="assets/js/adgate.js?v=2"></script>
-<script src="/assets/js/sulaksh-auth.js?v=1"></script>
+<script src="/assets/js/sulaksh-auth.js?v=3"></script>
 <script>
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
@@ -429,6 +429,7 @@ isAdmin: false,
       if (!res.ok) throw new Error(data.error || 'Login failed.');
       state.email = email;
       state.token = data.token;
+      if (data.token) { try { localStorage.setItem('sulaksh-token', data.token); } catch (e) {} }
       state.isAdmin = (data.role === 'admin' || data.role === 'super');
       localStorage.setItem('sulaksh-email', email);
       // token is never persisted to localStorage — it lives only in the HttpOnly cookie
