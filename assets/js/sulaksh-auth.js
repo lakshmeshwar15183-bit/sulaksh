@@ -15,7 +15,7 @@
  */
 (function () {
   'use strict';
-  var API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  var API = localStorage.getItem('sulaksh-api') || (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
 
   var _fetch = window.fetch.bind(window);
   window.fetch = function (input, init) {

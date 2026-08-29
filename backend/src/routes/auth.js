@@ -11,6 +11,22 @@ const isProd = process.env.NODE_ENV === 'production';
 const IDLE_HOURS = parseInt(process.env.AUTH_IDLE_HOURS || '12', 10);
 const EMAIL_LOCK_LIMIT = parseInt(process.env.LOGIN_EMAIL_LOCK || '8', 10);
 
+// The session cookie is Partitioned (CHIPS): still HttpOnly so XSS can't read
+// it, but Safari/Firefox/Chrome retain it across refresh even when it is set
+// cross-site (sulaksh.online -> railway.app). That removes the third-party
+// (Safari ITP) logout-on-refresh without any proxy/DNS change.
+// No Domain is set — partitioned cookies are keyed by the top-level site.
+function sessionCookieOpts() {
+  return {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    partitioned: isProd,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    path: '/',
+  };
+}
+
 // ---- Per-account lockout: protects a single email from targeted brute-force
 // even when the attacker rotates IPs (the per-IP limiter catches the rest).
 const emailFails = new Map(); // email -> { count, resetAt }
@@ -70,13 +86,7 @@ router.post('/login', (req, res) => {
     { expiresIn: '30d' }
   );
 
-  res.cookie(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    domain: process.env.COOKIE_DOMAIN || undefined,
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie(COOKIE_NAME, token, sessionCookieOpts());
 
   db.logAuthEvent(admin.email, 'login', true, req);
 
@@ -123,13 +133,7 @@ router.post('/logout', (req, res) => {
       }
     } catch {}
   }
-  res.clearCookie(COOKIE_NAME, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    domain: process.env.COOKIE_DOMAIN || undefined,
-    path: '/',
-  });
+  res.clearCookie(COOKIE_NAME, sessionCookieOpts());
   res.json({ ok: true });
 });
 
@@ -138,13 +142,7 @@ router.post('/logout-all', requireAdmin, (req, res) => {
   db.prepare('UPDATE auth_sessions SET revoked = 1 WHERE admin_id = ? AND revoked = 0')
     .run(req.admin.id);
   db.logAuthEvent(req.admin.email, 'logout-all', true, req);
-  res.clearCookie(COOKIE_NAME, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    domain: process.env.COOKIE_DOMAIN || undefined,
-    path: '/',
-  });
+  res.clearCookie(COOKIE_NAME, sessionCookieOpts());
   res.json({ ok: true });
 });
 

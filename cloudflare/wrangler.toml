@@ -4,3 +4,9 @@ compatibility_date = "2024-09-23"
 
 [vars]
 BACKEND_URL = "https://sulaksh-backend-production.up.railway.app"
+
+# Serve /api/* from sulaksh.online through this worker so the admin session
+# cookie is first-party (fixes Safari/ITP logout-on-refresh).
+routes = [
+  { pattern = "sulaksh.online/api/*", zone_name = "sulaksh.online" }
+]
