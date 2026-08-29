@@ -1714,7 +1714,7 @@
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), DU_FETCH_TIMEOUT_MS);
       try {
-        const r = await fetch(url, { signal: ctrl.signal });
+        const r = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
         clearTimeout(timer);
         if (r.ok) return await r.json();
         // 429 / 5xx are transient — back off and retry rather than giving up.
