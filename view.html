@@ -31,27 +31,49 @@ iframe{width:100%;height:100%;border:none}
   <div id="msg" style="display:block"></div>
 </div>
 <script>
-const API = (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online')) ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app';
-const params=new URLSearchParams(location.search);
-const id=params.get('id');
-(async()=>{
-  if(!id){document.getElementById('msg').textContent='No document specified.';return;}
-  try{
-    const r=await fetch(`${API}/api/materials/${id}/download?disposition=inline`);
-    const d=await r.json();
-    if(!r.ok||!d.url){document.getElementById('msg').textContent=d.error||'Could not open this document.';document.querySelector('.spin').style.display='none';return;}
-    // Defense-in-depth: only embed URLs from our own CDN/storage hosts.
-    let safe=false;try{const u=new URL(d.url);safe=u.protocol==='https:'&&(u.hostname==='cdn.sulaksh.online'||u.hostname.endsWith('.backblazeb2.com'));}catch(e){}
-    if(!safe){document.getElementById('msg').textContent='Could not open this document.';document.querySelector('.spin').style.display='none';return;}
-    document.getElementById('title').textContent='Sulaksh — Viewing document';
-    const wrap=document.getElementById('iframeWrap');
-    wrap.innerHTML=`<iframe src="${d.url}" allow="autoplay" referrerpolicy="no-referrer"></iframe>`;
-    const f=wrap.querySelector('iframe');f.style.width='100%';f.style.height='100%';f.style.border='none';
-  }catch(e){
-    document.getElementById('msg').innerHTML='Could not load. <a href="javascript:location.reload()" style="color:#7fb0ff">Retry</a>';
+const WORKER_API = (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online')) ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app';
+const RAILWAY_API = 'https://sulaksh-backend-production.up.railway.app';
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+function setMsg(t){ document.getElementById('msg').textContent = t; document.querySelector('.spin').style.display='none'; }
+async function findCdnUrl() {
+  // (1) Static snapshot — always available, never depends on the backend.
+  try {
+    const snap = await fetch(`${location.origin}/assets/data/materials.json`, { cache: 'no-store' });
+    if (snap.ok) {
+      const j = await snap.json();
+      const m = (j.materials || []).find((x) => x.id === id);
+      if (m && m.cdnUrl) return m.cdnUrl;
+    }
+  } catch (e) {}
+  // (2) Backend download endpoint (worker, then direct) as a fallback.
+  for (const base of [WORKER_API, RAILWAY_API]) {
+    try {
+      const r = await fetch(`${base}/api/materials/${id}/download?disposition=inline`, { cache: 'no-store' });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d.url) return d.url;
+    } catch (e) {}
   }
+  return null;
+}
+(async () => {
+  if (!id) { setMsg('No document specified.'); return; }
+  const cdnUrl = await findCdnUrl();
+  if (!cdnUrl) {
+    document.getElementById('msg').innerHTML = 'Could not load. <a href="javascript:location.reload()" style="color:#7fb0ff">Retry</a>';
+    document.querySelector('.spin').style.display = 'none';
+    return;
+  }
+  // Defense-in-depth: only embed URLs from our own CDN/storage hosts.
+  let safe = false;
+  try { const u = new URL(cdnUrl); safe = u.protocol === 'https:' && (u.hostname === 'cdn.sulaksh.online' || u.hostname.endsWith('.backblazeb2.com')); } catch (e) {}
+  if (!safe) { setMsg('Could not open this document.'); return; }
+  document.getElementById('title').textContent = 'Sulaksh — Viewing document';
+  const wrap = document.getElementById('iframeWrap');
+  wrap.innerHTML = `<iframe src="${cdnUrl}" allow="autoplay" referrerpolicy="no-referrer"></iframe>`;
+  const f = wrap.querySelector('iframe'); f.style.width = '100%'; f.style.height = '100%'; f.style.border = 'none';
 })();
-document.getElementById('backBtn').href=document.referrer||'/du.html';
+document.getElementById('backBtn').href = document.referrer || '/du.html';
 </script>
 </body>
 </html>
