@@ -22,7 +22,7 @@ iframe{width:100%;height:100%;border:none}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
-<body>
+<body><main>
 <div class="topbar">
   <a href="/du.html" id="backBtn">← Back</a>
   <span class="brand">SULAKSH</span>
@@ -33,7 +33,7 @@ iframe{width:100%;height:100%;border:none}
   <div class="spin"></div>
   <div id="msg" style="display:block"></div>
 </div>
-<script>
+</main><script>
 const API_BASE = 'https://sulaksh-backend-production.up.railway.app';
 const params = new URLSearchParams(location.search);
 const id = params.get('id');
