@@ -957,9 +957,9 @@
   // email lists or localStorage tokens.
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
-    token: null, // truthy sentinel set from server role; real token lives in the HttpOnly cookie
+    token: localStorage.getItem('sulaksh-token') || null,
     role: null,
-    isAdmin: false,
+    isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admin'||r==='super';})(),
     canMaintain: false,
   };
 

@@ -8,7 +8,7 @@ const { requireAdmin, COOKIE_NAME } = require('../middleware/auth');
 const router = express.Router();
 
 const isProd = process.env.NODE_ENV === 'production';
-const IDLE_HOURS = parseInt(process.env.AUTH_IDLE_HOURS || '12', 10);
+const IDLE_HOURS = parseInt(process.env.AUTH_IDLE_HOURS || '720', 10);
 const EMAIL_LOCK_LIMIT = parseInt(process.env.LOGIN_EMAIL_LOCK || '8', 10);
 
 // The session cookie is Partitioned (CHIPS): still HttpOnly so XSS can't read
@@ -76,14 +76,13 @@ router.post('/login', (req, res) => {
     .run(jti, admin.id, new Date(now).toISOString(), new Date(now).toISOString(),
       new Date(now + IDLE_HOURS * 3600 * 1000).toISOString(), ip, req.headers['user-agent'] || null);
 
-  // The JWT itself carries a long absolute cap only; the REAL lifetime is
-  // governed by the auth_sessions row (12h idle window, sliding, revocable).
-  // Signing a short-lived JWT here would kill active sessions at 12h sharp
-  // regardless of the sliding extension.
+  // The JWT itself carries a long absolute cap; the REAL lifetime is governed by
+  // the auth_sessions row (sliding idle window, revocable). The session slides
+  // on every verified request, so it stays alive until an explicit logout.
   const token = jwt.sign(
     { sub: admin.id, email: admin.email, role, jti },
     process.env.JWT_SECRET,
-    { expiresIn: '30d' }
+    { expiresIn: '365d' }
   );
 
   res.cookie(COOKIE_NAME, token, sessionCookieOpts());

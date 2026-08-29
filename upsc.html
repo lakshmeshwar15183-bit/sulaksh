@@ -435,7 +435,7 @@
   const state = {
     email: localStorage.getItem('sulaksh-email') || null,
     token: localStorage.getItem('sulaksh-token') || null,
-isAdmin: false,
+isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admin'||r==='super';})(),
   };
 
   const dynamicSubjects = {};

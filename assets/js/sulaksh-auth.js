@@ -106,7 +106,11 @@
           if (me && me.email) {
             st.email = me.email;
             st.role = me.role || null;
-            st.token = me.role || null; // truthy sentinel for UI
+            // Keep the REAL JWT here (not a role sentinel). Consumers trust
+            // SulakshAuth.st.token as the bearer to authorize requests, so it
+            // must be the actual token — otherwise every call after a restore()
+            // would send `Bearer <role>` and 401 (the "logout on refresh" bug).
+            st.token = t;
             st.verified = true;
             try { localStorage.setItem('sulaksh-email', me.email); } catch (e) {}
           } else {
