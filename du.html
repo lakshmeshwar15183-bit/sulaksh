@@ -1548,6 +1548,7 @@
       // Session is established via the HttpOnly cookie — never store the token
       // in JS/localStorage. `state.token` is just a truthy UI sentinel.
       state.token = data.token ? '1' : null;
+      if (data.token) { try { localStorage.setItem('sulaksh-token', data.token); } catch (e) {} }
       const me = await fetch(`${SULAKSH_API}/api/auth/me`)
         .then((r) => (r.ok ? r.json() : {}))
         .catch(() => ({}));

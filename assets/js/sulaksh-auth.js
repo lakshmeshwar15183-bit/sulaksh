@@ -59,6 +59,7 @@
     return _fetch(input, finalInit).then(function (resp) {
       var isLogin = endsWith(url, '/api/auth/login');
       var isLogout = endsWith(url, '/api/auth/logout');
+      var isMe = endsWith(url, '/api/auth/me');
 
       // Capture the token from a successful login BEFORE the caller's
       // res.json() continues, so the very next /api/auth/me carries it.
@@ -71,10 +72,11 @@
 
       if (useAuth && isLogout && resp.ok) setToken(null);
 
-      // A 401 on a protected call means the session died — drop it and tell
-      // the UI to re-render as logged-out. /auth/me 401 just means "not
-      // logged in" and /auth/login 401 is a normal bad-password, so skip those.
-      if (useAuth && resp.status === 401 && !isLogin && !endsWith(url, '/api/auth/me')) {
+      // ONLY a failed session check (/api/auth/me -> 401) means the session is
+      // truly dead. A 401 from any other endpoint (rate-limit, missing
+      // permission, transient network blip) must NEVER drop the session — doing
+      // so was logging users out on navigation / section changes for no reason.
+      if (useAuth && isMe && resp.status === 401) {
         setToken(null);
         try { window.dispatchEvent(new Event('sulaksh:unauthenticated')); } catch (e) {}
       }
