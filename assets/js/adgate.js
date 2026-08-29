@@ -71,6 +71,7 @@
       return;
     }
     try {
+      if (window.__sgLoadAds) window.__sgLoadAds();
       window.adsbygoogle = window.adsbygoogle || [];
       var ins = document.createElement('ins');
       ins.className = 'adsbygoogle';
