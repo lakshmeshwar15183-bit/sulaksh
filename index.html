@@ -1252,9 +1252,13 @@ isAdmin: false,
     const errMsg = 'Materials will appear here once the backend is connected.';
     let mats = null;
     try {
+      const sm = await fetchJsonRetry(`${location.origin}/assets/data/materials.json`);
+      if (sm && Array.isArray(sm.materials)) mats = sm.materials;
+    } catch (e) { /* snapshot missing — fall through */ }
+    try {
       const data = await apiGet('/api/materials');
-      if (data) {
-        mats = data.materials || [];
+      if (data && Array.isArray(data.materials) && data.materials.length) {
+        mats = data.materials;
         homeCacheSet(mats);
       }
     } catch (err) {

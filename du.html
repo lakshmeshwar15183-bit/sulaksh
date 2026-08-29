@@ -1764,6 +1764,20 @@
     let subjectDBLocal = [];
     let fromCache = false;
     try {
+      // (1) Static snapshot served from the site itself — always available,
+      // independent of the backend, so materials never disappear.
+      const [smats, ssubs] = await Promise.all([
+        fetchJsonRetry(`${location.origin}/assets/data/materials.json`),
+        fetchJsonRetry(`${location.origin}/assets/data/subjects.json`),
+      ]);
+      if (smats && Array.isArray(smats.materials)) {
+        data = smats;
+        subjectDBLocal = (ssubs && Array.isArray(ssubs.subjects)) ? ssubs.subjects : [];
+      }
+    } catch (err) { /* snapshot missing — fall through to live */ }
+
+    // (2) Live API for fresher data when reachable (worker, then backend direct).
+    try {
       const [d, sd] = await Promise.all([
         apiGet('/api/materials'),
         apiGet('/api/subjects?exam=' + encodeURIComponent('DU & College')),
@@ -1776,9 +1790,7 @@
         cacheSetLong(DU_MAT_CACHE_KEY, data.materials || []);
         cacheSetLong(DU_SUBJECT_CACHE_KEY, subjectDBLocal);
       }
-    } catch (err) {
-      data = null;
-    }
+    } catch (err) { /* keep static snapshot / cache */ }
 
     if (!data) {
       // Last-known-good fallback: show the cached materials the visitor (or a
