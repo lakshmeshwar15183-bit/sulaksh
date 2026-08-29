@@ -80,7 +80,7 @@
       ins.setAttribute('data-ad-format', 'auto');
       ins.setAttribute('data-full-width-responsive', 'true');
       container.appendChild(ins);
-      window.adsbygoogle.push({});
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) {
       container.innerHTML = '<span class="sg-ad-ph">Advertisement</span>';
     }
