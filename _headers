@@ -2,3 +2,24 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+/assets/js/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/assets/vendor/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/assets/images/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/assets/data/*
+  Cache-Control: public, max-age=300, must-revalidate
+
+/stack.png
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/stack.webp
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/stack-640.webp
+  Cache-Control: public, max-age=86400, must-revalidate
