@@ -131,18 +131,24 @@ function showFallback(url, note){
   openLink.href = url;
   openLink.style.display = '';
   const wrap = document.getElementById('iframeWrap');
-  wrap.innerHTML = '';
-  const f = document.createElement('iframe');
-  f.src = url;
-  f.setAttribute('allow', 'autoplay');
-  f.setAttribute('referrerpolicy', 'no-referrer');
-  f.style.width = '100%'; f.style.height = '100%'; f.style.border = 'none';
+  wrap.querySelectorAll('iframe,object,embed').forEach((e) => e.remove());
+
+  // Use <object>/<embed> (not <iframe>) so mobile browsers (Android Chrome /
+  // iOS Safari) render the PDF instead of blocking it as "content blocked".
+  const obj = document.createElement('object');
+  obj.data = url;
+  obj.type = 'application/pdf';
+  obj.style.width = '100%'; obj.style.height = '100%'; obj.style.border = 'none';
+  const emb = document.createElement('embed');
+  emb.src = url; emb.type = 'application/pdf';
+  emb.style.width = '100%'; emb.style.height = '100%'; emb.style.border = 'none';
+  obj.appendChild(emb);
   let loaded = false;
-  f.addEventListener('load', () => { loaded = true; spin.style.display = 'none'; });
-  f.addEventListener('error', () => {
+  obj.addEventListener('load', () => { loaded = true; spin.style.display = 'none'; });
+  obj.addEventListener('error', () => {
     if (!loaded) showFallback(url, 'The document failed to load. Use the direct link to open or download it.');
   });
-  wrap.appendChild(f);
+  wrap.appendChild(obj);
 
   // If the embed is slow or blocked, still offer a direct link.
   setTimeout(() => {
