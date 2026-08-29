@@ -3,7 +3,7 @@
 // admin panel. When disabled we hide every element with class `dl-btn`.
 // Viewing a file always stays enabled (only the button is hidden).
 (function () {
-  var API = (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online') ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app');
+  var API = 'https://sulaksh-backend-production.up.railway.app';
   // Default to visible until we know the real setting (fail-open).
   window.__downloadsEnabled = true;
 

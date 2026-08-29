@@ -31,27 +31,107 @@ iframe{width:100%;height:100%;border:none}
   <div id="msg" style="display:block"></div>
 </div>
 <script>
-const API = (location.hostname === 'sulaksh.online' || location.hostname.endsWith('.sulaksh.online')) ? location.origin + '/api' : 'https://sulaksh-backend-production.up.railway.app';
-const params=new URLSearchParams(location.search);
-const id=params.get('id');
-(async()=>{
-  if(!id){document.getElementById('msg').textContent='No document specified.';return;}
-  try{
-    const r=await fetch(`${API}/api/materials/${id}/download?disposition=inline`);
-    const d=await r.json();
-    if(!r.ok||!d.url){document.getElementById('msg').textContent=d.error||'Could not open this document.';document.querySelector('.spin').style.display='none';return;}
-    // Defense-in-depth: only embed URLs from our own CDN/storage hosts.
-    let safe=false;try{const u=new URL(d.url);safe=u.protocol==='https:'&&(u.hostname==='cdn.sulaksh.online'||u.hostname.endsWith('.backblazeb2.com'));}catch(e){}
-    if(!safe){document.getElementById('msg').textContent='Could not open this document.';document.querySelector('.spin').style.display='none';return;}
-    document.getElementById('title').textContent='Sulaksh — Viewing document';
-    const wrap=document.getElementById('iframeWrap');
-    wrap.innerHTML=`<iframe src="${d.url}" allow="autoplay" referrerpolicy="no-referrer"></iframe>`;
-    const f=wrap.querySelector('iframe');f.style.width='100%';f.style.height='100%';f.style.border='none';
-  }catch(e){
-    document.getElementById('msg').innerHTML='Could not load. <a href="javascript:location.reload()" style="color:#7fb0ff">Retry</a>';
+const API_BASE = 'https://sulaksh-backend-production.up.railway.app';
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+
+const spin = document.querySelector('.spin');
+const msg = document.getElementById('msg');
+const titleEl = document.getElementById('title');
+
+function setMsg(html){ msg.innerHTML = html; spin.style.display = 'none'; }
+function retryLink(){ return ' <a href="javascript:location.reload()" style="color:#7fb0ff">Retry</a>'; }
+
+// Fetch with a couple of retries so a sleeping/cold backend doesn't look like
+// a permanent failure. The Railway free tier can take a few seconds to wake up.
+async function fetchRetry(url, opts, tries){
+  tries = tries || 3;
+  let lastErr;
+  for (let i = 0; i < tries; i++){
+    try { return await fetch(url, opts); }
+    catch (e){ lastErr = e; await new Promise(r => setTimeout(r, 800)); }
   }
+  throw lastErr;
+}
+
+async function findSource(){
+  // (1) Static snapshot — always available, never depends on the backend.
+  try {
+    const snap = await fetch(`${location.origin}/assets/data/materials.json`, { cache: 'no-store' });
+    if (snap.ok){
+      const j = await snap.json();
+      const m = (j.materials || []).find((x) => x.id === id);
+      if (m && m.cdnUrl) return { url: m.cdnUrl };
+    }
+  } catch (e) {}
+
+  // (2) Material detail — returns the public CDN url, NOT rate-limited.
+  try {
+    const r = await fetchRetry(`${API_BASE}/api/materials/${id}`);
+    if (r.ok){
+      const d = await r.json().catch(() => ({}));
+      if (d && d.material && d.material.cdnUrl) return { url: d.material.cdnUrl };
+    }
+  } catch (e) {}
+
+  // (3) Download endpoint — last resort (short-lived, per-IP daily limit).
+  try {
+    const r = await fetchRetry(`${API_BASE}/api/materials/${id}/download?disposition=inline`);
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d.url) return { url: d.url };
+    if (r.status === 429 || (d && d.error && /limit/i.test(d.error)))
+      return { rateLimited: true };
+  } catch (e) {}
+  return null;
+}
+
+function isSafe(u){
+  try {
+    const x = new URL(u);
+    return x.protocol === 'https:' &&
+      (x.hostname === 'cdn.sulaksh.online' || x.hostname.endsWith('.backblazeb2.com'));
+  } catch (e) { return false; }
+}
+
+(async () => {
+  if (!id){ setMsg('No document specified.'); return; }
+
+  const res = await findSource();
+  if (!res){
+    setMsg('Could not open this document.' + retryLink());
+    return;
+  }
+  if (res.rateLimited){
+    setMsg('You’ve reached the daily view limit. Please try again tomorrow.' + retryLink());
+    return;
+  }
+
+  const url = res.url;
+  if (!isSafe(url)){ setMsg('Could not open this document.' + retryLink()); return; }
+
+  titleEl.textContent = 'Sulaksh — Viewing document';
+  const wrap = document.getElementById('iframeWrap');
+  wrap.innerHTML = '';
+  const f = document.createElement('iframe');
+  f.src = url;
+  f.setAttribute('allow', 'autoplay');
+  f.setAttribute('referrerpolicy', 'no-referrer');
+  f.style.width = '100%'; f.style.height = '100%'; f.style.border = 'none';
+  let loaded = false;
+  f.addEventListener('load', () => { loaded = true; spin.style.display = 'none'; });
+  wrap.appendChild(f);
+
+  // If the embed is slow or blocked, still offer a direct link.
+  setTimeout(() => {
+    if (loaded) return;
+    const note = document.createElement('div');
+    note.style.cssText = 'position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#cfd9ec;font-size:13px';
+    note.innerHTML = 'Taking too long? <a href="' + url + '" target="_blank" rel="noopener" style="color:#7fb0ff">Open in a new tab</a>';
+    wrap.appendChild(note);
+  }, 12000);
 })();
-document.getElementById('backBtn').href=document.referrer||'/du.html';
+
+document.getElementById('backBtn').href = document.referrer || '/du.html';
 </script>
 </body>
 </html>

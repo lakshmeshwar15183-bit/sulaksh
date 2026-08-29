@@ -70,6 +70,15 @@ function maintenanceEnabled(env) {
   return getSetting(env, 'maintenance_mode').then((v) => v === '1');
 }
 
+// Attach the always-available public CDN URL for a material row so clients can
+// embed/view it directly from the CDN — this works even when the backend is
+// cold/sleeping and is NOT subject to the download rate limit.
+function attachCdn(row, env) {
+  if (!row || !row.r2_object_key || !env.PUBLIC_CDN_BASE) return row;
+  const key = String(row.r2_object_key).split('/').map(encodeURIComponent).join('/');
+  return { ...row, cdnUrl: `${env.PUBLIC_CDN_BASE}/file/${key}?disposition=inline` };
+}
+
 // ============================= ROUTES =============================
 async function handleRequest(request, env) {
   const url = new URL(request.url);
@@ -178,7 +187,7 @@ async function routeMaterials(request, env, method, path, url) {
       env, `SELECT ${PUBLIC_FIELDS} FROM materials WHERE id = ? AND status = ?`, one[1], 'active'
     );
     if (!row) return json({ error: 'Material not found.' }, 404);
-    return json({ material: row });
+    return json({ material: attachCdn(row, env) });
   }
 
   // GET /api/materials?filters
@@ -208,7 +217,7 @@ async function routeMaterials(request, env, method, path, url) {
       `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
       ...params, limit, (page - 1) * limit
     );
-    return json({ materials: rows, page, limit, total });
+    return json({ materials: rows.map((r) => attachCdn(r, env)), page, limit, total });
   }
 
   const rows = await all(
@@ -216,7 +225,7 @@ async function routeMaterials(request, env, method, path, url) {
     `SELECT ${PUBLIC_FIELDS} FROM materials WHERE ${where} ORDER BY created_at DESC LIMIT 5000`,
     ...params
   );
-  return json({ materials: rows });
+  return json({ materials: rows.map((r) => attachCdn(r, env)) });
 }
 
 // --------------------------- /api/subjects -------------------

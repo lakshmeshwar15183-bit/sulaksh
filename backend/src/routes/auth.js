@@ -99,8 +99,12 @@ router.post('/login', (req, res) => {
 // ---- One-time bootstrap for limited-role accounts ----
 // Creates or updates an account with role 'maintenance' (can only toggle
 // maintenance mode). Requires the ADMIN_SETUP_KEY env value in the
-// x-setup-key header. Delete the env var after use to disable this route.
+// x-setup-key header. Disabled in production unless ENABLE_BOOTSTRAP=1 is
+// explicitly set, so a leaked key cannot create admins on the live site.
 router.post('/bootstrap-maintainer', (req, res) => {
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_BOOTSTRAP !== '1') {
+    return res.status(404).json({ error: 'Not found.' });
+  }
   if (!process.env.ADMIN_SETUP_KEY || req.get('x-setup-key') !== process.env.ADMIN_SETUP_KEY) {
     return res.status(403).json({ error: 'Forbidden.' });
   }
