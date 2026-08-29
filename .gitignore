@@ -10,6 +10,9 @@ node_modules/
 *.db-wal
 *.db-shm
 data/
+# Keep the generated static materials snapshot (committed as an always-available fallback)
+!assets/data/
+!assets/data/*.json
 
 # OS
 .DS_Store
