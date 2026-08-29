@@ -8,7 +8,10 @@
      crossorigin="anonymous"></script>
 <title>Important Questions — Sulaksh</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"></noscript>
 <style>
   :root{
     --navy:#0C2340;
@@ -194,7 +197,7 @@
 
   [data-theme="dark"] .brand-wordmark{filter:brightness(0) invert(1);opacity:.95;}
 </style>
-<script src="assets/js/maintenance.js?v=1"></script>
+<script src="assets/js/maintenance.js?v=1" defer></script>
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/favicon.png">
 </head>
@@ -309,9 +312,9 @@
   </div>
 </div>
 
-<script src="assets/js/optimize.js?v=3"></script>
-<script src="assets/js/adgate.js?v=2"></script>
-<script src="/assets/js/sulaksh-auth.js?v=3"></script>
+<script src="assets/js/optimize.js?v=3" defer></script>
+<script src="assets/js/adgate.js?v=2" defer></script>
+<script src="/assets/js/sulaksh-auth.js?v=3" defer></script>
 <script>
   // ---------- Config ----------
   const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
@@ -649,7 +652,7 @@ isAdmin: false,
 
 </script>
 
-  <script src="assets/js/download-flag.js"></script>
-  <script src="assets/js/delete-flag.js"></script>
+  <script src="assets/js/download-flag.js" defer></script>
+  <script src="assets/js/delete-flag.js" defer></script>
 </body>
 </html>
