@@ -37,6 +37,11 @@ iframe{width:100%;height:100%;border:none}
 const API_BASE = 'https://sulaksh-backend-production.up.railway.app';
 const params = new URLSearchParams(location.search);
 const id = params.get('id');
+// "Open" should VIEW, not download. Linking straight to the raw .pdf makes
+// browsers with "Download PDFs" enabled (or strict top-level PDF handling)
+// save the file. Routing through the viewer (blob render) displays it inline
+// regardless of that setting.
+const openHref = 'view.html?id=' + encodeURIComponent(id);
 
 const spin = document.querySelector('.spin');
 const msg = document.getElementById('msg');
@@ -128,7 +133,7 @@ function showFallback(url, note){
   if (!isSafe(url)){ setMsg('Could not open this document.' + retryLink()); return; }
 
   titleEl.textContent = 'Sulaksh — Viewing document';
-  openLink.href = url;
+  openLink.href = openHref;
   openLink.style.display = '';
   const wrap = document.getElementById('iframeWrap');
   wrap.querySelectorAll('iframe,object,embed').forEach((e) => e.remove());
@@ -142,7 +147,7 @@ function showFallback(url, note){
     const panel = document.createElement('div');
     panel.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;color:#cfd9ec';
     panel.innerHTML = '<div style="font-size:15px;max-width:280px">Tap below to open this document in a new tab.</div>' +
-      '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-block;padding:13px 22px;background:#4d8dff;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">Open document ↗</a>';
+      '<a href="' + openHref + '" target="_blank" rel="noopener" style="display:inline-block;padding:13px 22px;background:#4d8dff;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">Open document ↗</a>';
     wrap.appendChild(panel);
     return;
   }
