@@ -6,6 +6,9 @@ import path from 'node:path';
 const API = process.env.SULAKSH_API || 'https://sulaksh-backend-production.up.railway.app';
 const SITE = 'https://sulaksh.online';
 const OUT = path.resolve(process.cwd(), 'pyq');
+// Bump this when you edit view.html so the cached page is bypassed (the "?v="
+// makes a fresh cache key, just like the auth JS). Resync after bumping.
+const VIEW_VERSION = '4';
 const slug = s => String(s || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const TRACK = { 'Honours': 'Honours', 'As Major': 'Major', 'As Minor': 'Minor' };
@@ -83,7 +86,7 @@ ${o.aboutBlock || ""}
 <footer><b>SULAKSH</b> — Learn. Prepare. Achieve.<br>Free study material for every DU aspirant · <a href="/">Home</a> · <a href="/du.html">DU &amp; College</a> · <a href="/pyq/index.html">All PYQs</a></footer>
 <script>
 const API='${API}';
-async function openMat(id){location.href='/view.html?id='+encodeURIComponent(id)}
+async function openMat(id){location.href='/view.html?v='+VIEW_VERSION+'&id='+encodeURIComponent(id)}
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 </body></html>`;
