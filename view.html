@@ -148,7 +148,7 @@ function showFallback(url, note){
     const panel = document.createElement('div');
     panel.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;color:#cfd9ec';
     panel.innerHTML = '<div style="font-size:15px;max-width:280px">Tap below to open this document in a new tab.</div>' +
-      '<a href="' + openHref + '" target="_blank" rel="noopener" style="display:inline-block;padding:13px 22px;background:#4d8dff;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">Open document ↗</a>';
+      '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-block;padding:13px 22px;background:#4d8dff;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">Open document ↗</a>';
     wrap.appendChild(panel);
     return;
   }
