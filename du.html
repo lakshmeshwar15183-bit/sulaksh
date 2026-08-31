@@ -1983,8 +1983,13 @@
     const proCount = (mats || []).filter((m) => m.category && m.category.toUpperCase() === 'CORE' && proFiles.includes(m.subject || '')).length;
     grid.innerHTML = CORE_SUBJECTS.map((s) => {
       const meta = CORE_META[s] || { ico: '📘', tag: 'Core' };
-      const PROG_TAG = ({ 'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Mathematics':'BA/BSc','Sociology':'BA' })[s] || '';
-      const files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
+      const PROG_TAG = ({ 'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Mathematics':'BA/BSc','Sociology':'BA','B.Sc.':'BSc' })[s] || '';
+      let files;
+      if (s === 'B.Sc.') {
+        files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && BSC_SUBJECTS.includes(m.subject || ''));
+      } else {
+        files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
+      }
       const n = files.length;
       return `
         <button class="core-card" onclick="openCoreSubject('${s.replace(/'/g, "\\'")}')">
