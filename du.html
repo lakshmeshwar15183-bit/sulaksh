@@ -784,6 +784,7 @@
     'Mathematics',
     'Hindi',
     'B.Com (Hons)',
+    'Sociology',
   ];
 
   const CORE_META = {
@@ -794,6 +795,7 @@
     'Mathematics':      { ico: '➗', tag: 'Core Queue' },
     'Hindi':            { ico: '📗', tag: 'Core Queue' },
     'B.Com (Hons)':     { ico: '💼', tag: 'Core Queue' },
+    'Sociology':        { ico: '👥', tag: 'Core Queue' },
   };
 
   // ---- Programme catch-all section ----
@@ -1886,7 +1888,7 @@
     const proCount = (mats || []).filter((m) => m.category && m.category.toUpperCase() === 'CORE' && proFiles.includes(m.subject || '')).length;
     grid.innerHTML = CORE_SUBJECTS.map((s) => {
       const meta = CORE_META[s] || { ico: '📘', tag: 'Core' };
-      const PROG_TAG = ({ 'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Mathematics':'BA/BSc' })[s] || '';
+      const PROG_TAG = ({ 'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Mathematics':'BA/BSc','Sociology':'BA' })[s] || '';
       const files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
       const n = files.length;
       return `
