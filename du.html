@@ -508,6 +508,18 @@
     </button>
   </div>
   </div>
+
+  <!-- 3. BSc Hons -->
+  <div class="du-sec">
+    <div class="du-sec-head">
+      <span class="num">3</span>
+      <div>
+        <h2>BSc Hons</h2>
+        <span class="sub">Science Honours — Chemistry, Physics & more (Hons only, no Major/Minor)</span>
+      </div>
+    </div>
+    <div class="core-grid" id="bscGrid"></div>
+  </div>
   </div>
 
   <section class="du-cat" id="cat-SEC">
@@ -796,6 +808,34 @@
     'Hindi':            { ico: '📗', tag: 'Core Queue' },
     'B.Com (Hons)':     { ico: '💼', tag: 'Core Queue' },
     'Sociology':        { ico: '👥', tag: 'Core Queue' },
+  };
+
+  const BSC_SUBJECTS = [
+    'B.Sc. (Hons) Chemistry',
+    'B.Sc. (Hons) Physics',
+    'B.Sc. (Hons) Zoology',
+    'B.Sc. (Hons) Botany',
+    'B.Sc. (Hons) Geology',
+    'B.Sc. (Hons) Statistics',
+    'B.Sc. (Hons) Food Technology',
+    'B.Sc. (Hons) Computer Science',
+    'B.Sc. (Hons) Biological Sciences',
+    'B.Sc. (Hons) Home Science',
+    'B.Sc. (Hons) Environmental Science',
+  ];
+
+  const BSC_META = {
+    'B.Sc. (Hons) Chemistry':             { ico: '🧪', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Physics':               { ico: '⚛️', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Zoology':               { ico: '🦁', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Botany':                { ico: '🌿', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Geology':               { ico: '🪨', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Statistics':            { ico: '📈', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Food Technology':       { ico: '🍎', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Computer Science':      { ico: '💻', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Biological Sciences':   { ico: '🧬', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Home Science':          { ico: '🏠', tag: 'BSc Hons' },
+    'B.Sc. (Hons) Environmental Science': { ico: '🌍', tag: 'BSc Hons' },
   };
 
   // ---- Programme catch-all section ----
@@ -1272,7 +1312,7 @@
   }
 
   function openCoreSubject(subject) {
-    if (subject === 'B.Com (Hons)') {
+    if (BSC_SUBJECTS.includes(subject) || subject === 'B.Com (Hons)') {
       renderCoreSubjectView(subject, 'Honours');
       setCoreView('viewCoreSubject');
       return;
@@ -1284,6 +1324,12 @@
 
   function goCoreTrack(subject) {
     window.__coreSubject = subject;
+    if (BSC_SUBJECTS.includes(subject)) {
+      backToCategories();
+      const bsc = document.getElementById('bscGrid');
+      if (bsc) bsc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     if (subject === 'B.Com (Hons)') {
       backToCategories();
       return;
@@ -1838,6 +1884,7 @@
         }
       });
       renderCoreGrid([]);
+      renderBscGrid([]);
       if (showErrors) showDuErrorBanner();
       return;
     }
@@ -1849,6 +1896,7 @@
       // Core grid renders FIRST — it must never be left blank because a
       // later category failed.
       renderCoreGrid(mats);
+      renderBscGrid(mats);
       CATEGORIES.forEach((cat) => {
         const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
         dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
@@ -1914,6 +1962,35 @@
         <span class="core-btn">Open →</span>
       </button>`;
   }
+
+  function renderBscGrid(mats) {
+    const grid = document.getElementById('bscGrid');
+    if (!grid) return;
+    grid.innerHTML = BSC_SUBJECTS.map((s) => {
+      const meta = BSC_META[s] || { ico: '🔬', tag: 'BSc Hons' };
+      const files = (mats || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
+      const n = files.length;
+      return `
+        <button class="core-card" onclick="openBscSubject('${s.replace(/'/g, "\\'")}')">
+          <div class="top">
+            <span class="core-ico">${meta.ico}</span>
+            <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
+          </div>
+          <span class="core-name">${s}</span>
+          <span class="core-desc">Hons — Direct semester view (no Major/Minor)</span>
+          <span class="core-count">${n} materials</span>
+          <span class="core-btn">Explore →</span>
+        </button>`;
+    }).join('');
+  }
+
+  function openBscSubject(subject) {
+    window.__coreSubject = subject;
+    window.__coreTrack = 'Honours';
+    renderCoreSubjectView(subject, 'Honours');
+    setCoreView('viewCoreSubject');
+  }
+  window.openBscSubject = openBscSubject;
 
   function renderCategory(cat, mats) {
     const grid = document.getElementById('subj-' + cat);
