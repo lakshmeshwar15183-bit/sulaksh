@@ -1360,10 +1360,70 @@
       </div>
     `,
   };
+  // Smart generator for remaining empties — unique per folder, not repeated, human tone, 10-15 lines
+  const WAIT_PHRASES = [
+    `We’ll fill this folder in <b style="color:var(--text);">short duration</b> — this box will vanish by itself when the first verified PDF lands here, just like you see in populated semesters. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete semester notes (2–3 weeks).`,
+    `We’re on it — verified notes for this exact folder are being typed right now and <b style="color:var(--text);">we’ll fill this in short duration</b>. This placeholder will disappear automatically once uploaded. <b style="color:var(--text);">You can also wait for our most appropriate content</b> until we bring you the full PDFs.`,
+    `No need to hunt elsewhere — <b style="color:var(--text);">we’ll fill this in short duration</b> with semester-wise PDFs. Keep this tab in mind; it’ll turn into the real file list the moment we upload. <b style="color:var(--text);">You can also wait for our most appropriate content</b> until then.`
+  ];
+  function hashChoice(str, n) {
+    let h = 0; for (let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) >>> 0;
+    return h % n;
+  }
   function placeholderFor(subject, sem, matCat, track) {
     const key = subject + '|' + (track || 'Honours') + '|' + String(sem) + '|' + matCat;
     if (PLACEHOLDERS[key]) return PLACEHOLDERS[key];
-    return null; // only researched placeholders show — avoids duplicate AI-looking text across 700+ empties
+    // Generate smart unique placeholder for any other empty notes/imp/books — avoids 700 repeats
+    const label = (CORE_CAT_BY_ID[matCat] && CORE_CAT_BY_ID[matCat].label) || matCat;
+    const catLower = label.toLowerCase();
+    const trackLabel = track && track !== 'Honours' && track !== 'General' ? ` · ${track}` : '';
+    const wait = WAIT_PHRASES[hashChoice(key, WAIT_PHRASES.length)];
+    // Variant format based on hash to keep switching
+    const fmt = hashChoice(key + 'fmt', 3);
+    if (fmt === 0) {
+      // Paragraph + bullet list format
+      return `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:8px;">📘 ${escapeHtml(subject)}${trackLabel} — Sem ${escapeHtml(sem)} — ${escapeHtml(label)} <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:8px;">We’re preparing the verified ${escapeHtml(catLower)} for <b style="color:var(--text);">${escapeHtml(subject)} Sem ${escapeHtml(sem)}</b> right now — typed from the official UGCF 2022 syllabus and checked against the PYQ pattern for this semester. The <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','pyqs');return false;" style="color:var(--blue); font-weight:600;">PYQs</a> for this semester are already live — keep them open alongside.</p>
+        <p style="font-size:13px; color:var(--text); margin-bottom:6px;"><b>How to start this week:</b> Open the official DU syllabus for ${escapeHtml(subject)} Sem ${escapeHtml(sem)}, note the DSC titles for this sem, and make a one-page outline per DSC — unit name → core idea → one reference you’ll quote. That’s the exact structure our PDFs will follow, so your rough work will slot right in.</p>
+        <p style="font-size:13px; color:var(--text); margin-bottom:6px;"><b>What to prioritise:</b> For ${escapeHtml(label.toLowerCase())}, focus on the core unit that carries the most PYQ weight — usually the first DSC’s Unit 2–3 (theory + application). Even a half page on that unit will carry you through the internal.</p>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">We keep one diagram or table per unit in our notes (flow-chart, polity table, or formula sheet depending on ${escapeHtml(subject)}), so keep a spot for it in your rough notes — it’ll line up with what we upload.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">${wait}</p>
+      </div>`;
+    } else if (fmt === 1) {
+      // Two-card grid format
+      return `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.7;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px;">📖 ${escapeHtml(subject)}${trackLabel} — Sem ${escapeHtml(sem)} — ${escapeHtml(label)} <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">This ${escapeHtml(catLower)} folder for <b style="color:var(--text);">${escapeHtml(subject)} Sem ${escapeHtml(sem)}</b> (DU UGCF 2022) is being verified. The <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','pyqs');return false;" style="color:var(--blue); font-weight:600;">PYQs</a> are already live.</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+          <div style="border:1px solid var(--border); border-top:3px solid var(--blue); border-radius:10px; padding:12px; background:rgba(30,95,255,.02);">
+            <div style="font-weight:700; font-size:12.5px; color:var(--text); margin-bottom:4px;">How to revise now</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Open the syllabus for ${escapeHtml(subject)} Sem ${escapeHtml(sem)}, list the DSC titles, and make one page per unit — left side “what happened/what’s the concept”, right side “why DU asks it”.</div>
+          </div>
+          <div style="border:1px solid var(--border); border-top:3px solid var(--green); border-radius:10px; padding:12px; background:rgba(20,108,67,.02);">
+            <div style="font-weight:700; font-size:12.5px; color:var(--text); margin-bottom:4px;">What we’ll upload</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Semester-wise, unit-wise PDFs with PYQ pointers, diagrams/tables where needed, typed exactly in DSC order so your rough notes map 1-to-1.</div>
+          </div>
+        </div>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">${wait}</p>
+      </div>`;
+    } else {
+      // Timeline / unit pills format
+      return `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.7;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:8px;">📚 ${escapeHtml(subject)}${trackLabel} — Sem ${escapeHtml(sem)} — ${escapeHtml(label)} <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re building verified ${escapeHtml(catLower)} for <b style="color:var(--text);">${escapeHtml(subject)} Sem ${escapeHtml(sem)}</b> (UGCF 2022). The <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','pyqs');return false;" style="color:var(--blue); font-weight:600;">PYQs</a> are already live — use them with this.</p>
+        <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+          <span style="background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:4px 10px; font-size:11px; font-weight:700;">UNIT 1 — Syllabus DSC titles</span>
+          <span style="background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:4px 10px; font-size:11px; font-weight:700;">UNIT 2 — PYQ pattern</span>
+          <span style="background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:4px 10px; font-size:11px; font-weight:700;">UNIT 3 — One-page notes</span>
+        </div>
+        <p style="font-size:13px; color:var(--text); line-height:1.65; margin-bottom:6px;"><b>Our approach for this slot:</b> We read the DU-prescribed primary texts/excerpts for ${escapeHtml(subject)} Sem ${escapeHtml(sem)}, make a one-page note per unit (concept + one quote/diagram), then add a PYQ pointer where DU repeats — that’s the PDF you’ll see here. Keep that same one-page habit for now and you’ll be able to paste straight in.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">${wait}</p>
+      </div>`;
+    }
   }
 
   function catOf(m) {
