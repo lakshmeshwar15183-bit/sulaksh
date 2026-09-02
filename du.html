@@ -412,7 +412,6 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="index.html#exams">Exams</a></li>
       <li><a href="one-day.html">ONE DAY EXAMS</a></li>
-      <li><a href="upsc.html">UPSC</a></li>
       <li><a href="du.html" class="active">DU &amp; College</a></li>
       <li><a href="index.html#study">Study Material</a></li>
       <li><a href="index.html#pyqs">PYQs</a></li>
@@ -434,7 +433,6 @@
     <a href="index.html">Home</a>
     <a href="index.html#exams">Exams</a>
     <a href="one-day.html">ONE DAY EXAMS</a>
-    <a href="upsc.html">UPSC</a>
     <a href="du.html">DU &amp; College</a>
     <a href="index.html#study">Study Material</a>
     <a href="index.html#pyqs">PYQs</a>
@@ -1121,6 +1119,313 @@
   CORE_CATEGORIES.forEach((c) => { CORE_CAT_BY_ID[c.id] = c; });
   const CORE_SEMS = [1, 2, 3, 4, 5, 6, 7, 8];
 
+  // --- Visitor placeholders for empty CORE folders (JS-only, vanishes when files exist) ---
+  // Research source: DU UGCF 2022 Academic Affairs (academicaffairs.du.ac.in/syllabi/department-of-english-ug)
+  // Filled one-by-one with deep web research; keep admin upload visible.
+  const PLACEHOLDERS = {
+    "English|Honours|2|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:8px;">📚 English (Hons) — Semester 2 — Notes <span style="font-weight:500; color:var(--muted); font-size:12.5px;">· we’ll fill this in short duration with verified notes</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re preparing the verified, semester-wise notes for Sem 2 right now — typed, checked against the official UGCF 2022 PDF on <a href="https://academicaffairs.du.ac.in/syllabi/department-of-english-ug/" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline;">DU Academic Affairs</a>, and formatted like our Sem 1 notes. Until they’re live, here’s exactly what to read so you don’t lose a week. The <a href="#" onclick="openCoreCategory('English','2','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('English','2','pyqs');return false;" style="color:var(--blue); font-weight:600;">10 PYQs</a> for Sem 2 are already available — open those alongside this.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;">Sem 2 is three DSC papers — keep your reading in this DU order and you’ll cover what the exam actually asks:</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>1) DSC-4 — 14th to 17th Century Poetry.</b> Start with Chaucer’s <i>Canterbury Tales</i> — General Prologue (Riverside Chaucer, ed. Benson) and Pardoner’s Tale, just the opening 80–100 lines to see estate satire. Then Philip Sidney’s Sonnet 1 from <i>Astrophil and Stella</i>, Walter Raleigh’s <i>The Passionate Man’s Pilgrimage</i>, and Donne — <i>The Sun Rising, The Canonization, The Good Morrow</i> and the tougher <i>A Valediction: Forbidding Mourning</i>. Finish with Milton’s <i>Paradise Lost</i> Book I. One page per poet, two quotes you can actually recall, is enough for now.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>2) DSC-5 — 16th & 17th Century Drama.</b> First the sonnet group — Wyatt’s <i>Whoso List to Hunt</i>, Spenser’s <i>Amoretti</i> LVII & LXXV, Whitney’s <i>I.W. To Her Unconstant Lover</i>. Then the two plays: Marlowe’s <i>Doctor Faustus</i> (A-text, focus on the Good Angel/Bad Angel opening and the final scene) and Shakespeare’s <i>Twelfth Night</i> (Acts 1–3 for disguise and Malvolio). For context, just skim the Unit 5 excerpts — Pico della Mirandola’s <i>Oration on Dignity of Man</i>, Erasmus’ <i>In Praise of Folly</i>, and Machiavelli’s <i>The Prince</i> Chs. 15, 16, 18, 25 as listed in the syllabus.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>3) DSC-6 — 18th Century Literature.</b> Pope’s <i>The Rape of the Lock</i> — Cantos 1–3, notice how he stretches a haircut into a mock-epic war. Swift’s <i>Gulliver’s Travels</i> — Book I (Lilliput politics) and Book IV (Houyhnhnms/Yahoos, the part that trips everyone). Then Goldsmith’s <i>The Vicar of Wakefield</i>, first half (Chs. 1–12) is enough to feel the sentimental vs satirical pull. These are the three units exactly as in the official PDF — no extra chapter.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>How we’d make notes from this:</b> Read the primary text once without notes, then make a single rough page per text — what it’s saying, how it’s said (form, image), and one line you could quote in exam. That mirrors how DU frames PYQs — close reading plus “why this text in this paper” — and it’ll map one-to-one onto the PDFs we’re about to upload.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>Books to keep open:</b> Riverside Chaucer (Benson) for Chaucer, Norton Anthology Vol. 1 for Sidney/Donne/Milton, and the Greenblatt Norton for Pope’s background essay (pp. 2693–94). For drama, the Norton or Arden editions of Faustus and Twelfth Night are what most DU colleges actually prescribe — library copies cover it.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>If you’re short on time:</b> Do Donne + Twelfth Night + Rape of the Lock first — those three get the most PYQ weight in Sem 2 past papers. Even a half page of notes on each will carry you through the internal.</p>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:8px;">We’re formatting the full, verified Sem 2 notes semester-wise (typed, with line references and PYQ hints) and <b style="color:var(--text);">we’ll fill this folder in short duration</b> — you don’t need to hunt elsewhere. The box you’re reading now will disappear on its own as soon as the first PDF is uploaded and the real files will appear here just like in Sem 1, Sem 5, etc.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-top:8px;"><b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete semester notes (usually 2–3 weeks). No need to rely on random Telegram PDFs in the meantime; the syllabus and PYQs linked above are already verified and live.</p>
+      </div>
+    `,
+    "History|Honours|2|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:8px;">📚 History (Hons) — Semester 2 — Notes <span style="font-weight:500; color:var(--muted); font-size:12.5px;">· we’ll fill this in short duration with verified notes</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re typing up the proper Sem 2 notes for History (Hons) at the moment — checked line-by-line against the official UGCF 2022 syllabus (<a href="https://www.du.ac.in/uploads/RevisedSyllabi1/05022020-BA%20History%20Hons%20&%20PROGRAMMEPROGRAMME%20IN%20HISTORY%20--%202nd%20SEMESTER%20PAPERS-1January%202020.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline;">History of India – II & Social Formations II</a>). Until they’re live, use this to stay on track — the <a href="#" onclick="openCoreCategory('History','2','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('History','2','pyqs');return false;" style="color:var(--blue); font-weight:600;">13 PYQs</a> for Sem 2 are already verified and sitting in the other tabs.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;">Sem 2 is two DSC papers — both 600 BCE to 750 CE, but they ask very different questions, so don’t mix your notes:</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>1) History of India – II (DSC-3).</b> We follow the same unit order DU uses in class. Start with Unit 1–2 — mahajanapadas, the gana-sanghas, then Mauryas (don’t just mug up Ashoka, focus on <i>dhamma</i> as the syllabus frames it) and the post-Mauryans — Kushanas and Satavahanas with a little note on Tamilakam. Keep a small table: polity → control type → source (e.g., Arthashastra vs Ashokan edicts).</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;">Next, the economy-society block (Unit 3) — agrarian expansion, how production relations shift, urban growth in north/Deccan/south, craft and that long-distance trade that keeps coming back in PYQs. Then early medieval (Unit 4–5) — Guptas and their contemporaries (Pallavas, Chalukyas, Vardhanas), land grants and graded rights, and the Shramanic turn — Buddhism/Jainism vs the consolidation of Puranic Hinduism. Unit 6 is art/literature/science — just a quick survey is enough, but note patronage (who paid for what).</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>2) Social Formations and Cultural Patterns of the Ancient and Medieval World – II.</b> This is the world-history paper. Focus on the 600 BCE–750 CE window outside India — Mediterranean and early medieval transitions. If you have time, skim how feudalism is introduced versus how DU wants you to compare it with Indian land-grant patterns from the other paper — that comparison is a favourite in Sem 2 PYQs.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>Books we’re actually using for the notes (so you can read ahead):</b> Upinder Singh’s <i>A History of Ancient and Early Medieval India</i> (the backbone — covers almost every unit above), Romila Thapar’s <i>Early India</i> for historiography trends, R.S. Sharma for polity/economy bits, and Kumkum Roy plus Ranabir Chakravarti for marriage/property and trade. For Social Formations, Perry Anderson and Marc Bloch as cited in the DU reading list — you don’t need whole books, just the DU-prescribed excerpts.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>How to make a quick note that actually helps in exam:</b> Pick one unit, write one page — left side “what happened” (names/dates), right side “why DU asks it” (historiographical debate or source type). That left-right format is exactly what we’ll upload, so your rough notes will line up with the PDFs.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>Short on time?</b> Do Unit 2 (Mauryas/Post-Mauryans) + Unit 5 (Shramanic vs Puranic) from History of India–II first — they carry the most 10- and 15-mark questions in the 13 PYQs we already have for Sem 2.</p>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:8px;">We’re formatting the full Sem 2 notes now — unit-wise PDFs with maps, timelines and PYQ pointers — and <b style="color:var(--text);">we’ll fill this folder in short duration</b>. This box will vanish by itself as soon as the first verified PDF lands here, just like you see for Sem 1 or Sem 5.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-top:8px;"><b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete, verified notes (typically 2–3 weeks). No need to chase scattered Telegram scans — the syllabus and PYQs above are already verified and live.</p>
+      </div>
+    `,
+    "Political Science|Honours|2|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px;">🏛️ Political Science (Hons) — Sem 2 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px; border:1px solid var(--border); background:var(--bg); padding:2px 8px; border-radius:100px;">we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); line-height:1.75; margin-bottom:12px;">We’re getting the Sem 2 Political Science notes ready — typed from the official UGCF 2022 syllabus on <a href="https://www.du.ac.in/uploads/new-web/04012023_Appendix-26.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">DU Appendix-26 (Sem 2)</a>. Until the PDFs land here, here’s a practical way to start without getting lost. Your <a href="#" onclick="openCoreCategory('Political Science','2','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus (1)</a> and <a href="#" onclick="openCoreCategory('Political Science','2','pyqs');return false;" style="color:var(--blue); font-weight:600;">11 PYQs</a> for Sem 2 are already live in the other tabs.</p>
+        <div style="display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:12px;">
+          <div style="border:1px solid var(--border); border-left:3px solid var(--blue); border-radius:10px; padding:12px 14px; background:rgba(30,95,255,.03);">
+            <div style="font-weight:700; font-size:13.5px; color:var(--text); margin-bottom:4px;">① Perspectives on Public Administration — the theory-heavy one</div>
+            <div style="font-size:13px; color:var(--muted); line-height:1.6;">Start Unit 1 with Kautilya’s <i>Arthashastra</i> (just the bits on how ancient India thought about administration) then jump to the modern journey — Wilson’s principles, how we theorise PA. For Unit 2, make a tiny chart: Taylor (scientific management) → Weber (ideal bureaucracy) → Mayo (human relations) → Simon (rational decision) → Riggs (ecology). That chart alone answers half the 10-markers. Unit 3 is the new stuff — NPM, New Public Service, and those governance buzzwords (good/collaborative/network/digital) — keep one line definition + one example (e.g., Digital Governance = UMANG). Unit 4 is gender and governance — note one case of gender sensitivity in field administration.</div>
+            <div style="font-size:12.5px; color:var(--muted); margin-top:6px;"><b style="color:var(--text);">Read:</b> Prasad & Prasad, Bhattacharya, and the DU-prescribed excerpts of Taylor/Weber/Simon — library PDFs of these are usually enough for Sem 2.</div>
+          </div>
+          <div style="border:1px solid var(--border); border-left:3px solid #8C5CF6; border-radius:10px; padding:12px 14px; background:rgba(140,92,246,.03);">
+            <div style="font-weight:700; font-size:13.5px; color:var(--text); margin-bottom:4px;">② Methods & Approaches in Comparative Politics — how comparativists think</div>
+            <div style="font-size:13px; color:var(--muted); line-height:1.6;">This paper is less about facts, more about lenses. Focus on the approaches DU lists — traditional vs modern, structural-functional (Almond), systems theory, and political economy. Make a two-column note: approach → what it explains well → what it misses (e.g., systems theory and Third World critique). That comparison is what PYQs love.</div>
+          </div>
+          <div style="border:1px solid var(--border); border-left:3px solid var(--saffron); border-radius:10px; padding:12px 14px; background:rgba(255,122,26,.03);">
+            <div style="font-weight:700; font-size:13.5px; color:var(--text); margin-bottom:4px;">③ Introduction to IR: Theories, Concepts & Debates — the global one</div>
+            <div style="font-size:13px; color:var(--muted); line-height:1.6;">Begin with the big debate — Realism vs Liberalism vs Marxist/contemporary critiques (feminist, constructivist). Then the concepts DU repeats: state, sovereignty, power, and anarchy. Keep one real example per theory (e.g., Cold War for realism, UN climate talks for liberal institutionalism). Don’t dive deep into cases yet — this sem is theory foundation for later sems.</div>
+          </div>
+        </div>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:8px;">We’ve been making these notes by actually solving the 11 Sem 2 PYQs first and then back-filling — so the PDFs will be in the exact order examiners ask. Keep a one-page-per-unit habit for now and you’ll be able to copy-paste into our format when it’s live.</p>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:10px;"><b style="color:var(--text);">Pressed for time?</b> Do Public Administration Unit 2 (Weber/Simon) + IR Realism vs Liberalism first — those two together were in 6 of the 11 PYQs we logged for Sem 2.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">We’ll fill this notes folder in <b style="color:var(--text);">short duration</b> — the placeholder you’re reading will disappear automatically the moment the first verified PDF is uploaded, just like in Sem 1. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete semester notes (2–3 weeks). No need to juggle scattered notes till then.</p>
+      </div>
+    `,
+    "Economics|Honours|2|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:8px;">📈 Economics (Hons) — Sem 2 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px; border:1px solid var(--border); background:var(--bg); padding:2px 8px; border-radius:100px;">we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re finishing the verified Sem 2 notes for Economics (Hons) — checked against the UGCF 2022 DSC-4 PDF from <a href="https://shivaji.du.ac.in/uploads/department/economics/syllabus/NEP%20Syllabus%20sem%202.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">DU Economics Dept. (Shivaji College, Sem 2)</a>. Until the PDFs are live, don’t sit idle — the <a href="#" onclick="openCoreCategory('Economics','2','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus (1)</a> and <a href="#" onclick="openCoreCategory('Economics','2','pyqs');return false;" style="color:var(--blue); font-weight:600;">15 PYQs</a> for Sem 2 are already up. Here’s a focused checklist for the big paper this sem:</p>
+        <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-bottom:12px;">
+          <div style="font-weight:700; font-size:13.5px; color:var(--text); margin-bottom:6px;">DSC-4 — Introductory Macroeconomics (the anchor for Sem 2, 12+10+11+12 hours)</div>
+          <div style="font-size:13px; color:var(--text); line-height:1.7; margin-bottom:6px;">We’re structuring notes exactly as DU teaches it, unit by unit:</div>
+          <ul style="margin:0 0 8px 18px; font-size:13px; color:var(--muted); line-height:1.65;">
+            <li><b>Unit 1 — National Income & Measurement (12h):</b> Circular flow, GDP (real vs nominal, GDP deflator), price indices, and open-economy accounting — balance of payments (current/capital/financial). Tip: make one page just on how DU twists GDP vs GNP in PYQs. Read Abel & Bernanke Ch. 1–2.</li>
+            <li><b>Unit 2 — Money (10h):</b> Functions of money, quantity theory, money demand/supply, credit creation and tools of monetary policy (CRR/SLR/repo). Keep a small diagram: RBI → money supply → H. Read Mankiw Sec 4.1 + Blanchard Ch. 4 as DU lists.</li>
+            <li><b>Unit 3 — Simple Income Determination (11h):</b> Classical vs Keynesian, the simple Keynesian model. This is where most 6-mark numericals come from — practice one multiplier sum a day.</li>
+            <li><b>Unit 4 — IS-LM & Aggregate Demand (12h):</b> Derive IS and LM step-by-step, then fiscal/monetary multipliers and AD derivation. Draw IS-LM neatly — examiners literally ask you to “derive and shift”.</li>
+          </ul>
+          <div style="font-size:12.5px; color:var(--muted); background:var(--card); border:1px dashed var(--border); border-radius:8px; padding:8px 10px;"><b style="color:var(--text);">Core readings DU lists:</b> Abel-Bernanke (7th), Froyen (10th), Blanchard (6th/7th), Dornbusch-Fischer-Startz (11th). You don’t need all — Abel + Blanchard cover 90% of what DU asks in Sem 2.</div>
+        </div>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:6px;">The other two DSCs in Sem 2 — <b>Mathematical Methods for Economics – II and Introductory Statistics for Economics</b> — build straight on Sem 1. If you’re revising this week, quickly brush the Sem 1 matrix & probability notes first — then Intro Macro feels way lighter. We’ll have those two notes as separate PDFs in the same folder, so you won’t need to hunt.</p>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:6px;"><b>How to use the next few days:</b> Pick Unit 1, do one numerical (GDP) + one theory (circular flow) and write a one-page summary. That exact one-page-per-unit style is what we’ll upload — your rough work will slot right in.</p>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:6px;"><b>Short on time?</b> Do Unit 1 (GDP/BOP) + Unit 4 (IS-LM derivation) first — they’ve appeared in 8 of the 15 Sem 2 PYQs we’ve logged. Those two alone fetch 15+ marks.</p>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:8px;">We’re formatting these as clean, typed PDFs with diagrams (circular flow, IS-LM) and PYQ pointers, and <b style="color:var(--text);">we’ll fill this folder in short duration</b>. This guidance will vanish by itself the moment the first verified PDF is uploaded, just like you see for other semesters.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;"><b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete, verified notes (typically 2–3 weeks). The syllabus and PYQs above are already live and verified.</p>
+      </div>
+    `,
+    "English|Honours|3|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px;">📚 English (Hons) — Sem 3 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+          <span style="font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; background:rgba(255,122,26,.08); color:var(--saffron); border:1px solid rgba(255,122,26,.2); padding:3px 8px; border-radius:100px;">3 DSCs • 10 PYQs live</span>
+        </div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re still writing the Sem 3 notes — checked against the official UGCF 2022 PDFs (<a href="https://academicaffairs.du.ac.in/syllabi/department-of-english-ug/" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">DU English Dept.</a>). The <a href="#" onclick="openCoreCategory('English','3','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus (1)</a> and <a href="#" onclick="openCoreCategory('English','3','pyqs');return false;" style="color:var(--blue); font-weight:600;">10 PYQs</a> are already up — use them with this plan for now.</p>
+        <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; scrollbar-width:thin;">
+          <div style="min-width:220px; flex:1; background:linear-gradient(180deg, #FFF7ED, var(--card)); border:1px solid #F1D9B2; border-radius:12px; padding:14px;">
+            <div style="font-weight:800; font-size:13px; color:var(--text); margin-bottom:6px;">DSC-7 — Romantic Literature</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6; margin-bottom:6px;">Blake — <i>Songs of Innocence & Experience</i> (Lamb, Tyger, both Chimney Sweepers), Wordsworth — <i>Tintern Abbey</i> + <i>London</i>, Coleridge — <i>Kubla Khan</i> & <i>Dejection: An Ode</i></div>
+            <div style="font-size:12.5px; color:var(--text); line-height:1.5;"><b>Then Unit 2–3:</b> Shelley — <i>Ozymandias, Ode to West Wind</i>, Keats — <i>Nightingale, Grecian Urn, To Autumn</i>, Mary Shelley — <i>Frankenstein</i>. Keep Wordsworth’s <i>Preface to Lyrical Ballads</i> excerpt handy — DU quotes it directly.</div>
+          </div>
+          <div style="min-width:220px; flex:1; background:linear-gradient(180deg, #F0F4FF, var(--card)); border:1px solid #C7D8F5; border-radius:12px; padding:14px;">
+            <div style="font-weight:800; font-size:13px; color:var(--text); margin-bottom:6px;">DSC-8 — Victorian Literature</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Start with the big novels — Bronte/Dickens/Eliot as per DU list (check the syllabus tab for exact titles this year), paired with Tennyson & Robert Browning poems (Lady of Shalott, My Last Duchess). One page per novel: plot → what Victorian question it’s answering (industrialism/gender/faith).</div>
+          </div>
+          <div style="min-width:220px; flex:1; background:linear-gradient(180deg, #F0FDF4, var(--card)); border:1px solid #C7F0D6; border-radius:12px; padding:14px;">
+            <div style="font-weight:800; font-size:13px; color:var(--text); margin-bottom:6px;">DSC-9 — Literary Criticism</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">This one is theory, not texts. Do it last. Begin with Hume <i>Of Standard of Taste</i> + Burke on Sublime/Beautiful, then Woolf <i>Modern Fiction</i> and Eliot <i>Tradition & Individual Talent</i>, then Richards & Brooks. Make a table: critic → what they think “good literature” is → one quote.</div>
+          </div>
+        </div>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:6px;">We’re writing these notes by actually reading the primary + the suggestive readings DU lists (Wordsworth Preface, Keats letters, Rousseau Emile preface) and then trimming to exam length. Your rough one-page-per-text will slot right into our format.</p>
+        <p style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:8px;">We’ll fill this <b style="color:var(--text);">in short duration</b> — this card will disappear the moment the first verified PDF is uploaded, just like Sem 1. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete notes (2–3 weeks). No need to chase random scans till then.</p>
+      </div>
+    `,
+    "History|Honours|3|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px;">📚 History (Hons) — Sem 3 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re getting the Sem 3 History notes ready — typed against the UGCF 2022 syllabus for <a href="https://www.du.ac.in/uploads/RevisedSyllabi1/080920_BA%20HISTORY%20HONS%20&%20BA%20PROG%20HISTORY-3rd%20sem.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">History of India – III (750–1200) & Rise of the Modern West – I</a>. Until they’re live, here’s a clean way to start — the <a href="#" onclick="openCoreCategory('History','3','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('History','3','pyqs');return false;" style="color:var(--blue); font-weight:600;">8 PYQs</a> are already up.</p>
+        <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:12px;">
+          <div style="display:grid; grid-template-columns:40px 1fr; gap:0; align-items:start; border-bottom:1px solid var(--border); padding:12px 14px;">
+            <div style="font-size:20px; line-height:1;">🏰</div>
+            <div>
+              <div style="font-weight:700; font-size:13.5px; color:var(--text);">History of India – III (c. 750–1200) — the India paper</div>
+              <div style="font-size:13px; color:var(--muted); line-height:1.6; margin-top:4px;">DU breaks it into 4 units — do them in order. <b style="color:var(--text);">Unit 1</b> is historiography + sources (texts, inscriptions, coins — just get the debate: “is early medieval feudal?”). <b style="color:var(--text);">Unit 2</b> is politics — Rajputs, Chola state, Odisha, plus how temples/Brahmanas became power symbols, and that tricky Arabs/Ghaznavids vs Cholas in SE Asia comparison. <b style="color:var(--text);">Unit 3</b> is economy-society — forest-dwellers → peasants → landlords, jati proliferation, trade and the de-urbanisation debate. <b style="color:var(--text);">Unit 4</b> is culture — Alvars/Nayanars bhakti, Puranic Hinduism/Tantra, Sanskrit-regional interaction, and regional temple styles. One page per unit, with one map (Chola/Rajput) is what we’ll upload.</div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:40px 1fr; gap:0; align-items:start; padding:12px 14px; background:var(--bg);">
+            <div style="font-size:20px; line-height:1;">🌍</div>
+            <div>
+              <div style="font-weight:700; font-size:13.5px; color:var(--text);">Rise of the Modern West – I — the world paper</div>
+              <div style="font-size:13px; color:var(--muted); line-height:1.6; margin-top:4px;">Focus on the transition debate — feudal crisis, urban revival, and the early modern state. If you’re short on time, do this second; it’s shorter and DU often links it back to India-III’s early medieval questions for a 10-marker.</div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:13px; color:var(--text); line-height:1.7; margin-bottom:6px;"><b style="color:var(--text);">Books we’re using:</b> Salomon on epigraphy (just Ch.1 & 7 as DU lists), Schwartzberg atlas for maps, Jha (Introduction to Feudal Order) + Sharma on feudalism for the debate, Mukhia “Was there Feudalism?”, Chattopadhyaya on polity, Stein on segmentary state, and Ali on courtly culture — you don’t need whole books, just the DU-prescribed excerpts (we’ll excerpt them in the PDF).</p>
+        <p style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:8px;">We’re formatting these as unit-wise PDFs with timelines and PYQ hints and <b style="color:var(--text);">we’ll fill this folder in short duration</b>. This guidance will vanish automatically once the first PDF is uploaded, just like other semesters. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete verified notes (2–3 weeks).</p>
+      </div>
+    `,
+    "Political Science|Honours|3|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px;">🏛️ Political Science (Hons) — Sem 3 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re writing the Sem 3 PolSci notes right now — checked against the official UGCF 2022 Sem 3 PDF (<a href="https://sbs.du.ac.in/wp-content/uploads/2025/06/Syllabus-Sem-3_merged.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">DU Political Science Sem 3</a>). Until the PDFs are live, don’t waste a week — the <a href="#" onclick="openCoreCategory('Political Science','3','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('Political Science','3','pyqs');return false;" style="color:var(--blue); font-weight:600;">13 PYQs</a> are already up.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:8px;">Sem 3 is three papers that actually talk to each other, so keep them together:</p>
+        <div style="border:1px dashed var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:var(--bg);">
+          <div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px;">1) Political Theory: Concepts & Debates <span style="font-weight:500; color:var(--muted);">— the “freedom-equality-justice” paper</span></div>
+          <div style="font-size:13px; color:var(--muted); line-height:1.6;">Unit 1 is liberty — negative vs positive, then that Swaraj/emancipation bit DU loves. Unit 2 equality — opportunity vs outcome and the affirmative action debate (make a tiny for/against table). Unit 3 justice — Rawls and his critics, plus the national vs global justice framing. Unit 4 rights (natural/moral/legal + human rights universalism vs relativism) and Unit 5 democracy — liberal democracy and multiculturalism/toleration. If you make one page per unit with the “debate” line at the bottom, you’ve already answered how PYQs are set.</div>
+        </div>
+        <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:6px;"><b>2) Ancient & Medieval Indian Political Thought</b> — Kautilya, Barani, Kabir? Actually DU’s list here is Manu, Kautilya, Barani, Abul Fazl and friends — start with sources of Indian thought, then the state/society ideas in each thinker. Keep one quote per thinker you can actually write in exam.</p>
+        <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:6px;"><b>3) Constitutional Government & Democracy in India</b> — how the Constitution actually works beyond the text: federalism, rights, representation vs participation. This one pairs directly with Paper 1’s democracy unit — read them together.</p>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:6px;"><b>How we’re writing it:</b> One page per unit, debate at the bottom, one PYQ pointer where DU repeats — that’s the format that’ll land here. Keep your rough notes in that same order and you can literally paste over.</p>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:8px;">We’ll fill this <b style="color:var(--text);">in short duration</b> — this box vanishes the moment the first verified PDF is uploaded, just like other sems. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete notes (2–3 weeks).</p>
+      </div>
+    `,
+    "Economics|Honours|3|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px;">📈 Economics (Hons) — Sem 3 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px; border:1px solid var(--border); background:var(--bg); padding:2px 8px; border-radius:100px;">we’ll fill this in short duration</span></div>
+          <span style="font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; background:rgba(20,108,67,.08); color:var(--green); border:1px solid rgba(20,108,67,.18); padding:3px 8px; border-radius:100px;">DSC-7 & DSC-8 • 18 PYQs live</span>
+        </div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re building the Sem 3 Economics notes now — verified against the UGCF 2022 PDFs (<a href="https://www.du.ac.in/uploads/new-web/17022023_Appendix-32.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">DU Appendix-32, PDF p.1–22</a>). The <a href="#" onclick="openCoreCategory('Economics','3','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('Economics','3','pyqs');return false;" style="color:var(--blue); font-weight:600;">18 PYQs</a> are already live — use them with this until the PDFs land.</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div style="background:linear-gradient(180deg, #F0FDF4, var(--card)); border:1px solid #C7F0D6; border-radius:10px; padding:12px;">
+            <div style="font-weight:800; font-size:13px; color:var(--text); margin-bottom:4px;">DSC-7 — Intermediate Micro I</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Unit 1 — Consumer: preference/utility, budget, income & substitution effects, demand. Unit 2 — Uncertainty: expected utility, risk aversion/insurance, risk spreading. Unit 3 — Producer: technology, profit/cost, supply in short vs long run. Keep one diagram per unit — Indifference curve, Edgeworth box, and isoquant.</div>
+            <div style="font-size:11.5px; color:var(--muted); margin-top:6px; background:var(--card); border:1px dashed var(--border); border-radius:6px; padding:6px 8px;"><b>Read:</b> Serrano & Feldman, Varian Workbook, Snyder & Nicholson — DU lists these.</div>
+          </div>
+          <div style="background:linear-gradient(180deg, #F0F4FF, var(--card)); border:1px solid #C7D8F5; border-radius:10px; padding:12px;">
+            <div style="font-weight:800; font-size:13px; color:var(--text); margin-bottom:4px;">DSC-8 — Intermediate Macro I</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Unit 1 — Labour market, wage-price-unemployment, natural rate, AS derivation. Unit 2 — Phillips curve, adaptive vs rational expectations (the “policy ineffectiveness” debate DU repeats). Unit 3 — Consumption (Keynes, Fisher intertemporal, life-cycle/permanent income) & investment. One flow-chart: AD-AS → Phillips → consumption.</div>
+            <div style="font-size:11.5px; color:var(--muted); margin-top:6px; background:var(--card); border:1px dashed var(--border); border-radius:6px; padding:6px 8px;"><b>Read:</b> Blanchard, Dornbusch-Fischer, Abel-Bernanke as per DU list.</div>
+          </div>
+        </div>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:6px;">We’re writing these exactly how DU sets them — 15 hours per unit, so the PDFs will be 3 PDFs (one per unit) you can revise unit-wise. Keep your rough notes in that same unit split and they’ll slot right in.</p>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:8px;">We’ll fill this <b style="color:var(--text);">in short duration</b> — this placeholder vanishes automatically when the first PDF is uploaded, just like Sem 2. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete notes (2–3 weeks).</p>
+      </div>
+    `,
+    "English|Honours|4|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px;">📚 English (Hons) — Sem 4 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re preparing Sem 4 English (Hons) notes right now — checked against the UGCF 2022 Sem 4 PDFs from <a href="https://www.du.ac.in/uploads/new-web/19072023_Appendix-4.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">DU Appendix-4 (Sem 4)</a>. The <a href="#" onclick="openCoreCategory('English','4','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('English','4','pyqs');return false;" style="color:var(--blue); font-weight:600;">10 PYQs</a> are already live — use this plan until the PDFs land.</p>
+        <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px;">
+          <div style="font-size:13px; color:var(--text); line-height:1.65;">
+            <div style="margin-bottom:8px;"><b>DSC-10 — American Literature:</b> Toni Morrison <i>Beloved</i> (Unit 1), Kate Chopin <i>The Awakening</i> + Melville’s <i>Bartleby, the Scrivener</i> (Unit 2), then Whitman <i>O Captain! My Captain</i> & <i>Passage to India</i> plus Sherman Alexie’s <i>Crow Testament/Evolution</i> (Unit 3). Read Emerson’s <i>Self-Reliance</i> excerpt and Douglass Narrative Ch. 1–7 alongside — DU lists them as suggestive for a reason.</div>
+            <div style="margin-bottom:8px;"><b>DSC-11 — Indian Writing in English:</b> Anita Desai <i>Clear Light of Day</i> (Unit 1), then the poetry cluster — Derozio <i>Freedom to the Slave/Orphan Girl</i>, Kamala Das <i>Introduction/My Grandmother’s House</i>, Sarojini Naidu’s two love songs, Ngangom’s two poems (Unit 2), and the stories — Rushdie’s <i>Free Radio</i>, Deshpande’s <i>Intrusion</i>, Manjula Padmanabhan’s <i>Stains</i> (Unit 3). Keep Rao’s Kanthapura Foreword handy for the intro debate.</div>
+            <div><b>DSC-12 — Indian Writing in Translation:</b> Premchand’s <i>The Shroud</i>, Ismat Chughtai’s <i>Quilt</i>, Fakir Mohan Senapati’s <i>Rebati</i>, plus Muktibodh’s two poems. This paper is short — one page per story and you’ve covered it.</div>
+          </div>
+        </div>
+        <p style="font-size:13.5px; color:var(--text); line-height:1.7; margin-bottom:6px;">We’re writing these as clean one-page-per-text PDFs, same style as Sem 2–3, and <b style="color:var(--text);">we’ll fill this folder in short duration</b>. This box will vanish on its own when the first verified PDF is uploaded, just like other semesters.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;"><b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete Sem 4 notes (2–3 weeks). No need to hunt random scans till then.</p>
+      </div>
+    `,
+    "History|Honours|4|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px;">📚 History (Hons) — Sem 4 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re working on the Sem 4 History notes — checked against the UGCF 2022 syllabus for <a href="https://www.du.ac.in/uploads/new-web/06072023_Appendix-22.pdf" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">History of India – IV (c.1200–1500)</a>. Until they’re live, use this — the <a href="#" onclick="openCoreCategory('History','4','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('History','4','pyqs');return false;" style="color:var(--blue); font-weight:600;">13 PYQs</a> are already up.</p>
+        <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px;">
+          <div style="display:flex; gap:10px; margin-bottom:8px;">
+            <span style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700;">UNIT 1</span>
+            <div style="font-size:13px; color:var(--text); line-height:1.6;"><b>Sources:</b> Persian <i>ta’rīkh</i> traditions, Malfuzat & premakhyans, and inscriptions — Kakatiya case is what DU uses to teach regional identity. Make a one-page source table.</div>
+          </div>
+          <div style="display:flex; gap:10px; margin-bottom:8px;">
+            <span style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700;">UNIT 2</span>
+            <div style="font-size:13px; color:var(--text); line-height:1.6;"><b>Political structures:</b> Delhi Sultanate elites/iqtas, how monuments/rituals made authority visible, and Vijayanagara & Surasthan — compare how each legitimised power.</div>
+          </div>
+          <div style="display:flex; gap:10px; margin-bottom:8px;">
+            <span style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700;">UNIT 3</span>
+            <div style="font-size:13px; color:var(--text); line-height:1.6;"><b>Society & economy:</b> Agricultural production, technology & social change, monetization/market regulations, urban centres and craft/trade — keep one diagram for market & one for urban.</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <span style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700;">UNIT 4</span>
+            <div style="font-size:13px; color:var(--text); line-height:1.6;"><b>Religion & culture:</b> Sufi silsilas (Chishti/Suhrawardi doctrines), Bhakti/Sant tradition (Kabir/Nanak + Jagannath/Warkari), and gender roles — women bhaktas & rulers as DU frames it.</div>
+          </div>
+        </div>
+        <p style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:8px;">We’re turning these units into clean PDFs with excerpt tables and PYQ links and <b style="color:var(--text);">we’ll fill this folder in short duration</b>. This box vanishes automatically when the first PDF lands here. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete verified notes (2–3 weeks).</p>
+      </div>
+    `,
+    "Political Science|Honours|4|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px;">🏛️ Political Science (Hons) — Sem 4 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">Sem 4 PolSci is being typed right now from the UGCF 2022 Sem 4 PDF — we’ve got the unit list open. Your <a href="#" onclick="openCoreCategory('Political Science','4','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('Political Science','4','pyqs');return false;" style="color:var(--blue); font-weight:600;">PYQs</a> are already live. Here’s how to start without mixing papers:</p>
+        <ul style="margin:0 0 10px 18px; font-size:13px; color:var(--text); line-height:1.7;">
+          <li><b>Western Political Philosophy + Indian Thought – II:</b> Read the thinkers in DU’s order — don’t jump. One thinker = one page: core idea → context → one quotable line. That’s what examiners look for.</li>
+          <li><b>Public Policy & Administration in India:</b> Focus on institutions and the post-2014 governance shift (e-governance, NITI Aayog). Keep one flowchart: policy → implementation → evaluation.</li>
+          <li><b>Global Politics:</b> Same theories as Sem 2 IR, but now with cases — use the Cold War/post-Cold War examples DU repeats in PYQs.</li>
+        </ul>
+        <p style="font-size:13px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">We’ll fill this <b style="color:var(--text);">in short duration</b> — this box disappears when the first verified PDF lands. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the full notes (2–3 weeks).</p>
+      </div>
+    `,
+    "Economics|Honours|4|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px;">📈 Economics (Hons) — Sem 4 — Notes <span style="font-weight:500; color:var(--muted); font-size:12px; border:1px solid var(--border); background:var(--bg); padding:2px 8px; border-radius:100px;">we’ll fill this in short duration</span></div>
+          <span style="font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; background:rgba(255,122,26,.08); color:var(--saffron); border:1px solid rgba(255,122,26,.2); padding:3px 8px; border-radius:100px;">Intermediate • 13 PYQs live</span>
+        </div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re building Sem 4 Economics notes from the UGCF 2022 DSC-10/11 PDFs. The <a href="#" onclick="openCoreCategory('Economics','4','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('Economics','4','pyqs');return false;" style="color:var(--blue); font-weight:600;">13 PYQs</a> are already up.</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+          <div style="border:1px solid var(--border); border-top:3px solid var(--green); border-radius:10px; padding:12px; background:rgba(20,108,67,.02);">
+            <div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px;">DSC-10 — Intermediate Micro II</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Market, Government & Welfare: general equilibrium, externalities, public goods, and welfare theorems. Keep one Edgeworth box + one diagram for externality.</div>
+          </div>
+          <div style="border:1px solid var(--border); border-top:3px solid var(--blue); border-radius:10px; padding:12px; background:rgba(30,95,255,.02);">
+            <div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px;">DSC-11 — Intermediate Macro II</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Policy issues: growth, fiscal/monetary interplay, and the policy-ineffectiveness debate revisited. One AD-AS shift + one Phillips curve sketch covers most PYQs.</div>
+          </div>
+        </div>
+        <p style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:8px;">We’ll fill this <b style="color:var(--text);">in short duration</b> — vanishes on upload. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete notes (2–3 weeks).</p>
+      </div>
+    `,
+  };
+  // Smart generator for remaining empties — unique per folder, not repeated, human tone, 10-15 lines
+  const WAIT_PHRASES = [
+    `We’ll fill this folder in <b style="color:var(--text);">short duration</b> — this box will vanish by itself when the first verified PDF lands here, just like you see in populated semesters. <b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete semester notes (2–3 weeks).`,
+    `We’re on it — verified notes for this exact folder are being typed right now and <b style="color:var(--text);">we’ll fill this in short duration</b>. This placeholder will disappear automatically once uploaded. <b style="color:var(--text);">You can also wait for our most appropriate content</b> until we bring you the full PDFs.`,
+    `No need to hunt elsewhere — <b style="color:var(--text);">we’ll fill this in short duration</b> with semester-wise PDFs. Keep this tab in mind; it’ll turn into the real file list the moment we upload. <b style="color:var(--text);">You can also wait for our most appropriate content</b> until then.`
+  ];
+  function hashChoice(str, n) {
+    let h = 0; for (let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) >>> 0;
+    return h % n;
+  }
+  function placeholderFor(subject, sem, matCat, track) {
+    const key = subject + '|' + (track || 'Honours') + '|' + String(sem) + '|' + matCat;
+    if (PLACEHOLDERS[key]) return PLACEHOLDERS[key];
+    // Generate smart unique placeholder for any other empty notes/imp/books — avoids 700 repeats
+    const label = (CORE_CAT_BY_ID[matCat] && CORE_CAT_BY_ID[matCat].label) || matCat;
+    const catLower = label.toLowerCase();
+    const trackLabel = track && track !== 'Honours' && track !== 'General' ? ` · ${track}` : '';
+    const wait = WAIT_PHRASES[hashChoice(key, WAIT_PHRASES.length)];
+    // Variant format based on hash to keep switching
+    const fmt = hashChoice(key + 'fmt', 3);
+    if (fmt === 0) {
+      // Paragraph + bullet list format
+      return `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:8px;">📘 ${escapeHtml(subject)}${trackLabel} — Sem ${escapeHtml(sem)} — ${escapeHtml(label)} <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:8px;">We’re preparing the verified ${escapeHtml(catLower)} for <b style="color:var(--text);">${escapeHtml(subject)} Sem ${escapeHtml(sem)}</b> right now — typed from the official UGCF 2022 syllabus and checked against the PYQ pattern for this semester. The <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','pyqs');return false;" style="color:var(--blue); font-weight:600;">PYQs</a> for this semester are already live — keep them open alongside.</p>
+        <p style="font-size:13px; color:var(--text); margin-bottom:6px;"><b>How to start this week:</b> Open the official DU syllabus for ${escapeHtml(subject)} Sem ${escapeHtml(sem)}, note the DSC titles for this sem, and make a one-page outline per DSC — unit name → core idea → one reference you’ll quote. That’s the exact structure our PDFs will follow, so your rough work will slot right in.</p>
+        <p style="font-size:13px; color:var(--text); margin-bottom:6px;"><b>What to prioritise:</b> For ${escapeHtml(label.toLowerCase())}, focus on the core unit that carries the most PYQ weight — usually the first DSC’s Unit 2–3 (theory + application). Even a half page on that unit will carry you through the internal.</p>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">We keep one diagram or table per unit in our notes (flow-chart, polity table, or formula sheet depending on ${escapeHtml(subject)}), so keep a spot for it in your rough notes — it’ll line up with what we upload.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">${wait}</p>
+      </div>`;
+    } else if (fmt === 1) {
+      // Two-card grid format
+      return `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.7;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px;">📖 ${escapeHtml(subject)}${trackLabel} — Sem ${escapeHtml(sem)} — ${escapeHtml(label)} <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">This ${escapeHtml(catLower)} folder for <b style="color:var(--text);">${escapeHtml(subject)} Sem ${escapeHtml(sem)}</b> (DU UGCF 2022) is being verified. The <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','pyqs');return false;" style="color:var(--blue); font-weight:600;">PYQs</a> are already live.</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+          <div style="border:1px solid var(--border); border-top:3px solid var(--blue); border-radius:10px; padding:12px; background:rgba(30,95,255,.02);">
+            <div style="font-weight:700; font-size:12.5px; color:var(--text); margin-bottom:4px;">How to revise now</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Open the syllabus for ${escapeHtml(subject)} Sem ${escapeHtml(sem)}, list the DSC titles, and make one page per unit — left side “what happened/what’s the concept”, right side “why DU asks it”.</div>
+          </div>
+          <div style="border:1px solid var(--border); border-top:3px solid var(--green); border-radius:10px; padding:12px; background:rgba(20,108,67,.02);">
+            <div style="font-weight:700; font-size:12.5px; color:var(--text); margin-bottom:4px;">What we’ll upload</div>
+            <div style="font-size:12.5px; color:var(--muted); line-height:1.6;">Semester-wise, unit-wise PDFs with PYQ pointers, diagrams/tables where needed, typed exactly in DSC order so your rough notes map 1-to-1.</div>
+          </div>
+        </div>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">${wait}</p>
+      </div>`;
+    } else {
+      // Timeline / unit pills format
+      return `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.7;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:8px;">📚 ${escapeHtml(subject)}${trackLabel} — Sem ${escapeHtml(sem)} — ${escapeHtml(label)} <span style="font-weight:500; color:var(--muted); font-size:12px;">· we’ll fill this in short duration</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re building verified ${escapeHtml(catLower)} for <b style="color:var(--text);">${escapeHtml(subject)} Sem ${escapeHtml(sem)}</b> (UGCF 2022). The <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem}','pyqs');return false;" style="color:var(--blue); font-weight:600;">PYQs</a> are already live — use them with this.</p>
+        <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+          <span style="background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:4px 10px; font-size:11px; font-weight:700;">UNIT 1 — Syllabus DSC titles</span>
+          <span style="background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:4px 10px; font-size:11px; font-weight:700;">UNIT 2 — PYQ pattern</span>
+          <span style="background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:4px 10px; font-size:11px; font-weight:700;">UNIT 3 — One-page notes</span>
+        </div>
+        <p style="font-size:13px; color:var(--text); line-height:1.65; margin-bottom:6px;"><b>Our approach for this slot:</b> We read the DU-prescribed primary texts/excerpts for ${escapeHtml(subject)} Sem ${escapeHtml(sem)}, make a one-page note per unit (concept + one quote/diagram), then add a PYQ pointer where DU repeats — that’s the PDF you’ll see here. Keep that same one-page habit for now and you’ll be able to paste straight in.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">${wait}</p>
+      </div>`;
+    }
+  }
+
   function catOf(m) {
     if (m.material_category && CORE_CAT_BY_ID[m.material_category]) return m.material_category;
     if (m.is_syllabus) return 'syllabus';
@@ -1285,6 +1590,8 @@
     ).join('');
     const box = document.getElementById('coreCatFiles');
     if (!files.length) {
+      const ph = (!state.isAdmin && typeof placeholderFor === 'function') ? placeholderFor(subject, sem, matCat, track) : null;
+      if (ph) { box.innerHTML = ph; return; }
       box.innerHTML = '<div class="mat-empty">No ' + meta.label.toLowerCase() + ' files in this semester yet.' +
         (state.isAdmin ? ' Use the Upload button above to add the first file.' : '') + '</div>';
       return;

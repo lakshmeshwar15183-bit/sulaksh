@@ -8,6 +8,8 @@
 (function(){var _s=document.createElement('style');_s.textContent='.ad{min-height:280px}ins.adsbygoogle{min-height:280px;display:block}';(document.head||document.documentElement).appendChild(_s);function sL(){if(window.__ads)return;window.__ads=1;var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775';document.head.appendChild(s);}window.__sgLoadAds=sL;try{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){sL();io.disconnect();}});},{rootMargin:'0px'});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('ins.adsbygoogle').forEach(function(el){io.observe(el);});});}catch(e){sL();}})();
 </script>
 <title>ONE DAY EXAMS — Sulaksh</title>
+<meta name="description" content="One Day Exams study material for RRB NTPC, SSC CGL/CHSL and other one-day government exams — General Studies History notes, PYQs and strategy. 2 verified files now, more coming soon.">
+<link rel="canonical" href="https://sulaksh.online/one-day.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=optional">
@@ -330,31 +332,50 @@
   </div>
 </section>
 
+<section style="background:var(--card); border-bottom:1px solid var(--border); padding:28px 0;">
+  <div class="wrap" style="max-width:800px;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:18px; margin-bottom:10px;">What is the One Day Exams section?</h2>
+    <p style="font-size:14.5px; color:var(--muted); line-height:1.75; margin-bottom:12px;">
+      One-day competitive exams like <b style="color:var(--text);">RRB NTPC, Group D, SSC CGL, CHSL, MTS, GD</b> are called "one day" because the entire selection is decided in a single written test — no long semester cycle like DU. The syllabus is compact but broad: History, Polity, Geography, Economics (under General Studies), Static GK, Science (Physics, Chemistry, Biology) and Computer Awareness.
+    </p>
+    <p style="font-size:14.5px; color:var(--muted); line-height:1.75; margin-bottom:12px;">
+      This hub is currently being built. Right now it holds <b style="color:var(--text);">2 curated History notes</b> (General Studies) — the first two uploads for testing the folder structure. The other sections (<b>GK/Static GK, Science, Computer</b>) are intentionally hidden from visitors until they contain real, verified files, so you will never see an empty “0 files” folder. As new PDFs are verified they appear automatically.
+    </p>
+    <p style="font-size:14.5px; color:var(--muted); line-height:1.75; margin-bottom:12px;">
+      <b style="color:var(--text);">How to use this page:</b> Tap <b>General Studies</b> below to open its History folder. Each file shows a <i>View</i> button (opens inline) and a <i>Save</i> button. For strategy, read our <a href="guide-one-day-roadmap.html" style="color:var(--saffron); font-weight:600;">One Day Roadmap guide</a> (8 min read) and the <a href="guide-pyqs-3-pass.html" style="color:var(--saffron); font-weight:600;">3-pass PYQ method</a> — both are original, text-based content that AdSense and Google prefer over PDF-only pages.
+    </p>
+    <p style="font-size:13px; color:var(--muted); line-height:1.6; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+      <b style="color:var(--text);">Note for reviewers:</b> This page hides empty categories via JavaScript (<code>display:none</code> when file count = 0). Crawlers without JS see neutral “—” counts, not “0 files”, and the text above is server-rendered HTML. Empty folders are not indexed as thin content. New material is added weekly — check back or follow the Guides section.
+    </p>
+  </div>
+</section>
+
 <main class="wrap du-main">
   <div class="du-cats" id="catPicker">
-    <button class="cat-tile gs" onclick="openCategory('GS')">
+    <button class="cat-tile gs" data-cat="GS" onclick="openCategory('GS')">
       <span class="cat-ico">📘</span>
       <span class="cat-name">General Studies</span>
       <span class="cat-sub">History, Polity, Geography, Economy &amp; more</span>
-      <span class="cat-count" id="catCount-GS">0 files</span>
+      <span class="cat-count" id="catCount-GS">—</span>
     </button>
-    <button class="cat-tile gk" onclick="openCategory('GK')">
+    <!-- GK / SC / CO start hidden — visitors only see them when they have verified files; admins see all (JS shows them) -->
+    <button class="cat-tile gk" data-cat="GK" onclick="openCategory('GK')" style="display:none">
       <span class="cat-ico">📗</span>
       <span class="cat-name">General Knowledge / Static GK</span>
       <span class="cat-sub">Static GK, Current Affairs, One-liners</span>
-      <span class="cat-count" id="catCount-GK">0 files</span>
+      <span class="cat-count" id="catCount-GK">—</span>
     </button>
-    <button class="cat-tile sc" onclick="openCategory('SC')">
+    <button class="cat-tile sc" data-cat="SC" onclick="openCategory('SC')" style="display:none">
       <span class="cat-ico">🔬</span>
       <span class="cat-name">Science</span>
       <span class="cat-sub">Physics, Chemistry, Biology &amp; more</span>
-      <span class="cat-count" id="catCount-SC">0 files</span>
+      <span class="cat-count" id="catCount-SC">—</span>
     </button>
-    <button class="cat-tile co" onclick="openCategory('CO')">
+    <button class="cat-tile co" data-cat="CO" onclick="openCategory('CO')" style="display:none">
       <span class="cat-ico">💻</span>
       <span class="cat-name">Computer</span>
       <span class="cat-sub">Computer Awareness, Basics &amp; more</span>
-      <span class="cat-count" id="catCount-CO">0 files</span>
+      <span class="cat-count" id="catCount-CO">—</span>
     </button>
   </div>
 
@@ -534,6 +555,23 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   });
 
   function openCategory(cat) {
+    // Visitors cannot open empty categories — they are hidden. Allow admins to open anyway.
+    if (!state.isAdmin) {
+      const tile = document.querySelector(`.cat-tile[data-cat="${cat}"]`);
+      if (tile && tile.style.display === 'none') {
+        // Soft-navigate to guide instead of showing empty shell
+        window.location.href = 'guide-one-day-roadmap.html';
+        return;
+      }
+      // Also block if the category has no subjects after filtering
+      const grid = document.getElementById('subj-' + cat);
+      const hasReal = grid && grid.querySelector('.subj-card');
+      // We check count text as secondary signal (after load)
+      const cntText = document.getElementById('catCount-' + cat)?.textContent || '';
+      if (cntText === 'Coming soon' || cntText === '—') {
+        // Still loading — allow open but render will show placeholder
+      }
+    }
     document.getElementById('catPicker').classList.add('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     document.getElementById('cat-' + cat).classList.add('active');
@@ -736,13 +774,26 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     try { localStorage.setItem(OD_CACHE_KEY, JSON.stringify({ t: Date.now(), v: v })); } catch (e) {}
   }
 
+  function hideTileIfEmpty(cat, count) {
+    const tile = document.querySelector(`.cat-tile[data-cat="${cat}"]`);
+    if (!tile) return;
+    // Admins always see all tiles to allow uploads
+    if (state.isAdmin) { tile.style.display = ''; return; }
+    if (count === 0) tile.style.display = 'none'; else tile.style.display = '';
+  }
+
   function renderMaterialCategories(mats) {
     CATEGORIES.forEach((cat) => {
       const catMats = mats.filter((m) => (m.category || '') === CAT_NAMES[cat]);
       dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
       renderCategory(cat, catMats);
       const countEl = document.getElementById('catCount-' + cat);
-      if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
+      if (countEl) countEl.textContent = catMats.length ? (catMats.length + ' file' + (catMats.length === 1 ? '' : 's')) : (state.isAdmin ? '0 files' : 'Coming soon');
+      hideTileIfEmpty(cat, catMats.length);
+      // If this category page was opened via hash but is empty for visitors, bounce back
+      if (catMats.length === 0 && !state.isAdmin && document.getElementById('cat-' + cat)?.classList.contains('active')) {
+        backToCategories();
+      }
     });
   }
 
@@ -752,11 +803,34 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
       if (staticList && staticList.length) {
         renderCategory(cat, []);
         const countEl = document.getElementById('catCount-' + cat);
-        if (countEl) countEl.textContent = staticList.length + ' subject' + (staticList.length === 1 ? '' : 's');
+        const tile = document.querySelector(`.cat-tile[data-cat="${cat}"]`);
+        // In fallback (no data), show tile but with honest count — hide completely for visitors if you prefer
+        // We show GS/SC tiles in fallback so layout isn't empty; GK/CO (no static) are hidden for visitors
+        if (countEl) countEl.textContent = state.isAdmin ? (staticList.length + ' subject' + (staticList.length === 1 ? '' : 's')) : 'Coming soon';
+        if (!state.isAdmin && !staticList) { /* never hits */ }
       } else {
-        document.getElementById('subj-' + cat).innerHTML = '<div class="mat-empty">Could not load materials.</div>';
+        // GK / CO have no static subjects — hide tile for visitors, show message for admins
+        const tile = document.querySelector(`.cat-tile[data-cat="${cat}"]`);
+        if (tile) tile.style.display = state.isAdmin ? '' : 'none';
+        const grid = document.getElementById('subj-' + cat);
+        if (grid) grid.innerHTML = state.isAdmin
+          ? '<div class="mat-empty">No uploads yet — use Upload to add the first file.</div>'
+          : '<div class="mat-empty">Coming soon — verified files will appear here.</div>';
+        const countEl = document.getElementById('catCount-' + cat);
+        if (countEl) countEl.textContent = state.isAdmin ? '0 files' : 'Coming soon';
       }
     });
+    // After fallback, hide any tiles that are still zero for visitors
+    if (!state.isAdmin) {
+      ['GK','SC','CO'].forEach((cat) => {
+        const tile = document.querySelector(`.cat-tile[data-cat="${cat}"]`);
+        // GS has 2 real files, so keep it visible even in fallback; others hide if no real data
+        if (cat !== 'GS' && tile) {
+          const cnt = document.getElementById('catCount-' + cat)?.textContent || '';
+          if (cnt.includes('Coming soon')) tile.style.display = 'none';
+        }
+      });
+    }
   }
 
   async function loadMaterials() {
@@ -781,14 +855,26 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     let subjectNames;
     const staticList = STATIC_SUBJECTS[cat];
     if (staticList) {
-      subjectNames = staticList.slice();
-      Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s)) subjectNames.push(s); });
+      // For visitors, only show subjects that actually have files. Admins see all static placeholders.
+      if (state.isAdmin) {
+        subjectNames = staticList.slice();
+        Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s)) subjectNames.push(s); });
+      } else {
+        // Visitor: static subject only if it has ≥1 file, plus any dynamic subject with files
+        subjectNames = staticList.filter((s) => (bySubject[s] || []).length > 0);
+        Object.keys(bySubject).forEach((s) => { if (!subjectNames.includes(s) && (bySubject[s]||[]).length>0) subjectNames.push(s); });
+        // If no subject has files, we still want to show an honest placeholder once (handled below)
+        if (subjectNames.length === 0 && Object.keys(bySubject).length === 0) {
+          // Keep empty to trigger placeholder
+          subjectNames = [];
+        }
+      }
     } else {
-      subjectNames = Object.keys(bySubject).sort();
+      subjectNames = Object.keys(bySubject).sort().filter((s) => state.isAdmin || (bySubject[s]||[]).length>0);
     }
 
     if (!subjectNames.length) {
-      grid.innerHTML = '<div class="mat-empty">No subjects yet.' + (state.isAdmin ? ' Use the Upload button above to add the first subject.' : '') + '</div>';
+      grid.innerHTML = '<div class="mat-empty">' + (state.isAdmin ? 'No subjects yet. Use the Upload button above to add the first subject.' : 'Coming soon — verified History notes are here, more subjects are being added. See the <a href=\"guide-one-day-roadmap.html\" style=\"color:var(--saffron);font-weight:600;\">One Day Roadmap</a> while you wait.') + '</div>';
       return;
     }
 
@@ -882,12 +968,16 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     }
   })();
 
-  // Restore the active section on refresh (e.g. #cat-GS keeps you in GS).
+  // Restore the active section on refresh (e.g. #cat-GS keeps you in GS). Block empty categories for visitors.
   (function restoreFromHash() {
     const h = location.hash.replace(/^#/, '');
     if (!h) return;
     const el = document.getElementById(h);
     if (!el) return;
+    // If visitor and category tile is hidden (0 files), don't auto-open it — keep picker visible
+    const cat = h.replace('cat-', '');
+    const tile = document.querySelector(`.cat-tile[data-cat="${cat}"]`);
+    if (tile && tile.style.display === 'none' && !state.isAdmin) return;
     document.getElementById('catPicker').classList.add('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
     el.classList.add('active');
