@@ -349,9 +349,9 @@ emit('index.html',
 // ===== sitemap =====
 const TODAY = new Date().toISOString().slice(0, 10);
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-  + ['', 'index.html', 'du.html', 'one-day.html', 'upsc.html', 'guides.html', 'contact.html']
+  + ['', 'index.html', 'du.html', 'one-day.html', 'guides.html', 'contact.html']
     .concat([...pages.keys()].map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
 
-console.log('TOTAL SITEMAP URLs:', 7 + pages.size);
+console.log('TOTAL SITEMAP URLs:', 6 + pages.size);

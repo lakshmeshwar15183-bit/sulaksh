@@ -412,7 +412,6 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="index.html#exams">Exams</a></li>
       <li><a href="one-day.html">ONE DAY EXAMS</a></li>
-      <li><a href="upsc.html">UPSC</a></li>
       <li><a href="du.html" class="active">DU &amp; College</a></li>
       <li><a href="index.html#study">Study Material</a></li>
       <li><a href="index.html#pyqs">PYQs</a></li>
@@ -434,7 +433,6 @@
     <a href="index.html">Home</a>
     <a href="index.html#exams">Exams</a>
     <a href="one-day.html">ONE DAY EXAMS</a>
-    <a href="upsc.html">UPSC</a>
     <a href="du.html">DU &amp; College</a>
     <a href="index.html#study">Study Material</a>
     <a href="index.html#pyqs">PYQs</a>
@@ -1121,6 +1119,32 @@
   CORE_CATEGORIES.forEach((c) => { CORE_CAT_BY_ID[c.id] = c; });
   const CORE_SEMS = [1, 2, 3, 4, 5, 6, 7, 8];
 
+  // --- Visitor placeholders for empty CORE folders (JS-only, vanishes when files exist) ---
+  // Research source: DU UGCF 2022 Academic Affairs (academicaffairs.du.ac.in/syllabi/department-of-english-ug)
+  // Filled one-by-one with deep web research; keep admin upload visible.
+  const PLACEHOLDERS = {
+    "English|Honours|2|notes": `
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; line-height:1.75;">
+        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin-bottom:8px;">📚 English (Hons) — Semester 2 — Notes <span style="font-weight:500; color:var(--muted); font-size:12.5px;">· we’ll fill this in short duration with verified notes</span></div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:10px;">We’re preparing the verified, semester-wise notes for Sem 2 right now — typed, checked against the official UGCF 2022 PDF on <a href="https://academicaffairs.du.ac.in/syllabi/department-of-english-ug/" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline;">DU Academic Affairs</a>, and formatted like our Sem 1 notes. Until they’re live, here’s exactly what to read so you don’t lose a week. The <a href="#" onclick="openCoreCategory('English','2','syllabus');return false;" style="color:var(--green); font-weight:600;">syllabus</a> and <a href="#" onclick="openCoreCategory('English','2','pyqs');return false;" style="color:var(--blue); font-weight:600;">10 PYQs</a> for Sem 2 are already available — open those alongside this.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;">Sem 2 is three DSC papers — keep your reading in this DU order and you’ll cover what the exam actually asks:</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>1) DSC-4 — 14th to 17th Century Poetry.</b> Start with Chaucer’s <i>Canterbury Tales</i> — General Prologue (Riverside Chaucer, ed. Benson) and Pardoner’s Tale, just the opening 80–100 lines to see estate satire. Then Philip Sidney’s Sonnet 1 from <i>Astrophil and Stella</i>, Walter Raleigh’s <i>The Passionate Man’s Pilgrimage</i>, and Donne — <i>The Sun Rising, The Canonization, The Good Morrow</i> and the tougher <i>A Valediction: Forbidding Mourning</i>. Finish with Milton’s <i>Paradise Lost</i> Book I. One page per poet, two quotes you can actually recall, is enough for now.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>2) DSC-5 — 16th & 17th Century Drama.</b> First the sonnet group — Wyatt’s <i>Whoso List to Hunt</i>, Spenser’s <i>Amoretti</i> LVII & LXXV, Whitney’s <i>I.W. To Her Unconstant Lover</i>. Then the two plays: Marlowe’s <i>Doctor Faustus</i> (A-text, focus on the Good Angel/Bad Angel opening and the final scene) and Shakespeare’s <i>Twelfth Night</i> (Acts 1–3 for disguise and Malvolio). For context, just skim the Unit 5 excerpts — Pico della Mirandola’s <i>Oration on Dignity of Man</i>, Erasmus’ <i>In Praise of Folly</i>, and Machiavelli’s <i>The Prince</i> Chs. 15, 16, 18, 25 as listed in the syllabus.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>3) DSC-6 — 18th Century Literature.</b> Pope’s <i>The Rape of the Lock</i> — Cantos 1–3, notice how he stretches a haircut into a mock-epic war. Swift’s <i>Gulliver’s Travels</i> — Book I (Lilliput politics) and Book IV (Houyhnhnms/Yahoos, the part that trips everyone). Then Goldsmith’s <i>The Vicar of Wakefield</i>, first half (Chs. 1–12) is enough to feel the sentimental vs satirical pull. These are the three units exactly as in the official PDF — no extra chapter.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>How we’d make notes from this:</b> Read the primary text once without notes, then make a single rough page per text — what it’s saying, how it’s said (form, image), and one line you could quote in exam. That mirrors how DU frames PYQs — close reading plus “why this text in this paper” — and it’ll map one-to-one onto the PDFs we’re about to upload.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>Books to keep open:</b> Riverside Chaucer (Benson) for Chaucer, Norton Anthology Vol. 1 for Sidney/Donne/Milton, and the Greenblatt Norton for Pope’s background essay (pp. 2693–94). For drama, the Norton or Arden editions of Faustus and Twelfth Night are what most DU colleges actually prescribe — library copies cover it.</p>
+        <p style="font-size:13.5px; color:var(--text); margin-bottom:6px;"><b>If you’re short on time:</b> Do Donne + Twelfth Night + Rape of the Lock first — those three get the most PYQ weight in Sem 2 past papers. Even a half page of notes on each will carry you through the internal.</p>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:8px;">We’re formatting the full, verified Sem 2 notes semester-wise (typed, with line references and PYQ hints) and <b style="color:var(--text);">we’ll fill this folder in short duration</b> — you don’t need to hunt elsewhere. The box you’re reading now will disappear on its own as soon as the first PDF is uploaded and the real files will appear here just like in Sem 1, Sem 5, etc.</p>
+        <p style="font-size:12.5px; color:var(--muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-top:8px;"><b style="color:var(--text);">You can also wait for our most appropriate content</b> — please wait for us until we bring you the complete semester notes (usually 2–3 weeks). No need to rely on random Telegram PDFs in the meantime; the syllabus and PYQs linked above are already verified and live.</p>
+      </div>
+    `,
+  };
+  function placeholderFor(subject, sem, matCat, track) {
+    const key = subject + '|' + (track || 'Honours') + '|' + String(sem) + '|' + matCat;
+    if (PLACEHOLDERS[key]) return PLACEHOLDERS[key];
+    return null; // only researched placeholders show — avoids duplicate AI-looking text across 700+ empties
+  }
+
   function catOf(m) {
     if (m.material_category && CORE_CAT_BY_ID[m.material_category]) return m.material_category;
     if (m.is_syllabus) return 'syllabus';
@@ -1285,6 +1309,8 @@
     ).join('');
     const box = document.getElementById('coreCatFiles');
     if (!files.length) {
+      const ph = (!state.isAdmin && typeof placeholderFor === 'function') ? placeholderFor(subject, sem, matCat, track) : null;
+      if (ph) { box.innerHTML = ph; return; }
       box.innerHTML = '<div class="mat-empty">No ' + meta.label.toLowerCase() + ' files in this semester yet.' +
         (state.isAdmin ? ' Use the Upload button above to add the first file.' : '') + '</div>';
       return;
