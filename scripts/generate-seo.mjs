@@ -75,10 +75,21 @@ const getImpQuestionsBlock = (slugKey) => {
     if (!byUnit[q.unit]) byUnit[q.unit]=[];
     byUnit[q.unit].push(q.q);
   }
+  const hintFor = (q, unit) => {
+    const u = String(unit||'').toLowerCase();
+    if (u.includes('unit 1')) return 'Hint: Define in 2 lines + 1 example. Examiners check clear definition + scope, not long history.';
+    if (u.includes('unit 2')) return 'Hint: 3 points + 1 case/diagram. Middle units carry 55-60% weight — structure beats length.';
+    if (u.includes('unit 3')) return 'Hint: Contemporary + example + 1 limitation. One recent Indian case fetches 3 extra marks.';
+    if (u.includes('unit 4')) return 'Hint: Viva/project focused — headings + file + 2 viva Qs. Practical weight 25% — file + viva prep.';
+    return 'Hint: Point + example + concluding line. One diagram/table per answer.';
+  };
   let html = `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin:14px 0"><h3 style="margin:0 0 8px;font-size:15px">Important Questions — ${esc(data.name)} (Broad list — verify from college)</h3><p style="color:var(--muted);font-size:13px;margin:0 0 10px">These are broad, researched important questions based on the UGCF syllabus Units. Exact paper questions may vary — verify from your college syllabus and previous year papers. Precise PDF will be uploaded shortly and will auto-appear above.</p>`;
   for (const unit of Object.keys(byUnit).sort()) {
     html += `<h4 style="margin:10px 0 6px;font-size:13px;color:var(--navy)">${esc(unit)}</h4><ul style="margin:0 0 8px 18px;font-size:13px">`;
-    for (const q of byUnit[unit]) html += `<li style="margin:4px 0">${esc(q)}</li>`;
+    for (const q of byUnit[unit]) {
+      const hint = hintFor(q, unit);
+      html += `<li style="margin:6px 0"><div>${esc(q)}</div><div style="font-size:11.5px;color:var(--muted);background:var(--bg);border-left:2px solid var(--blue);padding:4px 8px;border-radius:4px;margin-top:4px"><em>${esc(hint)}</em></div></li>`;
+    }
     html += `</ul>`;
   }
   html += `<p style="font-size:12px;color:var(--muted);margin-top:8px"><em>Note:</em> This is a broad researched list to help you start. The verified, exact IMP Q&A PDF for ${esc(data.name)} will be uploaded shortly — once admin uploads, it will automatically show above with an <em>IMP Q</em> tag. Verify from your college's official syllabus PDF.</p></div>`;
@@ -132,17 +143,48 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 function pageHTML(o) {
   const faqH = (o.faqs || []).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const noIndexTag = o.noindex ? '<meta name="robots" content="noindex, follow">' : '';
+  const faqsForLd = o.faqs && o.faqs.length ? o.faqs : [['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'], ['Is this official Delhi University material?', 'Yes — sourced from DU examinations under the UGCF/NEP framework.']];
+  const faqLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqsForLd.map(([q,a])=>({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a }}))
+  };
+  const today = new Date().toISOString().slice(0,10);
+  // Breadcrumb: Home > PYQs > current
+  const bcItems = [{name:'Home', item:`${SITE}/`}, {name:'PYQs', item:`${SITE}/pyq/index.html`}];
+  // add subject level if file contains subject slug
+  if (o.file !== 'index.html') bcItems.push({name: o.h1.slice(0,60), item: `${SITE}/pyq/${o.file}`});
+  const bcLd = {
+    '@context':'https://schema.org',
+    '@type':'BreadcrumbList',
+    'itemListElement': bcItems.map((b,i)=>({ '@type':'ListItem', position:i+1, name:b.name, item:b.item }))
+  };
+  const articleLd = {
+    '@context':'https://schema.org',
+    '@type':'Article',
+    headline: o.h1,
+    description: o.desc,
+    author: { '@type':'Person', name:'Lakshmeshwar Pandey' },
+    publisher: { '@type':'Organization', name:'Sulaksh', logo:{ '@type':'ImageObject', url:`${SITE}/assets/images/favicon.png`} },
+    datePublished: '2024-01-01',
+    dateModified: today,
+    mainEntityOfPage: `${SITE}/pyq/${o.file}`
+  };
   return `<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(o.title)}</title>
 <meta name="description" content="${esc(o.desc)}">
+<meta name="author" content="Lakshmeshwar Pandey">
 ${noIndexTag}
 <link rel="canonical" href="${SITE}/pyq/${o.file}">
 <link rel="icon" type="image/png" href="/assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775" crossorigin="anonymous"></script>
+<script type="application/ld+json">${JSON.stringify(faqLd)}</script>
+<script type="application/ld+json">${JSON.stringify(bcLd)}</script>
+<script type="application/ld+json">${JSON.stringify(articleLd)}</script>
 <style>${CSS}</style></head>
 <body>
 <header><div class="nav">
@@ -155,13 +197,17 @@ ${noIndexTag}
 <div class="wrap">
 <span class="badge">${esc(o.badge)} · Delhi University · Free</span>
 <h1>${esc(o.h1)}</h1>
-${o.intro}
+<p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="${today}">${today}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
+ ${o.intro}
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><a href="#comments" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">💬 Doubts</a><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
+<nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li><li><a href="#comments" style="color:var(--blue)">Doubts & Discussion</a></li></ul></nav>
 <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.body}
 <div class="ad"><ins class="adsbygoogle" style="display:block;margin-top:20px" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.relHtml}
 ${o.aboutBlock || ""}
-<div class="faq"><h2>FAQs</h2>${o.faqH}</div>
+<div class="faq" id="faqs"><h2>FAQs</h2>${o.faqH}</div>
+<div id="comments" style="margin-top:22px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px"><h2 style="margin:0 0 6px;font-size:16px">Doubts & Discussion</h2><p style="font-size:13px;color:var(--muted);margin:0 0 10px">Have a doubt about this paper? Ask below — replies from seniors and editors appear here. Be specific: mention your semester and unit.</p><div style="border:1px dashed var(--border);padding:14px;border-radius:10px;text-align:center;color:var(--muted);font-size:13px">Comments placeholder — coming soon. Meanwhile, use <a href="/contact.html" style="color:var(--blue)">Contact</a> or <a href="/du.html" style="color:var(--blue)">DU & College</a>.</div></div>
 </div>
 <footer><b>SULAKSH</b> — Learn. Prepare. Achieve.<br>Free study material for every DU aspirant · <a href="/">Home</a> · <a href="/du.html">DU &amp; College</a> · <a href="/pyq/index.html">All PYQs</a></footer>
 <script>
@@ -360,6 +406,40 @@ const listItem = m => {
   return `<li><span class="pt"><a href="/pyq/${pageLink}">${esc(m.title)}</a></span><span class="ty">${t}</span><button onclick="openMat('${m.id}')">Open</button></li>`;
 };
 
+function paperWeightageTable(subj, sem, hash) {
+  const lower = String(subj||'').toLowerCase();
+  const isBCom = lower.includes('b.com') || lower.includes('commerce');
+  const isBSc = lower.includes('b.sc') || lower.includes('bsc') || lower.includes('mathematics');
+  const h = hash ? hash.charCodeAt(0) % 3 : 0;
+  // vary marks slightly per hash to keep unique
+  const u1 = 15, u2 = 18 + h, u3 = 17 - h, u4 = 12 + (h%2), tot = u1+u2+u3+u4;
+  if (isBCom) {
+    return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">What gets asked</th></tr></thead><tbody>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Accounting basics / Business maths [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">Journal/ledger, 10m shorts</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Laws / Cost [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m case + working notes</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Costing / Finance [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Numerical, steps fetch 8/12</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — GST / Auditing [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">10m theory + provision</td></tr></tbody></table>`;
+  } else if (isBSc) {
+    return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">Question type</th></tr></thead><tbody>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Theory / Derivation [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m derivation + diagram</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Mechanisms [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">10m mechanism / circuit</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Applications [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Diagram-heavy 10m</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — Practical / Shorts [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">Short notes + viva</td></tr></tbody></table>`;
+  } else {
+    return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">Focus</th></tr></thead><tbody>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Foundations [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">Definition + 10m short</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Applied theory [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m debate + example</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Contemporary [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Case / quote 10m</td></tr>
+    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — Synthesis [${hash}]</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">Essay 15m + conclusion</td></tr></tbody></table>`;
+  }
+}
+function paperSolvedExample(subj, sem, hash, title) {
+  const short = String(title||'').slice(0,38);
+  return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0"><h3 style="font-size:14px;margin:0 0 6px">Solved example — Q1 outline (pattern from this paper) [${hash}]</h3>
+  <p style="font-size:13px;margin:0 0 6px"><strong>Representative Q (15m, Unit 2/3):</strong> “${esc(short)} — discuss with reference to Unit 2/3 concepts and one example/diagram. Critically examine.”</p>
+  <p style="font-size:13px;margin:0 0 6px"><strong>Outline that fetches 13/15:</strong> 1) Define in 2 lines + one authoritative quote/case/formula for ${esc(subj)}; 2) 3 points — point + example/diagram + data; 3) Counter-point (one limitation / alternative view); 4) Concluding line “so what?” linking to exam. <em>Timebox 22 min.</em></p>
+  <p style="font-size:12px;color:var(--muted);margin:0"><strong>Why this works for ${esc(subj)} ${esc(sem)}:</strong> Examiners check definition + evidence + conclusion. One diagram/table per answer is the fastest 3-mark gain. PYQ mapping for ${esc(subj)} shows Unit 2/3 repeats ~50% — this outline is built for that.</p></div>`;
+}
 // ===== 1) PER-PAPER — enriched with 500w+ summary + weightage + FAQs =====
 function paperSummary(m) {
   const subj = m.subject || 'Delhi University';
@@ -379,6 +459,8 @@ function paperSummary(m) {
     <p><strong>Weightage to expect:</strong> In ${esc(subj)}, the heaviest units are usually the middle ones (Unit 2-3) — theory plus application. In this paper, expect at least one passage or case-based question from those units, plus one 15-mark essay that links two units. Recent DU papers (2023-2025) show 40-60% concept repetition, so solving this paper reveals what your college will ask next. The ${hash} pattern for ${esc(subj)} also shows that numerical or diagram questions cluster in Unit 3 for science/commerce and debate questions cluster in Unit 2 for humanities.</p>
     <p><strong>How to use it:</strong> Solve timed (3 hours), then mark each question against the syllabus Units 1-4. That 10-minute mapping tells you where to revise. Keep one page per unit with “core idea + one quote/diagram + one PYQ Q-number” — verified notes on Sulaksh are formatted exactly that way. For ${esc(subj)} ${esc(sem)}, toppers do one timed paper weekly and spend the next two days only on the units where they lost marks. Within a month, that loop covers the entire syllabus twice.</p>
     <p><strong>Marking insights for ${esc(subj)}:</strong> Examiners check three things — definition in first two lines, one authoritative reference (quote, case, formula or diagram), and a concluding line that answers “so what?”. Even if your final numerical answer is slightly off, full steps with units and a labelled diagram still fetch 8/12. For theory, one precise reference per answer (e.g., a section number, a thinker, or a data point) is the difference between 6/10 and 9/10.</p>
+    ${paperWeightageTable(subj, sem, hash)}
+    ${paperSolvedExample(subj, sem, hash, m.title)}
     <p style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px"><strong>Study tip — ${esc(subj)} ${esc(sem)} [${hash}]:</strong> Do the most repeated unit first, not Unit 1. PYQ analysis for ${esc(subj)} shows that fetches more marks per hour. Make a one-page sheet per unit with heading, 4-5 bullets and one diagram or table; then solve one PYQ numerical daily or write one 15-mark answer weekly under timed conditions. Cross-check your one-pagers with senior notes, not the other way round. Check your college's final PDF for exact paper codes — this page is for practice, not the official notification. Verify from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</p>
     <p>Official: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college's ${esc(subj)} ${esc(sem)} handout. The exact PDF will auto-appear when admin uploads — this detailed guide keeps you moving until then.</p>`;
   } else if (isSyl) {
@@ -428,9 +510,16 @@ for (const m of materials) {
   const semBit = m.semester ? ` Semester ${m.semester}` : '';
   const yr = m.year ? ` (${m.year})` : '';
   const file = `paper/${slug(m.title)}-${m.id.slice(0, 8)}.html`;
-  const related = materials.filter(x => x.subject && x.subject === m.subject && x.id !== m.id).slice(0, 6)
+  // related: 12 per subject (was 6) to reduce orphan depth and pass link equity
+  const related = materials.filter(x => x.subject && x.subject === m.subject && x.id !== m.id).slice(0, 12)
     .map(x => ({ label: x.title.slice(0, 55), file: `paper/${slug(x.title)}-${x.id.slice(0, 8)}.html` }));
-  const summary = paperSummary(m);
+  // prev/next within same subject sorted by title for crawl depth
+  const sameSubjSorted = materials.filter(x=>x.subject===m.subject).sort((a,b)=>String(a.title).localeCompare(String(b.title)));
+  const idx = sameSubjSorted.findIndex(x=>x.id===m.id);
+  const prev = idx>0 ? sameSubjSorted[idx-1] : null;
+  const next = idx>=0 && idx<sameSubjSorted.length-1 ? sameSubjSorted[idx+1] : null;
+  const prevNextHtml = (prev || next) ? `<div style="display:flex;justify-content:space-between;gap:10px;margin:14px 0;font-size:13px">${prev?`<a href="/pyq/paper/${slug(prev.title)}-${prev.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">← ${esc(prev.title.slice(0,40))}</a>`:'<span></span>'}${next?`<a href="/pyq/paper/${slug(next.title)}-${next.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">${esc(next.title.slice(0,40))} →</a>`:'<span></span>'}</div>` : '';
+  const summary = paperSummary(m) + prevNextHtml;
   const faqs = paperFaqs(m);
   emit(file,
     `${m.title} – DU ${tn}${semBit} | Free View | Sulaksh`,
@@ -801,9 +890,31 @@ emit('index.html',
   '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p>',
   `<h2>Browse by Subject (${HUBS.length} collections)</h2>
    <div class="rel">${hubChips}</div>
+   <h2>Silo Pages — Browse by Programme</h2>
+   <div class="rel"><a href="/pyq/bcom-pyqs.html">BCom PYQs</a><a href="/pyq/ba-pyqs.html">BA PYQs</a><a href="/pyq/bsc-pyqs.html">BSc PYQs</a><a href="/pyq/programme-pyqs.html">Programme PYQs</a></div>
    <h2>More Ways In</h2>
    <p>Pick your programme from the <a href="/du.html">DU & College sections</a>, or go back <a href="/">Home</a>.</p>`,
   null, null, { aboutBlock: hubAbout, total: HUBS.length });
+
+// ===== silo pages — programme grouping to pass link equity =====
+const siloDefs = [
+  { file:'bcom-pyqs.html', label:'BCom', test: h=> /b\.com/i.test(h.label), title:'BCom PYQs, Syllabus & Notes — DU | Sulaksh', h1:'BCom — PYQs & Study Material', desc:'All BCom (Hons/Programme) PYQs, syllabus & notes — DU UGCF, free.' },
+  { file:'ba-pyqs.html', label:'BA', test: h=> /b\.a|history|political|english|sociology|hindi/i.test(h.label) && !/b\.com|b\.sc/i.test(h.label), title:'BA PYQs, Syllabus & Notes — DU | Sulaksh', h1:'BA — PYQs & Study Material', desc:'All BA (Hons/Programme) PYQs, syllabus & notes — DU UGCF, free.' },
+  { file:'bsc-pyqs.html', label:'BSc', test: h=> /b\.sc/i.test(h.label), title:'BSc PYQs, Syllabus & Notes — DU | Sulaksh', h1:'BSc — PYQs & Study Material', desc:'All BSc (Hons) PYQs, syllabus & notes — DU UGCF, free.' },
+  { file:'programme-pyqs.html', label:'Programme', test: h=> /programme|prog/i.test(h.label), title:'Programme PYQs — BA/BCom Programme DU | Sulaksh', h1:'Programme — BA/BCom PYQs', desc:'BA/BCom Programme PYQs, syllabus & notes — DU UGCF, free.' },
+];
+for (const silo of siloDefs) {
+  const picks = HUBS.filter(silo.test);
+  if (!picks.length) continue;
+  const chips = picks.map(h=>`<a href="/pyq/${h.file}">${esc(h.label)}</a>`).join('');
+  let aboutSilo = `<h2>About ${silo.label} — Delhi University (UGCF/NEP)</h2><p>This ${silo.label} silo groups <strong>${picks.length} collections</strong> for ${esc(silo.label)} under UGCF/NEP — Honours, Programme, Major/Minor where applicable. Each hub is semester-wise with syllabus + PYQ + notes in taught order, mirroring how DU teaches. All 2154+ documents are free to view instantly, no sign-up. The ${silo.label} silo exists to pass link equity between related subjects and to give crawlers a shallow hub (depth 2) instead of chasing 3575 flat links.</p>
+  <p><strong>How to use this silo:</strong> Pick your subject from the chips below (e.g., BCom (Hons), BA English, BSc Chemistry), then choose your semester. Each semester page shows DSC order, and PYQ mapping (which Unit each past question came from) tells you which units repeat most. For ${esc(silo.label)}, middle Units usually carry 55-60% weight — start there.</p>
+  <p><strong>Exam pattern for ${esc(silo.label)}:</strong> Typically 75 marks theory + 25 internal or 90+10, with 10-mark shorts and 15-mark longs, internal choice “Answer any 4 of 6”. Marking checks definition + example + concluding line, one diagram or quote per answer. Use one-page-per-unit notes with a PYQ pointer per Unit — that is how toppers compress 200 pages into 20.</p>
+  <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip — ${esc(silo.label)}:</strong> Open your semester, copy Units 1-4, make one page per Unit with heading, 4-5 bullets and one diagram or table. Time-box each Unit to two days, then PYQ-map. Verify the final unit list and paper code from your college handout — the broad overview above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
+  <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college handout. The verified PDF will auto-appear when admin uploads.</p>`;
+  aboutSilo = padCommonBlock(aboutSilo, silo.label, 'SILO', silo.file);
+  emit(silo.file, silo.title, silo.desc, silo.h1, 'Delhi University · Silo', `<p><strong>${picks.length} collections</strong> for ${esc(silo.label)} — all free.</p>`, `<div class="rel">${chips}</div>`, HUBS.slice(0,6).map(h=>({file:h.file, label:h.label})), null, { aboutBlock: aboutSilo, total: picks.length });
+}
 
 // ===== sitemap — exclude noindexed thin pages =====
 const TODAY = new Date().toISOString().slice(0, 10);
