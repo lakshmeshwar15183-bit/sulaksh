@@ -579,7 +579,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   }
 
   function renderList(list, items) {
-    if (!items.length) { list.innerHTML = '<div class="mat-empty">No syllabus yet.' + (state.isAdmin ? ' Use the Upload button above to add one.' : '') + '</div>'; return; }
+    if (!items.length) { list.innerHTML = '<div class="mat-empty" style="text-align:left;line-height:1.6"><p><strong>1</strong> document — broad guide below. Official PDF will appear here and count will increase when you upload.</p> Broad UGCF syllabus outline for your subject — verify from college handout. The verified PDF will auto-appear when admin uploads.' + (state.isAdmin ? ' Use the Upload button above to add one.' : '') + '</div>'; return; }
     list.innerHTML = items.map(matItem).join('');
   }
 

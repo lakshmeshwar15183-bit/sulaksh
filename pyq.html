@@ -581,7 +581,8 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   function renderList(list, items) {
     if (!items.length) {
       const broad = getBroadPlaceholder();
-      list.innerHTML = '<div class="mat-empty" style="text-align:left;line-height:1.6">' + broad + (state.isAdmin ? '<br><br>Use the Upload button above to add the first PDF — it will appear here instantly.' : '') + '</div>';
+      // show minimum 1 (broad guide counts as 1) instead of 0
+      list.innerHTML = '<div class="mat-empty" style="text-align:left;line-height:1.6"><p><strong>1</strong> document — broad guide below. Official PDF will appear here and count will increase when you upload.</p>' + broad + (state.isAdmin ? '<br><br>Use the Upload button above to add the first PDF — it will appear here instantly.' : '') + '</div>';
       return;
     }
     list.innerHTML = items.map(matItem).join('');
