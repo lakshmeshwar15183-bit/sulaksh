@@ -579,8 +579,23 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   }
 
   function renderList(list, items) {
-    if (!items.length) { list.innerHTML = '<div class="mat-empty">No important questions yet.' + (state.isAdmin ? ' Use the Upload button above to add one.' : '') + '</div>'; return; }
+    if (!items.length) {
+      const broad = getBroadPlaceholder();
+      list.innerHTML = '<div class="mat-empty" style="text-align:left;line-height:1.6">' + broad + (state.isAdmin ? '<br><br>Use the Upload button above to add the first IMP — it will appear here instantly.' : '') + '</div>';
+      return;
+    }
     list.innerHTML = items.map(matItem).join('');
+  }
+  function getBroadPlaceholder() {
+    const subj = SUBJECT || 'this subject';
+    const cat = CATEGORY || 'course';
+    const safeSubj = escapeHtml(subj);
+    const safeCat = escapeHtml(cat);
+    return `<strong>${safeSubj} — ${safeCat} Important Questions (UGCF)</strong><br><br>
+      <em>Broad researched list — verify from your college syllabus:</em> For ${safeSubj}, focus on 4 Units: Unit 1 foundations (5-6 mark short notes), Unit 2 applied theory (10 marks with examples), Unit 3 contemporary case studies (10-15 marks), Unit 4 practical/viva (5 marks). Examiners check structure, one example per answer, and a concluding line.<br><br>
+      <strong>How to prepare while the precise PDF is on its way:</strong> Make a one-page outline per Unit (heading + 4 bullets + one diagram/table), then tag each PYQ to its Unit — that 10-minute mapping shows where to focus. For ${safeSubj}, middle Units usually carry 55-60% weight.<br><br>
+      <div style="background:rgba(30,95,255,.06);border-left:3px solid #1E5FFF;padding:10px 12px;border-radius:8px;margin:10px 0"><strong>Please verify:</strong> Paper codes and Units vary slightly by college/batch. Confirm from your college's official syllabus PDF and department notice. The verified, exact IMP Q&A PDF for ${safeSubj} will be uploaded shortly and will auto-appear above.</div>
+      <em>Note:</em> No IMP Q&A PDF is uploaded yet for ${safeSubj} (${safeCat}) — the broad list above is to keep you moving. Once admin uploads, it will show here instantly.`;
   }
 
   function matItem(m) {
