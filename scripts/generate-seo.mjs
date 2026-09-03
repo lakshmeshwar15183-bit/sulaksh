@@ -528,25 +528,41 @@ for (const [k, arr] of ncByType) {
   const [cat, subject, type] = k.split('|');
   const secKey = cat.toLowerCase() + '-' + slug(subject);
   const custom = getCustomBlock(cat, secKey);
-  const opts = custom ? { total: arr.length, aboutBlock: custom } : { total: arr.length };
+  // Detail check for SEC/VAC/GE/AEC
+  let useCustom = custom;
+  if (cat === 'SEC' && secDetailed[secKey]) useCustom = secDetailed[secKey][type === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
+  else if (cat === 'VAC' && vacDetailed[secKey]) useCustom = vacDetailed[secKey][type === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
+  else if (cat === 'GE' && geDetailed[secKey]) useCustom = geDetailed[secKey][type === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
+  else if (cat === 'AEC' && aecDetailed[secKey]) useCustom = aecDetailed[secKey][type === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
+  const displayCount = arr.length + 1; // broad guide counts as 1
+  const opts = useCustom ? { total: displayCount, aboutBlock: useCustom } : { total: arr.length, aboutBlock: custom };
+  // If we used detailed, ensure opts has detailed
+  const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom } : opts;
   emit(cat.toLowerCase() + '-' + slug(subject) + '-' + type + '.html',
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
     arr.length + ' ' + subject + ' ' + CAT_LABEL[cat] + ' ' + TYPE_LABEL[type].toLowerCase() + ' - Delhi University NEP/UGCF, free instant view.',
     subject + ' - ' + TYPE_LABEL[type] + ' (' + CAT_LABEL[cat] + ')',
-    CAT_LABEL[cat], '<p><strong>' + arr.length + '</strong> document(s).</p>',
-    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, opts);
+    CAT_LABEL[cat], `<p><strong>${displayCount}</strong> document(s) — includes broad guide + PDFs. Count increases when you upload.</p>`,
+    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, finalOpts);
 }
 for (const [k, arr] of ncByYear) {
   const [cat, subject, y] = k.split('|');
   const secKey = cat.toLowerCase() + '-' + slug(subject);
   const custom = getCustomBlock(cat, secKey);
-  const opts = custom ? { total: arr.length, aboutBlock: custom } : { total: arr.length };
+  let useCustom = custom;
+  if (cat === 'SEC' && secDetailed[secKey]) useCustom = secDetailed[secKey]['pyq_block'] || custom;
+  else if (cat === 'VAC' && vacDetailed[secKey]) useCustom = vacDetailed[secKey]['pyq_block'] || custom;
+  else if (cat === 'GE' && geDetailed[secKey]) useCustom = geDetailed[secKey]['pyq_block'] || custom;
+  else if (cat === 'AEC' && aecDetailed[secKey]) useCustom = aecDetailed[secKey]['pyq_block'] || custom;
+  const displayCount = arr.length + 1;
+  const opts = useCustom ? { total: displayCount, aboutBlock: useCustom } : { total: arr.length };
+  const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom } : { total: displayCount, aboutBlock: useCustom };
   emit(cat.toLowerCase() + '-' + slug(subject) + '-' + y + '-pyqs.html',
     subject + ' ' + CAT_LABEL[cat] + ' PYQs ' + y + ' - Delhi University | Sulaksh',
     arr.length + ' ' + subject + ' (' + CAT_LABEL[cat] + ') document(s) from ' + y + ' - Delhi University, free.',
     subject + ' - ' + y,
-    CAT_LABEL[cat], '<p>' + arr.length + ' document(s).</p>',
-    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, opts);
+    CAT_LABEL[cat], `<p><strong>${displayCount}</strong> document(s) — includes broad guide + PDFs.</p>`,
+    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, finalOpts);
 }
 for (const [k, v] of ncCombined) {
   if (v.items.length < 2) continue;
@@ -561,7 +577,7 @@ for (const [k, v] of ncCombined) {
     '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>', null, { aboutBlock: aboutNC, total: v.items.length });
 }
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
-for (const [k, v] of ncCombined) {
+  for (const [k, v] of ncCombined) {
   const secKey = v.cat.toLowerCase() + '-' + slug(v.subject);
   const baseCustom = getCustomBlock(v.cat, secKey);
   const hasDetailed = (v.cat === 'SEC' && secDetailed[secKey]) || (v.cat === 'VAC' && vacDetailed[secKey]) || (v.cat === 'GE' && geDetailed[secKey]) || (v.cat === 'AEC' && aecDetailed[secKey]);
@@ -577,6 +593,8 @@ for (const [k, v] of ncCombined) {
     else if (v.cat === 'VAC' && vacDetailed[secKey]) useCustom = vacDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || baseCustom;
     else if (v.cat === 'GE' && geDetailed[secKey]) useCustom = geDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || baseCustom;
     else if (v.cat === 'AEC' && aecDetailed[secKey]) useCustom = aecDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || baseCustom;
+    // Show at least 1 (the broad guide counts as 1), will increase when PDFs are uploaded (arr length is 0 here, so show 1)
+    const displayCount = 1;
     const impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
     // For SEC imp, the detailed imp_block already contains the questions, so don't duplicate
     let body;
@@ -590,11 +608,11 @@ for (const [k, v] of ncCombined) {
       'Broad overview of ' + v.subject + ' (' + CAT_LABEL[v.cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon. Verify from your college.',
       v.subject + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[v.cat] + ')',
       CAT_LABEL[v.cat],
-      '<p><strong>0</strong> document(s) currently listed — broad guide below. Official IMP PDF will appear here once uploaded.</p>',
+      `<p><strong>${displayCount}</strong> document(s) — broad guide below. Official PDF will appear here and count will increase when you upload.</p>`,
       body,
       null,
       [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
-      { total: 0, aboutBlock: useCustom }
+      { total: displayCount, aboutBlock: useCustom }
     );
   }
 }
@@ -625,16 +643,17 @@ for (const secKey of Object.keys(allOverviews)) {
       impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
       body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
     }
+    const displayCount = 1;
     emit(file,
       name + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
       'Broad overview of ' + name + ' (' + CAT_LABEL[cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon.',
       name + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[cat] + ')',
       CAT_LABEL[cat],
-      '<p><strong>0</strong> document(s) currently listed — broad guide below. Official IMP PDF will appear here once uploaded.</p>',
+      `<p><strong>${displayCount}</strong> document(s) — broad guide below. Official PDF will appear here and count will increase when you upload.</p>`,
       body,
       null,
       [['Is this the exact IMP?', 'Not yet — broad researched list. Verified PDF coming soon.']],
-      { total: 0, aboutBlock: custom }
+      { total: displayCount, aboutBlock: custom }
     );
   }
 }
