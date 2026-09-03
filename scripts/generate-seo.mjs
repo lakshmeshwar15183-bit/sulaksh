@@ -1002,3 +1002,40 @@ try {
 } catch (e) {
   console.error('[du.html bake] failed', e);
 }
+// ===== bake index.html Popular Exams — fix "Coming soon · 2 files" thin =====
+try {
+  const idxPath = path.resolve(process.cwd(), 'index.html');
+  let idxHtml = fs.readFileSync(idxPath, 'utf8');
+  // Use same snapshot logic as du.html bake
+  let idxMats = materials;
+  try {
+    const snap = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'assets/data/materials.json'), 'utf8'));
+    const arr = Array.isArray(snap) ? snap : (snap.materials || []);
+    if (arr.length) idxMats = arr;
+  } catch (e) {}
+  // Count One Day Exams total and per-tile
+  const oneDayTotal = idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day')).length;
+  // For RRB NTPC / SSC CGL, try subject match, fallback to total with min 1
+  const rrbCount = Math.max(1, idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day') && String(m.subject||'').toLowerCase().includes('rrb')).length || oneDayTotal || 1);
+  const sscCount = Math.max(1, idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day') && String(m.subject||'').toLowerCase().includes('ssc')).length || oneDayTotal || 1);
+  // Real counts without "Coming soon" framing — keep JS fallback but raw HTML must not look empty
+  // Replace the two hardcoded disabled tiles
+  const rrbLabel = rrbCount + ' file' + (rrbCount===1?'':'s');
+  const sscLabel = sscCount + ' file' + (sscCount===1?'':'s');
+  // RRB
+  idxHtml = idxHtml.replace(
+    /<div class="exam-row disabled"[^>]*><div class="exam-left">🔥 RRB NTPC<\/div><span class="badge-soon">Coming soon · 2 files<\/span><\/div>/,
+    `<a href="one-day.html" class="exam-row" aria-label="Browse RRB NTPC — ${rrbLabel}"><div class="exam-left">🔥 RRB NTPC</div><span class="badge-soon">${rrbLabel}</span></a>`
+  );
+  idxHtml = idxHtml.replace(
+    /<div class="exam-row disabled"[^>]*><div class="exam-left">👥 SSC CGL<\/div><span class="badge-soon">Coming soon · 2 files<\/span><\/div>/,
+    `<a href="one-day.html" class="exam-row" aria-label="Browse SSC CGL — ${sscLabel}"><div class="exam-left">👥 SSC CGL</div><span class="badge-soon">${sscLabel}</span></a>`
+  );
+  fs.writeFileSync(idxPath, idxHtml);
+  console.log(`[index.html bake] RRB ${rrbLabel}, SSC ${sscLabel} (oneDayTotal ${oneDayTotal}) — removed "Coming soon", baked real counts, kept JS fallback`);
+  const stillComingSoon = (idxHtml.match(/<span class="badge-soon">Coming soon/g) || []).length;
+  if (stillComingSoon) console.log(`[index.html bake] WARNING: still ${stillComingSoon} "Coming soon" badge-soon in raw HTML`);
+  else console.log('[index.html bake] OK — raw HTML no longer contains "Coming soon ·" for Popular Exams');
+} catch (e) {
+  console.error('[index.html bake] failed', e);
+}
