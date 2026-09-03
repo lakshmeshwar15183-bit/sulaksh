@@ -6,7 +6,7 @@ import path from 'node:path';
 const API = process.env.SULAKSH_API || 'https://sulaksh-backend-production.up.railway.app';
 const SITE = 'https://sulaksh.online';
 const OUT = path.resolve(process.cwd(), 'pyq');
-let secOverviews = {}, vacOverviews = {}, geOverviews = {}, aecOverviews = {};
+let secOverviews = {}, vacOverviews = {}, geOverviews = {}, aecOverviews = {}, impQuestions = {};
 try {
   const base = path.dirname(new URL(import.meta.url).pathname);
   secOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'sec-overviews.json'), 'utf8'));
@@ -23,6 +23,10 @@ try {
   const base = path.dirname(new URL(import.meta.url).pathname);
   aecOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'aec-overviews.json'), 'utf8'));
 } catch (e) { /* no AEC overviews */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  impQuestions = JSON.parse(fs.readFileSync(path.resolve(base, 'imp-questions.json'), 'utf8'));
+} catch (e) { /* no imp questions */ }
 const getSecBlock = (slugKey) => secOverviews[slugKey]?.block || null;
 const getVacBlock = (slugKey) => vacOverviews[slugKey]?.block || null;
 const getGeBlock = (slugKey) => geOverviews[slugKey]?.block || null;
@@ -33,6 +37,23 @@ const getCustomBlock = (cat, slugKey) => {
   if (cat === 'GE') return getGeBlock(slugKey);
   if (cat === 'AEC') return getAecBlock(slugKey);
   return null;
+};
+const getImpQuestionsBlock = (slugKey) => {
+  const data = impQuestions[slugKey];
+  if (!data || !data.questions || !data.questions.length) return '';
+  const byUnit = {};
+  for (const q of data.questions) {
+    if (!byUnit[q.unit]) byUnit[q.unit]=[];
+    byUnit[q.unit].push(q.q);
+  }
+  let html = `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin:14px 0"><h3 style="margin:0 0 8px;font-size:15px">Important Questions — ${esc(data.name)} (Broad list — verify from college)</h3><p style="color:var(--muted);font-size:13px;margin:0 0 10px">These are broad, researched important questions based on the UGCF syllabus Units. Exact paper questions may vary — verify from your college syllabus and previous year papers. Precise PDF will be uploaded shortly and will auto-appear above.</p>`;
+  for (const unit of Object.keys(byUnit).sort()) {
+    html += `<h4 style="margin:10px 0 6px;font-size:13px;color:var(--navy)">${esc(unit)}</h4><ul style="margin:0 0 8px 18px;font-size:13px">`;
+    for (const q of byUnit[unit]) html += `<li style="margin:4px 0">${esc(q)}</li>`;
+    html += `</ul>`;
+  }
+  html += `<p style="font-size:12px;color:var(--muted);margin-top:8px"><em>Note:</em> This is a broad researched list to help you start. The verified, exact IMP Q&A PDF for ${esc(data.name)} will be uploaded shortly — once admin uploads, it will automatically show above with an <em>IMP Q</em> tag. Verify from your college's official syllabus PDF.</p></div>`;
+  return html;
 };
 // Bump this when you edit view.html so the cached page is bypassed (the "?v="
 // makes a fresh cache key, just like the auth JS). Resync after bumping.
@@ -533,15 +554,17 @@ for (const [k, v] of ncCombined) {
     if (existingTypes.has(t)) continue;
     const file = v.cat.toLowerCase() + '-' + slug(v.subject) + '-' + t + '.html';
     if (pages.has(file)) continue;
+    const impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
+    const body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet for this section — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>';
     emit(file,
       v.subject + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[v.cat] + ' | Free | Sulaksh',
       'Broad overview of ' + v.subject + ' (' + CAT_LABEL[v.cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon. Verify from your college.',
       v.subject + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[v.cat] + ')',
       CAT_LABEL[v.cat],
       '<p><strong>0</strong> document(s) currently listed — broad guide below. Official IMP PDF will appear here once uploaded.</p>',
-      '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>',
+      body,
       null,
-      [['Is this the exact IMP?', 'Not yet — this page shows a broad UGCF outline. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the syllabus units above and the PYQs; the IMP will supplement them.']],
+      [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
       { total: 0, aboutBlock: custom }
     );
   }
@@ -560,15 +583,17 @@ for (const secKey of Object.keys(allOverviews)) {
     if (!hasYearFile) continue;
     const custom = getCustomBlock(cat, secKey);
     if (!custom) continue;
+    const impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
+    const body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
     emit(file,
       name + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
       'Broad overview of ' + name + ' (' + CAT_LABEL[cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon.',
       name + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[cat] + ')',
       CAT_LABEL[cat],
       '<p><strong>0</strong> document(s) currently listed — broad guide below. Official IMP PDF will appear here once uploaded.</p>',
-      '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>',
+      body,
       null,
-      [['Is this the exact IMP?', 'Not yet — broad outline. Verified PDF coming soon.']],
+      [['Is this the exact IMP?', 'Not yet — broad researched list. Verified PDF coming soon.']],
       { total: 0, aboutBlock: custom }
     );
   }
