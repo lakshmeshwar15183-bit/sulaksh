@@ -989,21 +989,12 @@ try {
       const escS = s.replace(/'/g, "\\'");
       return `<button class="core-card" onclick="openCoreSubject('${escS}')"><div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span style="font-size:10.5px;font-weight:800;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:100px;letter-spacing:.5px;">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span></button>`;
     }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>`;
-    // Idempotent: replace empty placeholder OR already-baked grid
+    // Idempotent: normalize any already-baked grid back to empty, then bake fresh (prevents duplication on re-run)
+    // This handles the case where du.html was already baked with 10 cards — reset to empty first
+    const normalized = duHtml.replace(/<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>\s*<\/div>\s*<!-- 2\. Common/, '<div class="core-grid" id="coreGrid"></div>\n  </div>\n\n  <!-- 2. Common');
+    if (normalized !== duHtml) { duHtml = normalized; console.log('[du.html bake] normalized already-baked coreGrid to empty'); }
     const gridReEmpty = /<div class="core-grid" id="coreGrid"><\/div>/;
-    const gridReBaked = /<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>\s*<\/div>\s*<div class="du-sec">/;
     if (gridReEmpty.test(duHtml)) { duHtml = duHtml.replace(gridReEmpty, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] baked coreGrid with', CORE_SUBJECTS_BAKE.length+1, 'cards'); }
-    else if (duHtml.includes('id="coreGrid"')) {
-      // already baked — replace inner to keep counts fresh on re-run
-      const gridReAny = /<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>(?=\s*<\/div>\s*<div class="du-sec">)/;
-      // fallback: replace first occurrence
-      if (gridReAny.test(duHtml)) { duHtml = duHtml.replace(gridReAny, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] refreshed coreGrid'); }
-      else {
-        // final fallback: simple replace
-        const simpleRe = /<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>/;
-        if (simpleRe.test(duHtml)) { duHtml = duHtml.replace(simpleRe, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; }
-      }
-    }
   } catch (e) { console.log('[du.html bake] coreGrid bake failed', e.message); }
   // Write back
   fs.writeFileSync(duPath, duHtml);
