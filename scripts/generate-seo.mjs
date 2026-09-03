@@ -313,7 +313,14 @@ function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
     <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college's ${esc(s)} syllabus handout.</p>`;
 }
 function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
-  if (pages.has(file)) return;
+  if (file === 'ge-public-finance-study-material.html') {
+    console.log(`[EMIT DEBUG] ${file} hasCustom=${!!(opts && opts.aboutBlock)} len=${opts && opts.aboutBlock ? opts.aboutBlock.length : 0} total=${opts?.total} title=${title.slice(0,30)}`);
+    console.log(new Error().stack.split('\n').slice(1,5).join(' | '));
+  }
+  if (pages.has(file)) {
+    if (file === 'ge-public-finance-study-material.html') console.log(`[EMIT DEBUG] skip duplicate ${file} hasCustom=${!!(opts && opts.aboutBlock)}`);
+    return;
+  }
   const hasCustom = opts && opts.aboutBlock;
   const isThin = opts && opts.total !== undefined && opts.total < 3 && !hasCustom;
   if (isThin) noIndexFiles.add(file);
@@ -446,18 +453,19 @@ for (const [key, semMap] of bySubjTrack) {
   for (const [semName, arr] of semMap) {
     const semNum = (semName.match(/\d+/) || [''])[0];
     const baseSlug = `${slug(subject)}-${slug(track)}-${semNum ? 'sem-' + semNum + '-' : ''}`;
-    const semBlock = coreSemesterBlock(subject, track, semName, null, null, arr.length);
+    const displayCountSem = arr.length + 1;
+    const semBlock = coreSemesterBlock(subject, track, semName, null, null, displayCountSem);
     emit(`${baseSlug}pyqs.html`,
       `${subject} ${track} ${semName} PYQs & Material – DU | Sulaksh`,
       `${arr.length} documents for ${subject} ${track.toLowerCase()} ${semName.toLowerCase()} — Delhi University. Free instant view.`,
       `${subject} ${track} — ${semName}`,
       'Delhi University · Free',
-      `<p>All <strong>${arr.length}</strong> documents for <strong>${semName}</strong>.</p>`,
+      `<p><strong>${displayCountSem}</strong> document(s) — includes broad guide + PDFs for <strong>${semName}</strong>.</p>`,
       `<ul class="plist">${arr.map(listItem).join('')}</ul>`,
       [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
         const n2 = (s2.match(/\d+/) || [''])[0];
         return { file: `${slug(subject)}-${slug(track)}-${n2 ? 'sem-' + n2 + '-' : ''}pyqs.html`, label: `${subject} ${track} ${s2}` };
-      }), null, { total: arr.length, aboutBlock: semBlock });
+      }), null, { total: displayCountSem, aboutBlock: semBlock });
     const types = new Map(); const byYr = new Map();
     for (const m of arr) {
       const tt = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus'
@@ -468,22 +476,24 @@ for (const [key, semMap] of bySubjTrack) {
     }
     const TN = { pyq: 'PYQ', syllabus: 'Syllabus', imp: 'Important Questions', notes: 'Notes' };
     for (const [t, arr2] of types) {
-      const typeBlock = coreSemesterBlock(subject, track, semName, TN[t], null, arr2.length);
+      const displayCountType = arr2.length + 1;
+      const typeBlock = coreSemesterBlock(subject, track, semName, TN[t], null, displayCountType);
       emit(`${baseSlug}${t}.html`,
         `${subject} ${track} ${semName} ${TN[t]} – DU Free | Sulaksh`,
         `${arr2.length} documents — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
-        'Delhi University · Free', `<p>${arr2.length} document(s).</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length, aboutBlock: typeBlock });
+        'Delhi University · Free', `<p><strong>${displayCountType}</strong> document(s) — includes broad guide + PDFs for ${TN[t]}.</p>`,
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: displayCountType, aboutBlock: typeBlock });
     }
     for (const [y, arr2] of byYr) {
-      const yrBlock = coreSemesterBlock(subject, track, semName, null, y, arr2.length);
+      const displayCountYr = arr2.length + 1;
+      const yrBlock = coreSemesterBlock(subject, track, semName, null, y, displayCountYr);
       emit(`${baseSlug}${y}-pyqs.html`,
         `${subject} ${track} ${semName} PYQs ${y} – Delhi University | Sulaksh`,
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
-        'Delhi University · Free', `<p>${arr2.length} document(s).</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length, aboutBlock: yrBlock });
+        'Delhi University · Free', `<p><strong>${displayCountYr}</strong> document(s) — includes broad guide + PDFs for ${y}.</p>`,
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: displayCountYr, aboutBlock: yrBlock });
     }
   }
   const typesAll = new Map();
@@ -495,13 +505,14 @@ for (const [key, semMap] of bySubjTrack) {
   }
   const TNA = { pyq: 'PYQ', syllabus: 'Syllabus', imp: 'Important Questions', notes: 'Notes' };
   for (const [t, arr] of typesAll) {
-    const allBlock = coreSemesterBlock(subject, track, "All Semesters", TNA[t], null, arr.length);
+    const displayCountAll = arr.length + 1;
+    const allBlock = coreSemesterBlock(subject, track, "All Semesters", TNA[t], null, displayCountAll);
     emit(`${slug(subject)}-${slug(track)}-${t}-all.html`,
       `All ${subject} ${track} ${TNA[t]} – Across Semesters | Sulaksh`,
       `${arr.length} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
       `${subject} ${track} — All ${TNA[t]}`,
-      'Delhi University · Free', `<p>${arr.length} document(s).</p>`,
-      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: arr.length, aboutBlock: allBlock });
+      'Delhi University · Free', `<p><strong>${displayCountAll}</strong> document(s) — includes broad guide + PDFs across semesters.</p>`,
+      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: displayCountAll, aboutBlock: allBlock });
   }
 }
 
@@ -566,15 +577,22 @@ for (const [k, arr] of ncByYear) {
 }
 for (const [k, v] of ncCombined) {
   if (v.items.length < 2) continue;
+  if (v.subject === 'Public Finance') console.log(`[NC DEBUG] ${v.subject} items=${v.items.length} aboutNC len=${uniqueAboutBlock(v.subject, v.label, v.items.length, 1).length}`);
   HUBS.push({ file: v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html', label: `${v.subject} (${v.label})` });
   const aboutNC = uniqueAboutBlock(v.subject, v.label, v.items.length, 1);
+  if (v.subject === 'Public Finance') {
+    console.log(`[NC DEBUG2] aboutNC len=${aboutNC.length} snippet=${aboutNC.slice(0,50)}`);
+    console.log(`[NC DEBUG3] emit opts aboutBlock len=${aboutNC.length} total=${v.items.length} file=${v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html'}`);
+  }
+  console.log(`[NC EMIT] ${v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html'} aboutNC len=${aboutNC.length} total=${v.items.length} hasCustom=${!!aboutNC} file=${v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html'}`);
+  console.log(`[NC EMIT2] opts aboutBlock len=${aboutNC.length} total=${v.items.length}`);
   emit(v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html',
     v.subject + ' Study Material - ' + v.label + ' PYQs, Syllabus & Notes | Sulaksh',
     v.items.length + ' ' + v.subject + ' documents (' + v.label + ') - PYQs, syllabus & notes. Delhi University. Free.',
     v.subject + ' - Complete Study Material (' + v.label + ')',
     v.label,
     '<p><strong>' + v.items.length + ' documents</strong> - everything available for this course.</p>',
-    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>', null, { aboutBlock: aboutNC, total: v.items.length });
+    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>', null, null, { aboutBlock: aboutNC, total: v.items.length });
 }
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
   for (const [k, v] of ncCombined) {
