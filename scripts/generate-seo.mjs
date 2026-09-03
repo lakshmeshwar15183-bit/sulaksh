@@ -927,3 +927,78 @@ fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset
 
 console.log('TOTAL SITEMAP URLs:', 6 + sitemapPages.length, `(excluded ${noIndexFiles.size} thin <3)`);
 console.log('NoIndex thin files:', [...noIndexFiles].slice(0,10).join(', ') + (noIndexFiles.size>10?' ...':''));
+
+// ===== bake du.html counts at build time — fix "0 files" thin in raw HTML =====
+// Keep JS fetch as live fallback, but raw HTML must already contain real numbers
+// so Google's crawler never indexes 0. Reads the 15-min snapshot if present,
+// otherwise falls back to the live API `materials` already fetched.
+try {
+  let duMats = materials; // live API
+  // Prefer the committed snapshot so build is deterministic even if Railway sleeps
+  try {
+    const snapPath = path.resolve(process.cwd(), 'assets/data/materials.json');
+    const raw = fs.readFileSync(snapPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    const arr = Array.isArray(parsed) ? parsed : (parsed.materials || []);
+    if (arr.length) {
+      duMats = arr;
+      console.log(`[du.html bake] using snapshot ${snapPath} (${arr.length} mats)`);
+    }
+  } catch (e) { console.log('[du.html bake] snapshot not usable, using live API mats', e.message); }
+  // Filter to DU & College only, like du.html's JS does
+  const duFiltered = duMats.filter(m => String(m.exam||'').toLowerCase() === 'du & college');
+  const countByCat = {};
+  for (const cat of ['SEC','VAC','AEC','GE']) {
+    countByCat[cat] = duFiltered.filter(m => String(m.category||'').toUpperCase() === cat).length;
+  }
+  // Core subjects — same lists as du.html
+  const CORE_SUBJECTS_BAKE = ['English','History','Economics','Political Science','Mathematics','Hindi','B.Com (Hons)','Sociology','B.Sc.'];
+  const BSC_SUBJECTS_BAKE = ['B.Sc. (Hons) Chemistry','B.Sc. (Hons) Physics','B.Sc. (Hons) Zoology','B.Sc. (Hons) Botany','B.Sc. (Hons) Geology','B.Sc. (Hons) Statistics','B.Sc. (Hons) Food Technology','B.Sc. (Hons) Computer Science','B.Sc. (Hons) Biological Sciences','B.Sc. (Hons) Home Science','B.Sc. (Hons) Environmental Science'];
+  const coreCounts = {};
+  for (const s of CORE_SUBJECTS_BAKE) {
+    let files;
+    if (s === 'B.Sc.') files = duFiltered.filter(m => String(m.category||'').toUpperCase()==='CORE' && BSC_SUBJECTS_BAKE.includes(String(m.subject||'')));
+    else files = duFiltered.filter(m => String(m.category||'').toUpperCase()==='CORE' && String(m.subject||'')===s);
+    coreCounts[s] = files.length;
+  }
+  // Also programme catch-all
+  const progFiles = ['BCom prg','BAprog'];
+  let progCount = 0;
+  for (const pf of progFiles) progCount += duFiltered.filter(m => String(m.category||'').toUpperCase()==='CORE' && String(m.subject||'')===pf).length;
+  // Read du.html, replace hardcoded 0 files + bake coreGrid
+  const duPath = path.resolve(process.cwd(), 'du.html');
+  let duHtml = fs.readFileSync(duPath, 'utf8');
+  let replaced = 0;
+  for (const cat of ['SEC','VAC','AEC','GE']) {
+    const n = countByCat[cat] ?? 0;
+    const label = n + ' file' + (n===1?'':'s');
+    const re = new RegExp(`(<span class="cat-count" id="catCount-${cat}">)[^<]*?(</span>)`);
+    if (re.test(duHtml)) { duHtml = duHtml.replace(re, `$1${label}$2`); replaced++; }
+  }
+  // Bake coreGrid — raw HTML was <div id="coreGrid"></div> filled only by JS
+  // Build static fallback cards with real counts so Google sees numbers without JS
+  try {
+    const CORE_META_BAKE = {
+      'English':{ico:'📖',tag:'Core Queue'},'History':{ico:'🏛️',tag:'Core Queue'},'Economics':{ico:'📊',tag:'Core Queue'},'Political Science':{ico:'⚖️',tag:'Core Queue'},'Mathematics':{ico:'➗',tag:'Core Queue'},'Hindi':{ico:'📗',tag:'Core Queue'},'B.Com (Hons)':{ico:'💼',tag:'Core Queue'},'Sociology':{ico:'👥',tag:'Core Queue'},'B.Sc.':{ico:'🔬',tag:'BSc Hons'}
+    };
+    const progTagMap = {'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Mathematics':'BA/BSc','Sociology':'BA','B.Sc.':'BSc'};
+    const coreGridHtml = CORE_SUBJECTS_BAKE.map(s=>{
+      const meta = CORE_META_BAKE[s] || {ico:'📘',tag:'Core'};
+      const progTag = progTagMap[s] || '';
+      const n = coreCounts[s] ?? 0;
+      const escS = s.replace(/'/g, "\\'");
+      return `<button class="core-card" onclick="openCoreSubject('${escS}')"><div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span style="font-size:10.5px;font-weight:800;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:100px;letter-spacing:.5px;">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span></button>`;
+    }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>`;
+    const gridRe = /<div class="core-grid" id="coreGrid"><\/div>/;
+    if (gridRe.test(duHtml)) { duHtml = duHtml.replace(gridRe, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] baked coreGrid with', CORE_SUBJECTS_BAKE.length+1, 'cards'); }
+  } catch (e) { console.log('[du.html bake] coreGrid bake failed', e.message); }
+  // Write back
+  fs.writeFileSync(duPath, duHtml);
+  console.log(`[du.html bake] injected ${replaced} category/core counts:`, JSON.stringify({...countByCat, ...coreCounts, progCount}));
+  // Verify — check exact ">0 files</span>" not "80 files"
+  const check = (duHtml.match(/catCount-(SEC|VAC|AEC|GE)">0 files<\/span>/g) || []).length;
+  if (check) console.log(`[du.html bake] WARNING: still ${check} hardcoded 0 files remain`);
+  else console.log('[du.html bake] OK — raw HTML now contains real numbers, JS remains as live fallback');
+} catch (e) {
+  console.error('[du.html bake] failed', e);
+}
