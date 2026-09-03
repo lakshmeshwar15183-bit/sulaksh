@@ -989,15 +989,29 @@ try {
       const escS = s.replace(/'/g, "\\'");
       return `<button class="core-card" onclick="openCoreSubject('${escS}')"><div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span style="font-size:10.5px;font-weight:800;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:100px;letter-spacing:.5px;">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span></button>`;
     }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>`;
-    const gridRe = /<div class="core-grid" id="coreGrid"><\/div>/;
-    if (gridRe.test(duHtml)) { duHtml = duHtml.replace(gridRe, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] baked coreGrid with', CORE_SUBJECTS_BAKE.length+1, 'cards'); }
+    // Idempotent: replace empty placeholder OR already-baked grid
+    const gridReEmpty = /<div class="core-grid" id="coreGrid"><\/div>/;
+    const gridReBaked = /<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>\s*<\/div>\s*<div class="du-sec">/;
+    if (gridReEmpty.test(duHtml)) { duHtml = duHtml.replace(gridReEmpty, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] baked coreGrid with', CORE_SUBJECTS_BAKE.length+1, 'cards'); }
+    else if (duHtml.includes('id="coreGrid"')) {
+      // already baked — replace inner to keep counts fresh on re-run
+      const gridReAny = /<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>(?=\s*<\/div>\s*<div class="du-sec">)/;
+      // fallback: replace first occurrence
+      if (gridReAny.test(duHtml)) { duHtml = duHtml.replace(gridReAny, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] refreshed coreGrid'); }
+      else {
+        // final fallback: simple replace
+        const simpleRe = /<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>/;
+        if (simpleRe.test(duHtml)) { duHtml = duHtml.replace(simpleRe, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; }
+      }
+    }
   } catch (e) { console.log('[du.html bake] coreGrid bake failed', e.message); }
   // Write back
   fs.writeFileSync(duPath, duHtml);
   console.log(`[du.html bake] injected ${replaced} category/core counts:`, JSON.stringify({...countByCat, ...coreCounts, progCount}));
-  // Verify — check exact ">0 files</span>" not "80 files"
+  // Hard guard: fail build if 0 files still present (prevents regression)
   const check = (duHtml.match(/catCount-(SEC|VAC|AEC|GE)">0 files<\/span>/g) || []).length;
-  if (check) console.log(`[du.html bake] WARNING: still ${check} hardcoded 0 files remain`);
+  const checkCoreBadgeZero = (duHtml.match(/core-badge">0 files<\/span>/g) || []).length;
+  if (check || checkCoreBadgeZero) { console.error(`[du.html bake] ERROR: still ${check} catCount 0 and ${checkCoreBadgeZero} core-badge 0 remain — failing build to prevent thin regression`); process.exit(1); }
   else console.log('[du.html bake] OK — raw HTML now contains real numbers, JS remains as live fallback');
 } catch (e) {
   console.error('[du.html bake] failed', e);
@@ -1019,22 +1033,22 @@ try {
   const rrbCount = Math.max(1, idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day') && String(m.subject||'').toLowerCase().includes('rrb')).length || oneDayTotal || 1);
   const sscCount = Math.max(1, idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day') && String(m.subject||'').toLowerCase().includes('ssc')).length || oneDayTotal || 1);
   // Real counts without "Coming soon" framing — keep JS fallback but raw HTML must not look empty
-  // Replace the two hardcoded disabled tiles
+  // Idempotent: replace either hardcoded disabled "Coming soon · 2 files" OR already-baked "2 files"
   const rrbLabel = rrbCount + ' file' + (rrbCount===1?'':'s');
   const sscLabel = sscCount + ' file' + (sscCount===1?'':'s');
-  // RRB
+  // RRB — matches disabled div OR baked a tag
   idxHtml = idxHtml.replace(
-    /<div class="exam-row disabled"[^>]*><div class="exam-left">🔥 RRB NTPC<\/div><span class="badge-soon">Coming soon · 2 files<\/span><\/div>/,
+    /<(div|a)[^>]*><div class="exam-left">🔥 RRB NTPC<\/div><span class="badge-soon">[^<]*<\/span><\/(div|a)>/,
     `<a href="one-day.html" class="exam-row" aria-label="Browse RRB NTPC — ${rrbLabel}"><div class="exam-left">🔥 RRB NTPC</div><span class="badge-soon">${rrbLabel}</span></a>`
   );
   idxHtml = idxHtml.replace(
-    /<div class="exam-row disabled"[^>]*><div class="exam-left">👥 SSC CGL<\/div><span class="badge-soon">Coming soon · 2 files<\/span><\/div>/,
+    /<(div|a)[^>]*><div class="exam-left">👥 SSC CGL<\/div><span class="badge-soon">[^<]*<\/span><\/(div|a)>/,
     `<a href="one-day.html" class="exam-row" aria-label="Browse SSC CGL — ${sscLabel}"><div class="exam-left">👥 SSC CGL</div><span class="badge-soon">${sscLabel}</span></a>`
   );
   fs.writeFileSync(idxPath, idxHtml);
   console.log(`[index.html bake] RRB ${rrbLabel}, SSC ${sscLabel} (oneDayTotal ${oneDayTotal}) — removed "Coming soon", baked real counts, kept JS fallback`);
   const stillComingSoon = (idxHtml.match(/<span class="badge-soon">Coming soon/g) || []).length;
-  if (stillComingSoon) console.log(`[index.html bake] WARNING: still ${stillComingSoon} "Coming soon" badge-soon in raw HTML`);
+  if (stillComingSoon) { console.error(`[index.html bake] ERROR: still ${stillComingSoon} "Coming soon" badge-soon in raw HTML — failing build`); process.exit(1); }
   else console.log('[index.html bake] OK — raw HTML no longer contains "Coming soon ·" for Popular Exams');
 } catch (e) {
   console.error('[index.html bake] failed', e);
