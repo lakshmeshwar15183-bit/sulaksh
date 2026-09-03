@@ -205,7 +205,75 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p>Recent years (2023-2026) match the current UGCF pattern most closely. Please verify the final unit list from your college PDF — this reference overview will be replaced when the official file is uploaded.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a></p>`;
   }
+  block += `<div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this collection:</strong> Start with the official DU syllabus PDF — copy the Unit titles in order, then make one page per Unit with heading, 4-5 bullet points and one diagram or table. This one-page-per-unit format mirrors DU's marking scheme. For numerical papers, keep a formula sheet and solve one PYQ numerical daily; for theory, write one 15-mark answer weekly. Use senior notes only to cross-check your one-pagers. Time-box each Unit to two days and revise with the 10-minute PYQ mapping technique described above. Verify from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>`;
   return block;
+}
+function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
+  const s = String(subject || '').trim();
+  const t = String(track || '').trim();
+  const lower = s.toLowerCase();
+  const isBCom = lower.includes('b.com') || lower.includes('commerce');
+  const isEnglish = lower.includes('english');
+  const isHistory = lower.includes('history');
+  const isPolsci = lower.includes('political');
+  const isEco = lower.includes('economics');
+  const isBSc = lower.includes('b.sc') || lower.includes('bsc') || lower.includes('mathematics') || lower.includes('physics') || lower.includes('chemistry') || lower.includes('botany') || lower.includes('zoology');
+  const title = `${s} ${t} — ${semName}${typeLabel ? ' ' + typeLabel : ''}${year ? ' ' + year : ''}`.trim();
+  const context = `${semName}${typeLabel ? ' ' + typeLabel : ''}${year ? ' ' + year : ''}`.trim() || 'this collection';
+  let intro, units, exam, marking, howto;
+  if (isEnglish) {
+    intro = `${esc(s)} ${esc(t)} at DU (NEP/UGCF) for ${esc(semName)} is built around close reading of primary texts. This page <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> organises ${esc(semName.toLowerCase())} ${typeLabel ? typeLabel.toLowerCase() : 'material'} in DU's taught order.`;
+    units = `<li><strong>Unit 1:</strong> Primary texts — e.g., Chaucer, Donne, Shakespeare (form-aware reading)</li><li><strong>Unit 2:</strong> Literary history & close reading — passage-based analysis</li><li><strong>Unit 3:</strong> Theory — e.g., Post-colonial, Feminist, Cultural studies</li><li><strong>Unit 4:</strong> Essay & long answers — thesis + textual reference</li>`;
+    exam = `Most English papers are 90 theory + 10 internal or 75+25. Questions are 10 marks (short) and 15 marks (long), with passage-based questions where 1-2 quoted lines matter.`;
+    marking = `Examiners reward accurate textual reference, a clear thesis in first 3 lines, and awareness of form. One-page-per-text sheet with “what's said / how it's said / one quote” maps to rubric.`;
+    howto = `Open syllabus Units 1-4 alongside the 3 most recent PYQs and mark which Unit each question came from. If this ${typeLabel ? typeLabel.toLowerCase() : 'section'} is empty or shows only one PDF, the broad outline above is your interim guide — the precise semester IMP will auto-appear when admin uploads.`;
+  } else if (isHistory) {
+    intro = `History ${esc(t)} at DU for ${esc(semName)} spans Ancient to Contemporary. This <strong>${esc(context)}</strong> page with <strong>${total} document(s)</strong> groups syllabus and PYQs chronologically.`;
+    units = `<li><strong>Unit 1:</strong> Sources & historiography — epigraphy, archaeology, literary</li><li><strong>Unit 2:</strong> Polity & economy — e.g., Mauryan state, Sultanate, 1857</li><li><strong>Unit 3:</strong> Society & culture — Bhakti, gender, caste</li><li><strong>Unit 4:</strong> Map & long essays — locate 4 sites + historiographical debate</li>`;
+    exam = `Typically 75 written + 25 internal. Map-based (10 marks), two 15-mark essays, three 10-mark shorts. Answers without source discussion rarely cross 6/10.`;
+    marking = `Chronology, one primary source per answer, and concluding “why this debate matters” line are checked.`;
+    howto = `Run 3-pass: mark repeated units, write timed answers, make one-page timeline per unit. If IMP for this ${typeLabel ? typeLabel.toLowerCase() : 'semester'} is missing, use the outline above until verified PDF auto-appears.`;
+  } else if (isPolsci) {
+    intro = `Political Science ${esc(t)} at DU for ${esc(semName)} blends theory and Indian institutions. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> orders concept and application together.`;
+    units = `<li><strong>Unit 1:</strong> Theory — liberty, justice, democracy, Rawls/Nozick</li><li><strong>Unit 2:</strong> Indian constitution — federalism, rights, institutions</li><li><strong>Unit 3:</strong> Comparative & global politics — case studies</li><li><strong>Unit 4:</strong> Long answers — thesis + counter-thesis + Indian example</li>`;
+    exam = `90/100 marks with choices “Answer 4 out of 6”. Theory asks comparison, India papers ask application with recent examples.`;
+    marking = `Thesis + counter-thesis + one Supreme Court case or election data fetch full marks.`;
+    howto = `Keep Unit 1 and Unit 4 open together — DU pairs liberty with democracy. Make a one-page debate table per unit. Broad outline here until IMP auto-appears.`;
+  } else if (isEco) {
+    intro = `Economics ${esc(t)} at DU for ${esc(semName)} is mathematical and diagram-driven. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> separates quantitative core first.`;
+    units = `<li><strong>Unit 1:</strong> Micro/Macro foundations — consumer equilibrium, IS-LM</li><li><strong>Unit 2:</strong> Numericals — elasticity, national income, multiplier</li><li><strong>Unit 3:</strong> Theory & diagrams — AD-AS, Phillips curve</li><li><strong>Unit 4:</strong> Data & policy — GDP/GNP, reforms</li>`;
+    exam = `75 marks theory with 40% numericals. Expect one 15-mark derivation, two 10-mark numericals, and shorts. Without diagrams, scores plateau.`;
+    marking = `Steps, formula, substitution, and labelled diagrams carry weight. One correct diagram often equals 8/10.`;
+    howto = `Solve last 3 years’ numericals first, then theory. Keep a formula sheet per semester. If this page shows only syllabus, the overview above is your starter.`;
+  } else if (isBCom) {
+    intro = `${esc(s)} ${esc(t)} at DU for ${esc(semName)} follows numerical-then-theory progression. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> mirrors that order.`;
+    units = `<li><strong>Unit 1:</strong> Accounting/Business Maths — journal, ledger, ratios</li><li><strong>Unit 2:</strong> Laws & theory — Contract Act, provisions</li><li><strong>Unit 3:</strong> Numericals — Process Costing, Marginal vs Absorption</li><li><strong>Unit 4:</strong> Cases — GST input credit, audit, management</li>`;
+    exam = `Typically 75+25 or 90+10. Sems 1-4 are 50% step-based numericals. Section A compulsory, Section B attempt 4/6.`;
+    marking = `Show working notes — even wrong final answer with correct steps gets 8/12. In theory, use definition + provision + example.`;
+    howto = `Solve one numerical daily (15 min) and revise theory alternate days. Last 3 PYQs reveal repeats. Broad outline here until IMP auto-appears.`;
+  } else if (isBSc) {
+    intro = `${esc(s)} ${esc(t)} at DU for ${esc(semName)} combines theory, practicals and labs. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> keeps lab and theory aligned.`;
+    units = `<li><strong>Unit 1:</strong> Theory & derivation — e.g., thermodynamics, cell structure</li><li><strong>Unit 2:</strong> Mechanisms/diagrams — organic, genetics, circuits</li><li><strong>Unit 3:</strong> Practical & viva — lab steps and observations</li><li><strong>Unit 4:</strong> Short notes & applications — one diagram per answer</li>`;
+    exam = `75 theory + 25 internal, plus 25-50 practical. One derivation/diagram (15 marks), two mechanisms (10 each), and shorts.`;
+    marking = `Labelled diagrams with equations carry disproportionate weight.`;
+    howto = `Before lab, skim the corresponding theory PYQ — DU often asks the same experiment’s principle. Keep a diagram sheet per unit.`;
+  } else {
+    intro = `${esc(s)} ${esc(t)} at DU under NEP/UGCF for ${esc(semName)} focuses on conceptual clarity. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> groups syllabus, notes and PYQs in taught order.`;
+    units = `<li><strong>Unit 1:</strong> Foundations & concepts — core readings</li><li><strong>Unit 2:</strong> Applied theory — case studies and examples</li><li><strong>Unit 3:</strong> Contemporary issues — debates and perspectives</li><li><strong>Unit 4:</strong> Practice & long answers — thesis + evidence</li>`;
+    exam = `Most papers are 75+25 or 90+10, with 10-mark shorts and 15-mark essays. “Course Objectives” become questions verbatim.`;
+    marking = `Clear structure, one example per answer, and a concluding line are rewarded.`;
+    howto = `Open syllabus Units 1-4, then the 3 most recent PYQs, and mark which Unit each question came from. That 10-minute exercise tells you where to spend next two days.`;
+  }
+  return `
+    <h2>About ${esc(title)} — Delhi University</h2>
+    <p>${intro} This page helps you see the taught order and exam pattern together.</p>
+    <p><strong>What you will study (broad UGCF outline — verify from your college):</strong></p>
+    <ul style="margin:8px 0 8px 18px">${units}</ul>
+    <p><strong>Exam pattern & marking:</strong> ${exam} ${marking}</p>
+    <p><strong>How to prepare & what is missing:</strong> ${howto} Right now the IMP questions / detailed notes PDF for this ${typeLabel ? typeLabel.toLowerCase() : 'section'} may not be uploaded yet — the list below shows what is currently available. Once your college or the admin uploads the official IMP Q&A PDF, it will automatically appear above with an <em>IMP Q</em> tag.</p>
+    <div style="background:rgba(30,95,255,.06);border-left:3px solid #1E5FFF;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Please verify:</strong> Paper codes and unit lists can vary slightly by college and batch. Confirm from your college's official syllabus PDF and department notice. This overview is a broad UGCF guide — the precise, verified semester-wise IMP will be uploaded shortly and will replace this placeholder reference.</div>
+    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this paper:</strong> Start with the official DU syllabus PDF — copy the Unit titles in order, then make one page per Unit with heading, 4-5 bullet points and one diagram or table. This one-page-per-unit format mirrors DU's marking scheme: definition + explanation + example + concluding line. For numerical papers, keep a separate formula sheet and solve one PYQ numerical daily under timed conditions; for theory papers, write one 15-mark answer weekly and get it checked for structure. Use senior notes only to cross-check your one-pagers, not as a replacement — toppers compress 200 pages into 20 revision pages with this method. Time-box each Unit to two days and revise with the 10-minute PYQ mapping technique described above — mark which Unit each past question came from to see where to focus next. Verify the final unit list and paper code from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
+    <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college's ${esc(s)} syllabus handout.</p>`;
 }
 function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   if (pages.has(file)) return;
@@ -341,6 +409,7 @@ for (const [key, semMap] of bySubjTrack) {
   for (const [semName, arr] of semMap) {
     const semNum = (semName.match(/\d+/) || [''])[0];
     const baseSlug = `${slug(subject)}-${slug(track)}-${semNum ? 'sem-' + semNum + '-' : ''}`;
+    const semBlock = coreSemesterBlock(subject, track, semName, null, null, arr.length);
     emit(`${baseSlug}pyqs.html`,
       `${subject} ${track} ${semName} PYQs & Material – DU | Sulaksh`,
       `${arr.length} documents for ${subject} ${track.toLowerCase()} ${semName.toLowerCase()} — Delhi University. Free instant view.`,
@@ -351,7 +420,7 @@ for (const [key, semMap] of bySubjTrack) {
       [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
         const n2 = (s2.match(/\d+/) || [''])[0];
         return { file: `${slug(subject)}-${slug(track)}-${n2 ? 'sem-' + n2 + '-' : ''}pyqs.html`, label: `${subject} ${track} ${s2}` };
-      }), null, { total: arr.length });
+      }), null, { total: arr.length, aboutBlock: semBlock });
     const types = new Map(); const byYr = new Map();
     for (const m of arr) {
       const tt = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus'
@@ -361,20 +430,24 @@ for (const [key, semMap] of bySubjTrack) {
       const y = m.year || '2025'; if (!byYr.has(y)) byYr.set(y, []); byYr.get(y).push(m);
     }
     const TN = { pyq: 'PYQ', syllabus: 'Syllabus', imp: 'Important Questions', notes: 'Notes' };
-    for (const [t, arr2] of types)
+    for (const [t, arr2] of types) {
+      const typeBlock = coreSemesterBlock(subject, track, semName, TN[t], null, arr2.length);
       emit(`${baseSlug}${t}.html`,
         `${subject} ${track} ${semName} ${TN[t]} – DU Free | Sulaksh`,
         `${arr2.length} documents — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
         'Delhi University · Free', `<p>${arr2.length} document(s).</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length });
-    for (const [y, arr2] of byYr)
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length, aboutBlock: typeBlock });
+    }
+    for (const [y, arr2] of byYr) {
+      const yrBlock = coreSemesterBlock(subject, track, semName, null, y, arr2.length);
       emit(`${baseSlug}${y}-pyqs.html`,
         `${subject} ${track} ${semName} PYQs ${y} – Delhi University | Sulaksh`,
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
         'Delhi University · Free', `<p>${arr2.length} document(s).</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length, aboutBlock: yrBlock });
+    }
   }
   const typesAll = new Map();
   for (const arr of semMap.values()) for (const m of arr) {
@@ -384,13 +457,15 @@ for (const [key, semMap] of bySubjTrack) {
     if (!typesAll.has(tt)) typesAll.set(tt, []); typesAll.get(tt).push(m);
   }
   const TNA = { pyq: 'PYQ', syllabus: 'Syllabus', imp: 'Important Questions', notes: 'Notes' };
-  for (const [t, arr] of typesAll)
+  for (const [t, arr] of typesAll) {
+    const allBlock = coreSemesterBlock(subject, track, "All Semesters", TNA[t], null, arr.length);
     emit(`${slug(subject)}-${slug(track)}-${t}-all.html`,
       `All ${subject} ${track} ${TNA[t]} – Across Semesters | Sulaksh`,
       `${arr.length} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
       `${subject} ${track} — All ${TNA[t]}`,
       'Delhi University · Free', `<p>${arr.length} document(s).</p>`,
-      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: arr.length });
+      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: arr.length, aboutBlock: allBlock });
+  }
 }
 
 // ===== 3) GE/VAC/AEC/SEC =====
