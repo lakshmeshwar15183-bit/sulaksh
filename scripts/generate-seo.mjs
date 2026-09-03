@@ -6,7 +6,7 @@ import path from 'node:path';
 const API = process.env.SULAKSH_API || 'https://sulaksh-backend-production.up.railway.app';
 const SITE = 'https://sulaksh.online';
 const OUT = path.resolve(process.cwd(), 'pyq');
-let secOverviews = {}, vacOverviews = {}, geOverviews = {}, aecOverviews = {}, impQuestions = {};
+let secOverviews = {}, vacOverviews = {}, geOverviews = {}, aecOverviews = {}, impQuestions = {}, secDetailed = {}, vacDetailed = {}, geDetailed = {}, aecDetailed = {};
 try {
   const base = path.dirname(new URL(import.meta.url).pathname);
   secOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'sec-overviews.json'), 'utf8'));
@@ -27,6 +27,22 @@ try {
   const base = path.dirname(new URL(import.meta.url).pathname);
   impQuestions = JSON.parse(fs.readFileSync(path.resolve(base, 'imp-questions.json'), 'utf8'));
 } catch (e) { /* no imp questions */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  secDetailed = JSON.parse(fs.readFileSync(path.resolve(base, 'sec-detailed.json'), 'utf8'));
+} catch (e) { /* no sec detailed */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  vacDetailed = JSON.parse(fs.readFileSync(path.resolve(base, 'vac-detailed.json'), 'utf8'));
+} catch (e) { /* no vac detailed */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  geDetailed = JSON.parse(fs.readFileSync(path.resolve(base, 'ge-detailed.json'), 'utf8'));
+} catch (e) { /* no ge detailed */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  aecDetailed = JSON.parse(fs.readFileSync(path.resolve(base, 'aec-detailed.json'), 'utf8'));
+} catch (e) { /* no aec detailed */ }
 const getSecBlock = (slugKey) => secOverviews[slugKey]?.block || null;
 const getVacBlock = (slugKey) => vacOverviews[slugKey]?.block || null;
 const getGeBlock = (slugKey) => geOverviews[slugKey]?.block || null;
@@ -547,15 +563,28 @@ for (const [k, v] of ncCombined) {
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
 for (const [k, v] of ncCombined) {
   const secKey = v.cat.toLowerCase() + '-' + slug(v.subject);
-  const custom = getCustomBlock(v.cat, secKey);
-  if (!custom) continue;
+  const baseCustom = getCustomBlock(v.cat, secKey);
+  const hasDetailed = (v.cat === 'SEC' && secDetailed[secKey]) || (v.cat === 'VAC' && vacDetailed[secKey]) || (v.cat === 'GE' && geDetailed[secKey]) || (v.cat === 'AEC' && aecDetailed[secKey]);
+  if (!baseCustom && !hasDetailed) continue;
   const existingTypes = new Set([...ncByType.keys()].filter(k2 => k2.startsWith(v.cat + '|' + v.subject + '|')).map(k2 => k2.split('|')[2]));
   for (const t of ['imp', 'pyq']) {
     if (existingTypes.has(t)) continue;
     const file = v.cat.toLowerCase() + '-' + slug(v.subject) + '-' + t + '.html';
     if (pages.has(file)) continue;
+    // Use detailed for SEC/VAC/GE/AEC with more lines
+    let useCustom = baseCustom;
+    if (v.cat === 'SEC' && secDetailed[secKey]) useCustom = secDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || baseCustom;
+    else if (v.cat === 'VAC' && vacDetailed[secKey]) useCustom = vacDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || baseCustom;
+    else if (v.cat === 'GE' && geDetailed[secKey]) useCustom = geDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || baseCustom;
+    else if (v.cat === 'AEC' && aecDetailed[secKey]) useCustom = aecDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || baseCustom;
     const impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
-    const body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet for this section — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>';
+    // For SEC imp, the detailed imp_block already contains the questions, so don't duplicate
+    let body;
+    if (v.cat === 'SEC' && t === 'imp' && secDetailed[secKey]) {
+      body = '<p style="color:var(--muted)">No PDF uploaded yet for this section — the detailed guide above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
+    } else {
+      body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet for this section — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>';
+    }
     emit(file,
       v.subject + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[v.cat] + ' | Free | Sulaksh',
       'Broad overview of ' + v.subject + ' (' + CAT_LABEL[v.cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon. Verify from your college.',
@@ -565,7 +594,7 @@ for (const [k, v] of ncCombined) {
       body,
       null,
       [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
-      { total: 0, aboutBlock: custom }
+      { total: 0, aboutBlock: useCustom }
     );
   }
 }
@@ -581,10 +610,21 @@ for (const secKey of Object.keys(allOverviews)) {
     if (pages.has(file)) continue;
     const hasYearFile = fs.existsSync(path.join(OUT, baseSlug + '-2025-pyqs.html')) || fs.existsSync(path.join(OUT, baseSlug + '-syllabus.html')) || fs.existsSync(path.join(OUT, baseSlug + '-pyqs.html'));
     if (!hasYearFile) continue;
-    const custom = getCustomBlock(cat, secKey);
+    let custom = getCustomBlock(cat, secKey);
+    if (cat === 'SEC' && secDetailed[secKey]) custom = secDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
+    else if (cat === 'VAC' && vacDetailed[secKey]) custom = vacDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
+    else if (cat === 'GE' && geDetailed[secKey]) custom = geDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
+    else if (cat === 'AEC' && aecDetailed[secKey]) custom = aecDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
     if (!custom) continue;
-    const impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
-    const body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
+    let impBlock = '';
+    let body;
+    const hasDetailed = (cat === 'SEC' && secDetailed[secKey]) || (cat === 'VAC' && vacDetailed[secKey]) || (cat === 'GE' && geDetailed[secKey]) || (cat === 'AEC' && aecDetailed[secKey]);
+    if (hasDetailed && t === 'imp') {
+      body = '<p style="color:var(--muted)">No PDF uploaded yet — the detailed guide above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
+    } else {
+      impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
+      body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
+    }
     emit(file,
       name + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
       'Broad overview of ' + name + ' (' + CAT_LABEL[cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon.',
