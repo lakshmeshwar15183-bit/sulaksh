@@ -6,6 +6,34 @@ import path from 'node:path';
 const API = process.env.SULAKSH_API || 'https://sulaksh-backend-production.up.railway.app';
 const SITE = 'https://sulaksh.online';
 const OUT = path.resolve(process.cwd(), 'pyq');
+let secOverviews = {}, vacOverviews = {}, geOverviews = {}, aecOverviews = {};
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  secOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'sec-overviews.json'), 'utf8'));
+} catch (e) { /* no SEC overviews */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  vacOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'vac-overviews.json'), 'utf8'));
+} catch (e) { /* no VAC overviews */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  geOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'ge-overviews.json'), 'utf8'));
+} catch (e) { /* no GE overviews */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  aecOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'aec-overviews.json'), 'utf8'));
+} catch (e) { /* no AEC overviews */ }
+const getSecBlock = (slugKey) => secOverviews[slugKey]?.block || null;
+const getVacBlock = (slugKey) => vacOverviews[slugKey]?.block || null;
+const getGeBlock = (slugKey) => geOverviews[slugKey]?.block || null;
+const getAecBlock = (slugKey) => aecOverviews[slugKey]?.block || null;
+const getCustomBlock = (cat, slugKey) => {
+  if (cat === 'SEC') return getSecBlock(slugKey);
+  if (cat === 'VAC') return getVacBlock(slugKey);
+  if (cat === 'GE') return getGeBlock(slugKey);
+  if (cat === 'AEC') return getAecBlock(slugKey);
+  return null;
+};
 // Bump this when you edit view.html so the cached page is bypassed (the "?v="
 // makes a fresh cache key, just like the auth JS). Resync after bumping.
 const VIEW_VERSION = '4';
@@ -181,7 +209,8 @@ function uniqueAboutBlock(subject, track, total, semCount) {
 }
 function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   if (pages.has(file)) return;
-  const isThin = opts && opts.total !== undefined && opts.total < 3;
+  const hasCustom = opts && opts.aboutBlock;
+  const isThin = opts && opts.total !== undefined && opts.total < 3 && !hasCustom;
   if (isThin) noIndexFiles.add(file);
   const faqH = (faqs && faqs.length ? faqs : [
     ['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'],
@@ -338,14 +367,14 @@ for (const [key, semMap] of bySubjTrack) {
         `${arr2.length} documents — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
         'Delhi University · Free', `<p>${arr2.length} document(s).</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, { total: arr2.length });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length });
     for (const [y, arr2] of byYr)
       emit(`${baseSlug}${y}-pyqs.html`,
         `${subject} ${track} ${semName} PYQs ${y} – Delhi University | Sulaksh`,
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
         'Delhi University · Free', `<p>${arr2.length} document(s).</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, { total: arr2.length });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: arr2.length });
   }
   const typesAll = new Map();
   for (const arr of semMap.values()) for (const m of arr) {
@@ -361,7 +390,7 @@ for (const [key, semMap] of bySubjTrack) {
       `${arr.length} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
       `${subject} ${track} — All ${TNA[t]}`,
       'Delhi University · Free', `<p>${arr.length} document(s).</p>`,
-      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, { total: arr.length });
+      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: arr.length });
 }
 
 // ===== 3) GE/VAC/AEC/SEC =====
@@ -385,21 +414,27 @@ for (const [cat, label] of [['GE', 'Generic Elective'], ['VAC', 'Value Added Cou
 }
 for (const [k, arr] of ncByType) {
   const [cat, subject, type] = k.split('|');
+  const secKey = cat.toLowerCase() + '-' + slug(subject);
+  const custom = getCustomBlock(cat, secKey);
+  const opts = custom ? { total: arr.length, aboutBlock: custom } : { total: arr.length };
   emit(cat.toLowerCase() + '-' + slug(subject) + '-' + type + '.html',
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
     arr.length + ' ' + subject + ' ' + CAT_LABEL[cat] + ' ' + TYPE_LABEL[type].toLowerCase() + ' - Delhi University NEP/UGCF, free instant view.',
     subject + ' - ' + TYPE_LABEL[type] + ' (' + CAT_LABEL[cat] + ')',
     CAT_LABEL[cat], '<p><strong>' + arr.length + '</strong> document(s).</p>',
-    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, { total: arr.length });
+    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, opts);
 }
 for (const [k, arr] of ncByYear) {
   const [cat, subject, y] = k.split('|');
+  const secKey = cat.toLowerCase() + '-' + slug(subject);
+  const custom = getCustomBlock(cat, secKey);
+  const opts = custom ? { total: arr.length, aboutBlock: custom } : { total: arr.length };
   emit(cat.toLowerCase() + '-' + slug(subject) + '-' + y + '-pyqs.html',
     subject + ' ' + CAT_LABEL[cat] + ' PYQs ' + y + ' - Delhi University | Sulaksh',
     arr.length + ' ' + subject + ' (' + CAT_LABEL[cat] + ') document(s) from ' + y + ' - Delhi University, free.',
     subject + ' - ' + y,
     CAT_LABEL[cat], '<p>' + arr.length + ' document(s).</p>',
-    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, { total: arr.length });
+    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, opts);
 }
 for (const [k, v] of ncCombined) {
   if (v.items.length < 2) continue;
@@ -412,6 +447,56 @@ for (const [k, v] of ncCombined) {
     v.label,
     '<p><strong>' + v.items.length + ' documents</strong> - everything available for this course.</p>',
     '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>', null, { aboutBlock: aboutNC, total: v.items.length });
+}
+// ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
+for (const [k, v] of ncCombined) {
+  const secKey = v.cat.toLowerCase() + '-' + slug(v.subject);
+  const custom = getCustomBlock(v.cat, secKey);
+  if (!custom) continue;
+  const existingTypes = new Set([...ncByType.keys()].filter(k2 => k2.startsWith(v.cat + '|' + v.subject + '|')).map(k2 => k2.split('|')[2]));
+  for (const t of ['imp', 'pyq']) {
+    if (existingTypes.has(t)) continue;
+    const file = v.cat.toLowerCase() + '-' + slug(v.subject) + '-' + t + '.html';
+    if (pages.has(file)) continue;
+    emit(file,
+      v.subject + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[v.cat] + ' | Free | Sulaksh',
+      'Broad overview of ' + v.subject + ' (' + CAT_LABEL[v.cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon. Verify from your college.',
+      v.subject + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[v.cat] + ')',
+      CAT_LABEL[v.cat],
+      '<p><strong>0</strong> document(s) currently listed — broad guide below. Official IMP PDF will appear here once uploaded.</p>',
+      '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>',
+      null,
+      [['Is this the exact IMP?', 'Not yet — this page shows a broad UGCF outline. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the syllabus units above and the PYQs; the IMP will supplement them.']],
+      { total: 0, aboutBlock: custom }
+    );
+  }
+}
+// Also cover stale file slugs that have overviews but no DB entry yet — ensure placeholder exists
+const allOverviews = { ...secOverviews, ...vacOverviews, ...geOverviews, ...aecOverviews };
+for (const secKey of Object.keys(allOverviews)) {
+  const name = allOverviews[secKey].name;
+  const cat = secKey.startsWith('sec-') ? 'SEC' : secKey.startsWith('vac-') ? 'VAC' : secKey.startsWith('ge-') ? 'GE' : secKey.startsWith('aec-') ? 'AEC' : null;
+  if (!cat) continue;
+  const baseSlug = secKey;
+  for (const t of ['imp', 'pyq']) {
+    const file = baseSlug + '-' + t + '.html';
+    if (pages.has(file)) continue;
+    const hasYearFile = fs.existsSync(path.join(OUT, baseSlug + '-2025-pyqs.html')) || fs.existsSync(path.join(OUT, baseSlug + '-syllabus.html')) || fs.existsSync(path.join(OUT, baseSlug + '-pyqs.html'));
+    if (!hasYearFile) continue;
+    const custom = getCustomBlock(cat, secKey);
+    if (!custom) continue;
+    emit(file,
+      name + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
+      'Broad overview of ' + name + ' (' + CAT_LABEL[cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon.',
+      name + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[cat] + ')',
+      CAT_LABEL[cat],
+      '<p><strong>0</strong> document(s) currently listed — broad guide below. Official IMP PDF will appear here once uploaded.</p>',
+      '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>',
+      null,
+      [['Is this the exact IMP?', 'Not yet — broad outline. Verified PDF coming soon.']],
+      { total: 0, aboutBlock: custom }
+    );
+  }
 }
 
 // ===== info pages — classic search-intent guides =====
