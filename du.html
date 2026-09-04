@@ -7066,18 +7066,41 @@
     document.getElementById('coreSemPrompt').style.display = 'none';
     document.getElementById('coreCatGrid').innerHTML = coreCatsFor(subject).map((c) => {
       const n = matsForCore(subject, sem, c.id, track).length;
+      const hasGuide = !state.isAdmin && typeof placeholderFor === 'function' && !!placeholderFor(subject, sem, c.id, track);
+      let badgeText, countText, badgeStyle, countStyle;
+      if (n === 0 && hasGuide) {
+        badgeText = 'Guide available';
+        countText = 'Guide available';
+        badgeStyle = 'background:rgba(20,108,67,.12);color:var(--green);border:1px solid rgba(20,108,67,.25);';
+        countStyle = 'color:var(--green);';
+      } else if (n === 0 && !hasGuide) {
+        if (state.isAdmin) {
+          badgeText = '0 files';
+          countText = '0 materials';
+          badgeStyle = '';
+          countStyle = '';
+        } else {
+          // Truly empty with no guidance — hide card for visitors to avoid empty 0 wall (admins still see 0)
+          return '';
+        }
+      } else {
+        badgeText = `${n} file${n === 1 ? '' : 's'}`;
+        countText = `${n} materials`;
+        badgeStyle = '';
+        countStyle = '';
+      }
       return `
         <button class="core-card" onclick="openCoreCategory('${subject.replace(/'/g, "\\'")}','${sem.replace(/'/g, "\\'")}','${c.id}')">
           <div class="top">
             <span class="core-ico">${c.ico}</span>
-            <span class="core-badge">${n} file${n === 1 ? '' : 's'}</span>
+            <span class="core-badge" style="${badgeStyle}">${badgeText}</span>
           </div>
           <span class="core-name">${c.label}</span>
           <span class="core-desc">${c.desc}</span>
-          <span class="core-count">${n} materials</span>
+          <span class="core-count" style="${countStyle}">${countText}</span>
           <span class="core-btn">Open →</span>
         </button>`;
-    }).join('');
+    }).filter(Boolean).join('');
   }
 
   function openCoreCategory(subject, sem, matCat) {
