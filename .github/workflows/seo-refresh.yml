@@ -38,7 +38,7 @@ jobs:
           git fetch origin gh-pages
           git checkout gh-pages
           # Only ship static site assets. Never publish backend/scripts source.
-          git checkout main -- pyq sitemap.xml index.html du.html || true
+          git checkout main -- pyq sitemap.xml index.html du.html _redirects _headers || true
           git add -A
           git diff --cached --quiet || git commit -m "SEO sync $(date -u '+%F %H:%M') UTC"
           git push origin gh-pages

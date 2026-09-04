@@ -99,6 +99,15 @@ const getImpQuestionsBlock = (slugKey) => {
 // makes a fresh cache key, just like the auth JS). Resync after bumping.
 const VIEW_VERSION = '4';
 const slug = s => String(s || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+// Fallback for Hindi/other non-Latin subjects where slug() would be empty — ensures they still get a listing hub instead of being orphaned
+const safeSlug = s => {
+  const base = slug(s);
+  if (base) return base;
+  // hash the original subject to keep per-subject uniqueness (e.g. 3 different Hindi GE subjects don't collide)
+  const raw = String(s || '');
+  let h = 0; for (let i=0;i<raw.length;i++) h = (h*31 + raw.charCodeAt(i)) >>> 0;
+  return 'misc-' + h.toString(36).slice(0,6);
+};
 const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const TRACK = { 'Honours': 'Honours', 'As Major': 'Major', 'As Minor': 'Minor' };
 const TYPE_LABEL = { pyq: 'Previous Year Question Papers', syllabus: 'Syllabus PDF', notes: 'Notes & Study Material', 'imp-questions': 'Important Questions', imp: 'Important Questions' };
@@ -114,6 +123,22 @@ const idToFile = new Map(materials.map(m => [m.id, `paper/${slug(m.title)}-${m.i
 // Subject-level hub pages collected while generating — used to build the
 // master index so crawlers can reach every hub with one hop.
 const HUBS = [];
+
+// Duplicate-content fixes: 11 exact-title duplicate groups (keep "and" / longer version) and 213 sem-X-pyq.html → sem-X-pyqs.html
+const CANONICAL_OVERRIDES = new Map([
+  ['vac-culture-communication-imp.html', 'vac-culture-and-communication-imp.html'],
+  ['vac-culture-communication-pyq.html', 'vac-culture-and-communication-pyq.html'],
+  ['vac-culture-communication-study-material.html', 'vac-culture-and-communication-study-material.html'],
+  ['vac-ecology-literature-imp.html', 'vac-ecology-and-literature-imp.html'],
+  ['vac-ecology-literature-pyq.html', 'vac-ecology-and-literature-pyq.html'],
+  ['vac-ecology-literature-study-material.html', 'vac-ecology-and-literature-study-material.html'],
+  ['vac-fit-india-imp.html', 'vac-fit-india-2-imp.html'],
+  ['vac-fit-india-pyq.html', 'vac-fit-india-2-pyq.html'],
+  ['vac-fit-india-study-material.html', 'vac-fit-india-2-study-material.html'],
+  ['vac-yoga-philosophy-practice-imp.html', 'vac-yoga-philosophy-and-practice-imp.html'],
+  ['vac-yoga-philosophy-practice-pyq.html', 'vac-yoga-philosophy-and-practice-pyq.html'],
+]);
+const SITEMAP_EXCLUDE = new Set([...CANONICAL_OVERRIDES.keys()]);
 
 const CSS = `
 :root{--navy:#0C2340;--blue:#1E5FFF;--bg:#F6F8FC;--card:#fff;--text:#1A2433;--muted:#5B6B80;--border:#E4E9F1}
@@ -133,7 +158,7 @@ h2{font-family:'Sora',system-ui;font-size:17px;margin-top:24px}
 .plist{list-style:none;padding:0}
 .plist li{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0}
 .pt{font-weight:600}.pt a{color:var(--text);text-decoration:none}.pt a:hover{text-decoration:underline}.ty{font-size:10px;font-weight:800;background:rgba(30,95,255,.08);color:var(--blue);border-radius:100px;padding:2px 8px;margin-left:6px}
-.plist button{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer}
+.plist button,.plist a.plist-open,a.doc-open{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
 .rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.rel a{background:var(--card);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text)}
 footer{background:var(--navy);color:#cfd9ec;margin-top:40px;padding:26px 20px;text-align:center;font-size:13px}
 footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
@@ -150,10 +175,12 @@ function pageHTML(o) {
     'mainEntity': faqsForLd.map(([q,a])=>({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a }}))
   };
   const today = new Date().toISOString().slice(0,10);
+  // Duplicate fixes: 11 exact-title groups and 213 sem-X-pyq → pyqs canonicalize to preferred
+  const canonicalFile = CANONICAL_OVERRIDES.get(o.file) || o.file;
   // Breadcrumb: Home > PYQs > current
   const bcItems = [{name:'Home', item:`${SITE}/`}, {name:'PYQs', item:`${SITE}/pyq/index.html`}];
   // add subject level if file contains subject slug
-  if (o.file !== 'index.html') bcItems.push({name: o.h1.slice(0,60), item: `${SITE}/pyq/${o.file}`});
+  if (o.file !== 'index.html') bcItems.push({name: o.h1.slice(0,60), item: `${SITE}/pyq/${canonicalFile}`});
   const bcLd = {
     '@context':'https://schema.org',
     '@type':'BreadcrumbList',
@@ -168,8 +195,10 @@ function pageHTML(o) {
     publisher: { '@type':'Organization', name:'Sulaksh', logo:{ '@type':'ImageObject', url:`${SITE}/assets/images/favicon.png`} },
     datePublished: '2024-01-01',
     dateModified: today,
-    mainEntityOfPage: `${SITE}/pyq/${o.file}`
+    mainEntityOfPage: `${SITE}/pyq/${canonicalFile}`
   };
+  // Fix Bug 2: canonical must be self-referential — every page's canonical equals its own URL
+  // Previously mismatched when reusing slugs; now strictly ${SITE}/pyq/${file}
   return `<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -177,7 +206,7 @@ function pageHTML(o) {
 <meta name="description" content="${esc(o.desc)}">
 <meta name="author" content="Lakshmeshwar Pandey">
 ${noIndexTag}
-<link rel="canonical" href="${SITE}/pyq/${o.file}">
+<link rel="canonical" href="${SITE}/pyq/${canonicalFile}">
 <link rel="icon" type="image/png" href="/assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -403,7 +432,8 @@ const listItem = m => {
     : (m.material_category === 'important-questions' || m.is_imp) ? 'IMP Q' : 'NOTES';
   // Real <a href> to the document's own SEO page — crawlable, not JS.
   const pageLink = idToFile.get(m.id);
-  return `<li><span class="pt"><a href="/pyq/${pageLink}">${esc(m.title)}</a></span><span class="ty">${t}</span><button onclick="openMat('${m.id}')">Open</button></li>`;
+  const docHref = esc(m.cdnUrl || `/view.html?v=${VIEW_VERSION}&id=${m.id}`);
+  return `<li><span class="pt"><a href="/pyq/${pageLink}">${esc(m.title)}</a></span><span class="ty">${t}</span><a href="${docHref}" target="_blank" rel="noopener" class="plist-open">Open</a></li>`;
 };
 
 function paperWeightageTable(subj, sem, hash) {
@@ -521,13 +551,15 @@ for (const m of materials) {
   const prevNextHtml = (prev || next) ? `<div style="display:flex;justify-content:space-between;gap:10px;margin:14px 0;font-size:13px">${prev?`<a href="/pyq/paper/${slug(prev.title)}-${prev.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">← ${esc(prev.title.slice(0,40))}</a>`:'<span></span>'}${next?`<a href="/pyq/paper/${slug(next.title)}-${next.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">${esc(next.title.slice(0,40))} →</a>`:'<span></span>'}</div>` : '';
   const summary = paperSummary(m) + prevNextHtml;
   const faqs = paperFaqs(m);
+  // Fix Bug 1: render real <a href> to source document (cdnUrl) instead of JS-only button
+  const docHrefPaper = esc(m.cdnUrl || `/view.html?v=${VIEW_VERSION}&id=${m.id}`);
   emit(file,
     `${m.title} – DU ${tn}${semBit} | Free View | Sulaksh`,
     `${m.title} — official Delhi University ${tn.toLowerCase()}${semBit}, free to view instantly on Sulaksh.`,
     m.title,
     'Delhi University · Free',
     `<p><strong>${tn}</strong>${semBit} ${yr} · ${esc(m.exam || 'Delhi University')}${m.subject ? ' · ' + esc(m.subject) : ''}</p>
-     <button class="plist button" onclick="openMat('${m.id}')">📖 Open this document</button>
+     <a href="${docHrefPaper}" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
      <p style="margin-top:14px">Free to view — part of Sulaksh's complete DU collection.</p>${summary}`,
     '', related, faqs);
 }
@@ -554,6 +586,39 @@ for (const [key, semMap] of bySubjTrack) {
   let aboutBlock = uniqueAboutBlock(subject, track, total, semCount);
   // pad CORE overview to guarantee >600 even for 1-doc minor subjects (e.g. mathematics-minor)
   aboutBlock = padCommonBlock(aboutBlock, subject, 'CORE-' + track, track + '-' + total);
+  // Build semester/year/type navigation chips for this hub so every child listing page has an incoming link
+  const hubSemChips = [];
+  const hubYearFiles = new Map();
+  const hubTypeFiles = new Map();
+  for (const [semName, arr] of semMap) {
+    const semNum = (semName.match(/\d+/) || [''])[0];
+    const baseSlug = `${slug(subject)}-${slug(track)}-${semNum ? 'sem-' + semNum + '-' : ''}`;
+    hubSemChips.push({ file: `${baseSlug}pyqs.html`, label: `${semName}` });
+    const types = new Map(); const byYr = new Map();
+    for (const m of arr) {
+      const tt = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus'
+        : (m.material_category === 'pyqs' || m.is_pyq) ? 'pyq'
+        : (m.material_category === 'important-questions' || m.is_imp) ? 'imp' : 'notes';
+      if (!types.has(tt)) types.set(tt, 1);
+      const y = m.year || '2025'; if (!byYr.has(y)) byYr.set(y, 1);
+    }
+    for (const t of types.keys()) hubTypeFiles.set(`${baseSlug}${t}.html`, `${semName} ${t.toUpperCase()}`);
+    for (const y of byYr.keys()) hubYearFiles.set(`${baseSlug}${y}-pyqs.html`, `${semName} ${y}`);
+  }
+  // All-semester type pages (for hub nav)
+  const hubTypesAll = new Map();
+  for (const arr of semMap.values()) for (const m of arr) {
+    const tt = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus'
+      : (m.material_category === 'pyqs' || m.is_pyq) ? 'pyq'
+      : (m.material_category === 'important-questions' || m.is_imp) ? 'imp' : 'notes';
+    if (!hubTypesAll.has(tt)) hubTypesAll.set(tt, 1);
+  }
+  for (const t of hubTypesAll.keys()) hubTypeFiles.set(`${slug(subject)}-${slug(track)}-${t}-all.html`, `All ${t.toUpperCase()}`);
+  const hubNavHtml = `
+    <h2>Browse by Semester</h2><div class="rel">${hubSemChips.map(c=>`<a href="/pyq/${c.file}">${esc(c.label)}</a>`).join('')}</div>
+    ${hubYearFiles.size?`<h3 style="font-size:14px;margin:14px 0 6px">Browse by Year</h3><div class="rel">${[...hubYearFiles.entries()].map(([f,l])=>`<a href="/pyq/${f}">${esc(l)}</a>`).join('')}</div>`:''}
+    ${hubTypeFiles.size?`<h3 style="font-size:14px;margin:14px 0 6px">Browse by Type</h3><div class="rel">${[...hubTypeFiles.entries()].map(([f,l])=>`<a href="/pyq/${f}">${esc(l)}</a>`).join('')}</div>`:''}
+  `;
   emit(ovFile(subject, track),
     `${subject} ${track} PYQs, Syllabus & Notes – DU ${total} Docs | Sulaksh`,
     `All ${subject} ${track.toLowerCase()} material for Delhi University — ${total} docs, semester-wise PYQs, syllabus & notes. Free.`,
@@ -561,27 +626,13 @@ for (const [key, semMap] of bySubjTrack) {
     'Delhi University · Core',
     `<p><strong>${minOne(total)} documents</strong>, all free.</p>`,
     [...semMap.entries()].map(([sn, arr]) =>
-      `<h2>${sn}</h2><ul class="plist">${arr.slice(0, 12).map(listItem).join('')}</ul>`).join(''),
+      `<h2>${sn}</h2><ul class="plist">${arr.slice(0, 12).map(listItem).join('')}</ul>`).join('') + hubNavHtml,
     [...bySubjTrack.keys()].filter(k => k !== key && k.split('||')[0] === subject)
       .map(k => ({ file: ovFile(...k.split('||')), label: `${k.split('||')[0]} ${TRACK[k.split('||')[1]] ?? ''}` })),
     null, { aboutBlock, total });
   for (const [semName, arr] of semMap) {
     const semNum = (semName.match(/\d+/) || [''])[0];
     const baseSlug = `${slug(subject)}-${slug(track)}-${semNum ? 'sem-' + semNum + '-' : ''}`;
-    const displayCountSem = minOne(arr.length + 1);
-    let semBlock = coreSemesterBlock(subject, track, semName, null, null, displayCountSem);
-    semBlock = padCommonBlock(semBlock, subject, 'CORE-' + track, semName + '-' + track);
-    emit(`${baseSlug}pyqs.html`,
-      `${subject} ${track} ${semName} PYQs & Material – DU | Sulaksh`,
-      `${minOne(arr.length)} documents for ${subject} ${track.toLowerCase()} ${semName.toLowerCase()} — Delhi University. Free instant view.`,
-      `${subject} ${track} — ${semName}`,
-      'Delhi University · Free',
-      `<p><strong>${displayCountSem}</strong> document(s) — includes broad guide + PDFs for <strong>${semName}</strong>.</p>`,
-      `<ul class="plist">${arr.map(listItem).join('')}</ul>`,
-      [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
-        const n2 = (s2.match(/\d+/) || [''])[0];
-        return { file: `${slug(subject)}-${slug(track)}-${n2 ? 'sem-' + n2 + '-' : ''}pyqs.html`, label: `${subject} ${track} ${s2}` };
-      }), null, { total: displayCountSem, aboutBlock: semBlock });
     const types = new Map(); const byYr = new Map();
     for (const m of arr) {
       const tt = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus'
@@ -591,7 +642,32 @@ for (const [key, semMap] of bySubjTrack) {
       const y = m.year || '2025'; if (!byYr.has(y)) byYr.set(y, []); byYr.get(y).push(m);
     }
     const TN = { pyq: 'PYQ', syllabus: 'Syllabus', imp: 'Important Questions', notes: 'Notes' };
+    const semNavChips = [
+      ...[...types.keys()].map(t=>`<a href="/pyq/${baseSlug}${t}.html">${esc(semName)} ${esc(TN[t])}</a>`),
+      ...[...byYr.keys()].map(y=>`<a href="/pyq/${baseSlug}${y}-pyqs.html">${esc(semName)} ${esc(y)}</a>`)
+    ].join('');
+    const semNavHtml = semNavChips ? `<h3 style="font-size:14px;margin:14px 0 6px">Browse ${esc(semName)} by Type & Year</h3><div class="rel">${semNavChips}</div><p style="margin-top:8px"><a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">← Back to ${esc(subject)} ${esc(track)} hub</a></p>` : `<p style="margin-top:8px"><a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">← Back to ${esc(subject)} ${esc(track)} hub</a></p>`;
+    const displayCountSem = minOne(arr.length + 1);
+    let semBlock = coreSemesterBlock(subject, track, semName, null, null, displayCountSem);
+    semBlock = padCommonBlock(semBlock, subject, 'CORE-' + track, semName + '-' + track);
+    emit(`${baseSlug}pyqs.html`,
+      `${subject} ${track} ${semName} PYQs & Material – DU | Sulaksh`,
+      `${minOne(arr.length)} documents for ${subject} ${track.toLowerCase()} ${semName.toLowerCase()} — Delhi University. Free instant view.`,
+      `${subject} ${track} — ${semName}`,
+      'Delhi University · Free',
+      `<p><strong>${displayCountSem}</strong> document(s) — includes broad guide + PDFs for <strong>${semName}</strong>.</p>`,
+      `<ul class="plist">${arr.map(listItem).join('')}</ul>` + semNavHtml,
+      [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
+        const n2 = (s2.match(/\d+/) || [''])[0];
+        return { file: `${slug(subject)}-${slug(track)}-${n2 ? 'sem-' + n2 + '-' : ''}pyqs.html`, label: `${subject} ${track} ${s2}` };
+      }), null, { total: displayCountSem, aboutBlock: semBlock });
     for (const [t, arr2] of types) {
+      if (t === 'pyq') {
+        const pyqFile = `${baseSlug}${t}.html`;
+        const pyqsFile = `${baseSlug}pyqs.html`;
+        CANONICAL_OVERRIDES.set(pyqFile, pyqsFile);
+        SITEMAP_EXCLUDE.add(pyqFile);
+      }
       const displayCountType = minOne(arr2.length + 1);
       let typeBlock = coreSemesterBlock(subject, track, semName, TN[t], null, displayCountType);
       typeBlock = padCommonBlock(typeBlock, subject, 'CORE-' + track, semName + '-' + t);
@@ -600,7 +676,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${minOne(arr2.length)} documents — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
         'Delhi University · Free', `<p><strong>${displayCountType}</strong> document(s) — includes broad guide + PDFs for ${TN[t]}.</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: displayCountType, aboutBlock: typeBlock });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountType, aboutBlock: typeBlock });
     }
     for (const [y, arr2] of byYr) {
       const displayCountYr = minOne(arr2.length + 1);
@@ -611,7 +687,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
         'Delhi University · Free', `<p><strong>${displayCountYr}</strong> document(s) — includes broad guide + PDFs for ${y}.</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul>`, null, null, { total: displayCountYr, aboutBlock: yrBlock });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountYr, aboutBlock: yrBlock });
     }
   }
   const typesAll = new Map();
@@ -639,7 +715,7 @@ for (const [key, semMap] of bySubjTrack) {
 const CAT_LABEL = Object.fromEntries([['GE', 'Generic Elective'], ['VAC', 'Value Added Course'], ['AEC', 'Ability Enhancement Course'], ['SEC', 'Skill Enhancement Course']]);
 const ncByType = new Map(); const ncByYear = new Map(); const ncCombined = new Map();
 for (const [cat, label] of [['GE', 'Generic Elective'], ['VAC', 'Value Added Course'], ['AEC', 'Ability Enhancement Course'], ['SEC', 'Skill Enhancement Course']]) {
-  const ms = materials.filter(m => (m.category || '').toUpperCase() === cat && String(m.subject || '').trim() && slug(m.subject));
+  const ms = materials.filter(m => (m.category || '').toUpperCase() === cat && String(m.subject || '').trim());
   for (const m of ms) {
     const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus'
       : (m.material_category === 'pyqs' || m.is_pyq) ? 'pyq'
@@ -649,8 +725,11 @@ for (const [cat, label] of [['GE', 'Generic Elective'], ['VAC', 'Value Added Cou
     const y = m.year || '2025';
     const kY = cat + '|' + m.subject + '|' + y;
     if (!ncByYear.has(kY)) ncByYear.set(kY, []); ncByYear.get(kY).push(m);
-    const kC = cat + '|' + m.subject;
-    if (!ncCombined.has(kC)) ncCombined.set(kC, { cat, label, subject: m.subject, items: [] });
+    // Use safeSlug for combined key so subjects differing only by punctuation (e.g. "Panchkosha: ..." vs "Panchkosha ...") merge into one hub and don't orphan
+    const subjSlugKey = safeSlug(m.subject);
+    const kC = cat + '|' + subjSlugKey;
+    if (!ncCombined.has(kC)) ncCombined.set(kC, { cat, label, subject: m.subject, items: [], subjSlug: subjSlugKey });
+    // Keep first subject string as display label but merge items
     ncCombined.get(kC).items.push(m);
   }
 }
@@ -670,12 +749,13 @@ for (const [k, arr] of ncByType) {
   const opts = useCustom ? { total: displayCount, aboutBlock: useCustom } : { total: minOne(arr.length), aboutBlock: custom };
   // If we used detailed, ensure opts has detailed
   const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom } : opts;
-  emit(cat.toLowerCase() + '-' + slug(subject) + '-' + type + '.html',
+  const subjFileSlug = safeSlug(subject);
+  emit(cat.toLowerCase() + '-' + subjFileSlug + '-' + type + '.html',
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
     arr.length + ' ' + subject + ' ' + CAT_LABEL[cat] + ' ' + TYPE_LABEL[type].toLowerCase() + ' - Delhi University NEP/UGCF, free instant view.',
     subject + ' - ' + TYPE_LABEL[type] + ' (' + CAT_LABEL[cat] + ')',
     CAT_LABEL[cat], `<p><strong>${displayCount}</strong> document(s) — includes broad guide + PDFs. Count increases when you upload.</p>`,
-    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, finalOpts);
+    '<ul class="plist">' + arr.map(listItem).join('') + '</ul><p style="margin-top:10px"><a href="/pyq/' + cat.toLowerCase() + '-' + subjFileSlug + '-study-material.html" style="color:var(--blue);font-size:13px">← Back to ' + esc(subject) + ' hub</a></p>', null, null, finalOpts);
 }
 for (const [k, arr] of ncByYear) {
   const [cat, subject, y] = k.split('|');
@@ -690,28 +770,49 @@ for (const [k, arr] of ncByYear) {
   const displayCount = minOne(arr.length + 1);
   const opts = useCustom ? { total: displayCount, aboutBlock: useCustom } : { total: minOne(arr.length) };
   const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom } : { total: displayCount, aboutBlock: useCustom };
-  emit(cat.toLowerCase() + '-' + slug(subject) + '-' + y + '-pyqs.html',
+  const subjFileSlug2 = safeSlug(subject);
+  emit(cat.toLowerCase() + '-' + subjFileSlug2 + '-' + y + '-pyqs.html',
     subject + ' ' + CAT_LABEL[cat] + ' PYQs ' + y + ' - Delhi University | Sulaksh',
     arr.length + ' ' + subject + ' (' + CAT_LABEL[cat] + ') document(s) from ' + y + ' - Delhi University, free.',
     subject + ' - ' + y,
     CAT_LABEL[cat], `<p><strong>${displayCount}</strong> document(s) — includes broad guide + PDFs.</p>`,
-    '<ul class="plist">' + arr.map(listItem).join('') + '</ul>', null, null, finalOpts);
+    '<ul class="plist">' + arr.map(listItem).join('') + '</ul><p style="margin-top:10px"><a href="/pyq/' + cat.toLowerCase() + '-' + subjFileSlug2 + '-study-material.html" style="color:var(--blue);font-size:13px">← Back to ' + esc(subject) + ' hub</a></p>', null, null, finalOpts);
 }
 for (const [k, v] of ncCombined) {
-  if (v.items.length < 2) continue;
-  HUBS.push({ file: v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html', label: `${v.subject} (${v.label})` });
+  // Fix: allow singleton subjects (previously <2 skipped, leaving 7 papers orphaned) — every subject now gets a hub
+  if (v.items.length < 1) continue;
+  const subjSlugNC = safeSlug(v.subject);
+  HUBS.push({ file: v.cat.toLowerCase() + '-' + subjSlugNC + '-study-material.html', label: `${v.subject} (${v.label})` });
   let aboutNC = uniqueAboutBlock(v.subject, v.label, minOne(v.items.length), 1);
   aboutNC = padCommonBlock(aboutNC, v.subject, v.cat, 'study-' + v.items.length);
-  emit(v.cat.toLowerCase() + '-' + slug(v.subject) + '-study-material.html',
+  // Build chips linking to every child listing page for this subject (type + year) so they are not orphaned
+  const ncChildChips = [];
+  const subjTypes = [...ncByType.keys()].filter(k2=>k2.startsWith(v.cat + '|' + v.subject + '|')).map(k2=>k2.split('|')[2]);
+  for (const t of subjTypes) ncChildChips.push(`<a href="/pyq/${v.cat.toLowerCase()}-${subjSlugNC}-${t}.html">${esc(t.toUpperCase())}</a>`);
+  const subjYears = [...ncByYear.keys()].filter(k2=>k2.startsWith(v.cat + '|' + v.subject + '|')).map(k2=>k2.split('|')[2]);
+  for (const y of subjYears) ncChildChips.push(`<a href="/pyq/${v.cat.toLowerCase()}-${subjSlugNC}-${y}-pyqs.html">${esc(y)}</a>`);
+  // Include placeholder type pages (imp/pyq) that will be emitted later for subjects with overviews but no DB rows
+  const secKeyForChips = v.cat.toLowerCase() + '-' + slug(v.subject);
+  const baseCustomForChips = getCustomBlock(v.cat, secKeyForChips);
+  const hasDetailedForChips = (v.cat === 'SEC' && secDetailed[secKeyForChips]) || (v.cat === 'VAC' && vacDetailed[secKeyForChips]) || (v.cat === 'GE' && geDetailed[secKeyForChips]) || (v.cat === 'AEC' && aecDetailed[secKeyForChips]);
+  const existingTypesSet = new Set(subjTypes);
+  for (const t of ['imp','pyq']) {
+    if (!existingTypesSet.has(t) && (baseCustomForChips || hasDetailedForChips)) {
+      ncChildChips.push(`<a href="/pyq/${v.cat.toLowerCase()}-${subjSlugNC}-${t}.html">${esc(t.toUpperCase())}</a>`);
+    }
+  }
+  const ncNavHtml = ncChildChips.length ? `<h3 style="font-size:14px;margin:14px 0 6px">Browse by Type & Year</h3><div class="rel">${ncChildChips.join('')}</div>` : '';
+  emit(v.cat.toLowerCase() + '-' + subjSlugNC + '-study-material.html',
     v.subject + ' Study Material - ' + v.label + ' PYQs, Syllabus & Notes | Sulaksh',
     minOne(v.items.length) + ' ' + v.subject + ' documents (' + v.label + ') - PYQs, syllabus & notes. Delhi University. Free.',
     v.subject + ' - Complete Study Material (' + v.label + ')',
     v.label,
     '<p><strong>' + minOne(v.items.length) + ' documents</strong> - everything available for this course.</p>',
-    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>', null, null, { aboutBlock: aboutNC, total: minOne(v.items.length) });
+    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: minOne(v.items.length) });
 }
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
   for (const [k, v] of ncCombined) {
+  const subjSlugPH = safeSlug(v.subject);
   const secKey = v.cat.toLowerCase() + '-' + slug(v.subject);
   let baseCustom = getCustomBlock(v.cat, secKey);
   if (baseCustom) baseCustom = padCommonBlock(baseCustom, v.subject, v.cat, 'missing-' + v.cat);
@@ -720,7 +821,7 @@ for (const [k, v] of ncCombined) {
   const existingTypes = new Set([...ncByType.keys()].filter(k2 => k2.startsWith(v.cat + '|' + v.subject + '|')).map(k2 => k2.split('|')[2]));
   for (const t of ['imp', 'pyq']) {
     if (existingTypes.has(t)) continue;
-    const file = v.cat.toLowerCase() + '-' + slug(v.subject) + '-' + t + '.html';
+    const file = v.cat.toLowerCase() + '-' + subjSlugPH + '-' + t + '.html';
     if (pages.has(file)) continue;
     // Use detailed for SEC/VAC/GE/AEC with more lines
     let useCustom = baseCustom;
@@ -758,9 +859,17 @@ for (const secKey of Object.keys(allOverviews)) {
   const cat = secKey.startsWith('sec-') ? 'SEC' : secKey.startsWith('vac-') ? 'VAC' : secKey.startsWith('ge-') ? 'GE' : secKey.startsWith('aec-') ? 'AEC' : null;
   if (!cat) continue;
   const baseSlug = secKey;
+  // Ensure a study-material hub exists for this overview subject so its placeholders have an incoming link (otherwise they'd be orphan)
+  const hubFile = baseSlug + '-study-material.html';
+  let hubCreated = pages.has(hubFile);
+  // We'll collect which placeholder files we emit for this subject to link from hub
+  const placeholderFilesForHub = [];
   for (const t of ['imp', 'pyq']) {
     const file = baseSlug + '-' + t + '.html';
-    if (pages.has(file)) continue;
+    if (pages.has(file)) {
+      placeholderFilesForHub.push({ file, label: t.toUpperCase() });
+      continue;
+    }
     // keep placeholder even if no year file yet — broad guide counts as 1, never 0
     let custom = getCustomBlock(cat, secKey);
     if (cat === 'SEC' && secDetailed[secKey]) custom = padCommonBlock(secDetailed[secKey][t === 'imp' ? 'imp_block' : 'pyq_block'] || custom, name, cat, t);
@@ -779,17 +888,44 @@ for (const secKey of Object.keys(allOverviews)) {
       body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
     }
     const displayCount = 1;
+    // add back-link to hub so placeholder has navigation and hub gets incoming count via placeholder's link? Actually hub needs link to placeholder, not vice versa, but add both
+    const bodyWithNav = body + `<p style="margin-top:10px"><a href="/pyq/${hubFile}" style="color:var(--blue);font-size:13px">← Back to ${esc(name)} hub</a></p>`;
     emit(file,
       name + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
       'Broad overview of ' + name + ' (' + CAT_LABEL[cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon.',
       name + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[cat] + ')',
       CAT_LABEL[cat],
       `<p><strong>${displayCount}</strong> document(s) — broad guide below. Official PDF will appear here and count will increase when you upload.</p>`,
-      body,
+      bodyWithNav,
       null,
       [['Is this the exact IMP?', 'Not yet — broad researched list. Verified PDF coming soon.']],
       { total: displayCount, aboutBlock: custom }
     );
+    placeholderFilesForHub.push({ file, label: t.toUpperCase() });
+  }
+  // If this overview subject had no combined hub (because no DB rows), create one now so placeholders are not orphan and master index can reach them
+  if (!hubCreated && placeholderFilesForHub.length) {
+    // Check if a combined hub for this subject already exists via ncCombined (would be pages.has) — if so skip, already linked
+    if (!pages.has(hubFile)) {
+      let hubCustom = getCustomBlock(cat, secKey);
+      if (hubCustom) hubCustom = padCommonBlock(hubCustom, name, cat, 'study');
+      else if (cat === 'SEC' && secDetailed[secKey]) hubCustom = padCommonBlock(secDetailed[secKey]['pyq_block'] || '', name, cat, 'study');
+      else if (cat === 'VAC' && vacDetailed[secKey]) hubCustom = padCommonBlock(vacDetailed[secKey]['pyq_block'] || '', name, cat, 'study');
+      else if (cat === 'GE' && geDetailed[secKey]) hubCustom = padCommonBlock(geDetailed[secKey]['pyq_block'] || '', name, cat, 'study');
+      else if (cat === 'AEC' && aecDetailed[secKey]) hubCustom = padCommonBlock(aecDetailed[secKey]['pyq_block'] || '', name, cat, 'study');
+      if (!hubCustom) hubCustom = padCommonBlock(`<h2>About ${esc(name)} — ${esc(CAT_LABEL[cat])}</h2><p>${esc(name)} (${esc(CAT_LABEL[cat])}) at Delhi University. This hub collects syllabus, PYQs and notes semester-wise.</p>`, name, cat, 'study');
+      const hubNav = `<h3 style="font-size:14px;margin:14px 0 6px">Browse</h3><div class="rel">${placeholderFilesForHub.map(p=>`<a href="/pyq/${p.file}">${esc(p.label)}</a>`).join('')}</div>`;
+      HUBS.push({ file: hubFile, label: `${name} (${CAT_LABEL[cat]})` });
+      emit(hubFile,
+        `${name} Study Material - ${CAT_LABEL[cat]} | Sulaksh`,
+        `${name} (${CAT_LABEL[cat]}) — syllabus, PYQs & notes. Delhi University. Free.`,
+        `${name} - Complete Study Material (${CAT_LABEL[cat]})`,
+        CAT_LABEL[cat],
+        `<p><strong>1</strong> document(s) - overview for this course.</p>`,
+        `<p>Overview for ${esc(name)}.</p>` + hubNav,
+        null, null, { aboutBlock: hubCustom, total: 1 }
+      );
+    }
   }
 }
 
@@ -822,7 +958,8 @@ emit('where-to-find-du-pyqs.html',
    <h2>How to verify you have the right PYQ</h2>
    <p>Before you solve, check three things on the paper: (1) paper code matches your syllabus handout, (2) year says 2023-2026 for current UGCF pattern, (3) semester tag matches your exam form. If any of those mismatch, open the syllabus tab for your subject on Sulaksh — it sits alongside the PYQs in the same semester folder and shows the correct DSC order.</p>
    <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college syllabus handout. All PYQs on Sulaksh are free to view; the exact verified PDF will auto-appear when admin uploads.</p>
-   <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Make one page per unit with heading, 4-5 bullets and one diagram or table. Time-box each unit to two days, solve one PYQ numerical daily or write one 15-mark answer weekly, and cross-check with syllabus Units 1-4. Verify from your college handout — the broad guide above is a bridge until the exact PDF is uploaded.</div>`,
+    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Make one page per unit with heading, 4-5 bullets and one diagram or table. Time-box each unit to two days, solve one PYQ numerical daily or write one 15-mark answer weekly, and cross-check with syllabus Units 1-4. Verify from your college handout — the broad guide above is a bridge until the exact PDF is uploaded.</div>`,
+  null,
   [['Are these really free?', 'Yes. Every paper on Sulaksh is free to view, no sign-up.'],
    ['Do you have my semester?', 'Papers are organised semester-wise from Sem 1 to Sem 8 for Honours, Programme and GE/VAC/AEC/SEC courses.'],
    ['Is this the latest UGCF/NEP pattern?', 'Yes — 2023-2026 papers follow the current UGCF/NEP framework. Pre-2022 codes are marked separately and not mixed.'],
@@ -843,7 +980,8 @@ emit('where-to-find-du-syllabus.html',
    <h2>DU SOL vs Regular — same syllabus?</h2>
    <p>Yes — DU SOL follows the same UGCF syllabus as regular colleges for GE/VAC/SEC/AEC and core papers. The PDF content is identical; only the exam timing may differ. If you are SOL, use the same semester folders on Sulaksh and verify your paper code with the SOL handout.</p>
    <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college handout. Verify the final unit list and paper code from your college — the broad overview here is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</p>
-   <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Copy the Unit titles in order, make one page per unit, and run the 10-minute PYQ mapping technique — mark which Unit each past question came from to see where to focus next. Time-box each Unit to two days. Verify from your college handout.</div>`,
+    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Copy the Unit titles in order, make one page per unit, and run the 10-minute PYQ mapping technique — mark which Unit each past question came from to see where to focus next. Time-box each Unit to two days. Verify from your college handout.</div>`,
+  null,
   [['Is this the new NEP syllabus?', 'Yes — material follows the current UGCF/NEP structure used across DU colleges.'],
    ['Is DU SOL syllabus different?', 'No — same UGCF content as regular. Use the same semester folders.'],
    ['Where are the PYQs for the same syllabus?', 'On the same subject page on Sulaksh — syllabus and PYQs sit side-by-side per semester.']]);
@@ -868,7 +1006,8 @@ emit('best-website-for-du-pyqs-study-material.html',
    <h2>How to pick in 30 seconds</h2>
    <p>Open your programme from <a href="/du.html">DU & College</a>, pick your semester, then open the syllabus Units 1-4 alongside the PYQ for that semester. If you can map each past question to a Unit in 10 minutes, you have the right source. If you can’t, the source is mixing old patterns. Sulaksh’s one-page-per-unit notes are formatted exactly for that mapping, with a PYQ pointer per unit.</p>
    <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college handout. Verify the final unit list and paper code from your college.</p>
-   <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Copy the Unit titles in order, make one page per unit with heading, 4-5 bullets and one diagram or table, then solve one PYQ numerical daily or write one 15-mark answer weekly. Time-box each unit to two days and revise with the 10-minute PYQ mapping technique.</div>`,
+    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Copy the Unit titles in order, make one page per unit with heading, 4-5 bullets and one diagram or table, then solve one PYQ numerical daily or write one 15-mark answer weekly. Time-box each unit to two days and revise with the 10-minute PYQ mapping technique.</div>`,
+  null,
   [['Is registration required?', 'No. Open any paper and start solving.'],
    ['Which source is official?', 'DU Exam Portal is official, but Sulaksh organises the same papers semester-wise with syllabus pairing and permanent URLs.'],
    ['Is this free for all semesters?', 'Yes — Sem 1 to Sem 8 for Honours, Programme and GE/VAC/AEC/SEC, all free.']]);
@@ -892,6 +1031,8 @@ emit('index.html',
    <div class="rel">${hubChips}</div>
    <h2>Silo Pages — Browse by Programme</h2>
    <div class="rel"><a href="/pyq/bcom-pyqs.html">BCom PYQs</a><a href="/pyq/ba-pyqs.html">BA PYQs</a><a href="/pyq/bsc-pyqs.html">BSc PYQs</a><a href="/pyq/programme-pyqs.html">Programme PYQs</a></div>
+   <h2>Guides</h2>
+   <div class="rel"><a href="/pyq/where-to-find-du-pyqs.html">Where to Find DU PYQs</a><a href="/pyq/where-to-find-du-syllabus.html">Where to Find DU Syllabus</a><a href="/pyq/best-website-for-du-pyqs-study-material.html">Best Website for DU PYQs</a></div>
    <h2>More Ways In</h2>
    <p>Pick your programme from the <a href="/du.html">DU & College sections</a>, or go back <a href="/">Home</a>.</p>`,
   null, null, { aboutBlock: hubAbout, total: HUBS.length });
@@ -916,16 +1057,16 @@ for (const silo of siloDefs) {
   emit(silo.file, silo.title, silo.desc, silo.h1, 'Delhi University · Silo', `<p><strong>${picks.length} collections</strong> for ${esc(silo.label)} — all free.</p>`, `<div class="rel">${chips}</div>`, HUBS.slice(0,6).map(h=>({file:h.file, label:h.label})), null, { aboutBlock: aboutSilo, total: picks.length });
 }
 
-// ===== sitemap — exclude noindexed thin pages =====
+// ===== sitemap — exclude noindexed thin pages + canonicalized duplicates =====
 const TODAY = new Date().toISOString().slice(0, 10);
-const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f));
+const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !SITEMAP_EXCLUDE.has(f));
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + ['', 'index.html', 'du.html', 'one-day.html', 'guides.html', 'contact.html']
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
 
-console.log('TOTAL SITEMAP URLs:', 6 + sitemapPages.length, `(excluded ${noIndexFiles.size} thin <3)`);
+console.log('TOTAL SITEMAP URLs:', 6 + sitemapPages.length, `(excluded ${noIndexFiles.size} thin <3, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
 console.log('NoIndex thin files:', [...noIndexFiles].slice(0,10).join(', ') + (noIndexFiles.size>10?' ...':''));
 
 // ===== bake du.html counts at build time — fix "0 files" thin in raw HTML =====
