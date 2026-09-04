@@ -400,13 +400,23 @@ function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
     <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this paper:</strong> Start with the official DU syllabus PDF — copy the Unit titles in order, then make one page per Unit with heading, 4-5 bullet points and one diagram or table. This one-page-per-unit format mirrors DU's marking scheme: definition + explanation + example + concluding line. For numerical papers, keep a separate formula sheet and solve one PYQ numerical daily under timed conditions; for theory papers, write one 15-mark answer weekly and get it checked for structure. Use senior notes only to cross-check your one-pagers, not as a replacement — toppers compress 200 pages into 20 revision pages with this method. Time-box each Unit to two days and revise with the 10-minute PYQ mapping technique described above — mark which Unit each past question came from to see where to focus next. Verify the final unit list and paper code from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
     <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener">DU Exam Portal</a> · your college's ${esc(s)} syllabus handout.</p>`;
 }
-const minOne = n => Math.max(1, Number(n) || 1);
+const honestCount = n => Math.max(0, Number(n) || 0);
+const displayLabel = (n, hasGuide) => {
+  const num = honestCount(n);
+  if (num === 0 && hasGuide) return 'Guide available';
+  if (num === 0) return 'Coming soon';
+  return `${num} document${num === 1 ? '' : 's'}`;
+};
+const badgeLabel = (n, hasGuide) => {
+  const num = honestCount(n);
+  if (num === 0 && hasGuide) return 'Guide available';
+  if (num === 0) return 'Coming soon';
+  return `${num} file${num === 1 ? '' : 's'}`;
+};
 function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   if (pages.has(file)) return;
-  // force minimum 1 for any count to avoid "0 document(s)" doorway
-  if (opts && opts.total !== undefined) opts.total = minOne(opts.total);
-  // also patch intro/body if they contain "0 document" from displayCount
-  if (intro && intro.includes('>0<')) intro = intro.replace(/<strong>0<\/strong>/g, '<strong>1</strong>');
+  // keep honest count — do not fabricate 1 when 0 (was minOne)
+  if (opts && opts.total !== undefined) opts.total = honestCount(opts.total);
   const hasCustom = opts && opts.aboutBlock;
   const isThin = opts && opts.total !== undefined && opts.total < 3 && !hasCustom;
   if (isThin) noIndexFiles.add(file);
@@ -581,7 +591,7 @@ for (const [key, semMap] of bySubjTrack) {
   const [subject, track] = key.split('||');
   let total = [...semMap.values()].reduce((a, v) => a + v.length, 0);
   const semCount = semMap.size;
-  total = minOne(total);
+  total = honestCount(total);
   HUBS.push({ file: ovFile(subject, track), label: `${subject} ${track}` });
   let aboutBlock = uniqueAboutBlock(subject, track, total, semCount);
   // pad CORE overview to guarantee >600 even for 1-doc minor subjects (e.g. mathematics-minor)
@@ -619,12 +629,13 @@ for (const [key, semMap] of bySubjTrack) {
     ${hubYearFiles.size?`<h3 style="font-size:14px;margin:14px 0 6px">Browse by Year</h3><div class="rel">${[...hubYearFiles.entries()].map(([f,l])=>`<a href="/pyq/${f}">${esc(l)}</a>`).join('')}</div>`:''}
     ${hubTypeFiles.size?`<h3 style="font-size:14px;margin:14px 0 6px">Browse by Type</h3><div class="rel">${[...hubTypeFiles.entries()].map(([f,l])=>`<a href="/pyq/${f}">${esc(l)}</a>`).join('')}</div>`:''}
   `;
+  const hubDisplay = displayLabel(total, !!aboutBlock);
   emit(ovFile(subject, track),
-    `${subject} ${track} PYQs, Syllabus & Notes – DU ${total} Docs | Sulaksh`,
-    `All ${subject} ${track.toLowerCase()} material for Delhi University — ${total} docs, semester-wise PYQs, syllabus & notes. Free.`,
+    `${subject} ${track} PYQs, Syllabus & Notes – DU ${honestCount(total)} Docs | Sulaksh`,
+    `All ${subject} ${track.toLowerCase()} material for Delhi University — ${honestCount(total)} docs, semester-wise PYQs, syllabus & notes. Free.`,
     `${subject} ${track} — Question Papers & Study Material`,
     'Delhi University · Core',
-    `<p><strong>${minOne(total)} documents</strong>, all free.</p>`,
+    `<p><strong>${hubDisplay}</strong>${hubDisplay.includes('Guide')||hubDisplay.includes('Coming')?'':' documents'}, all free.</p>`,
     [...semMap.entries()].map(([sn, arr]) =>
       `<h2>${sn}</h2><ul class="plist">${arr.slice(0, 12).map(listItem).join('')}</ul>`).join('') + hubNavHtml,
     [...bySubjTrack.keys()].filter(k => k !== key && k.split('||')[0] === subject)
@@ -647,15 +658,16 @@ for (const [key, semMap] of bySubjTrack) {
       ...[...byYr.keys()].map(y=>`<a href="/pyq/${baseSlug}${y}-pyqs.html">${esc(semName)} ${esc(y)}</a>`)
     ].join('');
     const semNavHtml = semNavChips ? `<h3 style="font-size:14px;margin:14px 0 6px">Browse ${esc(semName)} by Type & Year</h3><div class="rel">${semNavChips}</div><p style="margin-top:8px"><a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">← Back to ${esc(subject)} ${esc(track)} hub</a></p>` : `<p style="margin-top:8px"><a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">← Back to ${esc(subject)} ${esc(track)} hub</a></p>`;
-    const displayCountSem = minOne(arr.length + 1);
+    const displayCountSem = honestCount(arr.length);
+    const semHasGuide = true;
     let semBlock = coreSemesterBlock(subject, track, semName, null, null, displayCountSem);
     semBlock = padCommonBlock(semBlock, subject, 'CORE-' + track, semName + '-' + track);
     emit(`${baseSlug}pyqs.html`,
       `${subject} ${track} ${semName} PYQs & Material – DU | Sulaksh`,
-      `${minOne(arr.length)} documents for ${subject} ${track.toLowerCase()} ${semName.toLowerCase()} — Delhi University. Free instant view.`,
+      `${displayLabel(arr.length, semHasGuide)} for ${subject} ${track.toLowerCase()} ${semName.toLowerCase()} — Delhi University. Free instant view.`,
       `${subject} ${track} — ${semName}`,
       'Delhi University · Free',
-      `<p><strong>${displayCountSem}</strong> document(s) — includes broad guide + PDFs for <strong>${semName}</strong>.</p>`,
+      `<p><strong>${displayLabel(arr.length, semHasGuide)}</strong>${displayLabel(arr.length, semHasGuide).includes('Guide')||displayLabel(arr.length, semHasGuide).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for <strong>${semName}</strong>.</p>`,
       `<ul class="plist">${arr.map(listItem).join('')}</ul>` + semNavHtml,
       [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
         const n2 = (s2.match(/\d+/) || [''])[0];
@@ -668,25 +680,25 @@ for (const [key, semMap] of bySubjTrack) {
         CANONICAL_OVERRIDES.set(pyqFile, pyqsFile);
         SITEMAP_EXCLUDE.add(pyqFile);
       }
-      const displayCountType = minOne(arr2.length + 1);
+      const displayCountType = honestCount(arr2.length);
       let typeBlock = coreSemesterBlock(subject, track, semName, TN[t], null, displayCountType);
       typeBlock = padCommonBlock(typeBlock, subject, 'CORE-' + track, semName + '-' + t);
       emit(`${baseSlug}${t}.html`,
         `${subject} ${track} ${semName} ${TN[t]} – DU Free | Sulaksh`,
-        `${minOne(arr2.length)} documents — Delhi University, free.`,
+        `${displayLabel(arr2.length, true)} — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
-        'Delhi University · Free', `<p><strong>${displayCountType}</strong> document(s) — includes broad guide + PDFs for ${TN[t]}.</p>`,
+        'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${TN[t]}.</p>`,
         `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountType, aboutBlock: typeBlock });
     }
     for (const [y, arr2] of byYr) {
-      const displayCountYr = minOne(arr2.length + 1);
+      const displayCountYr = honestCount(arr2.length);
       let yrBlock = coreSemesterBlock(subject, track, semName, null, y, displayCountYr);
       yrBlock = padCommonBlock(yrBlock, subject, 'CORE-' + track, semName + '-' + y);
       emit(`${baseSlug}${y}-pyqs.html`,
         `${subject} ${track} ${semName} PYQs ${y} – Delhi University | Sulaksh`,
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
-        'Delhi University · Free', `<p><strong>${displayCountYr}</strong> document(s) — includes broad guide + PDFs for ${y}.</p>`,
+        'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${y}.</p>`,
         `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountYr, aboutBlock: yrBlock });
     }
   }
@@ -699,14 +711,14 @@ for (const [key, semMap] of bySubjTrack) {
   }
   const TNA = { pyq: 'PYQ', syllabus: 'Syllabus', imp: 'Important Questions', notes: 'Notes' };
   for (const [t, arr] of typesAll) {
-    const displayCountAll = minOne(arr.length + 1);
+    const displayCountAll = honestCount(arr.length);
     let allBlock = coreSemesterBlock(subject, track, "All Semesters", TNA[t], null, displayCountAll);
     allBlock = padCommonBlock(allBlock, subject, 'CORE-' + track, 'all-' + t);
     emit(`${slug(subject)}-${slug(track)}-${t}-all.html`,
       `All ${subject} ${track} ${TNA[t]} – Across Semesters | Sulaksh`,
-      `${minOne(arr.length)} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
+      `${displayLabel(arr.length, true)} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
       `${subject} ${track} — All ${TNA[t]}`,
-      'Delhi University · Free', `<p><strong>${displayCountAll}</strong> document(s) — includes broad guide + PDFs across semesters.</p>`,
+      'Delhi University · Free', `<p><strong>${displayLabel(arr.length, true)}</strong>${displayLabel(arr.length, true).includes('Guide')||displayLabel(arr.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs across semesters.</p>`,
       `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: displayCountAll, aboutBlock: allBlock });
   }
 }
@@ -745,8 +757,9 @@ for (const [k, arr] of ncByType) {
   else if (cat === 'AEC' && aecDetailed[secKey]) useCustom = aecDetailed[secKey][type === 'imp' ? 'imp_block' : 'pyq_block'] || custom;
   // pad to guarantee >600w page (overview 335w -> 500w becomes 680w after pad)
   if (useCustom) useCustom = padCommonBlock(useCustom, subject, cat, type + '-' + slug(subject));
-  const displayCount = minOne(arr.length + 1); // broad guide counts as 1, never 0
-  const opts = useCustom ? { total: displayCount, aboutBlock: useCustom } : { total: minOne(arr.length), aboutBlock: custom };
+  const displayCount = honestCount(arr.length);
+  const hasGuideNC = !!useCustom;
+  const opts = { total: displayCount, aboutBlock: useCustom };
   // If we used detailed, ensure opts has detailed
   const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom } : opts;
   const subjFileSlug = safeSlug(subject);
@@ -754,7 +767,7 @@ for (const [k, arr] of ncByType) {
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
     arr.length + ' ' + subject + ' ' + CAT_LABEL[cat] + ' ' + TYPE_LABEL[type].toLowerCase() + ' - Delhi University NEP/UGCF, free instant view.',
     subject + ' - ' + TYPE_LABEL[type] + ' (' + CAT_LABEL[cat] + ')',
-    CAT_LABEL[cat], `<p><strong>${displayCount}</strong> document(s) — includes broad guide + PDFs. Count increases when you upload.</p>`,
+    CAT_LABEL[cat], `<p><strong>${displayLabel(arr.length, hasGuideNC)}</strong>${displayLabel(arr.length, hasGuideNC).includes('Guide')||displayLabel(arr.length, hasGuideNC).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs. Count increases when you upload.</p>`,
     '<ul class="plist">' + arr.map(listItem).join('') + '</ul><p style="margin-top:10px"><a href="/pyq/' + cat.toLowerCase() + '-' + subjFileSlug + '-study-material.html" style="color:var(--blue);font-size:13px">← Back to ' + esc(subject) + ' hub</a></p>', null, null, finalOpts);
 }
 for (const [k, arr] of ncByYear) {
@@ -767,15 +780,16 @@ for (const [k, arr] of ncByYear) {
   else if (cat === 'GE' && geDetailed[secKey]) useCustom = geDetailed[secKey]['pyq_block'] || custom;
   else if (cat === 'AEC' && aecDetailed[secKey]) useCustom = aecDetailed[secKey]['pyq_block'] || custom;
   if (useCustom) useCustom = padCommonBlock(useCustom, subject, cat, y + '-' + slug(subject));
-  const displayCount = minOne(arr.length + 1);
-  const opts = useCustom ? { total: displayCount, aboutBlock: useCustom } : { total: minOne(arr.length) };
-  const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom } : { total: displayCount, aboutBlock: useCustom };
+  const displayCount = honestCount(arr.length);
+  const hasGuideNC2 = !!useCustom;
+  const opts = { total: displayCount, aboutBlock: useCustom };
+  const finalOpts = { total: displayCount, aboutBlock: useCustom };
   const subjFileSlug2 = safeSlug(subject);
   emit(cat.toLowerCase() + '-' + subjFileSlug2 + '-' + y + '-pyqs.html',
     subject + ' ' + CAT_LABEL[cat] + ' PYQs ' + y + ' - Delhi University | Sulaksh',
     arr.length + ' ' + subject + ' (' + CAT_LABEL[cat] + ') document(s) from ' + y + ' - Delhi University, free.',
     subject + ' - ' + y,
-    CAT_LABEL[cat], `<p><strong>${displayCount}</strong> document(s) — includes broad guide + PDFs.</p>`,
+    CAT_LABEL[cat], `<p><strong>${displayLabel(arr.length, hasGuideNC2)}</strong>${displayLabel(arr.length, hasGuideNC2).includes('Guide')||displayLabel(arr.length, hasGuideNC2).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs.</p>`,
     '<ul class="plist">' + arr.map(listItem).join('') + '</ul><p style="margin-top:10px"><a href="/pyq/' + cat.toLowerCase() + '-' + subjFileSlug2 + '-study-material.html" style="color:var(--blue);font-size:13px">← Back to ' + esc(subject) + ' hub</a></p>', null, null, finalOpts);
 }
 for (const [k, v] of ncCombined) {
@@ -783,7 +797,8 @@ for (const [k, v] of ncCombined) {
   if (v.items.length < 1) continue;
   const subjSlugNC = safeSlug(v.subject);
   HUBS.push({ file: v.cat.toLowerCase() + '-' + subjSlugNC + '-study-material.html', label: `${v.subject} (${v.label})` });
-  let aboutNC = uniqueAboutBlock(v.subject, v.label, minOne(v.items.length), 1);
+  const honestTotalNC = honestCount(v.items.length);
+  let aboutNC = uniqueAboutBlock(v.subject, v.label, honestTotalNC, 1);
   aboutNC = padCommonBlock(aboutNC, v.subject, v.cat, 'study-' + v.items.length);
   // Build chips linking to every child listing page for this subject (type + year) so they are not orphaned
   const ncChildChips = [];
@@ -802,13 +817,14 @@ for (const [k, v] of ncCombined) {
     }
   }
   const ncNavHtml = ncChildChips.length ? `<h3 style="font-size:14px;margin:14px 0 6px">Browse by Type & Year</h3><div class="rel">${ncChildChips.join('')}</div>` : '';
+  const ncHasGuide = !!aboutNC;
   emit(v.cat.toLowerCase() + '-' + subjSlugNC + '-study-material.html',
     v.subject + ' Study Material - ' + v.label + ' PYQs, Syllabus & Notes | Sulaksh',
-    minOne(v.items.length) + ' ' + v.subject + ' documents (' + v.label + ') - PYQs, syllabus & notes. Delhi University. Free.',
+    `${honestCount(v.items.length)} ${v.subject} documents (' + v.label + ') - PYQs, syllabus & notes. Delhi University. Free.`,
     v.subject + ' - Complete Study Material (' + v.label + ')',
     v.label,
-    '<p><strong>' + minOne(v.items.length) + ' documents</strong> - everything available for this course.</p>',
-    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: minOne(v.items.length) });
+    `<p><strong>${displayLabel(v.items.length, ncHasGuide)}</strong>${displayLabel(v.items.length, ncHasGuide).includes('Guide')||displayLabel(v.items.length, ncHasGuide).includes('Coming')?'':' documents'} - everything available for this course.</p>`,
+    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: honestTotalNC });
 }
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
   for (const [k, v] of ncCombined) {
@@ -921,9 +937,9 @@ for (const secKey of Object.keys(allOverviews)) {
         `${name} (${CAT_LABEL[cat]}) — syllabus, PYQs & notes. Delhi University. Free.`,
         `${name} - Complete Study Material (${CAT_LABEL[cat]})`,
         CAT_LABEL[cat],
-        `<p><strong>1</strong> document(s) - overview for this course.</p>`,
+        `<p><strong>Guide available</strong> - overview for this course.</p>`,
         `<p>Overview for ${esc(name)}.</p>` + hubNav,
-        null, null, { aboutBlock: hubCustom, total: 1 }
+        null, null, { aboutBlock: hubCustom, total: 0 }
       );
     }
   }
