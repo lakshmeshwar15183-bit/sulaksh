@@ -1085,6 +1085,70 @@ fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset
 console.log('TOTAL SITEMAP URLs:', 6 + sitemapPages.length, `(excluded ${noIndexFiles.size} thin <3, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
 console.log('NoIndex thin files:', [...noIndexFiles].slice(0,10).join(', ') + (noIndexFiles.size>10?' ...':''));
 
+// ===== orphan pyq/paper cleanup — 2-consecutive-run safety =====
+// Removes pyq/paper/*.html where the material ID no longer exists in live API.
+// Safety: first time a file is missing, queue it in pending-removals.json.
+// Only delete on the NEXT run if still missing (~12h, given 6h schedule).
+// If it reappears, clear queue. Uses fs.unlinkSync + git add -A to stage deletions.
+try {
+  const pendingPath = path.resolve(process.cwd(), 'assets/data/pending-removals.json');
+  let pending = {};
+  try { pending = JSON.parse(fs.readFileSync(pendingPath, 'utf8')); } catch {}
+  const expectedPaperFiles = new Set([...idToFile.values()]); // e.g. "paper/foo-abc12345.html"
+  const paperDir = path.join(OUT, 'paper');
+  let existingFiles = [];
+  try { existingFiles = fs.readdirSync(paperDir).filter(f => f.endsWith('.html')); } catch {}
+  const nowIso = new Date().toISOString();
+  let queued = 0, deleted = 0, cleared = 0;
+  for (const file of existingFiles) {
+    const rel = `paper/${file}`;
+    if (!expectedPaperFiles.has(rel)) {
+      if (!pending[rel]) {
+        pending[rel] = { firstSeen: nowIso, lastSeen: nowIso, count: 1 };
+        queued++;
+        console.log(`[orphan] QUEUED for next run (1st missing, ~6h ago will delete if still missing): ${rel}`);
+      } else {
+        pending[rel].lastSeen = nowIso;
+        pending[rel].count = (pending[rel].count || 1) + 1;
+        if (pending[rel].count >= 2) {
+          try {
+            const fullPath = path.join(paperDir, file);
+            fs.unlinkSync(fullPath);
+            console.log(`[orphan] DELETED (2nd consecutive missing, ~12h+): ${rel}`);
+            deleted++;
+            delete pending[rel];
+          } catch (e) {
+            console.error(`[orphan] failed to delete ${rel}:`, e.message);
+          }
+        } else {
+          console.log(`[orphan] still pending (${pending[rel].count} times missing): ${rel}`);
+        }
+      }
+    }
+  }
+  for (const rel of Object.keys(pending)) {
+    if (expectedPaperFiles.has(rel)) {
+      console.log(`[orphan] REAPPEARED — clearing from pending: ${rel}`);
+      delete pending[rel];
+      cleared++;
+    }
+  }
+  for (const rel of Object.keys(pending)) {
+    const fileName = rel.startsWith('paper/') ? rel.slice(6) : rel;
+    const fullPath = path.join(paperDir, fileName);
+    if (!fs.existsSync(fullPath)) {
+      console.log(`[orphan] pending file no longer on disk, clearing: ${rel}`);
+      delete pending[rel];
+    }
+  }
+  fs.mkdirSync(path.dirname(pendingPath), { recursive: true });
+  fs.writeFileSync(pendingPath, JSON.stringify(pending, null, 2));
+  console.log(`[orphan] summary: ${queued} newly queued, ${deleted} deleted, ${cleared} reappeared/cleared, ${Object.keys(pending).length} still pending`);
+  if (deleted > 0) console.log(`[orphan] AUDIT: deleted files will be staged as deletions via 'git add -A' in workflow — verify in commit diff`);
+} catch (e) {
+  console.error('[orphan] cleanup failed (non-fatal):', e);
+}
+
 // ===== bake du.html counts at build time — fix "0 files" thin in raw HTML =====
 // Keep JS fetch as live fallback, but raw HTML must already contain real numbers
 // so Google's crawler never indexes 0. Reads the 15-min snapshot if present,

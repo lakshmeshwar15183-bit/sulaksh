@@ -38,6 +38,10 @@ jobs:
           git fetch origin gh-pages
           git checkout gh-pages
           # Only ship static site assets. Never publish backend/scripts source.
+          # Use rm -rf for pyq so deletions (orphan pruning via pending-removals.json)
+          # are actually propagated — plain 'git checkout main -- pyq' leaves
+          # stale files behind as orphans (ghost pages).
+          rm -rf pyq
           git checkout main -- pyq sitemap.xml index.html du.html _redirects _headers || true
           git add -A
           git diff --cached --quiet || git commit -m "SEO sync $(date -u '+%F %H:%M') UTC"
