@@ -207,6 +207,18 @@ function pageHTML(o) {
 <meta name="author" content="Lakshmeshwar Pandey">
 ${noIndexTag}
 <link rel="canonical" href="${SITE}/pyq/${canonicalFile}">
+<meta property="og:type" content="${o.file.startsWith('paper/') ? 'article' : 'website'}">
+<meta property="og:title" content="${esc(String(o.title).split(' | ')[0])}">
+<meta property="og:description" content="${esc(o.desc)}">
+<meta property="og:url" content="${SITE}/pyq/${canonicalFile}">
+<meta property="og:site_name" content="Sulaksh">
+<meta property="og:image" content="${SITE}/stack.png">
+<meta property="og:image:width" content="1536">
+<meta property="og:image:height" content="1024">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(String(o.title).split(' | ')[0])}">
+<meta name="twitter:description" content="${esc(o.desc)}">
+<meta name="twitter:image" content="${SITE}/stack.png">
 <link rel="icon" type="image/png" href="/assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
