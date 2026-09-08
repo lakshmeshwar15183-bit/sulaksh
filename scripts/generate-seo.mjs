@@ -212,13 +212,15 @@ ${noIndexTag}
 <meta property="og:description" content="${esc(o.desc)}">
 <meta property="og:url" content="${SITE}/pyq/${canonicalFile}">
 <meta property="og:site_name" content="Sulaksh">
-<meta property="og:image" content="${SITE}/stack.png">
-<meta property="og:image:width" content="1536">
-<meta property="og:image:height" content="1024">
+<meta property="og:image" content="${SITE}/assets/images/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sulaksh — Learn. Prepare. Achieve.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(String(o.title).split(' | ')[0])}">
 <meta name="twitter:description" content="${esc(o.desc)}">
-<meta name="twitter:image" content="${SITE}/stack.png">
+<meta name="twitter:image" content="${SITE}/assets/images/og-card.png">
+<meta name="twitter:image:alt" content="Sulaksh — Learn. Prepare. Achieve.">
 <link rel="icon" type="image/png" href="/assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -240,7 +242,7 @@ ${noIndexTag}
 <h1>${esc(o.h1)}</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="${today}">${today}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
  ${o.intro}
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><a href="#comments" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">💬 Doubts</a><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#comments" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">💬 Doubts</a><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
 <nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li><li><a href="#comments" style="color:var(--blue)">Doubts & Discussion</a></li></ul></nav>
 <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.body}
@@ -254,6 +256,28 @@ ${o.aboutBlock || ""}
 <script>
 const API='${API}';
 async function openMat(id){location.href='/view.html?v='+VIEW_VERSION+'&id='+encodeURIComponent(id)}
+function sharePage(){
+  const url=location.href;
+  const title=document.title;
+  if(navigator.share){
+    navigator.share({title, url}).catch(()=>{});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>{
+      let t=document.getElementById('shareToast');
+      if(!t){
+        t=document.createElement('div');
+        t.id='shareToast';
+        t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,.2)';
+        document.body.appendChild(t);
+      }
+      t.textContent='✓ Link copied';
+      t.style.display='block';
+      setTimeout(()=>t.style.display='none',2000);
+    });
+  } else {
+    prompt('Copy link:', url);
+  }
+}
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 </body></html>`;
