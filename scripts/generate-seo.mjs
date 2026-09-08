@@ -430,8 +430,7 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   // keep honest count — do not fabricate 1 when 0 (was minOne)
   if (opts && opts.total !== undefined) opts.total = honestCount(opts.total);
   const hasCustom = opts && opts.aboutBlock;
-  const isThin = opts && opts.total !== undefined && opts.total < 3 && !hasCustom;
-  if (isThin) noIndexFiles.add(file);
+  let isThin = opts && opts.total !== undefined && opts.total < 3 && !hasCustom;
   const faqH = (faqs && faqs.length ? faqs : [
     ['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'],
     ['Is this official Delhi University material?', 'Yes — sourced from DU examinations under the UGCF/NEP framework.'],
@@ -443,7 +442,19 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
     <p>These <strong>Delhi University previous year question papers and study materials</strong> are among the most searched resources by BA, BSc and BCom students under the <strong>NEP/UGCF framework</strong>. Solving previous year question papers is the single most effective way to understand DU's exam pattern, marking scheme and frequently repeated questions. Every paper here is free to view.</p>
     <p>Pair these papers with semester notes, the official DU syllabus and timed practice for maximum scores. Recent years' papers carry the most weight as they follow the latest pattern.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
-  const html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: isThin });
+  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: isThin });
+  // AdSense thin guard: if actual words <600, force noindex regardless of doc count (covers hasCustom but still thin)
+  if (!isThin) {
+    const textOnly = html.replace(/<[^>]+>/g, ' ');
+    const wordCount = textOnly.split(/\s+/).filter(Boolean).length;
+    if (wordCount < 600) {
+      console.log(`[thin-guard] forcing noindex for ${file}: words=${wordCount} (<600) total=${opts && opts.total}`);
+      isThin = true;
+      noIndexFiles.add(file);
+      html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: true });
+    }
+  }
+  if (isThin) noIndexFiles.add(file);
   fs.mkdirSync(path.dirname(path.join(OUT, file)), { recursive: true });
   fs.writeFileSync(path.join(OUT, file), html);
   pages.set(file, title);
