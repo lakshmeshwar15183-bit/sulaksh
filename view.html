@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.googlesyndication.com https://*.googletrustservices.com https://www.googletagmanager.com https://www.google-analytics.com https://fundingchoicesmessages.google.com https://static.cloudflareinsights.com https://*.google.com https://*.googleadservices.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com; font-src 'self' https://fonts.gstatic.com https://*.gstatic.com; img-src 'self' data: https://cdn.sulaksh.online https://*.google.com https://*.gstatic.com https://*.googlesyndication.com https://*.doubleclick.net https://*.googletrustservices.com; connect-src 'self' https://sulaksh-backend-production.up.railway.app https://cdn.sulaksh.online https://*.googlesyndication.com https://www.google-analytics.com https://www.googletagmanager.com https://*.doubleclick.net https://*.cloudflareinsights.com https://fundingchoicesmessages.google.com; frame-src 'self' blob: https://www.youtube.com https://cdn.sulaksh.online https://*.googlesyndication.com https://*.doubleclick.net https://*.googletrustservices.com https://fundingchoicesmessages.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.googlesyndication.com https://*.googletrustservices.com https://www.googletagmanager.com https://www.google-analytics.com https://fundingchoicesmessages.google.com https://static.cloudflareinsights.com https://*.google.com https://*.googleadservices.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com; font-src 'self' https://fonts.gstatic.com https://*.gstatic.com; img-src 'self' data: https://cdn.sulaksh.online https://*.google.com https://*.gstatic.com https://*.googlesyndication.com https://*.doubleclick.net https://*.googletrustservices.com; connect-src 'self' https://sulaksh-backend-production.up.railway.app https://cdn.sulaksh.online https://*.googlesyndication.com https://www.google-analytics.com https://www.googletagmanager.com https://*.doubleclick.net https://*.cloudflareinsights.com https://fundingchoicesmessages.google.com https://docs.google.com https://drive.google.com; frame-src 'self' blob: https://www.youtube.com https://cdn.sulaksh.online https://docs.google.com https://drive.google.com https://*.googlesyndication.com https://*.doubleclick.net https://*.googletrustservices.com https://fundingchoicesmessages.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>View Document – Sulaksh</title>
@@ -148,55 +148,54 @@ function showFallback(url, note){
   const wrap = document.getElementById('iframeWrap');
   wrap.querySelectorAll('iframe,object,embed').forEach((e) => e.remove());
 
-  // Mobile: try inline blob view first (no download). Direct CDN links often
-  // trigger "Download" on phones if the browser has "Download PDFs" enabled.
-  // Fetching as blob and opening a same-origin object URL forces inline view.
+  // Mobile: use Google Docs viewer first - most reliable inline on phones
+  // (blob iframe often blank on Android WebView, direct CDN triggers Download)
   const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
   if (isTouch) {
     spin.style.display = 'block';
-    msg.textContent = 'Loading document…';
+    msg.textContent = 'Loading viewer…';
     msg.style.display = 'block';
-    const panel = document.createElement('div');
-    panel.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;color:#cfd9ec;background:#202a3a';
-    panel.innerHTML = '<div style="font-size:15px;max-width:280px">Preparing inline view…</div><div class="spin" style="margin:12px auto"></div>';
-    wrap.appendChild(panel);
-    try {
-      const r = await fetchRetry(url, { mode: 'cors' }, 2);
-      if (!r.ok) throw new Error('status ' + r.status);
-      const blob = await r.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      panel.innerHTML = '<div style="font-size:13px;color:#cfd9ec;margin-bottom:8px">Swipe to read — or open in new tab</div>' +
-        '<a href="' + blobUrl + '" target="_blank" rel="noopener" style="display:inline-block;padding:10px 18px;background:#4d8dff;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:10px">Open in new tab ↗</a>';
-      const f = document.createElement('iframe');
-      f.src = blobUrl;
-      f.setAttribute('referrerpolicy', 'no-referrer');
-      f.style.cssText = 'width:100%;height:100%;border:none;background:#fff';
-      f.addEventListener('load', () => { spin.style.display = 'none'; msg.style.display = 'none'; });
-      wrap.appendChild(f);
-      openLink.href = blobUrl;
-      openLink.target = '_blank';
-      spin.style.display = 'none';
-      msg.style.display = 'none';
-      return;
-    } catch (e) {
-      // No download fallback - always inline via Google Docs viewer
-      panel.innerHTML = '<div style="font-size:13px;color:#cfd9ec;margin-bottom:8px">Loading viewer…</div>';
-      const viewerUrl = 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(url);
-      const f = document.createElement('iframe');
-      f.src = viewerUrl;
-      f.style.cssText = 'width:100%;height:100%;border:none;background:#fff';
-      f.addEventListener('load', () => { spin.style.display = 'none'; msg.style.display = 'none'; });
-      f.addEventListener('error', () => {
-        panel.innerHTML = '<div style="font-size:14px;max-width:300px">Viewer failed. <a href="' + url + '" target="_blank" rel="noopener" style="color:#7fb0ff">Tap to view</a> (opens inline if browser allows)</div>';
-      });
-      wrap.appendChild(f);
-      spin.style.display = 'none';
-      msg.style.display = 'none';
-      // Top bar also opens viewer inline
-      openLink.href = viewerUrl;
-      openLink.target = '_blank';
-      return;
-    }
+    const viewerUrl = 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(url);
+    openLink.href = viewerUrl;
+    openLink.target = '_blank';
+    openLink.style.display = '';
+    const f = document.createElement('iframe');
+    f.src = viewerUrl;
+    f.style.cssText = 'width:100%;height:100%;border:none;background:#fff';
+    f.setAttribute('referrerpolicy', 'no-referrer');
+    let viewerLoaded = false;
+    f.addEventListener('load', () => { viewerLoaded = true; spin.style.display = 'none'; msg.style.display = 'none'; });
+    f.addEventListener('error', async () => {
+      if (viewerLoaded) return;
+      // Fallback: try blob inline if gview blocked
+      try {
+        const r = await fetchRetry(url, { mode: 'cors' }, 2);
+        if (!r.ok) throw new Error();
+        const blob = await r.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        f.src = blobUrl;
+        openLink.href = blobUrl;
+      } catch (e) {
+        showFallback(url, 'Viewer failed. Tap to open inline.');
+      }
+    });
+    wrap.appendChild(f);
+    // If gview doesn't load in 8s, fallback to blob
+    setTimeout(async () => {
+      if (viewerLoaded) return;
+      try {
+        const r = await fetch(url, { mode: 'cors' });
+        if (r.ok) {
+          const blob = await r.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          f.src = blobUrl;
+          openLink.href = blobUrl;
+          spin.style.display = 'none';
+          msg.style.display = 'none';
+        }
+      } catch (e) {}
+    }, 8000);
+    return;
   }
 
   let loaded = false;
