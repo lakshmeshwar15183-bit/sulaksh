@@ -109,12 +109,21 @@ function isSafe(u){
 // <iframe> 'error' event below is enough to show a graceful fallback.
 
 function showFallback(url, note){
-  openLink.style.display = 'none';
+  const viewerUrl = 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(url);
+  openLink.href = viewerUrl;
+  openLink.style.display = '';
+  openLink.target = '_blank';
   const html =
     '<p style="margin-bottom:14px">' + (note || 'This document could not be displayed right now.') + '</p>' +
-    '<p><a href="' + url + '" target="_blank" rel="noopener" style="color:#7fb0ff">↗ Open / download in a new tab</a></p>' +
+    '<p><a href="' + viewerUrl + '" target="_blank" rel="noopener" style="color:#7fb0ff">↗ Open in viewer (no download)</a></p>' +
     retryLink();
   setMsg(html);
+  // Also try to embed viewer inline
+  const wrap2 = document.getElementById('iframeWrap');
+  const f = document.createElement('iframe');
+  f.src = viewerUrl;
+  f.style.cssText = 'width:100%;height:100%;border:none;background:#fff;position:absolute;inset:0';
+  wrap2.appendChild(f);
 }
 
 (async () => {
@@ -154,33 +163,38 @@ function showFallback(url, note){
     try {
       const r = await fetchRetry(url, { mode: 'cors' }, 2);
       if (!r.ok) throw new Error('status ' + r.status);
-      const ct = (r.headers.get('content-type') || '').toLowerCase();
-      if (!ct.includes('application/pdf') && !ct.startsWith('image/')) throw new Error('type');
       const blob = await r.blob();
       const blobUrl = URL.createObjectURL(blob);
-      // Replace panel with inline iframe (same blob trick as desktop) + button to open blob in new tab
       panel.innerHTML = '<div style="font-size:13px;color:#cfd9ec;margin-bottom:8px">Swipe to read — or open in new tab</div>' +
-        '<a href="' + blobUrl + '" target="_blank" rel="noopener" style="display:inline-block;padding:10px 18px;background:#4d8dff;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:10px">Open in new tab ↗</a>' +
-        '<div style="font-size:12px;color:#8fa0b8">If it still downloads, enable "Open PDFs in browser" in Chrome settings</div>';
-      // Also embed inline iframe for immediate reading
+        '<a href="' + blobUrl + '" target="_blank" rel="noopener" style="display:inline-block;padding:10px 18px;background:#4d8dff;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;margin-bottom:10px">Open in new tab ↗</a>';
       const f = document.createElement('iframe');
       f.src = blobUrl;
       f.setAttribute('referrerpolicy', 'no-referrer');
       f.style.cssText = 'width:100%;height:100%;border:none;background:#fff';
       f.addEventListener('load', () => { spin.style.display = 'none'; msg.style.display = 'none'; });
       wrap.appendChild(f);
-      // Keep blobUrl for openLink (top bar)
       openLink.href = blobUrl;
       openLink.target = '_blank';
       spin.style.display = 'none';
       msg.style.display = 'none';
       return;
     } catch (e) {
-      panel.remove();
+      // No download fallback - always inline via Google Docs viewer
+      panel.innerHTML = '<div style="font-size:13px;color:#cfd9ec;margin-bottom:8px">Loading viewer…</div>';
+      const viewerUrl = 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(url);
+      const f = document.createElement('iframe');
+      f.src = viewerUrl;
+      f.style.cssText = 'width:100%;height:100%;border:none;background:#fff';
+      f.addEventListener('load', () => { spin.style.display = 'none'; msg.style.display = 'none'; });
+      f.addEventListener('error', () => {
+        panel.innerHTML = '<div style="font-size:14px;max-width:300px">Viewer failed. <a href="' + url + '" target="_blank" rel="noopener" style="color:#7fb0ff">Tap to view</a> (opens inline if browser allows)</div>';
+      });
+      wrap.appendChild(f);
       spin.style.display = 'none';
-      msg.style.display = 'block';
-      // Fallback: direct open (may download on some phones) + retry
-      showFallback(url, 'Could not show inline on this phone. Tap to open — if it downloads, try Chrome → Settings → Downloads → uncheck "Download PDFs".');
+      msg.style.display = 'none';
+      // Top bar also opens viewer inline
+      openLink.href = viewerUrl;
+      openLink.target = '_blank';
       return;
     }
   }
@@ -193,7 +207,7 @@ function showFallback(url, note){
     f.style.width = '100%'; f.style.height = '100%'; f.style.border = 'none';
     f.addEventListener('load', () => { loaded = true; spin.style.display = 'none'; try { URL.revokeObjectURL(blobUrl); } catch (e) {} });
     f.addEventListener('error', () => {
-      if (!loaded) showFallback(url, 'This document could not be displayed inline. Use the direct link to open or download it.');
+      if (!loaded) showFallback(url, 'This document could not be displayed inline. Trying viewer…');
     });
     wrap.appendChild(f);
   }
@@ -204,12 +218,10 @@ function showFallback(url, note){
   try {
     const r = await fetchRetry(url, { mode: 'cors' }, 2);
     if (!r.ok) throw new Error('status ' + r.status);
-    const ct = (r.headers.get('content-type') || '').toLowerCase();
-    if (!ct.includes('application/pdf') && !ct.startsWith('image/')) throw new Error('type');
     const blob = await r.blob();
     showDoc(URL.createObjectURL(blob));
   } catch (e) {
-    showFallback(url, 'This document could not be loaded inline. Use the direct link to open or download it.');
+    showFallback(url, 'This document could not be loaded inline. Opening viewer…');
   }
 
   // If the embed is slow or blocked, still offer a direct link.
@@ -217,7 +229,8 @@ function showFallback(url, note){
     if (loaded) return;
     const note = document.createElement('div');
     note.style.cssText = 'position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#cfd9ec;font-size:13px';
-    note.innerHTML = 'Taking too long? <a href="' + url + '" target="_blank" rel="noopener" style="color:#7fb0ff">Open in a new tab</a>';
+    const viewerFallback = 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(url);
+    note.innerHTML = 'Taking too long? <a href="' + viewerFallback + '" target="_blank" rel="noopener" style="color:#7fb0ff">Open in viewer</a>';
     wrap.appendChild(note);
   }, 12000);
 })();
