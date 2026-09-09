@@ -487,9 +487,9 @@ const listItem = m => {
   const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'SYLLABUS'
     : (m.material_category === 'pyqs' || m.is_pyq) ? 'PYQ'
     : (m.material_category === 'important-questions' || m.is_imp) ? 'IMP Q' : 'NOTES';
-  // Real <a href> to the document's own SEO page — crawlable, not JS.
+  // Always via view.html viewer (ensures inline on phone, never forced download)
   const pageLink = idToFile.get(m.id);
-  const docHref = esc(m.cdnUrl || `/view.html?v=${VIEW_VERSION}&id=${m.id}`);
+  const docHref = `/view.html?v=${VIEW_VERSION}&id=${m.id}`;
   return `<li><span class="pt"><a href="/pyq/${pageLink}">${esc(m.title)}</a></span><span class="ty">${t}</span><a href="${docHref}" target="_blank" rel="noopener" class="plist-open">Open</a></li>`;
 };
 
@@ -608,8 +608,8 @@ for (const m of materials) {
   const prevNextHtml = (prev || next) ? `<div style="display:flex;justify-content:space-between;gap:10px;margin:14px 0;font-size:13px">${prev?`<a href="/pyq/paper/${slug(prev.title)}-${prev.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">← ${esc(prev.title.slice(0,40))}</a>`:'<span></span>'}${next?`<a href="/pyq/paper/${slug(next.title)}-${next.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">${esc(next.title.slice(0,40))} →</a>`:'<span></span>'}</div>` : '';
   const summary = paperSummary(m) + prevNextHtml;
   const faqs = paperFaqs(m);
-  // Fix Bug 1: render real <a href> to source document (cdnUrl) instead of JS-only button
-  const docHrefPaper = esc(m.cdnUrl || `/view.html?v=${VIEW_VERSION}&id=${m.id}`);
+  // Always via viewer (inline on phone, never download)
+  const docHrefPaper = `/view.html?v=${VIEW_VERSION}&id=${m.id}`;
   emit(file,
     `${m.title} – DU ${tn}${semBit} | Free View | Sulaksh`,
     `${m.title} — official Delhi University ${tn.toLowerCase()}${semBit}, free to view instantly on Sulaksh.`,
