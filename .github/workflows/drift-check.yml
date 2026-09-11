@@ -39,7 +39,9 @@ jobs:
 
           drift=0
 
-          for path in "assets/data" "pyq"; do
+          # Check pyq and the two owned snapshot files. pending-removals.json is intentionally
+          # only on main (orphan pruning queue) and is excluded from drift detection.
+          for path in "assets/data/materials.json" "assets/data/subjects.json" "pyq"; do
             echo "--- $path ---"
             if git diff --quiet origin/main origin/gh-pages -- "$path"; then
               echo "✓ $path: in sync"
