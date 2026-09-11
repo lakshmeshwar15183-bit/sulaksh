@@ -26,8 +26,8 @@ jobs:
 
       - name: Fetch both branches
         run: |
-          git fetch origin main --depth=0
-          git fetch origin gh-pages --depth=0
+          git fetch origin main
+          git fetch origin gh-pages
           echo "main HEAD: $(git rev-parse --short origin/main)"
           echo "gh-pages HEAD: $(git rev-parse --short origin/gh-pages)"
 
