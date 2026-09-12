@@ -409,6 +409,10 @@
   }
 
   [data-theme="dark"] .brand-wordmark{filter:brightness(0) invert(1);opacity:.95;}
+
+  /* Defensive: if mobile-tip is ever reintroduced, hide at first paint without JS */
+  .mobile-tip{display:none !important;}
+
 </style>
 <script src="assets/js/maintenance.js?v=1" defer></script>
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -1061,6 +1065,7 @@
   let materialsCache = [];
 
   let coreMaterials = [];
+  let duLoading = true;
 
   const upCatEl = document.getElementById('upCat');
   const upSubjectEl = document.getElementById('upSubject');
@@ -8098,7 +8103,13 @@ const WAIT_PHRASES = [
   }
 
   function renderSemPills(subject, activeSem) {
-    document.getElementById('coreSemPills').innerHTML = CORE_SEMS.map((n) =>
+    const el = document.getElementById('coreSemPills');
+    if (!el) return;
+    if (duLoading && (!coreMaterials || coreMaterials.length === 0)) {
+      el.innerHTML = '<span style="font-size:13px;color:var(--muted);padding:9px 12px;display:inline-block;">Loading semesters…</span>';
+      return;
+    }
+    el.innerHTML = CORE_SEMS.map((n) =>
       `<button class="core-sem-pill${n === activeSem ? ' active' : ''}" onclick="selectCoreSem('${n}')">Semester ${n}</button>`
     ).join('');
   }
@@ -8808,6 +8819,9 @@ const WAIT_PHRASES = [
   }
 
   async function loadMaterials({ showErrors = true } = {}) {
+    duLoading = true;
+    // Show loading in semester pills if user is already in that view
+    try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
     let data = null;
     let subjectDBLocal = [];
     let fromCache = false;
@@ -8875,6 +8889,8 @@ const WAIT_PHRASES = [
         }
       });
       renderCoreGrid([]);
+      duLoading = false;
+      try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
       if (showErrors) showDuErrorBanner();
       return;
     }
@@ -8894,6 +8910,30 @@ const WAIT_PHRASES = [
         const countEl = document.getElementById('catCount-' + cat);
         if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
       });
+      duLoading = false;
+      try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
+      // Re-render current core view if user navigated before data arrived (fix race: pills stuck empty)
+      try {
+        const curView = window.__coreViewId;
+        const curSub = window.__coreSubject;
+        const curTrack = window.__coreTrack;
+        const curSem = window.__coreSem;
+        const curCat = window.__coreCat;
+        if (curSub && curView) {
+          if (curView === 'viewCoreSubject' && curSub) {
+            if (curSem) renderCoreSubjectSem(curSub, curSem);
+            else renderCoreSubjectView(curSub, curTrack);
+          } else if (curView === 'viewCoreTrack' && curSub) {
+            renderCoreTrackView(curSub);
+          } else if (curView === 'viewCoreCategory' && curSub && curSem && curCat) {
+            renderCoreCategoryView(curSub, curSem, curCat);
+          } else if (curView === 'viewCoreSubject' || curView === 'viewCoreTrack' || curView === 'viewCoreCategory') {
+            // Fallback: refresh pills if still in loading state
+            renderSemPills(curSub, curSem ? Number(curSem) : null);
+          }
+        }
+      } catch(e){ console.error('[du] reload current view', e); }
+
       const banner = document.getElementById('duLoadError');
       if (banner) banner.remove();
       if (fromCache && showErrors) {
@@ -8909,6 +8949,10 @@ const WAIT_PHRASES = [
     } catch (err) {
       console.error('[du] loadMaterials render error:', err);
       renderCoreGrid([]);
+    } finally {
+      duLoading = false;
+      // Ensure pills exit loading state if still showing
+      try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
     }
   }
 

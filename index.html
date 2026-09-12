@@ -480,6 +480,9 @@
 
   [data-theme="dark"] .brand-wordmark{filter:brightness(0) invert(1);opacity:.95;}
 
+  /* Defensive: if mobile-tip is ever reintroduced, hide at first paint without JS */
+  .mobile-tip{display:none !important;}
+
 </style>
 <script src="assets/js/maintenance.js?v=1" defer></script>
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -526,7 +529,7 @@
 <section class="hero">
   <div class="wrap">
     <div class="hero-copy">
-      <div class="eyebrow">🏆 Trusted by 50,000+ aspirants</div>
+      <div class="eyebrow">🏆 Trusted by DU students across North and South Campus</div>
       <h1>A One Stop Destination for <span class="accent">All Aspirants</span></h1>
       <p>Competitive exams, university resources, notes, PYQs and much more — all in one place.</p>
       <div class="hero-ctas">
@@ -535,8 +538,8 @@
       </div>
       <div class="hero-stats">
         <div class="stat"><b>12+</b><span>Exam Categories</span></div>
-        <div class="stat"><b>3,000+</b><span>Notes &amp; PYQs</span></div>
-        <div class="stat"><b>50k+</b><span>Students Helped</span></div>
+        <div class="stat"><b id="heroDocs">—</b><span>Notes &amp; PYQs</span></div>
+        <div class="stat"><b>DU</b><span>Students across North & South Campus</span></div>
       </div>
     </div>
     <div class="hero-art">
@@ -627,7 +630,7 @@
       <div class="about-card">
         <div class="pillar-icon" style="background:rgba(30,142,90,.1); color:var(--green);">🏆</div>
         <h3>Achieve</h3>
-        <p>Previous year questions, high-quality notes and consistent support that have helped 50,000+ aspirants succeed.</p>
+        <p>Previous year questions, high-quality notes and consistent support trusted by DU students across North and South Campus.</p>
       </div>
     </div>
     <div class="about-mission">
@@ -1416,6 +1419,35 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     if (typeof updateAuthUI === 'function') updateAuthUI();
     });
   });
+
+  // Hero stats: live doc count from /api/materials (fallback to snapshot), so 3,000+ can't drift
+  (function(){
+    const el = document.getElementById('heroDocs');
+    if (!el) return;
+    async function updateHeroStats(){
+      try {
+        let mats = null;
+        try {
+          const r = await fetch(SULAKSH_API + '/api/materials', {cache:'no-store'});
+          if (r.ok) { const d = await r.json(); if (d && Array.isArray(d.materials)) mats = d.materials; }
+        } catch(e){}
+        if (!mats) {
+          try {
+            const r2 = await fetch('/assets/data/materials.json', {cache:'no-store'});
+            if (r2.ok) { const d2 = await r2.json(); if (d2 && Array.isArray(d2.materials)) mats = d2.materials; }
+          } catch(e){}
+        }
+        if (mats && mats.length) {
+          const n = mats.length;
+          el.textContent = n.toLocaleString() + '+';
+        } else {
+          el.textContent = '3,000+';
+        }
+      } catch(e){ el.textContent = '3,000+'; }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', updateHeroStats);
+    else updateHeroStats();
+  })();
 
 </script>
 
