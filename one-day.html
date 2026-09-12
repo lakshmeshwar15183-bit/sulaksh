@@ -43,12 +43,14 @@
     --shadow: 0 4px 24px rgba(0,0,0,0.35);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html{overflow-x:hidden;}
   body{
     font-family:'Inter',sans-serif;
     background:var(--bg);
     color:var(--text);
     -webkit-font-smoothing:antialiased;
     transition:background .3s ease, color .3s ease;
+    overflow-x:hidden;
   }
   h1,h2,h3,.brand-name{font-family:'Sora',sans-serif;}
   a{text-decoration:none; color:inherit;}
@@ -76,19 +78,21 @@
 
   .nav-actions{display:flex; align-items:center; gap:12px;}
   .icon-btn{
-    width:38px; height:38px; border-radius:50%;
+    width:44px; height:44px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     background:var(--bg); border:1px solid var(--border);
     color:var(--muted); transition:all .2s;
+    flex-shrink:0;
   }
   .icon-btn:hover{background:var(--border);}
   .btn-primary{
     background:var(--navy); color:#fff; padding:10px 20px; border-radius:10px;
     font-size:14.5px; font-weight:600; display:flex; align-items:center; gap:8px;
     transition:background .2s, transform .15s;
+    min-height:44px;
   }
   .btn-primary:hover{background:var(--blue); transform:translateY(-1px);}
-  .hamburger{display:none; flex-direction:column; gap:5px; width:38px; height:38px; align-items:center; justify-content:center;}
+  .hamburger{display:none; flex-direction:column; gap:5px; width:44px; height:44px; align-items:center; justify-content:center; flex-shrink:0;}
   .hamburger span{width:20px; height:2px; background:var(--text); border-radius:2px;}
 
   .mobile-menu{
@@ -210,12 +214,14 @@
   /* ---------- Modals ---------- */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(10,20,40,.5); display:none;
-    align-items:flex-start; justify-content:center; padding-top:12vh; z-index:200;
+    align-items:flex-start; justify-content:center; padding:16px; padding-top:6vh; z-index:200;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
   .modal-overlay.open{display:flex;}
   .modal-box{
     background:var(--card); width:min(420px, 92vw); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.3);
     padding:24px; position:relative;
+    max-height:min(88vh, 640px); overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
   .modal-box h3{font-size:18px; margin-bottom:16px;}
   .modal-box .field{
@@ -232,8 +238,8 @@
   .modal-msg{font-size:13px; margin-top:10px; min-height:18px;}
   .modal-msg.ok{color:var(--green);} .modal-msg.err{color:#d64545;}
   .modal-close{
-    position:absolute; top:12px; right:14px; font-size:20px; color:var(--muted);
-    width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    position:absolute; top:10px; right:10px; font-size:20px; color:var(--muted);
+    width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
   }
   .modal-close:hover{background:var(--bg);}
   .sel{appearance:none;}
@@ -279,6 +285,14 @@
     .brand{gap:8px;}
     .brand-emblem{height:32px;}
     .brand-wordmark{height:18px;}
+    .wrap{padding:0 16px;}
+    .nav{padding:12px 16px;}
+    .du-hero{padding:36px 0 32px;}
+  }
+  @media (max-width:375px){
+    .du-hero h1{font-size:26px;}
+    .cat-tile{padding:16px;}
+    .cat-name{font-size:17px;}
   }
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;}
