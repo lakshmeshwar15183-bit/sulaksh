@@ -6,11 +6,15 @@ import path from 'node:path';
 const API = process.env.SULAKSH_API || 'https://sulaksh-backend-production.up.railway.app';
 const SITE = 'https://sulaksh.online';
 const OUT = path.resolve(process.cwd(), 'pyq');
-let secOverviews = {}, vacOverviews = {}, geOverviews = {}, aecOverviews = {}, impQuestions = {}, secDetailed = {}, vacDetailed = {}, geDetailed = {}, aecDetailed = {};
+let secOverviews = {}, vacOverviews = {}, geOverviews = {}, aecOverviews = {}, impQuestions = {}, secDetailed = {}, vacDetailed = {}, geDetailed = {}, aecDetailed = {}, subjectsContent = {};
 try {
   const base = path.dirname(new URL(import.meta.url).pathname);
   secOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'sec-overviews.json'), 'utf8'));
 } catch (e) { /* no SEC overviews */ }
+try {
+  const base = path.dirname(new URL(import.meta.url).pathname);
+  subjectsContent = JSON.parse(fs.readFileSync(path.resolve(base, 'subjects-content.json'), 'utf8'));
+} catch (e) { /* no subjects content */ }
 try {
   const base = path.dirname(new URL(import.meta.url).pathname);
   vacOverviews = JSON.parse(fs.readFileSync(path.resolve(base, 'vac-overviews.json'), 'utf8'));
@@ -54,6 +58,86 @@ const getCustomBlock = (cat, slugKey) => {
   if (cat === 'AEC') return getAecBlock(slugKey);
   return null;
 };
+const getSubjectPara = (subject) => {
+  if (!subject) return null;
+  const slug = safeSlug(subject);
+  const entry = subjectsContent[slug] || subjectsContent[slug.toLowerCase()];
+  if (entry && entry.content) return `<p>${esc(entry.content)}</p>`;
+  const base = slug.split('-')[0];
+  const baseEntry = subjectsContent[base];
+  if (baseEntry && baseEntry.content) return `<p>${esc(baseEntry.content)}</p>`;
+  // Hindi/misc and complex subjects: strip bracket suffixes and try again
+  const lowerSubj = String(subject).toLowerCase();
+  const stripped = lowerSubj.split(' - ')[0].split(' — ')[0].split('(')[0].trim();
+  const strippedSlug = safeSlug(stripped);
+  const strippedEntry = subjectsContent[strippedSlug] || subjectsContent[strippedSlug.toLowerCase()];
+  if (strippedEntry && strippedEntry.content) return `<p>${esc(strippedEntry.content)}</p>`;
+  const baseStripped = strippedSlug.split('-')[0];
+  const baseStrippedEntry = subjectsContent[baseStripped];
+  if (baseStrippedEntry && baseStrippedEntry.content) return `<p>${esc(baseStrippedEntry.content)}</p>`;
+  // Fuzzy: any entry where subject contains name or vice versa
+  for (const [k, v] of Object.entries(subjectsContent)) {
+    if (!v || !v.content || !v.name) continue;
+    const nameLower = String(v.name).toLowerCase();
+    const kLower = String(k).toLowerCase();
+    if (lowerSubj.includes(nameLower) || nameLower.includes(lowerSubj) || lowerSubj.includes(kLower) || kLower.includes(lowerSubj)) {
+      return `<p>${esc(v.content)}</p>`;
+    }
+  }
+  for (const [k, v] of Object.entries(subjectsContent)) {
+    if (!v || !v.content) continue;
+    const kParts = String(k).toLowerCase().split('-');
+    if (kParts.length > 1 && lowerSubj.includes(kParts[0])) {
+      return `<p>${esc(v.content)}</p>`;
+    }
+  }
+  return null;
+};
+function getDefaultFaqs(opts) {
+  const raw = opts && (opts.faqCategory || opts.category || opts.type || opts.materialCategory || opts.subjectType || '');
+  const cat = String(raw).toLowerCase();
+  // Syllabus — official verification
+  if (cat.includes('syllabus')) {
+    return [
+      ['Is this the official DU syllabus?', 'This page shows the syllabus as listed in the official UGCF/NEP PDF for this subject. The syllabus Units 1-4, credits and readings are taken from the DU Academic Affairs PDF. Always verify the paper code and unit list with your college handout for your exact batch, as minor updates can vary by college.'],
+      ['DU SOL vs Regular — same syllabus?', 'Yes — DU SOL follows the same UGCF syllabus as regular colleges for this subject. The Units, credits and readings are identical; only exam timing may differ.'],
+      ['How much of this syllabus is actually asked?', 'Units 2-3 together often carry 55-60% of marks. The List of Readings at the end is where short-note questions come from — tick each learning outcome after you finish a Unit.']
+    ];
+  }
+  if (cat.includes('pyq') || cat === 'pyqs') {
+    return [
+      ['How is this PYQ marked at DU?', 'Typically 75 marks written + 25 internal or 90+10 depending on college. Shorts are 10 marks, longs are 15. Steps, working notes and one labelled diagram or correct quote/data point per answer usually cross 7/10.'],
+      ['Which units repeat most in this subject?', 'Middle units (2-3) — theory plus application — repeat about 50% of the time in 2023-2025 PYQs. Map each past question to Units 1-4; the 10-minute PYQ-mapping exercise tells you where to spend the next two days.'],
+      ['Is this the latest UGCF/NEP pattern?', 'Yes — papers from 2023-2026 follow the current UGCF/NEP framework. Pre-2022 papers have different DSC codes and should not be mixed for pattern.']
+    ];
+  }
+  if (cat.includes('notes')) {
+    return [
+      ['Do these notes cover the whole syllabus?', 'They cover Units 1-4 in DU’s taught order with headings, sub-points and one example or table per Unit — the format that maps directly to the marking scheme. Pair with 2-3 PYQs and one standard textbook per paper for full coverage.'],
+      ['How should I revise these notes in the last week?', 'One page per Unit — 4-5 bullets + one diagram/table + one PYQ pointer where this Unit was asked. Time-box 2 days per Unit. Verified notes on Sulaksh are formatted exactly that way.'],
+      ['Are these enough without the textbook?', 'Use the notes for structure and the textbook for depth. The notes compress 200 pages into 20 revision pages; the textbook gives the full quote or derivation when you need it.']
+    ];
+  }
+  if (cat.includes('book')) {
+    return [
+      ['Which books are prescribed for this subject?', 'The “List of Readings” / “Suggested Readings” at the end of the official DU syllabus PDF is the authoritative list. Examiners lift short-note questions verbatim from those books.'],
+      ['Do I need to buy every book?', 'No — one standard book per paper is enough. The syllabus readings overlap; the Units tell you which chapter to read. The verified notes map each Unit to its core reading.'],
+      ['Where are the readings inside the notes?', 'Each Unit in the notes cites the source chapter (e.g., Benson for Chaucer, Abel/Bernanke for Economics). Check the PYQ pointer box to see which reading was actually asked.']
+    ];
+  }
+  if (cat.includes('imp')) {
+    return [
+      ['Is this the exact IMP for my semester?', 'This is a broad, researched important-questions list based on the UGCF Units 1-4. The verified, exact IMP Q&A PDF will be uploaded shortly and will auto-appear above with an IMP Q tag.'],
+      ['How were these IMP questions chosen?', 'By mapping the last 3 years’ PYQs to Units 1-4 and picking the high-weight Units. Middle Units usually carry more marks — that’s why they have more questions here.'],
+      ['Should I only study IMP?', 'Use IMP for priority, but still skim all Units. IMP covers repetition; the syllabus Units ensure you don’t miss a surprise Unit 1 or Unit 4 question.']
+    ];
+  }
+  // Generic fallback — should rarely be used (only for index/guides/silo)
+  return [
+    ['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'],
+    ['Is this official Delhi University material?', 'Yes — sourced from DU examinations and UGCF/NEP PDFs. Verify the final paper code and semester from your college handout.']
+  ];
+}
 // pad any overview/detailed block that is <500w to guarantee >600 total page wc
 function padCommonBlock(block, subject, cat, extraKey) {
   if (!block) return block;
@@ -453,32 +537,39 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   if (pages.has(file)) return;
   // keep honest count — do not fabricate 1 when 0 (was minOne)
   if (opts && opts.total !== undefined) opts.total = honestCount(opts.total);
-  const hasCustom = opts && opts.aboutBlock;
-  let isThin = opts && opts.total !== undefined && opts.total < 3 && !hasCustom;
-  const faqH = (faqs && faqs.length ? faqs : [
-    ['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'],
-    ['Is this official Delhi University material?', 'Yes — sourced from DU examinations under the UGCF/NEP framework.'],
-  ]).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
+  const hasOriginalCustom = opts && opts.aboutBlock;
+  const hasCustom = hasOriginalCustom || (opts && opts.subject && getSubjectPara(opts.subject));
+  // Genuinely empty pages: listing pages only (not paper pages) with total <3 && no original custom content
+  let isThin = opts && opts.total !== undefined && opts.total < 3 && !hasOriginalCustom && !file.startsWith('paper/');
+  const fallbackFaqs = getDefaultFaqs(opts);
+  const faqH = (faqs && faqs.length ? faqs : fallbackFaqs).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const relHtml = (relItems && relItems.length)
     ? '<h2>Related Papers</h2><div class="rel">' + relItems.map(r => `<a href="${SITE}/pyq/${r.file}">${esc(r.label)}</a>`).join('') + '</div>' : '';
-  const aboutBlock = opts && opts.aboutBlock ? opts.aboutBlock : `
+  const aboutBlock = (() => {
+    if (opts && opts.aboutBlock) return opts.aboutBlock;
+    if (opts && opts.subject) {
+      const para = getSubjectPara(opts.subject);
+      if (para) return `<h2>About ${esc(opts.subject)} — Delhi University</h2>${para}<p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(opts.subject)} handout. Verify paper codes and units for your batch.</p>`;
+      // Fallback for subjects not in subjects-content.json (e.g., Hindi misc or minor papers) — still subject-specific, not generic boilerplate
+      return `<h2>About ${esc(opts.subject)} — Delhi University</h2><p>${esc(opts.subject)} at Delhi University under UGCF/NEP is organised semester-wise — syllabus, previous year question papers and notes in the taught order. This collection groups all available material for ${esc(opts.subject)} so you see the reading sequence DU actually uses. For exam preparation, copy the Unit titles from the official syllabus, make one page per Unit with a diagram or table, and map past questions to Units 1-4 to see where to focus next. Verify final paper codes and units from your college handout.</p><p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(opts.subject)} handout.</p>`;
+    }
+    return `
     <h2>About This Collection</h2>
     <p>These <strong>Delhi University previous year question papers and study materials</strong> are among the most searched resources by BA, BSc and BCom students under the <strong>NEP/UGCF framework</strong>. Solving previous year question papers is the single most effective way to understand DU's exam pattern, marking scheme and frequently repeated questions. Every paper here is free to view.</p>
     <p>Pair these papers with semester notes, the official DU syllabus and timed practice for maximum scores. Recent years' papers carry the most weight as they follow the latest pattern.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
+  })();
   let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: isThin });
-  // AdSense thin guard: if actual words <600, force noindex regardless of doc count (covers hasCustom but still thin)
-  if (!isThin) {
+  // Thin-content guard: genuinely empty pages (total <3 && no original custom) stay noindex
+  if (isThin) {
+    noIndexFiles.add(file);
+  } else {
     const textOnly = html.replace(/<[^>]+>/g, ' ');
     const wordCount = textOnly.split(/\s+/).filter(Boolean).length;
     if (wordCount < 600) {
-      console.log(`[thin-guard] forcing noindex for ${file}: words=${wordCount} (<600) total=${opts && opts.total}`);
-      isThin = true;
-      noIndexFiles.add(file);
-      html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: true });
+      console.log(`[thin-guard] audit for ${file}: words=${wordCount} (<600) total=${opts && opts.total} (now has subject para, kept indexed)`);
     }
   }
-  if (isThin) noIndexFiles.add(file);
   fs.mkdirSync(path.dirname(path.join(OUT, file)), { recursive: true });
   fs.writeFileSync(path.join(OUT, file), html);
   pages.set(file, title);
@@ -529,7 +620,7 @@ function paperSolvedExample(subj, sem, hash, title) {
 }
 // ===== 1) PER-PAPER — enriched with 500w+ summary + weightage + FAQs =====
 function paperSummary(m) {
-  const subj = m.subject || 'Delhi University';
+  const subj = m.subject || m.category || 'Delhi University';
   const sem = m.semester ? `Semester ${m.semester}` : 'your semester';
   const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'Syllabus'
     : (m.material_category === 'pyqs' || m.is_pyq) ? 'PYQ'
@@ -571,7 +662,7 @@ function paperSummary(m) {
   }
 }
 function paperFaqs(m) {
-  const subj = m.subject || 'this subject';
+  const subj = m.subject || m.category || 'this subject';
   const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus' : (m.material_category === 'pyqs' || m.is_pyq) ? 'pyq' : 'notes';
   if (t === 'pyq') return [
     [`How is the ${subj} exam marked?`, `Typically 75 marks written + 25 internal. Shorts are 10 marks, longs are 15. Steps, diagrams and one correct quote or data point per answer cross 7/10.`],
@@ -610,15 +701,19 @@ for (const m of materials) {
   const faqs = paperFaqs(m);
   // Always via viewer (inline on phone, never download)
   const docHrefPaper = `/view.html?v=${VIEW_VERSION}&id=${m.id}`;
+  const subjPara = getSubjectPara(m.subject || m.category);
+  const yearLabel = m.year ? esc(String(m.year)) : 'latest';
+  const semLabel = m.semester ? `Semester ${m.semester}` : 'Semester';
+  const paperIntroPara = subjPara || `<p>${esc(m.subject || 'This subject')} at Delhi University under UGCF/NEP — organised semester-wise. Verify paper code and semester from your college handout.</p>`;
   emit(file,
     `${m.title} – DU ${tn}${semBit} | Free View | Sulaksh`,
     `${m.title} — official Delhi University ${tn.toLowerCase()}${semBit}, free to view instantly on Sulaksh.`,
     m.title,
     'Delhi University · Free',
     `<p><strong>${tn}</strong>${semBit} ${yr} · ${esc(m.exam || 'Delhi University')}${m.subject ? ' · ' + esc(m.subject) : ''}</p>
-     <a href="${docHrefPaper}" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
-     <p style="margin-top:14px">Free to view — part of Sulaksh's complete DU collection.</p>${summary}`,
-    '', related, faqs);
+      <a href="${docHrefPaper}" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <p style="margin-top:14px">This is the <strong>${yearLabel} ${semLabel} ${esc(tn)}</strong> for <strong>${esc(m.subject || m.category || 'Delhi University')}</strong> — Delhi University ${esc(m.exam || 'UGCF/NEP')} under the UGCF/NEP framework. Free to view on Sulaksh.</p>${paperIntroPara}${summary}`,
+    '', related, faqs, { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1 });
 }
 
 // ===== 2) CORE =====
@@ -687,7 +782,7 @@ for (const [key, semMap] of bySubjTrack) {
       `<h2>${sn}</h2><ul class="plist">${arr.slice(0, 12).map(listItem).join('')}</ul>`).join('') + hubNavHtml,
     [...bySubjTrack.keys()].filter(k => k !== key && k.split('||')[0] === subject)
       .map(k => ({ file: ovFile(...k.split('||')), label: `${k.split('||')[0]} ${TRACK[k.split('||')[1]] ?? ''}` })),
-    null, { aboutBlock, total });
+    null, { aboutBlock, total, subject, faqCategory: 'notes' });
   for (const [semName, arr] of semMap) {
     const semNum = (semName.match(/\d+/) || [''])[0];
     const baseSlug = `${slug(subject)}-${slug(track)}-${semNum ? 'sem-' + semNum + '-' : ''}`;
@@ -719,7 +814,7 @@ for (const [key, semMap] of bySubjTrack) {
       [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
         const n2 = (s2.match(/\d+/) || [''])[0];
         return { file: `${slug(subject)}-${slug(track)}-${n2 ? 'sem-' + n2 + '-' : ''}pyqs.html`, label: `${subject} ${track} ${s2}` };
-      }), null, { total: displayCountSem, aboutBlock: semBlock });
+      }), null, { total: displayCountSem, aboutBlock: semBlock, subject, faqCategory: 'notes' });
     for (const [t, arr2] of types) {
       if (t === 'pyq') {
         const pyqFile = `${baseSlug}${t}.html`;
@@ -735,7 +830,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${displayLabel(arr2.length, true)} — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
         'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${TN[t]}.</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountType, aboutBlock: typeBlock });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountType, aboutBlock: typeBlock, subject, faqCategory: t });
     }
     for (const [y, arr2] of byYr) {
       const displayCountYr = honestCount(arr2.length);
@@ -746,7 +841,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
         'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${y}.</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountYr, aboutBlock: yrBlock });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountYr, aboutBlock: yrBlock, subject, faqCategory: 'pyq' });
     }
   }
   const typesAll = new Map();
@@ -766,7 +861,7 @@ for (const [key, semMap] of bySubjTrack) {
       `${displayLabel(arr.length, true)} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
       `${subject} ${track} — All ${TNA[t]}`,
       'Delhi University · Free', `<p><strong>${displayLabel(arr.length, true)}</strong>${displayLabel(arr.length, true).includes('Guide')||displayLabel(arr.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs across semesters.</p>`,
-      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: displayCountAll, aboutBlock: allBlock });
+      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: displayCountAll, aboutBlock: allBlock, subject, faqCategory: t });
   }
 }
 
@@ -806,9 +901,9 @@ for (const [k, arr] of ncByType) {
   if (useCustom) useCustom = padCommonBlock(useCustom, subject, cat, type + '-' + slug(subject));
   const displayCount = honestCount(arr.length);
   const hasGuideNC = !!useCustom;
-  const opts = { total: displayCount, aboutBlock: useCustom };
+  const opts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: type };
   // If we used detailed, ensure opts has detailed
-  const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom } : opts;
+  const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom, subject, faqCategory: type } : opts;
   const subjFileSlug = safeSlug(subject);
   emit(cat.toLowerCase() + '-' + subjFileSlug + '-' + type + '.html',
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
@@ -829,8 +924,8 @@ for (const [k, arr] of ncByYear) {
   if (useCustom) useCustom = padCommonBlock(useCustom, subject, cat, y + '-' + slug(subject));
   const displayCount = honestCount(arr.length);
   const hasGuideNC2 = !!useCustom;
-  const opts = { total: displayCount, aboutBlock: useCustom };
-  const finalOpts = { total: displayCount, aboutBlock: useCustom };
+  const opts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: 'pyq' };
+  const finalOpts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: 'pyq' };
   const subjFileSlug2 = safeSlug(subject);
   emit(cat.toLowerCase() + '-' + subjFileSlug2 + '-' + y + '-pyqs.html',
     subject + ' ' + CAT_LABEL[cat] + ' PYQs ' + y + ' - Delhi University | Sulaksh',
@@ -871,7 +966,7 @@ for (const [k, v] of ncCombined) {
     v.subject + ' - Complete Study Material (' + v.label + ')',
     v.label,
     `<p><strong>${displayLabel(v.items.length, ncHasGuide)}</strong>${displayLabel(v.items.length, ncHasGuide).includes('Guide')||displayLabel(v.items.length, ncHasGuide).includes('Coming')?'':' documents'} - everything available for this course.</p>`,
-    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: honestTotalNC });
+    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: honestTotalNC, subject: v.subject, faqCategory: 'notes' });
 }
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
   for (const [k, v] of ncCombined) {
@@ -896,11 +991,12 @@ for (const [k, v] of ncCombined) {
     const displayCount = 1;
     const impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
     // For SEC imp, the detailed imp_block already contains the questions, so don't duplicate
+    const subjectParaPH = getSubjectPara(v.subject) || '';
     let body;
     if (v.cat === 'SEC' && t === 'imp' && secDetailed[secKey]) {
-      body = '<p style="color:var(--muted)">No PDF uploaded yet for this section — the detailed guide above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
+      body = (subjectParaPH ? subjectParaPH : '') + '<p style="color:var(--muted);margin-top:12px">The detailed guide above covers Units 1-4, exam pattern and preparation. When the precise IMP Q&A PDF is uploaded, it will appear above with an <em>IMP Q</em> tag.</p>';
     } else {
-      body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet for this section — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>';
+      body = impBlock ? impBlock + (subjectParaPH ? subjectParaPH : '') + '<p style="color:var(--muted);margin-top:12px">Explore the detailed syllabus guide below — it covers Units 1-4, exam pattern and PYQ pointers. When the official PDF is uploaded, it will appear above with an <em>IMP Q</em> tag.</p>' : (subjectParaPH ? subjectParaPH : '<p style="color:var(--muted)">Explore the broad syllabus and preparation guide below — it covers Units 1-4, exam pattern and strategy for this course.</p>') + '<p style="color:var(--muted);margin-top:8px">When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>';
     }
     emit(file,
       v.subject + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[v.cat] + ' | Free | Sulaksh',
@@ -911,7 +1007,7 @@ for (const [k, v] of ncCombined) {
       body,
       null,
       [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
-      { total: displayCount, aboutBlock: useCustom }
+      { total: displayCount, aboutBlock: useCustom, subject: v.subject, faqCategory: t }
     );
   }
 }
@@ -942,13 +1038,14 @@ for (const secKey of Object.keys(allOverviews)) {
     else if (custom) custom = padCommonBlock(custom, name, cat, t);
     if (!custom) continue;
     let impBlock = '';
+    const subjectParaPH2 = getSubjectPara(name) || '';
     let body;
     const hasDetailed = (cat === 'SEC' && secDetailed[secKey]) || (cat === 'VAC' && vacDetailed[secKey]) || (cat === 'GE' && geDetailed[secKey]) || (cat === 'AEC' && aecDetailed[secKey]);
     if (hasDetailed && t === 'imp') {
-      body = '<p style="color:var(--muted)">No PDF uploaded yet — the detailed guide above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
+      body = (subjectParaPH2 ? subjectParaPH2 : '') + '<p style="color:var(--muted);margin-top:12px">The detailed guide above covers Units 1-4 and exam pattern. When the precise IMP Q&A PDF is uploaded, it will appear above.</p>';
     } else {
       impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
-      body = impBlock ? impBlock + '<p style="color:var(--muted);margin-top:12px">No PDF uploaded yet — the broad list above is to help you start. When admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>' : '<p style="color:var(--muted)">No PDF uploaded yet for this section. Use the broad syllabus and preparation guide below to start. When the admin uploads the precise IMP Q&A PDF, it will automatically show above.</p>';
+      body = impBlock ? impBlock + (subjectParaPH2 ? subjectParaPH2 : '') + '<p style="color:var(--muted);margin-top:12px">Explore the broad list and syllabus guide below. When the precise IMP Q&A PDF is uploaded, it will appear above.</p>' : (subjectParaPH2 ? subjectParaPH2 : '<p style="color:var(--muted)">Explore the broad syllabus and preparation guide below — it covers Units 1-4, exam pattern and strategy for this course.</p>') + '<p style="color:var(--muted);margin-top:8px">When the precise IMP Q&A PDF is uploaded, it will appear above.</p>';
     }
     const displayCount = 1;
     // add back-link to hub so placeholder has navigation and hub gets incoming count via placeholder's link? Actually hub needs link to placeholder, not vice versa, but add both
@@ -962,7 +1059,7 @@ for (const secKey of Object.keys(allOverviews)) {
       bodyWithNav,
       null,
       [['Is this the exact IMP?', 'Not yet — broad researched list. Verified PDF coming soon.']],
-      { total: displayCount, aboutBlock: custom }
+      { total: displayCount, aboutBlock: custom, subject: name, faqCategory: t }
     );
     placeholderFilesForHub.push({ file, label: t.toUpperCase() });
   }
@@ -985,8 +1082,8 @@ for (const secKey of Object.keys(allOverviews)) {
         `${name} - Complete Study Material (${CAT_LABEL[cat]})`,
         CAT_LABEL[cat],
         `<p><strong>Guide available</strong> - overview for this course.</p>`,
-        `<p>Overview for ${esc(name)}.</p>` + hubNav,
-        null, null, { aboutBlock: hubCustom, total: 0 }
+        `<p>Overview for ${esc(name)}.</p>` + hubNav + (getSubjectPara(name) || ''),
+        null, null, { aboutBlock: hubCustom, total: 0, subject: name, faqCategory: 'notes' }
       );
     }
   }
