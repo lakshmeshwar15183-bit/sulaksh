@@ -37,6 +37,16 @@ Allow: /
 User-agent: Claude-User
 Allow: /
 
+# Explicitly allow Google crawlers (must not be throttled)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-InspectionTool
+Allow: /
+
+User-agent: Mediapartners-Google
+Allow: /
+
 # Everyone else
 User-agent: *
 Allow: /

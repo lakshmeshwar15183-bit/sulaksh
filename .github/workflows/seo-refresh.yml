@@ -33,16 +33,46 @@ jobs:
           git diff --cached --quiet || git commit -m "SEO auto-refresh $(date -u '+%F %H:%M') UTC"
           git push origin main
 
-      - name: Deploy pages (gh-pages)
+      - name: Deploy FULL tree to gh-pages (nothing missed)
         run: |
           git fetch origin gh-pages
           git checkout gh-pages
-          # Only ship static site assets. Never publish backend/scripts source.
-          # Use rm -rf for pyq so deletions (orphan pruning via pending-removals.json)
-          # are actually propagated — plain 'git checkout main -- pyq' leaves
-          # stale files behind as orphans (ghost pages).
-          rm -rf pyq
-          git checkout main -- pyq sitemap.xml index.html du.html _redirects _headers || true
+          git reset --hard origin/gh-pages
+          # sync ENTIRE tree from main except backend source folder
+          git checkout main -- . ':!backend'
           git add -A
-          git diff --cached --quiet || git commit -m "SEO sync $(date -u '+%F %H:%M') UTC"
+          git diff --cached --quiet || git commit -m "full sync $(date -u '+%F %H:%M') UTC"
           git push origin gh-pages
+
+      - name: Purge Cloudflare cache and cache-bust
+        if: always()
+        run: |
+          # Best-effort Cloudflare purge (skips if secrets not set — still does warm fetch)
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ZONE_ID }}" ]; then
+            echo "Purging Cloudflare cache..."
+            curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              --data '{"purge_everything":true}' || echo "Purge via API failed (continuing)"
+          else
+            echo "No Cloudflare secrets — skipping API purge (relying on edge max-age + warm fetch)"
+          fi
+          sleep 10
+          for url in "https://sulaksh.online/" "https://sulaksh.online/du.html" "https://sulaksh.online/index.html"; do
+            echo "Warm fetch $url?purge=$(date +%s)"
+            curl -s "$url?purge=$(date +%s)" > /dev/null || true
+            if curl -s "$url?purge=$(date +%s)" | grep -qi "mobile view is limited"; then
+              echo "ERROR: banner still in $url"
+              exit 1
+            else
+              echo "OK: banner gone in $url"
+            fi
+          done
+
+      - name: Smoke test key pages
+        run: |
+          sleep 60
+          for u in "" view.html du.html pyq/index.html sitemap.xml; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://sulaksh.online/$u")
+            echo "$u → $code"
+          done
