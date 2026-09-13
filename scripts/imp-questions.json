@@ -1,0 +1,4710 @@
+{
+  "sec-advanced-spreadsheets-tools": {
+    "name": "Advanced Spreadsheets Tools",
+    "cat": "SEC",
+    "units": [
+      "Advanced formulas, lookup &amp; logic functions",
+      "PivotTables, PivotCharts &amp; data modelling",
+      "Macros, VBA basics &amp; automation",
+      "Dashboard design, what-if analysis &amp; data validation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Advanced formulas? Explain its meaning, scope and relevance for Advanced Spreadsheets Tools with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Advanced formulas, lookup in the context of Advanced Spreadsheets Tools. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain PivotTables in Advanced Spreadsheets Tools. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does PivotTables, PivotCharts work in Advanced Spreadsheets Tools? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Macros for Advanced Spreadsheets Tools. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Macros, VBA basics in Advanced Spreadsheets Tools with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Dashboard design in Advanced Spreadsheets Tools. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Dashboard design, what-if analysis is evaluated in Advanced Spreadsheets Tools (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-analytics-computing-with-python": {
+    "name": "Analytics Computing with Python",
+    "cat": "SEC",
+    "units": [
+      "Python basics, data types &amp; control flow",
+      "NumPy/Pandas for data handling",
+      "Data visualisation &amp; descriptive analytics",
+      "Intro to machine learning workflow &amp; case studies"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Python basics? Explain its meaning, scope and relevance for Analytics Computing with Python with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Python basics, data types in the context of Analytics Computing with Python. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain NumPy/Pandas for data handling in Analytics Computing with Python. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does NumPy/Pandas for data handling work in Analytics Computing with Python? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Data visualisation & descriptive analytics for Analytics Computing with Python. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Data visualisation in Analytics Computing with Python with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Intro to machine learning workflow & case studies in Analytics Computing with Python. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Intro to machine learning workflow is evaluated in Analytics Computing with Python (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-app-development-using-flutter": {
+    "name": "App Development using Flutter",
+    "cat": "SEC",
+    "units": [
+      "Dart fundamentals &amp; Flutter architecture",
+      "Widgets, layouts &amp; state management",
+      "APIs, Firebase &amp; local storage",
+      "Testing, deployment &amp; Play Store basics"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Dart fundamentals & Flutter architecture? Explain its meaning, scope and relevance for App Development using Flutter with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Dart fundamentals in the context of App Development using Flutter. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Widgets in App Development using Flutter. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Widgets, layouts work in App Development using Flutter? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in APIs for App Development using Flutter. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of APIs, Firebase in App Development using Flutter with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Testing in App Development using Flutter. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Testing, deployment is evaluated in App Development using Flutter (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-back-end-web-development": {
+    "name": "Back End Web Development",
+    "cat": "SEC",
+    "units": [
+      "HTTP, servers &amp; Node/Express basics",
+      "REST APIs &amp; database integration (SQL/NoSQL)",
+      "Authentication, sessions &amp; security",
+      "Deployment, hosting &amp; performance"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is HTTP? Explain its meaning, scope and relevance for Back End Web Development with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of HTTP, servers in the context of Back End Web Development. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain REST APIs & database integration (SQL/NoSQL) in Back End Web Development. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does REST APIs work in Back End Web Development? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Authentication for Back End Web Development. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Authentication, sessions in Back End Web Development with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Deployment in Back End Web Development. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Deployment, hosting is evaluated in Back End Web Development (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-basic-it-tools": {
+    "name": "Basic IT Tools",
+    "cat": "SEC",
+    "units": [
+      "Computer fundamentals &amp; OS basics",
+      "MS Office / Google Workspace essentials",
+      "Internet, email &amp; cyber hygiene",
+      "Intro to databases &amp; presentation tools"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Computer fundamentals & OS basics? Explain its meaning, scope and relevance for Basic IT Tools with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Computer fundamentals in the context of Basic IT Tools. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain MS Office / Google Workspace essentials in Basic IT Tools. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does MS Office / Google Workspace essentials work in Basic IT Tools? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Internet for Basic IT Tools. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Internet, email in Basic IT Tools with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Intro to databases & presentation tools in Basic IT Tools. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Intro to databases is evaluated in Basic IT Tools (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-beginners-course-to-calligraphy": {
+    "name": "Beginners Course to Calligraphy",
+    "cat": "SEC",
+    "units": [
+      "History &amp; styles of calligraphy",
+      "Tools, strokes &amp; letter construction",
+      "Composition, layout &amp; ornamentation",
+      "Project work &amp; portfolio"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is History & styles of calligraphy? Explain its meaning, scope and relevance for Beginners Course to Calligraphy with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of History in the context of Beginners Course to Calligraphy. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Tools in Beginners Course to Calligraphy. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Tools, strokes work in Beginners Course to Calligraphy? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Composition for Beginners Course to Calligraphy. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Composition, layout in Beginners Course to Calligraphy with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Project work & portfolio in Beginners Course to Calligraphy. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Project work is evaluated in Beginners Course to Calligraphy (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-big-data-analytics": {
+    "name": "Big Data Analytics",
+    "cat": "SEC",
+    "units": [
+      "Characteristics of big data &amp; ecosystem",
+      "Hadoop, Spark &amp; data ingestion",
+      "Data warehousing &amp; mining techniques",
+      "Visualisation &amp; decision-making"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Characteristics of big data & ecosystem? Explain its meaning, scope and relevance for Big Data Analytics with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Characteristics of big data in the context of Big Data Analytics. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Hadoop in Big Data Analytics. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Hadoop, Spark work in Big Data Analytics? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Data warehousing & mining techniques for Big Data Analytics. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Data warehousing in Big Data Analytics with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Visualisation & decision-making in Big Data Analytics. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Visualisation is evaluated in Big Data Analytics (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-business-communication": {
+    "name": "Business Communication",
+    "cat": "SEC",
+    "units": [
+      "Principles &amp; process of communication",
+      "Business letters, reports &amp; proposals",
+      "Presentation, negotiation &amp; meeting skills",
+      "Digital &amp; cross-cultural communication"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Principles & process of communication? Explain its meaning, scope and relevance for Business Communication with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Principles in the context of Business Communication. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Business letters in Business Communication. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Business letters, reports work in Business Communication? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Presentation for Business Communication. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Presentation, negotiation in Business Communication with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Digital & cross-cultural communication in Business Communication. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Digital is evaluated in Business Communication (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-business-intelligence-and-data-visualisation": {
+    "name": "Business Intelligence and Data Visualisation",
+    "cat": "SEC",
+    "units": [
+      "BI concepts &amp; data warehousing",
+      "ETL, dashboards &amp; KPIs",
+      "Tableau/Power BI &amp; visualisation principles",
+      "Case studies &amp; business decision-making"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is BI concepts & data warehousing? Explain its meaning, scope and relevance for Business Intelligence and Data Visualisation with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of BI concepts in the context of Business Intelligence and Data Visualisation. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain ETL in Business Intelligence and Data Visualisation. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does ETL, dashboards work in Business Intelligence and Data Visualisation? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Tableau/Power BI & visualisation principles for Business Intelligence and Data Visualisation. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Tableau/Power BI in Business Intelligence and Data Visualisation with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Case studies & business decision-making in Business Intelligence and Data Visualisation. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Case studies is evaluated in Business Intelligence and Data Visualisation (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-cad-for-fashion": {
+    "name": "CAD for Fashion",
+    "cat": "SEC",
+    "units": [
+      "Fashion illustration &amp; CAD basics",
+      "Pattern making &amp; garment construction in CAD",
+      "Textile design, colour &amp; rendering",
+      "Portfolio &amp; industry workflow"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Fashion illustration & CAD basics? Explain its meaning, scope and relevance for CAD for Fashion with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Fashion illustration in the context of CAD for Fashion. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Pattern making & garment construction in CAD in CAD for Fashion. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Pattern making work in CAD for Fashion? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Textile design for CAD for Fashion. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Textile design, colour in CAD for Fashion with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Portfolio & industry workflow in CAD for Fashion. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Portfolio is evaluated in CAD for Fashion (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-communication-in-everyday-life": {
+    "name": "Communication in Everyday Life",
+    "cat": "SEC",
+    "units": [
+      "Verbal &amp; non-verbal communication",
+      "Active listening &amp; interpersonal skills",
+      "Public speaking &amp; everyday writing",
+      "Media &amp; digital literacy"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Verbal & non-verbal communication? Explain its meaning, scope and relevance for Communication in Everyday Life with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Verbal in the context of Communication in Everyday Life. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Active listening & interpersonal skills in Communication in Everyday Life. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Active listening work in Communication in Everyday Life? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Public speaking & everyday writing for Communication in Everyday Life. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Public speaking in Communication in Everyday Life with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Media & digital literacy in Communication in Everyday Life. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Media is evaluated in Communication in Everyday Life (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-communication-in-professional-life": {
+    "name": "Communication in Professional Life",
+    "cat": "SEC",
+    "units": [
+      "Workplace communication models",
+      "Resume, interview &amp; corporate writing",
+      "Group discussion, leadership &amp; teamwork",
+      "Ethics, etiquette &amp; digital professionalism"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Workplace communication models? Explain its meaning, scope and relevance for Communication in Professional Life with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Workplace communication models in the context of Communication in Professional Life. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Resume in Communication in Professional Life. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Resume, interview work in Communication in Professional Life? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Group discussion for Communication in Professional Life. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Group discussion, leadership in Communication in Professional Life with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Ethics in Communication in Professional Life. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Ethics, etiquette is evaluated in Communication in Professional Life (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-creative-writing": {
+    "name": "Creative Writing",
+    "cat": "SEC",
+    "units": [
+      "Elements of fiction, poetry &amp; drama",
+      "Narrative techniques &amp; style",
+      "Editing, critique &amp; workshopping",
+      "Publishing basics &amp; portfolio"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Elements of fiction? Explain its meaning, scope and relevance for Creative Writing with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Elements of fiction, poetry in the context of Creative Writing. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Narrative techniques & style in Creative Writing. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Narrative techniques work in Creative Writing? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Editing for Creative Writing. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Editing, critique in Creative Writing with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Publishing basics & portfolio in Creative Writing. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Publishing basics is evaluated in Creative Writing (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-cyber-sphere-and-security-global-concern": {
+    "name": "Cyber Sphere and Security: Global Concern",
+    "cat": "SEC",
+    "units": [
+      "Cyberspace, cyber crime &amp; law",
+      "Network security &amp; cryptography basics",
+      "Global cyber governance &amp; policy",
+      "Case studies: privacy, misinformation &amp; ethics"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Cyberspace? Explain its meaning, scope and relevance for Cyber Sphere and Security: Global Concern with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Cyberspace, cyber crime in the context of Cyber Sphere and Security: Global Concern. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Network security & cryptography basics in Cyber Sphere and Security: Global Concern. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Network security work in Cyber Sphere and Security: Global Concern? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Global cyber governance & policy for Cyber Sphere and Security: Global Concern. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Global cyber governance in Cyber Sphere and Security: Global Concern with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Case studies: privacy in Cyber Sphere and Security: Global Concern. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Case studies: privacy, misinformation is evaluated in Cyber Sphere and Security: Global Concern (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-developing-sustainability-plans-for-a-business": {
+    "name": "Developing Sustainability Plans for a Business",
+    "cat": "SEC",
+    "units": [
+      "Sustainability, ESG &amp; circular economy",
+      "Business model &amp; life-cycle assessment",
+      "Stakeholder engagement &amp; reporting",
+      "Sustainable plan design &amp; pitch"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Sustainability? Explain its meaning, scope and relevance for Developing Sustainability Plans for a Business with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Sustainability, ESG in the context of Developing Sustainability Plans for a Business. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Business model & life-cycle assessment in Developing Sustainability Plans for a Business. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Business model work in Developing Sustainability Plans for a Business? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Stakeholder engagement & reporting for Developing Sustainability Plans for a Business. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Stakeholder engagement in Developing Sustainability Plans for a Business with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Sustainable plan design & pitch in Developing Sustainability Plans for a Business. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Sustainable plan design is evaluated in Developing Sustainability Plans for a Business (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-digital-film-production": {
+    "name": "Digital Film Production",
+    "cat": "SEC",
+    "units": [
+      "Script, storyboard &amp; pre-production",
+      "Camera, lighting &amp; sound basics",
+      "Editing, VFX &amp; post-production",
+      "Distribution &amp; festival workflow"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Script? Explain its meaning, scope and relevance for Digital Film Production with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Script, storyboard in the context of Digital Film Production. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Camera in Digital Film Production. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Camera, lighting work in Digital Film Production? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Editing for Digital Film Production. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Editing, VFX in Digital Film Production with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Distribution & festival workflow in Digital Film Production. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Distribution is evaluated in Digital Film Production (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-digital-marketing": {
+    "name": "Digital Marketing",
+    "cat": "SEC",
+    "units": [
+      "SEO, SEM &amp; content marketing",
+      "Social media, email &amp; influencer marketing",
+      "Analytics, ads &amp; campaign metrics",
+      "Strategy, branding &amp; case studies"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is SEO? Explain its meaning, scope and relevance for Digital Marketing with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of SEO, SEM in the context of Digital Marketing. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Social media in Digital Marketing. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Social media, email work in Digital Marketing? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Analytics for Digital Marketing. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Analytics, ads in Digital Marketing with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Strategy in Digital Marketing. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Strategy, branding is evaluated in Digital Marketing (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-e-tourism": {
+    "name": "E-Tourism",
+    "cat": "SEC",
+    "units": [
+      "Tourism industry &amp; digital transformation",
+      "Online booking, GDS &amp; hospitality tech",
+      "Digital marketing for destinations",
+      "Sustainable &amp; virtual tourism trends"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Tourism industry & digital transformation? Explain its meaning, scope and relevance for E-Tourism with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Tourism industry in the context of E-Tourism. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Online booking in E-Tourism. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Online booking, GDS work in E-Tourism? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Digital marketing for destinations for E-Tourism. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Digital marketing for destinations in E-Tourism with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Sustainable & virtual tourism trends in E-Tourism. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Sustainable is evaluated in E-Tourism (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-environmental-science": {
+    "name": "Environmental Science",
+    "cat": "SEC",
+    "units": [
+      "Environment, ecosystem &amp; biodiversity",
+      "Pollution, climate change &amp; mitigation",
+      "Natural resources &amp; conservation",
+      "Field work &amp; sustainability practices"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Environment? Explain its meaning, scope and relevance for Environmental Science with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Environment, ecosystem in the context of Environmental Science. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Pollution in Environmental Science. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Pollution, climate change work in Environmental Science? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Natural resources & conservation for Environmental Science. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Natural resources in Environmental Science with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Field work & sustainability practices in Environmental Science. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Field work is evaluated in Environmental Science (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-essentials-of-python": {
+    "name": "Essentials of Python",
+    "cat": "SEC",
+    "units": [
+      "Python syntax, loops &amp; functions",
+      "File handling &amp; modules",
+      "OOP basics &amp; error handling",
+      "Mini projects &amp; problem solving"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Python syntax? Explain its meaning, scope and relevance for Essentials of Python with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Python syntax, loops in the context of Essentials of Python. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain File handling & modules in Essentials of Python. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does File handling work in Essentials of Python? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in OOP basics & error handling for Essentials of Python. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of OOP basics in Essentials of Python with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Mini projects & problem solving in Essentials of Python. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Mini projects is evaluated in Essentials of Python (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-finance-for-everyone": {
+    "name": "Finance for Everyone",
+    "cat": "SEC",
+    "units": [
+      "Money, banking &amp; financial system",
+      "Saving, investing &amp; mutual funds",
+      "Tax, insurance &amp; retirement planning",
+      "Digital finance &amp; fraud awareness"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Money? Explain its meaning, scope and relevance for Finance for Everyone with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Money, banking in the context of Finance for Everyone. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Saving in Finance for Everyone. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Saving, investing work in Finance for Everyone? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Tax for Finance for Everyone. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Tax, insurance in Finance for Everyone with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Digital finance & fraud awareness in Finance for Everyone. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Digital finance is evaluated in Finance for Everyone (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-financial-database-and-analysis-software": {
+    "name": "Financial Database and Analysis Software",
+    "cat": "SEC",
+    "units": [
+      "Financial data sources &amp; databases",
+      "Excel/R for financial analysis",
+      "Ratio analysis &amp; valuation tools",
+      "Reporting &amp; visualisation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Financial data sources & databases? Explain its meaning, scope and relevance for Financial Database and Analysis Software with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Financial data sources in the context of Financial Database and Analysis Software. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Excel/R for financial analysis in Financial Database and Analysis Software. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Excel/R for financial analysis work in Financial Database and Analysis Software? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Ratio analysis & valuation tools for Financial Database and Analysis Software. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Ratio analysis in Financial Database and Analysis Software with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Reporting & visualisation in Financial Database and Analysis Software. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Reporting is evaluated in Financial Database and Analysis Software (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-front-end-web-design-and-development": {
+    "name": "Front End Web Design and Development",
+    "cat": "SEC",
+    "units": [
+      "HTML5, CSS3 &amp; responsive design",
+      "JavaScript &amp; DOM manipulation",
+      "Frameworks, UX &amp; accessibility",
+      "Project: portfolio website"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is HTML5? Explain its meaning, scope and relevance for Front End Web Design and Development with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of HTML5, CSS3 in the context of Front End Web Design and Development. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain JavaScript & DOM manipulation in Front End Web Design and Development. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does JavaScript work in Front End Web Design and Development? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Frameworks for Front End Web Design and Development. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Frameworks, UX in Front End Web Design and Development with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Project: portfolio website in Front End Web Design and Development. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Project: portfolio website is evaluated in Front End Web Design and Development (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-fundamentals-of-indian-manuscriptology": {
+    "name": "Fundamentals of Indian Manuscriptology",
+    "cat": "SEC",
+    "units": [
+      "Manuscripts, scripts &amp; materials",
+      "Cataloguing, preservation &amp; digitisation",
+      "Paleography &amp; textual criticism",
+      "Field visits &amp; archival ethics"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Manuscripts? Explain its meaning, scope and relevance for Fundamentals of Indian Manuscriptology with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Manuscripts, scripts in the context of Fundamentals of Indian Manuscriptology. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Cataloguing in Fundamentals of Indian Manuscriptology. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Cataloguing, preservation work in Fundamentals of Indian Manuscriptology? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Paleography & textual criticism for Fundamentals of Indian Manuscriptology. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Paleography in Fundamentals of Indian Manuscriptology with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Field visits & archival ethics in Fundamentals of Indian Manuscriptology. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Field visits is evaluated in Fundamentals of Indian Manuscriptology (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-graphics-design-and-animation": {
+    "name": "Graphics Design and Animation",
+    "cat": "SEC",
+    "units": [
+      "Design principles &amp; typography",
+      "Photoshop/Illustrator &amp; vector art",
+      "Motion graphics &amp; 2D animation",
+      "Branding &amp; portfolio project"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Design principles & typography? Explain its meaning, scope and relevance for Graphics Design and Animation with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Design principles in the context of Graphics Design and Animation. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Photoshop/Illustrator & vector art in Graphics Design and Animation. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Photoshop/Illustrator work in Graphics Design and Animation? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Motion graphics & 2D animation for Graphics Design and Animation. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Motion graphics in Graphics Design and Animation with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Branding & portfolio project in Graphics Design and Animation. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Branding is evaluated in Graphics Design and Animation (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-harmonium": {
+    "name": "Harmonium",
+    "cat": "SEC",
+    "units": [
+      "Harmonium structure &amp; tuning",
+      "Scales, ragas &amp; alankar practice",
+      "Accompaniment &amp; solo techniques",
+      "Performance &amp; recital"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Harmonium structure & tuning? Explain its meaning, scope and relevance for Harmonium with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Harmonium structure in the context of Harmonium. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Scales in Harmonium. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Scales, ragas work in Harmonium? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Accompaniment & solo techniques for Harmonium. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Accompaniment in Harmonium with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Performance & recital in Harmonium. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Performance is evaluated in Harmonium (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-introduction-to-arabic-calligraphy": {
+    "name": "Introduction to Arabic Calligraphy",
+    "cat": "SEC",
+    "units": [
+      "Arabic script &amp; calligraphic styles",
+      "Tools, strokes &amp; ligatures",
+      "Composition &amp; decorative arts",
+      "Exhibition &amp; portfolio"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Arabic script & calligraphic styles? Explain its meaning, scope and relevance for Introduction to Arabic Calligraphy with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Arabic script in the context of Introduction to Arabic Calligraphy. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Tools in Introduction to Arabic Calligraphy. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Tools, strokes work in Introduction to Arabic Calligraphy? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Composition & decorative arts for Introduction to Arabic Calligraphy. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Composition in Introduction to Arabic Calligraphy with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Exhibition & portfolio in Introduction to Arabic Calligraphy. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Exhibition is evaluated in Introduction to Arabic Calligraphy (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-introduction-to-blockchain": {
+    "name": "Introduction to Blockchain",
+    "cat": "SEC",
+    "units": [
+      "Blockchain fundamentals &amp; hashing",
+      "Distributed ledger &amp; consensus",
+      "Smart contracts &amp; Ethereum basics",
+      "Use cases &amp; regulatory view"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Blockchain fundamentals & hashing? Explain its meaning, scope and relevance for Introduction to Blockchain with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Blockchain fundamentals in the context of Introduction to Blockchain. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Distributed ledger & consensus in Introduction to Blockchain. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Distributed ledger work in Introduction to Blockchain? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Smart contracts & Ethereum basics for Introduction to Blockchain. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Smart contracts in Introduction to Blockchain with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Use cases & regulatory view in Introduction to Blockchain. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Use cases is evaluated in Introduction to Blockchain (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-introduction-to-cloud-computing-aws": {
+    "name": "Introduction to Cloud Computing (AWS)",
+    "cat": "SEC",
+    "units": [
+      "Cloud concepts, service models &amp; AWS overview",
+      "EC2, S3 &amp; VPC basics",
+      "Databases, IAM &amp; security",
+      "Deployment &amp; billing"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Cloud concepts? Explain its meaning, scope and relevance for Introduction to Cloud Computing (AWS) with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Cloud concepts, service models in the context of Introduction to Cloud Computing (AWS). Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain EC2 in Introduction to Cloud Computing (AWS). Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does EC2, S3 work in Introduction to Cloud Computing (AWS)? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Databases for Introduction to Cloud Computing (AWS). Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Databases, IAM in Introduction to Cloud Computing (AWS) with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Deployment & billing in Introduction to Cloud Computing (AWS). What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Deployment is evaluated in Introduction to Cloud Computing (AWS) (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-museum-and-museology": {
+    "name": "Museum and Museology",
+    "cat": "SEC",
+    "units": [
+      "Museum history, types &amp; functions",
+      "Collection, curation &amp; conservation",
+      "Exhibition design &amp; education",
+      "Museum management &amp; ethics"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Museum history? Explain its meaning, scope and relevance for Museum and Museology with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Museum history, types in the context of Museum and Museology. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Collection in Museum and Museology. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Collection, curation work in Museum and Museology? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Exhibition design & education for Museum and Museology. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Exhibition design in Museum and Museology with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Museum management & ethics in Museum and Museology. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Museum management is evaluated in Museum and Museology (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-negotiations-and-leadership": {
+    "name": "Negotiations and Leadership",
+    "cat": "SEC",
+    "units": [
+      "Negotiation models &amp; styles",
+      "Leadership theories &amp; traits",
+      "Conflict resolution &amp; decision-making",
+      "Simulations &amp; case studies"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Negotiation models & styles? Explain its meaning, scope and relevance for Negotiations and Leadership with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Negotiation models in the context of Negotiations and Leadership. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Leadership theories & traits in Negotiations and Leadership. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Leadership theories work in Negotiations and Leadership? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Conflict resolution & decision-making for Negotiations and Leadership. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Conflict resolution in Negotiations and Leadership with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Simulations & case studies in Negotiations and Leadership. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Simulations is evaluated in Negotiations and Leadership (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-others": {
+    "name": "SEC Others",
+    "cat": "SEC",
+    "units": [
+      "Interdisciplinary skill topics as per DU",
+      "Practical training &amp; workshops",
+      "Project &amp; assessment pattern",
+      "Credit &amp; evaluation scheme"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Interdisciplinary skill topics as per DU? Explain its meaning, scope and relevance for SEC Others with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Interdisciplinary skill topics as per DU in the context of SEC Others. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Practical training & workshops in SEC Others. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Practical training work in SEC Others? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Project & assessment pattern for SEC Others. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Project in SEC Others with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Credit & evaluation scheme in SEC Others. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Credit is evaluated in SEC Others (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-personal-financial-planning": {
+    "name": "Personal Financial Planning",
+    "cat": "SEC",
+    "units": [
+      "Income, budgeting &amp; goal setting",
+      "Investment avenues &amp; risk",
+      "Tax planning &amp; insurance",
+      "Retirement &amp; estate basics"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Income? Explain its meaning, scope and relevance for Personal Financial Planning with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Income, budgeting in the context of Personal Financial Planning. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Investment avenues & risk in Personal Financial Planning. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Investment avenues work in Personal Financial Planning? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Tax planning & insurance for Personal Financial Planning. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Tax planning in Personal Financial Planning with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Retirement & estate basics in Personal Financial Planning. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Retirement is evaluated in Personal Financial Planning (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-personality-development-and-communication": {
+    "name": "Personality Development and Communication",
+    "cat": "SEC",
+    "units": [
+      "Self-awareness, SWOT &amp; emotional intelligence",
+      "Communication &amp; interpersonal dynamics",
+      "Leadership, team building &amp; time management",
+      "Interview &amp; professional grooming"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Self-awareness? Explain its meaning, scope and relevance for Personality Development and Communication with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Self-awareness, SWOT in the context of Personality Development and Communication. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Communication & interpersonal dynamics in Personality Development and Communication. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Communication work in Personality Development and Communication? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Leadership for Personality Development and Communication. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Leadership, team building in Personality Development and Communication with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Interview & professional grooming in Personality Development and Communication. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Interview is evaluated in Personality Development and Communication (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-political-leadership-and-communication": {
+    "name": "Political Leadership and Communication",
+    "cat": "SEC",
+    "units": [
+      "Leadership, power &amp; political theories",
+      "Campaigns, rhetoric &amp; media",
+      "Governance, ethics &amp; public policy",
+      "Case studies: Indian &amp; global leaders"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Leadership? Explain its meaning, scope and relevance for Political Leadership and Communication with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Leadership, power in the context of Political Leadership and Communication. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Campaigns in Political Leadership and Communication. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Campaigns, rhetoric work in Political Leadership and Communication? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Governance for Political Leadership and Communication. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Governance, ethics in Political Leadership and Communication with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Case studies: Indian & global leaders in Political Leadership and Communication. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Case studies: Indian is evaluated in Political Leadership and Communication (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-programing-with-python": {
+    "name": "Programming with Python",
+    "cat": "SEC",
+    "units": [
+      "Python fundamentals &amp; data structures",
+      "Functions, modules &amp; file I/O",
+      "OOP &amp; libraries overview",
+      "Problem solving &amp; mini projects"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Python fundamentals & data structures? Explain its meaning, scope and relevance for Programming with Python with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Python fundamentals in the context of Programming with Python. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Functions in Programming with Python. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Functions, modules work in Programming with Python? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in OOP & libraries overview for Programming with Python. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of OOP in Programming with Python with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Problem solving & mini projects in Programming with Python. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Problem solving is evaluated in Programming with Python (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-prospecting-e-waste-for-sustainability": {
+    "name": "Prospecting E-Waste for Sustainability",
+    "cat": "SEC",
+    "units": [
+      "E-waste types, sources &amp; hazards",
+      "Collection, dismantling &amp; recycling",
+      "Policy, EPR &amp; circular economy",
+      "Sustainable enterprise models"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is E-waste types? Explain its meaning, scope and relevance for Prospecting E-Waste for Sustainability with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of E-waste types, sources in the context of Prospecting E-Waste for Sustainability. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Collection in Prospecting E-Waste for Sustainability. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Collection, dismantling work in Prospecting E-Waste for Sustainability? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Policy for Prospecting E-Waste for Sustainability. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Policy, EPR in Prospecting E-Waste for Sustainability with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Sustainable enterprise models in Prospecting E-Waste for Sustainability. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Sustainable enterprise models is evaluated in Prospecting E-Waste for Sustainability (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-public-speaking-in-english-language-and-leadership": {
+    "name": "Public Speaking in English Language and Leadership",
+    "cat": "SEC",
+    "units": [
+      "Speech structure &amp; delivery",
+      "Voice, body language &amp; audience",
+      "Debate, persuasion &amp; leadership",
+      "Practice, feedback &amp; evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Speech structure & delivery? Explain its meaning, scope and relevance for Public Speaking in English Language and Leadership with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Speech structure in the context of Public Speaking in English Language and Leadership. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Voice in Public Speaking in English Language and Leadership. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Voice, body language work in Public Speaking in English Language and Leadership? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Debate for Public Speaking in English Language and Leadership. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Debate, persuasion in Public Speaking in English Language and Leadership with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Practice in Public Speaking in English Language and Leadership. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Practice, feedback is evaluated in Public Speaking in English Language and Leadership (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-reading-the-archive": {
+    "name": "Reading the Archive",
+    "cat": "SEC",
+    "units": [
+      "Archive theory &amp; historiography",
+      "Documents, photographs &amp; oral sources",
+      "Methods for reading &amp; interpreting archives",
+      "Fieldwork &amp; research project"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Archive theory & historiography? Explain its meaning, scope and relevance for Reading the Archive with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Archive theory in the context of Reading the Archive. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Documents in Reading the Archive. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Documents, photographs work in Reading the Archive? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Methods for reading & interpreting archives for Reading the Archive. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Methods for reading in Reading the Archive with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Fieldwork & research project in Reading the Archive. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Fieldwork is evaluated in Reading the Archive (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-statistical-software-package": {
+    "name": "Statistical Software Package",
+    "cat": "SEC",
+    "units": [
+      "Data types &amp; descriptive stats",
+      "SPSS/R/Excel statistical tools",
+      "Hypothesis testing &amp; regression",
+      "Report writing &amp; interpretation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Data types & descriptive stats? Explain its meaning, scope and relevance for Statistical Software Package with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Data types in the context of Statistical Software Package. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain SPSS/R/Excel statistical tools in Statistical Software Package. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does SPSS/R/Excel statistical tools work in Statistical Software Package? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Hypothesis testing & regression for Statistical Software Package. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Hypothesis testing in Statistical Software Package with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Report writing & interpretation in Statistical Software Package. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Report writing is evaluated in Statistical Software Package (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-statistics-with-r": {
+    "name": "Statistics with R",
+    "cat": "SEC",
+    "units": [
+      "R basics, data frames &amp; packages",
+      "Descriptive &amp; inferential statistics",
+      "Visualisation &amp; modelling in R",
+      "Case studies &amp; reproducible reports"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is R basics? Explain its meaning, scope and relevance for Statistics with R with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of R basics, data frames in the context of Statistics with R. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Descriptive & inferential statistics in Statistics with R. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Descriptive work in Statistics with R? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Visualisation & modelling in R for Statistics with R. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Visualisation in Statistics with R with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Case studies & reproducible reports in Statistics with R. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Case studies is evaluated in Statistics with R (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-sustainable-ecotourism-and-entrepreneurship": {
+    "name": "Sustainable Ecotourism and Entrepreneurship",
+    "cat": "SEC",
+    "units": [
+      "Ecotourism principles &amp; community impact",
+      "Entrepreneurship &amp; business planning",
+      "Conservation &amp; responsible tourism",
+      "Field projects &amp; enterprise pitch"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Ecotourism principles & community impact? Explain its meaning, scope and relevance for Sustainable Ecotourism and Entrepreneurship with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Ecotourism principles in the context of Sustainable Ecotourism and Entrepreneurship. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Entrepreneurship & business planning in Sustainable Ecotourism and Entrepreneurship. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Entrepreneurship work in Sustainable Ecotourism and Entrepreneurship? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Conservation & responsible tourism for Sustainable Ecotourism and Entrepreneurship. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Conservation in Sustainable Ecotourism and Entrepreneurship with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Field projects & enterprise pitch in Sustainable Ecotourism and Entrepreneurship. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Field projects is evaluated in Sustainable Ecotourism and Entrepreneurship (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "sec-visual-communication-and-photography": {
+    "name": "Visual Communication and Photography",
+    "cat": "SEC",
+    "units": [
+      "Visual language &amp; communication models",
+      "Photography basics, composition &amp; lighting",
+      "Editing &amp; visual storytelling",
+      "Portfolio &amp; exhibition"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "What is Visual language & communication models? Explain its meaning, scope and relevance for Visual Communication and Photography with examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the evolution and importance of Visual language in the context of Visual Communication and Photography. Why is it essential for skill development?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Photography basics in Visual Communication and Photography. Discuss its types, features and practical applications with a case study."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "How does Photography basics, composition work in Visual Communication and Photography? Describe the process, tools and challenges."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Analyse contemporary issues and trends in Editing & visual storytelling for Visual Communication and Photography. Support with recent examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Editing in Visual Communication and Photography with reference to current Indian context."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe the practical file or project work for Portfolio & exhibition in Visual Communication and Photography. What viva questions are commonly asked?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Discuss how Portfolio is evaluated in Visual Communication and Photography (theory + practical). Give marking scheme and presentation tips."
+      }
+    ]
+  },
+  "vac-ayurveda-and-nutrition": {
+    "name": "Ayurveda and Nutrition",
+    "cat": "VAC",
+    "units": [
+      "Ayurveda fundamentals, doshas & prakriti",
+      "Nutrition, dietetics & ahara",
+      "Lifestyle, yoga & holistic health",
+      "Practical assessment & community health"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Ayurveda fundamentals in Ayurveda and Nutrition. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Ayurveda fundamentals, doshas important for holistic development in Ayurveda and Nutrition? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Nutrition as covered in Ayurveda and Nutrition. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Nutrition, dietetics in Ayurveda and Nutrition with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Lifestyle in Ayurveda and Nutrition — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Lifestyle, yoga in building Ayurveda and Nutrition values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Practical assessment & community health in Ayurveda and Nutrition. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Practical assessment linked to Sustainable Development Goals in Ayurveda and Nutrition? Discuss."
+      }
+    ]
+  },
+  "vac-constitutional-values-and-fundamental-duties": {
+    "name": "Constitutional Values and Fundamental Duties",
+    "cat": "VAC",
+    "units": [
+      "Preamble, values & citizenship",
+      "Fundamental Rights, Duties & DPSP",
+      "Constitutional institutions & governance",
+      "Case studies & civic engagement"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Preamble in Constitutional Values and Fundamental Duties. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Preamble, values important for holistic development in Constitutional Values and Fundamental Duties? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Fundamental Rights as covered in Constitutional Values and Fundamental Duties. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Fundamental Rights, Duties in Constitutional Values and Fundamental Duties with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Constitutional institutions & governance in Constitutional Values and Fundamental Duties — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Constitutional institutions in building Constitutional Values and Fundamental Duties values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Case studies & civic engagement in Constitutional Values and Fundamental Duties. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Case studies linked to Sustainable Development Goals in Constitutional Values and Fundamental Duties? Discuss."
+      }
+    ]
+  },
+  "vac-culture-and-communication": {
+    "name": "Culture and Communication",
+    "cat": "VAC",
+    "units": [
+      "Culture, identity & intercultural process",
+      "Verbal/non-verbal & folk media",
+      "Media, globalization & cultural change",
+      "Field work & presentation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Culture in Culture and Communication. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Culture, identity important for holistic development in Culture and Communication? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Verbal/non-verbal & folk media as covered in Culture and Communication. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Verbal/non-verbal in Culture and Communication with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Media in Culture and Communication — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Media, globalization in building Culture and Communication values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Field work & presentation in Culture and Communication. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Field work linked to Sustainable Development Goals in Culture and Communication? Discuss."
+      }
+    ]
+  },
+  "vac-digital-empowerment": {
+    "name": "Digital Empowerment",
+    "cat": "VAC",
+    "units": [
+      "Digital literacy & citizen services",
+      "Cyber security, privacy & ethics",
+      "e-Governance, UPI & digital finance",
+      "Hands-on labs & projects"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Digital literacy & citizen services in Digital Empowerment. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Digital literacy important for holistic development in Digital Empowerment? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Cyber security as covered in Digital Empowerment. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Cyber security, privacy in Digital Empowerment with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss e-Governance in Digital Empowerment — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of e-Governance, UPI in building Digital Empowerment values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Hands-on labs & projects in Digital Empowerment. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Hands-on labs linked to Sustainable Development Goals in Digital Empowerment? Discuss."
+      }
+    ]
+  },
+  "vac-ecology-and-literature": {
+    "name": "Ecology and Literature",
+    "cat": "VAC",
+    "units": [
+      "Ecology, literature & eco-criticism",
+      "Nature writing & environmental fiction",
+      "Climate narratives & activism",
+      "Critique & creative response"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Ecology in Ecology and Literature. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Ecology, literature important for holistic development in Ecology and Literature? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Nature writing & environmental fiction as covered in Ecology and Literature. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Nature writing in Ecology and Literature with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Climate narratives & activism in Ecology and Literature — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Climate narratives in building Ecology and Literature values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Critique & creative response in Ecology and Literature. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Critique linked to Sustainable Development Goals in Ecology and Literature? Discuss."
+      }
+    ]
+  },
+  "vac-emotional-intelligence": {
+    "name": "Emotional Intelligence",
+    "cat": "VAC",
+    "units": [
+      "EI models & self-awareness",
+      "Emotion regulation & empathy",
+      "Interpersonal skills & leadership",
+      "Assessments & workplace application"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of EI models & self-awareness in Emotional Intelligence. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is EI models important for holistic development in Emotional Intelligence? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Emotion regulation & empathy as covered in Emotional Intelligence. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Emotion regulation in Emotional Intelligence with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Interpersonal skills & leadership in Emotional Intelligence — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Interpersonal skills in building Emotional Intelligence values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Assessments & workplace application in Emotional Intelligence. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Assessments linked to Sustainable Development Goals in Emotional Intelligence? Discuss."
+      }
+    ]
+  },
+  "vac-envisaging-viksit-bharat-perspectives-and-challenges": {
+    "name": "Envisaging Viksit Bharat: Perspectives and Challenges",
+    "cat": "VAC",
+    "units": [
+      "Viksit Bharat vision 2047",
+      "Economy, innovation & sustainability",
+      "Governance, inclusion & culture",
+      "Youth role & nation building"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Viksit Bharat vision 2047 in Envisaging Viksit Bharat: Perspectives and Challenges. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Viksit Bharat vision 2047 important for holistic development in Envisaging Viksit Bharat: Perspectives and Challenges? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Economy as covered in Envisaging Viksit Bharat: Perspectives and Challenges. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Economy, innovation in Envisaging Viksit Bharat: Perspectives and Challenges with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Governance in Envisaging Viksit Bharat: Perspectives and Challenges — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Governance, inclusion in building Envisaging Viksit Bharat: Perspectives and Challenges values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Youth role & nation building in Envisaging Viksit Bharat: Perspectives and Challenges. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Youth role linked to Sustainable Development Goals in Envisaging Viksit Bharat: Perspectives and Challenges? Discuss."
+      }
+    ]
+  },
+  "vac-ethics-and-culture": {
+    "name": "Ethics and Culture",
+    "cat": "VAC",
+    "units": [
+      "Ethics, values & Indian traditions",
+      "Culture, religion & morality",
+      "Applied ethics & dilemmas",
+      "Community service & reflection"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Ethics in Ethics and Culture. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Ethics, values important for holistic development in Ethics and Culture? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Culture as covered in Ethics and Culture. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Culture, religion in Ethics and Culture with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Applied ethics & dilemmas in Ethics and Culture — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Applied ethics in building Ethics and Culture values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Community service & reflection in Ethics and Culture. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Community service linked to Sustainable Development Goals in Ethics and Culture? Discuss."
+      }
+    ]
+  },
+  "vac-ethics-and-values-in-ancient-indian-traditions": {
+    "name": "Ethics and Values in Ancient Indian Traditions",
+    "cat": "VAC",
+    "units": [
+      "Vedas, Upanishads & dharma",
+      "Buddhist/Jain ethics & values",
+      "Epics, Purana & moral stories",
+      "Contemporary relevance"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Vedas in Ethics and Values in Ancient Indian Traditions. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Vedas, Upanishads important for holistic development in Ethics and Values in Ancient Indian Traditions? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Buddhist/Jain ethics & values as covered in Ethics and Values in Ancient Indian Traditions. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Buddhist/Jain ethics in Ethics and Values in Ancient Indian Traditions with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Epics in Ethics and Values in Ancient Indian Traditions — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Epics, Purana in building Ethics and Values in Ancient Indian Traditions values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Contemporary relevance in Ethics and Values in Ancient Indian Traditions. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Contemporary relevance linked to Sustainable Development Goals in Ethics and Values in Ancient Indian Traditions? Discuss."
+      }
+    ]
+  },
+  "vac-financial-literacy": {
+    "name": "Financial Literacy",
+    "cat": "VAC",
+    "units": [
+      "Money, banking & financial system",
+      "Saving, investing & mutual funds",
+      "Tax, insurance & digital finance",
+      "Budgeting & fraud awareness"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Money in Financial Literacy. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Money, banking important for holistic development in Financial Literacy? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Saving as covered in Financial Literacy. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Saving, investing in Financial Literacy with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Tax in Financial Literacy — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Tax, insurance in building Financial Literacy values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Budgeting & fraud awareness in Financial Literacy. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Budgeting linked to Sustainable Development Goals in Financial Literacy? Discuss."
+      }
+    ]
+  },
+  "vac-fit-india": {
+    "name": "Fit India",
+    "cat": "VAC",
+    "units": [
+      "Fitness, wellness & nutrition",
+      "Yoga, exercise & lifestyle",
+      "Sports, injuries & first aid",
+      "Fitness plan & assessment"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Fitness in Fit India. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Fitness, wellness important for holistic development in Fit India? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Yoga as covered in Fit India. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Yoga, exercise in Fit India with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Sports in Fit India — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Sports, injuries in building Fit India values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Fitness plan & assessment in Fit India. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Fitness plan linked to Sustainable Development Goals in Fit India? Discuss."
+      }
+    ]
+  },
+  "vac-front-end-web-design-and-development": {
+    "name": "Front End Web Design and Development",
+    "cat": "VAC",
+    "units": [
+      "HTML, CSS & responsive design",
+      "JavaScript & DOM",
+      "Frameworks & accessibility",
+      "Portfolio project"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of HTML in Front End Web Design and Development. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is HTML, CSS important for holistic development in Front End Web Design and Development? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe JavaScript & DOM as covered in Front End Web Design and Development. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse JavaScript in Front End Web Design and Development with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Frameworks & accessibility in Front End Web Design and Development — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Frameworks in building Front End Web Design and Development values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Portfolio project in Front End Web Design and Development. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Portfolio project linked to Sustainable Development Goals in Front End Web Design and Development? Discuss."
+      }
+    ]
+  },
+  "vac-gandhi-and-education": {
+    "name": "Gandhi and Education",
+    "cat": "VAC",
+    "units": [
+      "Gandhian philosophy & Nai Talim",
+      "Truth, non-violence & sarvodaya",
+      "Education, craft & community",
+      "Field engagement"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Gandhian philosophy & Nai Talim in Gandhi and Education. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Gandhian philosophy important for holistic development in Gandhi and Education? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Truth as covered in Gandhi and Education. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Truth, non-violence in Gandhi and Education with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Education in Gandhi and Education — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Education, craft in building Gandhi and Education values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Field engagement in Gandhi and Education. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Field engagement linked to Sustainable Development Goals in Gandhi and Education? Discuss."
+      }
+    ]
+  },
+  "vac-indigenous-sports": {
+    "name": "Indigenous Sports",
+    "cat": "VAC",
+    "units": [
+      "Traditional Indian sports & history",
+      "Rules, skills & fitness",
+      "Cultural significance & revival",
+      "Practice & tournament"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Traditional Indian sports & history in Indigenous Sports. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Traditional Indian sports important for holistic development in Indigenous Sports? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Rules as covered in Indigenous Sports. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Rules, skills in Indigenous Sports with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Cultural significance & revival in Indigenous Sports — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Cultural significance in building Indigenous Sports values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Practice & tournament in Indigenous Sports. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Practice linked to Sustainable Development Goals in Indigenous Sports? Discuss."
+      }
+    ]
+  },
+  "vac-leadership-excellence-through-the-gita": {
+    "name": "Leadership Excellence through the Gita",
+    "cat": "VAC",
+    "units": [
+      "Gita philosophy & leadership",
+      "Karma yoga & decision-making",
+      "Ethics, duty & teamwork",
+      "Case studies & self-reflection"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Gita philosophy & leadership in Leadership Excellence through the Gita. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Gita philosophy important for holistic development in Leadership Excellence through the Gita? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Karma yoga & decision-making as covered in Leadership Excellence through the Gita. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Karma yoga in Leadership Excellence through the Gita with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Ethics in Leadership Excellence through the Gita — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Ethics, duty in building Leadership Excellence through the Gita values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Case studies & self-reflection in Leadership Excellence through the Gita. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Case studies linked to Sustainable Development Goals in Leadership Excellence through the Gita? Discuss."
+      }
+    ]
+  },
+  "vac-national-cadet-corps-i": {
+    "name": "National Cadet Corps I",
+    "cat": "VAC",
+    "units": [
+      "NCC organisation & history",
+      "Drill, discipline & leadership",
+      "National integration & duties",
+      "Camp & social service"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of NCC organisation & history in National Cadet Corps I. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is NCC organisation important for holistic development in National Cadet Corps I? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Drill as covered in National Cadet Corps I. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Drill, discipline in National Cadet Corps I with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss National integration & duties in National Cadet Corps I — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of National integration in building National Cadet Corps I values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Camp & social service in National Cadet Corps I. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Camp linked to Sustainable Development Goals in National Cadet Corps I? Discuss."
+      }
+    ]
+  },
+  "vac-national-cadet-corps-ii": {
+    "name": "National Cadet Corps II",
+    "cat": "VAC",
+    "units": [
+      "Armed forces & map reading",
+      "Weapon training & first aid",
+      "Adventure & community service",
+      "Leadership camp"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Armed forces & map reading in National Cadet Corps II. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Armed forces important for holistic development in National Cadet Corps II? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Weapon training & first aid as covered in National Cadet Corps II. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Weapon training in National Cadet Corps II with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Adventure & community service in National Cadet Corps II — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Adventure in building National Cadet Corps II values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Leadership camp in National Cadet Corps II. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Leadership camp linked to Sustainable Development Goals in National Cadet Corps II? Discuss."
+      }
+    ]
+  },
+  "vac-national-cadet-corps-iii": {
+    "name": "National Cadet Corps III",
+    "cat": "VAC",
+    "units": [
+      "Defence studies & security",
+      "Disaster management & civil defence",
+      "Personality & communication",
+      "Field training"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Defence studies & security in National Cadet Corps III. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Defence studies important for holistic development in National Cadet Corps III? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Disaster management & civil defence as covered in National Cadet Corps III. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Disaster management in National Cadet Corps III with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Personality & communication in National Cadet Corps III — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Personality in building National Cadet Corps III values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Field training in National Cadet Corps III. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Field training linked to Sustainable Development Goals in National Cadet Corps III? Discuss."
+      }
+    ]
+  },
+  "vac-national-cadet-corps-iv": {
+    "name": "National Cadet Corps IV",
+    "cat": "VAC",
+    "units": [
+      "Military history & current affairs",
+      "Leadership & officership",
+      "Social service & nation building",
+      "Final camp & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Military history & current affairs in National Cadet Corps IV. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Military history important for holistic development in National Cadet Corps IV? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Leadership & officership as covered in National Cadet Corps IV. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Leadership in National Cadet Corps IV with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Social service & nation building in National Cadet Corps IV — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Social service in building National Cadet Corps IV values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Final camp & evaluation in National Cadet Corps IV. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Final camp linked to Sustainable Development Goals in National Cadet Corps IV? Discuss."
+      }
+    ]
+  },
+  "vac-panchkosha-holistic-development-of-personality": {
+    "name": "Panchkosha: Holistic Development of Personality",
+    "cat": "VAC",
+    "units": [
+      "Panchkosha model & self",
+      "Annamaya/Pranamaya & wellness",
+      "Manomaya/Vijnanmaya & knowledge",
+      "Anandamaya & holistic integration"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Panchkosha model & self in Panchkosha: Holistic Development of Personality. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Panchkosha model important for holistic development in Panchkosha: Holistic Development of Personality? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Annamaya/Pranamaya & wellness as covered in Panchkosha: Holistic Development of Personality. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Annamaya/Pranamaya in Panchkosha: Holistic Development of Personality with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Manomaya/Vijnanmaya & knowledge in Panchkosha: Holistic Development of Personality — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Manomaya/Vijnanmaya in building Panchkosha: Holistic Development of Personality values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Anandamaya & holistic integration in Panchkosha: Holistic Development of Personality. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Anandamaya linked to Sustainable Development Goals in Panchkosha: Holistic Development of Personality? Discuss."
+      }
+    ]
+  },
+  "vac-reading-indian-fiction-in-english": {
+    "name": "Reading Indian Fiction in English",
+    "cat": "VAC",
+    "units": [
+      "Indian English fiction & canon",
+      "Themes, narrative & identity",
+      "Regional voices & translation",
+      "Critique & creative response"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Indian English fiction & canon in Reading Indian Fiction in English. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Indian English fiction important for holistic development in Reading Indian Fiction in English? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Themes as covered in Reading Indian Fiction in English. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Themes, narrative in Reading Indian Fiction in English with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Regional voices & translation in Reading Indian Fiction in English — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Regional voices in building Reading Indian Fiction in English values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Critique & creative response in Reading Indian Fiction in English. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Critique linked to Sustainable Development Goals in Reading Indian Fiction in English? Discuss."
+      }
+    ]
+  },
+  "vac-science-and-society": {
+    "name": "Science and Society",
+    "cat": "VAC",
+    "units": [
+      "Science, technology & society interface",
+      "Scientific temper & ethics",
+      "Innovation & sustainable development",
+      "Public engagement & policy"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Science in Science and Society. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Science, technology important for holistic development in Science and Society? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Scientific temper & ethics as covered in Science and Society. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Scientific temper in Science and Society with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Innovation & sustainable development in Science and Society — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Innovation in building Science and Society values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Public engagement & policy in Science and Society. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Public engagement linked to Sustainable Development Goals in Science and Society? Discuss."
+      }
+    ]
+  },
+  "vac-social-and-emotional-learning": {
+    "name": "Social and Emotional Learning",
+    "cat": "VAC",
+    "units": [
+      "Self-awareness & emotional regulation",
+      "Social awareness & empathy",
+      "Relationship skills & responsible decision",
+      "Classroom & workplace application"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Self-awareness & emotional regulation in Social and Emotional Learning. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Self-awareness important for holistic development in Social and Emotional Learning? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Social awareness & empathy as covered in Social and Emotional Learning. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Social awareness in Social and Emotional Learning with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Relationship skills & responsible decision in Social and Emotional Learning — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Relationship skills in building Social and Emotional Learning values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Classroom & workplace application in Social and Emotional Learning. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Classroom linked to Sustainable Development Goals in Social and Emotional Learning? Discuss."
+      }
+    ]
+  },
+  "vac-swachh-bharat": {
+    "name": "Swachh Bharat",
+    "cat": "VAC",
+    "units": [
+      "Swachh Bharat Mission & sanitation",
+      "Waste management & hygiene",
+      "Community mobilisation & IEC",
+      "Field project & report"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Swachh Bharat Mission & sanitation in Swachh Bharat. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Swachh Bharat Mission important for holistic development in Swachh Bharat? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Waste management & hygiene as covered in Swachh Bharat. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Waste management in Swachh Bharat with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Community mobilisation & IEC in Swachh Bharat — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Community mobilisation in building Swachh Bharat values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Field project & report in Swachh Bharat. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Field project linked to Sustainable Development Goals in Swachh Bharat? Discuss."
+      }
+    ]
+  },
+  "vac-the-art-of-being-happy": {
+    "name": "The Art of Being Happy",
+    "cat": "VAC",
+    "units": [
+      "Happiness psychology & theories",
+      "Positive emotions & resilience",
+      "Mindfulness & well-being practices",
+      "Happiness interventions & measurement"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Happiness psychology & theories in The Art of Being Happy. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Happiness psychology important for holistic development in The Art of Being Happy? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Positive emotions & resilience as covered in The Art of Being Happy. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Positive emotions in The Art of Being Happy with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Mindfulness & well-being practices in The Art of Being Happy — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Mindfulness in building The Art of Being Happy values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Happiness interventions & measurement in The Art of Being Happy. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Happiness interventions linked to Sustainable Development Goals in The Art of Being Happy? Discuss."
+      }
+    ]
+  },
+  "vac-vedic-mathematics-iii": {
+    "name": "Vedic Mathematics III",
+    "cat": "VAC",
+    "units": [
+      "Vedic sutras & techniques",
+      "Arithmetic & algebraic tricks",
+      "Geometry & mensuration shortcuts",
+      "Speed tests & applications"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Vedic sutras & techniques in Vedic Mathematics III. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Vedic sutras important for holistic development in Vedic Mathematics III? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Arithmetic & algebraic tricks as covered in Vedic Mathematics III. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Arithmetic in Vedic Mathematics III with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Geometry & mensuration shortcuts in Vedic Mathematics III — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Geometry in building Vedic Mathematics III values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Speed tests & applications in Vedic Mathematics III. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Speed tests linked to Sustainable Development Goals in Vedic Mathematics III? Discuss."
+      }
+    ]
+  },
+  "vac-yoga-philosophy-and-practice": {
+    "name": "Yoga: Philosophy and Practice",
+    "cat": "VAC",
+    "units": [
+      "Yoga history, philosophy & schools",
+      "Asanas, pranayama & meditation",
+      "Yoga therapy & lifestyle",
+      "Practice & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Yoga history in Yoga: Philosophy and Practice. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Yoga history, philosophy important for holistic development in Yoga: Philosophy and Practice? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Asanas as covered in Yoga: Philosophy and Practice. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Asanas, pranayama in Yoga: Philosophy and Practice with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Yoga therapy & lifestyle in Yoga: Philosophy and Practice — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Yoga therapy in building Yoga: Philosophy and Practice values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Practice & evaluation in Yoga: Philosophy and Practice. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Practice linked to Sustainable Development Goals in Yoga: Philosophy and Practice? Discuss."
+      }
+    ]
+  },
+  "vac-yoga-philosophy-practice": {
+    "name": "Yoga: Philosophy & Practice",
+    "cat": "VAC",
+    "units": [
+      "Yoga history, philosophy & schools",
+      "Asanas, pranayama & meditation",
+      "Yoga therapy & lifestyle",
+      "Practice & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Yoga history in Yoga: Philosophy & Practice. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Yoga history, philosophy important for holistic development in Yoga: Philosophy & Practice? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Asanas as covered in Yoga: Philosophy & Practice. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Asanas, pranayama in Yoga: Philosophy & Practice with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Yoga therapy & lifestyle in Yoga: Philosophy & Practice — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Yoga therapy in building Yoga: Philosophy & Practice values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Practice & evaluation in Yoga: Philosophy & Practice. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Practice linked to Sustainable Development Goals in Yoga: Philosophy & Practice? Discuss."
+      }
+    ]
+  },
+  "vac-viksit-bharat": {
+    "name": "Viksit Bharat",
+    "cat": "VAC",
+    "units": [
+      "Developed India goals & pillars",
+      "Economy, infrastructure & innovation",
+      "Culture, governance & inclusion",
+      "Student role & projects"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Developed India goals & pillars in Viksit Bharat. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Developed India goals important for holistic development in Viksit Bharat? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Economy as covered in Viksit Bharat. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Economy, infrastructure in Viksit Bharat with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Culture in Viksit Bharat — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Culture, governance in building Viksit Bharat values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Student role & projects in Viksit Bharat. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Student role linked to Sustainable Development Goals in Viksit Bharat? Discuss."
+      }
+    ]
+  },
+  "vac-others": {
+    "name": "VAC Others",
+    "cat": "VAC",
+    "units": [
+      "Interdisciplinary VAC topics as per DU",
+      "Workshops & community engagement",
+      "Project & evaluation",
+      "Credit scheme"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Interdisciplinary VAC topics as per DU in VAC Others. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Interdisciplinary VAC topics as per DU important for holistic development in VAC Others? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Workshops & community engagement as covered in VAC Others. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Workshops in VAC Others with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Project & evaluation in VAC Others — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Project in building VAC Others values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Credit scheme in VAC Others. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Credit scheme linked to Sustainable Development Goals in VAC Others? Discuss."
+      }
+    ]
+  },
+  "vac-culture-communication": {
+    "name": "Culture and Communication",
+    "cat": "VAC",
+    "units": [
+      "Culture & communication models",
+      "Folk & modern media",
+      "Globalization & identity",
+      "Project work"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Culture & communication models in Culture and Communication. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Culture important for holistic development in Culture and Communication? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Folk & modern media as covered in Culture and Communication. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Folk in Culture and Communication with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Globalization & identity in Culture and Communication — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Globalization in building Culture and Communication values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Project work in Culture and Communication. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Project work linked to Sustainable Development Goals in Culture and Communication? Discuss."
+      }
+    ]
+  },
+  "vac-ecology-literature": {
+    "name": "Ecology and Literature",
+    "cat": "VAC",
+    "units": [
+      "Ecology & literary theory",
+      "Nature writing",
+      "Environmental narratives",
+      "Critique"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Ecology & literary theory in Ecology and Literature. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Ecology important for holistic development in Ecology and Literature? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Nature writing as covered in Ecology and Literature. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Nature writing in Ecology and Literature with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Environmental narratives in Ecology and Literature — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Environmental narratives in building Ecology and Literature values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Critique in Ecology and Literature. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Critique linked to Sustainable Development Goals in Ecology and Literature? Discuss."
+      }
+    ]
+  },
+  "vac-fit-india-2": {
+    "name": "Fit India",
+    "cat": "VAC",
+    "units": [
+      "Fitness & wellness",
+      "Yoga & lifestyle",
+      "Sports & health",
+      "Assessment"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Fitness & wellness in Fit India. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Fitness important for holistic development in Fit India? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Yoga & lifestyle as covered in Fit India. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Yoga in Fit India with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Sports & health in Fit India — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Sports in building Fit India values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Assessment in Fit India. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Assessment linked to Sustainable Development Goals in Fit India? Discuss."
+      }
+    ]
+  },
+  "vac-sports-for-life": {
+    "name": "Sports For Life",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in Sports For Life. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in Sports For Life? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in Sports For Life. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in Sports For Life with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in Sports For Life — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building Sports For Life values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in Sports For Life. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in Sports For Life? Discuss."
+      }
+    ]
+  },
+  "vac-vedic-mathematics-i": {
+    "name": "Vedic Mathematics I",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in Vedic Mathematics I. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in Vedic Mathematics I? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in Vedic Mathematics I. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in Vedic Mathematics I with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in Vedic Mathematics I — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building Vedic Mathematics I values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in Vedic Mathematics I. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in Vedic Mathematics I? Discuss."
+      }
+    ]
+  },
+  "vac-sports-diversity-and-inclusivity": {
+    "name": "Sports Diversity And Inclusivity",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in Sports Diversity And Inclusivity. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in Sports Diversity And Inclusivity? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in Sports Diversity And Inclusivity. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in Sports Diversity And Inclusivity with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in Sports Diversity And Inclusivity — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building Sports Diversity And Inclusivity values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in Sports Diversity And Inclusivity. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in Sports Diversity And Inclusivity? Discuss."
+      }
+    ]
+  },
+  "vac-vedic-mathematics-iv": {
+    "name": "Vedic Mathematics Iv",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in Vedic Mathematics Iv. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in Vedic Mathematics Iv? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in Vedic Mathematics Iv. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in Vedic Mathematics Iv with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in Vedic Mathematics Iv — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building Vedic Mathematics Iv values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in Vedic Mathematics Iv. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in Vedic Mathematics Iv? Discuss."
+      }
+    ]
+  },
+  "vac-the-gita-for-holistic-life": {
+    "name": "The Gita For Holistic Life",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in The Gita For Holistic Life. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in The Gita For Holistic Life? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in The Gita For Holistic Life. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in The Gita For Holistic Life with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in The Gita For Holistic Life — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building The Gita For Holistic Life values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in The Gita For Holistic Life. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in The Gita For Holistic Life? Discuss."
+      }
+    ]
+  },
+  "vac-the-gita-for-sustainable-universe": {
+    "name": "The Gita For Sustainable Universe",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in The Gita For Sustainable Universe. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in The Gita For Sustainable Universe? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in The Gita For Sustainable Universe. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in The Gita For Sustainable Universe with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in The Gita For Sustainable Universe — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building The Gita For Sustainable Universe values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in The Gita For Sustainable Universe. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in The Gita For Sustainable Universe? Discuss."
+      }
+    ]
+  },
+  "vac-the-gita-navigating-life-challenges": {
+    "name": "The Gita Navigating Life Challenges",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in The Gita Navigating Life Challenges. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in The Gita Navigating Life Challenges? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in The Gita Navigating Life Challenges. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in The Gita Navigating Life Challenges with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in The Gita Navigating Life Challenges — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building The Gita Navigating Life Challenges values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in The Gita Navigating Life Challenges. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in The Gita Navigating Life Challenges? Discuss."
+      }
+    ]
+  },
+  "vac-vedic-mathematics-ii": {
+    "name": "Vedic Mathematics Ii",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in Vedic Mathematics Ii. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in Vedic Mathematics Ii? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in Vedic Mathematics Ii. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in Vedic Mathematics Ii with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in Vedic Mathematics Ii — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building Vedic Mathematics Ii values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in Vedic Mathematics Ii. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in Vedic Mathematics Ii? Discuss."
+      }
+    ]
+  },
+  "vac-tribes-of-india": {
+    "name": "Tribes Of India",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in Tribes Of India. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in Tribes Of India? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in Tribes Of India. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in Tribes Of India with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in Tribes Of India — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building Tribes Of India values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in Tribes Of India. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in Tribes Of India? Discuss."
+      }
+    ]
+  },
+  "vac-the-science-of-happiness": {
+    "name": "The Science Of Happiness",
+    "cat": "VAC",
+    "units": [
+      "Unit 1: Foundations & concepts",
+      "Unit 2: Applied theory & examples",
+      "Unit 3: Contemporary issues & case studies",
+      "Unit 4: Practice, field work & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain the concept of Unit 1: Foundations & concepts in The Science Of Happiness. Discuss its origin and relevance to value education."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Unit 1: Foundations important for holistic development in The Science Of Happiness? Give examples from Indian context."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Unit 2: Applied theory & examples as covered in The Science Of Happiness. How does it impact personal and social well-being?"
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Unit 2: Applied theory in The Science Of Happiness with case studies or field work examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Unit 3: Contemporary issues & case studies in The Science Of Happiness — its principles, practices and community relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate the role of Unit 3: Contemporary issues in building The Science Of Happiness values among youth."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the project or community engagement for Unit 4: Practice in The Science Of Happiness. What is the evaluation pattern?"
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Unit 4: Practice, field work linked to Sustainable Development Goals in The Science Of Happiness? Discuss."
+      }
+    ]
+  },
+  "ge-analytical-geometry": {
+    "name": "Analytical Geometry",
+    "cat": "GE",
+    "units": [
+      "Coordinate systems & straight lines",
+      "Circles, conics & transformations",
+      "Vectors & 3D geometry",
+      "Applications & problem solving"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Coordinate systems & straight lines and explain its core concepts in Analytical Geometry with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Coordinate systems for students of Analytical Geometry from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Circles in Analytical Geometry. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Circles, conics in Analytical Geometry — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Vectors & 3D geometry related to Analytical Geometry with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Vectors in Analytical Geometry — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Applications & problem solving in Analytical Geometry and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Applications is examined in Analytical Geometry — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-basic-statistics-for-economy": {
+    "name": "Basic Statistics for Economy",
+    "cat": "GE",
+    "units": [
+      "Data, averages & dispersion",
+      "Correlation, regression & time series",
+      "Probability & sampling",
+      "Index numbers & economic data"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Data and explain its core concepts in Basic Statistics for Economy with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Data, averages for students of Basic Statistics for Economy from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Correlation in Basic Statistics for Economy. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Correlation, regression in Basic Statistics for Economy — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Probability & sampling related to Basic Statistics for Economy with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Probability in Basic Statistics for Economy — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Index numbers & economic data in Basic Statistics for Economy and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Index numbers is examined in Basic Statistics for Economy — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-business-management-organisation": {
+    "name": "Business Management Organisation",
+    "cat": "GE",
+    "units": [
+      "Management functions & theories",
+      "Planning, organising & staffing",
+      "Leadership, motivation & control",
+      "Business environment & case studies"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Management functions & theories and explain its core concepts in Business Management Organisation with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Management functions for students of Business Management Organisation from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Planning in Business Management Organisation. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Planning, organising in Business Management Organisation — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Leadership related to Business Management Organisation with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Leadership, motivation in Business Management Organisation — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Business environment & case studies in Business Management Organisation and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Business environment is examined in Business Management Organisation — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-delhi-through-the-ages": {
+    "name": "Delhi Through the Ages",
+    "cat": "GE",
+    "units": [
+      "Ancient to Sultanate Delhi",
+      "Mughal Delhi & monuments",
+      "Colonial & modern Delhi",
+      "Heritage walks & field work"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Ancient to Sultanate Delhi and explain its core concepts in Delhi Through the Ages with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Ancient to Sultanate Delhi for students of Delhi Through the Ages from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Mughal Delhi & monuments in Delhi Through the Ages. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Mughal Delhi in Delhi Through the Ages — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Colonial & modern Delhi related to Delhi Through the Ages with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Colonial in Delhi Through the Ages — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Heritage walks & field work in Delhi Through the Ages and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Heritage walks is examined in Delhi Through the Ages — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-fitness-and-wellness": {
+    "name": "Fitness and Wellness",
+    "cat": "GE",
+    "units": [
+      "Fitness, exercise & nutrition",
+      "Yoga & lifestyle management",
+      "Sports & injury prevention",
+      "Wellness plan & assessment"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Fitness and explain its core concepts in Fitness and Wellness with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Fitness, exercise for students of Fitness and Wellness from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Yoga & lifestyle management in Fitness and Wellness. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Yoga in Fitness and Wellness — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Sports & injury prevention related to Fitness and Wellness with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Sports in Fitness and Wellness — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Wellness plan & assessment in Fitness and Wellness and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Wellness plan is examined in Fitness and Wellness — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-fundamentals-of-calculus": {
+    "name": "Fundamentals of Calculus",
+    "cat": "GE",
+    "units": [
+      "Limits, continuity & derivatives",
+      "Integration & techniques",
+      "Differential equations basics",
+      "Applications in economics/science"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Limits and explain its core concepts in Fundamentals of Calculus with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Limits, continuity for students of Fundamentals of Calculus from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Integration & techniques in Fundamentals of Calculus. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Integration in Fundamentals of Calculus — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Differential equations basics related to Fundamentals of Calculus with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Differential equations basics in Fundamentals of Calculus — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Applications in economics/science in Fundamentals of Calculus and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Applications in economics/science is examined in Fundamentals of Calculus — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-history-and-foundation-of-physical-education": {
+    "name": "History and Foundation of Physical Education",
+    "cat": "GE",
+    "units": [
+      "History & philosophy of PE",
+      "Biological & sociological foundations",
+      "Fitness & training principles",
+      "Organisation & evaluation"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define History & philosophy of PE and explain its core concepts in History and Foundation of Physical Education with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of History for students of History and Foundation of Physical Education from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Biological & sociological foundations in History and Foundation of Physical Education. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Biological in History and Foundation of Physical Education — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Fitness & training principles related to History and Foundation of Physical Education with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Fitness in History and Foundation of Physical Education — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Organisation & evaluation in History and Foundation of Physical Education and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Organisation is examined in History and Foundation of Physical Education — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-indian-economy": {
+    "name": "Indian Economy",
+    "cat": "GE",
+    "units": [
+      "Indian economy overview & planning",
+      "Agriculture, industry & services",
+      "Poverty, employment & inequality",
+      "Reforms, policy & current issues"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Indian economy overview & planning and explain its core concepts in Indian Economy with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Indian economy overview for students of Indian Economy from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Agriculture in Indian Economy. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Agriculture, industry in Indian Economy — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Poverty related to Indian Economy with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Poverty, employment in Indian Economy — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Reforms in Indian Economy and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Reforms, policy is examined in Indian Economy — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-introduction-to-linear-algebra": {
+    "name": "Introduction to Linear Algebra",
+    "cat": "GE",
+    "units": [
+      "Vectors, matrices & systems",
+      "Vector spaces & subspaces",
+      "Linear transformations & eigenvalues",
+      "Applications & computations"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Vectors and explain its core concepts in Introduction to Linear Algebra with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Vectors, matrices for students of Introduction to Linear Algebra from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Vector spaces & subspaces in Introduction to Linear Algebra. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Vector spaces in Introduction to Linear Algebra — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Linear transformations & eigenvalues related to Introduction to Linear Algebra with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Linear transformations in Introduction to Linear Algebra — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Applications & computations in Introduction to Linear Algebra and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Applications is examined in Introduction to Linear Algebra — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-introduction-to-public-policy": {
+    "name": "Introduction to Public Policy",
+    "cat": "GE",
+    "units": [
+      "Policy concepts & process",
+      "Actors, institutions & implementation",
+      "Policy analysis & evaluation",
+      "Indian policy case studies"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Policy concepts & process and explain its core concepts in Introduction to Public Policy with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Policy concepts for students of Introduction to Public Policy from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Actors in Introduction to Public Policy. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Actors, institutions in Introduction to Public Policy — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Policy analysis & evaluation related to Introduction to Public Policy with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Policy analysis in Introduction to Public Policy — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Indian policy case studies in Introduction to Public Policy and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Indian policy case studies is examined in Introduction to Public Policy — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-introduction-to-the-indian-constitution": {
+    "name": "Introduction to the Indian Constitution",
+    "cat": "GE",
+    "units": [
+      "Making, preamble & features",
+      "Rights, Duties & DPSP",
+      "Institutions & federalism",
+      "Amendments & current debates"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Making and explain its core concepts in Introduction to the Indian Constitution with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Making, preamble for students of Introduction to the Indian Constitution from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Rights in Introduction to the Indian Constitution. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Rights, Duties in Introduction to the Indian Constitution — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Institutions & federalism related to Introduction to the Indian Constitution with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Institutions in Introduction to the Indian Constitution — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Amendments & current debates in Introduction to the Indian Constitution and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Amendments is examined in Introduction to the Indian Constitution — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-introductory-probability": {
+    "name": "Introductory Probability",
+    "cat": "GE",
+    "units": [
+      "Probability, events & axioms",
+      "Random variables & distributions",
+      "Expectation, variance & limit theorems",
+      "Applications & problems"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Probability and explain its core concepts in Introductory Probability with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Probability, events for students of Introductory Probability from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Random variables & distributions in Introductory Probability. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Random variables in Introductory Probability — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Expectation related to Introductory Probability with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Expectation, variance in Introductory Probability — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Applications & problems in Introductory Probability and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Applications is examined in Introductory Probability — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-media-and-communication-skill": {
+    "name": "Media and Communication Skill",
+    "cat": "GE",
+    "units": [
+      "Communication models & media",
+      "Print, electronic & digital media",
+      "Writing, reporting & ethics",
+      "Practical projects & portfolio"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Communication models & media and explain its core concepts in Media and Communication Skill with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Communication models for students of Media and Communication Skill from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Print in Media and Communication Skill. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Print, electronic in Media and Communication Skill — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Writing related to Media and Communication Skill with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Writing, reporting in Media and Communication Skill — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Practical projects & portfolio in Media and Communication Skill and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Practical projects is examined in Media and Communication Skill — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-nationalism-in-india": {
+    "name": "Nationalism in India",
+    "cat": "GE",
+    "units": [
+      "Nationalism theories & India",
+      "Colonialism & national movement",
+      "Partition, constitution & nation building",
+      "Contemporary debates & identities"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Nationalism theories & India and explain its core concepts in Nationalism in India with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Nationalism theories for students of Nationalism in India from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Colonialism & national movement in Nationalism in India. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Colonialism in Nationalism in India — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Partition related to Nationalism in India with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Partition, constitution in Nationalism in India — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Contemporary debates & identities in Nationalism in India and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Contemporary debates is examined in Nationalism in India — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-principles-of-macroeconomics": {
+    "name": "Principles of Macroeconomics",
+    "cat": "GE",
+    "units": [
+      "National income & measurement",
+      "Money, banking & inflation",
+      "IS-LM, AD-AS & policy",
+      "Growth, trade & open economy"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define National income & measurement and explain its core concepts in Principles of Macroeconomics with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of National income for students of Principles of Macroeconomics from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Money in Principles of Macroeconomics. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Money, banking in Principles of Macroeconomics — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in IS-LM related to Principles of Macroeconomics with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate IS-LM, AD-AS in Principles of Macroeconomics — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Growth in Principles of Macroeconomics and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Growth, trade is examined in Principles of Macroeconomics — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-public-finance": {
+    "name": "Public Finance",
+    "cat": "GE",
+    "units": [
+      "Public finance nature & scope",
+      "Taxation, expenditure & debt",
+      "Budget & fiscal policy",
+      "Indian fiscal system & reforms"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Public finance nature & scope and explain its core concepts in Public Finance with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Public finance nature for students of Public Finance from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Taxation in Public Finance. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Taxation, expenditure in Public Finance — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Budget & fiscal policy related to Public Finance with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Budget in Public Finance — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Indian fiscal system & reforms in Public Finance and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Indian fiscal system is examined in Public Finance — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-stress-management": {
+    "name": "Stress Management",
+    "cat": "GE",
+    "units": [
+      "Stress concepts & theories",
+      "Assessment & coping strategies",
+      "Relaxation, mindfulness & lifestyle",
+      "Workplace stress & interventions"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Stress concepts & theories and explain its core concepts in Stress Management with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Stress concepts for students of Stress Management from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Assessment & coping strategies in Stress Management. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Assessment in Stress Management — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Relaxation related to Stress Management with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Relaxation, mindfulness in Stress Management — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Workplace stress & interventions in Stress Management and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Workplace stress is examined in Stress Management — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "ge-others": {
+    "name": "GE Others",
+    "cat": "GE",
+    "units": [
+      "Interdisciplinary GE topics",
+      "Theory & application",
+      "Projects & evaluation",
+      "Credit scheme"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Define Interdisciplinary GE topics and explain its core concepts in GE Others with diagrams where needed."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Discuss the scope and importance of Interdisciplinary GE topics for students of GE Others from other disciplines."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Explain Theory & application in GE Others. Derive or illustrate with an example."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Theory in GE Others — compare approaches and give a numerical or case example."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss contemporary debates in Projects & evaluation related to GE Others with Indian examples."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Projects in GE Others — its applications and limitations."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Describe Credit scheme in GE Others and its interdisciplinary relevance."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain how Credit scheme is examined in GE Others — short notes vs long answers, with marking tips."
+      }
+    ]
+  },
+  "aec-evs-theory-into-practice-i": {
+    "name": "EVS: Theory into Practice I",
+    "cat": "AEC",
+    "units": [
+      "Environment, ecosystem & biodiversity",
+      "Natural resources & conservation",
+      "Pollution & environmental issues",
+      "Field work & project I"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain Environment in EVS: Theory into Practice I. Discuss its definition, scope and examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Environment, ecosystem essential for EVS: Theory into Practice I? Discuss with reference to UGCF."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Natural resources & conservation in EVS: Theory into Practice I. Give practical examples or field work."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Natural resources in EVS: Theory into Practice I — its process, challenges and solutions."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Pollution & environmental issues in EVS: Theory into Practice I with contemporary relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Pollution in EVS: Theory into Practice I — its impact and future directions."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the practical or lab work for Field work & project I in EVS: Theory into Practice I."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Field work evaluated in EVS: Theory into Practice I? Discuss theory + practical marking."
+      }
+    ]
+  },
+  "aec-evs-theory-into-practice-ii": {
+    "name": "EVS: Theory into Practice II",
+    "cat": "AEC",
+    "units": [
+      "Climate change & sustainability",
+      "Biodiversity & conservation strategies",
+      "Environmental policies & governance",
+      "Field work & project II"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain Climate change & sustainability in EVS: Theory into Practice II. Discuss its definition, scope and examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Climate change essential for EVS: Theory into Practice II? Discuss with reference to UGCF."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Biodiversity & conservation strategies in EVS: Theory into Practice II. Give practical examples or field work."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Biodiversity in EVS: Theory into Practice II — its process, challenges and solutions."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Environmental policies & governance in EVS: Theory into Practice II with contemporary relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Environmental policies in EVS: Theory into Practice II — its impact and future directions."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the practical or lab work for Field work & project II in EVS: Theory into Practice II."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Field work evaluated in EVS: Theory into Practice II? Discuss theory + practical marking."
+      }
+    ]
+  },
+  "aec-others": {
+    "name": "AEC Others",
+    "cat": "AEC",
+    "units": [
+      "Language & communication skills",
+      "Theory & practice",
+      "Workshops & evaluation",
+      "Credit scheme"
+    ],
+    "questions": [
+      {
+        "unit": "Unit 1",
+        "q": "Explain Language & communication skills in AEC Others. Discuss its definition, scope and examples."
+      },
+      {
+        "unit": "Unit 1",
+        "q": "Why is Language essential for AEC Others? Discuss with reference to UGCF."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Describe Theory & practice in AEC Others. Give practical examples or field work."
+      },
+      {
+        "unit": "Unit 2",
+        "q": "Analyse Theory in AEC Others — its process, challenges and solutions."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Discuss Workshops & evaluation in AEC Others with contemporary relevance."
+      },
+      {
+        "unit": "Unit 3",
+        "q": "Evaluate Workshops in AEC Others — its impact and future directions."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "Explain the practical or lab work for Credit scheme in AEC Others."
+      },
+      {
+        "unit": "Unit 4",
+        "q": "How is Credit scheme evaluated in AEC Others? Discuss theory + practical marking."
+      }
+    ]
+  }
+}

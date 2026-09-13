@@ -1,0 +1,93 @@
+name: Drift Check — main vs gh-pages
+
+# Fails loudly if assets/data/ or pyq/ have been diverged for >12h.
+# - deploy-pages.yml never ships pyq/ or assets/data/ directly,
+#   they are owned by seo-refresh (6h) and materials-sync (15m).
+# - A normal 0-6h lag (just pushed to main, seo-refresh hasn't run yet)
+#   is expected and should NOT fail.
+# - Running every 12h means any divergence that survives 2 seo-refresh
+#   cycles (12h) will be caught on the next check and the run will be
+#   marked FAILED (visible red X in Actions, easy to notice).
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # every 12 hours (00,12 UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch both branches
+        run: |
+          git fetch origin main
+          git fetch origin gh-pages
+          echo "main HEAD: $(git rev-parse --short origin/main)"
+          echo "gh-pages HEAD: $(git rev-parse --short origin/gh-pages)"
+
+      - name: Compare assets/data/ and pyq/ between main and gh-pages
+        run: |
+          set -e
+          echo "Checking drift for assets/data/ and pyq/ ..."
+          echo ""
+
+          drift=0
+
+          # Check pyq and the two owned snapshot files. pending-removals.json is intentionally
+          # only on main (orphan pruning queue) and is excluded from drift detection.
+          for path in "assets/data/materials.json" "assets/data/subjects.json" "pyq"; do
+            echo "--- $path ---"
+            if git diff --quiet origin/main origin/gh-pages -- "$path"; then
+              echo "✓ $path: in sync"
+            else
+              echo "✗ $path: DIVERGED"
+              echo "Files differing:"
+              git diff --name-only origin/main origin/gh-pages -- "$path" | head -n 50
+              echo ""
+              echo "Diff stat:"
+              git diff --stat origin/main origin/gh-pages -- "$path" | tail -n 20
+              echo ""
+
+              # How long has the divergence existed?
+              # Take the newer of the two latest commits touching this path.
+              main_ts=$(git log -1 --format=%ct origin/main -- "$path" 2>/dev/null || echo 0)
+              gh_ts=$(git log -1 --format=%ct origin/gh-pages -- "$path" 2>/dev/null || echo 0)
+              # Use the most recent change on either branch as the start of divergence
+              if [ "$main_ts" -gt "$gh_ts" ]; then
+                last_change=$main_ts
+                last_branch="main"
+              else
+                last_change=$gh_ts
+                last_branch="gh-pages"
+              fi
+              now=$(date +%s)
+              age_hours=$(( (now - last_change) / 3600 ))
+              echo "Last change to $path was on $last_branch at $(date -d @$last_change -u '+%F %H:%M UTC') ($age_hours hours ago)"
+              
+              if [ "$age_hours" -ge 12 ]; then
+                echo "→ $path has been diverged for ${age_hours}h (>=12h) — FAILING"
+                drift=1
+              else
+                echo "→ $path diverged only ${age_hours}h ago (<12h) — within grace period, not failing yet (will be checked again in 12h)"
+                # Don't fail yet, but warn
+              fi
+              echo ""
+            fi
+          done
+
+          if [ "$drift" -eq 1 ]; then
+            echo ""
+            echo "DRIFT DETECTED for >12h — failing workflow to alert (visible red check in Actions)"
+            echo "This means a commit to main for assets/data/ or pyq/ has not reached gh-pages for 12+ hours."
+            echo "Check: did seo-refresh (6h) or materials-sync (15m) fail? Did deploy-pages incorrectly exclude it?"
+            exit 1
+          fi
+
+          echo ""
+          echo "No long-lived drift detected — OK"

@@ -3,18 +3,43 @@ const db = require('../db');
 const { rateLimit } = require('express-rate-limit');
 const { getPresignedDownloadUrl } = require('../r2');
 const { getStaff } = require('../middleware/auth');
+const dns = require('dns').promises;
 
 const router = express.Router();
 
 // Download URLs are the scrape target — cap hard. Real students open a
 // handful of papers per session; bulk agents need hundreds.
+// Google crawlers (Googlebot, Google-InspectionTool, Mediapartners-Google) are
+// explicitly allow-listed. We do NOT trust User-Agent alone — we verify via
+// reverse DNS per https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot
+// (hostname must end with .googlebot.com or .google.com and forward lookup must match IP).
+async function isVerifiedGooglebot(req) {
+  const ua = req.get('User-Agent') || '';
+  if (!/Googlebot|Mediapartners-Google|Google-InspectionTool/i.test(ua)) return false;
+  // Cloudflare forwards real IP in CF-Connecting-IP, Railway sets X-Forwarded-For
+  const ip = req.get('CF-Connecting-IP') || req.ip || (req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  if (!ip || ip.startsWith('127.')) return false;
+  try {
+    const hostnames = await dns.reverse(ip);
+    const isGoogleHost = hostnames.some((h) => h.endsWith('.googlebot.com') || h.endsWith('.google.com'));
+    if (!isGoogleHost) return false;
+    const addrs = await dns.lookup(hostnames[0], { all: true });
+    return addrs.some((a) => a.address === ip);
+  } catch {
+    return false;
+  }
+}
+
 const downloadLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
   limit: parseInt(process.env.DOWNLOAD_DAILY_LIMIT || '80', 10),
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: { error: 'Daily download limit reached. Please come back tomorrow.' },
-  skip: (req) => Boolean(getStaff(req)), // admins never throttled
+  skip: async (req) => {
+    if (await isVerifiedGooglebot(req)) return true;
+    return Boolean(getStaff(req));
+  },
 });
 
 // Staff bypass the cap (admins never get throttled while working).

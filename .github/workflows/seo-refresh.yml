@@ -44,6 +44,31 @@ jobs:
           git diff --cached --quiet || git commit -m "full sync $(date -u '+%F %H:%M') UTC"
           git push origin gh-pages
 
+      - name: Purge Cloudflare cache and cache-bust
+        if: always()
+        run: |
+          # Best-effort Cloudflare purge (skips if secrets not set — still does warm fetch)
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ZONE_ID }}" ]; then
+            echo "Purging Cloudflare cache..."
+            curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              --data '{"purge_everything":true}' || echo "Purge via API failed (continuing)"
+          else
+            echo "No Cloudflare secrets — skipping API purge (relying on edge max-age + warm fetch)"
+          fi
+          sleep 10
+          for url in "https://sulaksh.online/" "https://sulaksh.online/du.html" "https://sulaksh.online/index.html"; do
+            echo "Warm fetch $url?purge=$(date +%s)"
+            curl -s "$url?purge=$(date +%s)" > /dev/null || true
+            if curl -s "$url?purge=$(date +%s)" | grep -qi "mobile view is limited"; then
+              echo "ERROR: banner still in $url"
+              exit 1
+            else
+              echo "OK: banner gone in $url"
+            fi
+          done
+
       - name: Smoke test key pages
         run: |
           sleep 60

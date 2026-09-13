@@ -480,8 +480,6 @@
 
   [data-theme="dark"] .brand-wordmark{filter:brightness(0) invert(1);opacity:.95;}
 
-  /* Defensive: if mobile-tip is ever reintroduced, hide at first paint without JS */
-  .mobile-tip{display:none !important;}
 
 </style>
 <script src="assets/js/maintenance.js?v=1" defer></script>
@@ -996,6 +994,19 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   window.closeModal = closeModal;
 
   function updateAuthUI() {
+    // Gate admin controls: remove from DOM for anon (not just CSS hide) — all three: Login, Upload, Delete
+    const _isAdmin = !!(state && state.isAdmin);
+    if (!_isAdmin) {
+      try {
+        document.querySelectorAll('.upload-btn, .add-subj-btn, #delBtn, #secLogBtn, #pwBtn, #maintBtn, #dlBtn').forEach(el=>el.remove());
+        const lb=document.getElementById('loginBtn'); if(lb) lb.remove();
+        // Also remove from mobile menu if separately rendered
+        document.querySelectorAll('.mobile-menu .upload-btn, .mobile-menu #loginBtn').forEach(el=>el.remove());
+      } catch(e){}
+      document.body.classList.remove('is-admin');
+      return;
+    }
+    document.body.classList.add('is-admin');
     const btn = document.getElementById('loginBtn');
     if (state.email) {
       btn.textContent = '👤 ' + state.email.split('@')[0];
@@ -1163,7 +1174,8 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
       localStorage.setItem('sulaksh-role', data.role || 'super');
       updateAuthUI();
       closeModal('loginOverlay');
-      loadMaterials();
+      // Reload to restore admin controls that were removed from DOM for anon
+      location.reload();
     } catch (err) {
       setMsg(msg, err.message, false);
     }

@@ -1,0 +1,44 @@
+name: Materials snapshot sync
+
+on:
+  schedule:
+    # Every 15 minutes — keeps the static snapshot fresh AND keeps the
+    # Railway backend from going idle (each run hits the live API).
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch generator script from main
+        run: git fetch origin main && git checkout origin/main -- scripts/generate-materials.mjs
+
+      - name: Regenerate snapshot (keeps previous on backend outage)
+        env:
+          SULAKSH_API: https://sulaksh-backend-production.up.railway.app
+        run: node scripts/generate-materials.mjs
+
+      - name: Commit snapshot to gh-pages
+        run: |
+          git config user.name "sulaksh-bot"
+          git config user.email "bot@sulaksh.online"
+          git add -f assets/data/materials.json assets/data/subjects.json
+          git diff --cached --quiet || git commit -m "materials snapshot $(date -u '+%F %H:%M') UTC"
+          for i in 1 2 3 4 5; do
+            git fetch origin gh-pages
+            git rebase origin/gh-pages || git reset --hard origin/gh-pages
+            if git push origin gh-pages 2>/dev/null; then echo "pushed (attempt $i)"; break; fi
+            echo "retry $i"; sleep 5
+          done
