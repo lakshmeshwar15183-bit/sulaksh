@@ -39,9 +39,17 @@
 
 <script>
   const API_BASE = window.location.origin; // adjust if admin panel is hosted separately from the API
+  const TOKEN_KEY = 'sulaksh-token';
   const form = document.getElementById('loginForm');
   const errorEl = document.getElementById('error');
   const submitBtn = document.getElementById('submitBtn');
+
+  function setToken(t) {
+    try {
+      if (t) localStorage.setItem(TOKEN_KEY, t);
+      else localStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -60,6 +68,12 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Login failed.');
+      // Persist Bearer token for subsequent requests — keeps session alive even
+      // when the Partitioned HttpOnly cookie is blocked (Safari ITP / third-party
+      // cookie blocking). The backend accepts either cookie or Authorization header.
+      if (data.token) setToken(data.token);
+      if (data.email) try { localStorage.setItem('sulaksh-email', data.email); } catch (e) {}
+      if (data.role) try { localStorage.setItem('sulaksh-role', data.role); } catch (e) {}
       window.location.href = './dashboard.html';
     } catch (err) {
       errorEl.textContent = err.message;

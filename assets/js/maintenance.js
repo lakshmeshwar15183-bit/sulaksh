@@ -5,6 +5,8 @@
   'use strict';
 
   var API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  var TOKEN_KEY = 'sulaksh-token';
+  function getToken() { try { return localStorage.getItem(TOKEN_KEY); } catch (e) { return null; } }
 
   var CSS = ''
     + '#sgmOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#0C2340,#123467);'
@@ -28,8 +30,11 @@
   }
 
   function isStaff() {
-    // Confirm via API using the HttpOnly session cookie (sent automatically).
-    return fetch(API + '/api/auth/me', { credentials: 'include' })
+    // Confirm via API using Bearer token if available (cross-site) or HttpOnly cookie fallback.
+    var headers = {};
+    var t = getToken();
+    if (t) headers['Authorization'] = 'Bearer ' + t;
+    return fetch(API + '/api/auth/me', { credentials: 'include', headers: headers })
       .then(function (r) { return r.ok; })
       .catch(function () { return false; });
   }
@@ -74,6 +79,7 @@
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (res) {
           if (!res.ok) throw new Error(res.j.error || 'Login failed.');
+          if (res.j.token) try { localStorage.setItem(TOKEN_KEY, res.j.token); } catch (e) {}
           localStorage.setItem('sulaksh-email', res.j.email);
           if (res.j.role) localStorage.setItem('sulaksh-role', res.j.role);
           window.location.reload();
