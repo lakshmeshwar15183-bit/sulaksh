@@ -9,26 +9,54 @@ const router = express.Router();
 
 // Download URLs are the scrape target — cap hard. Real students open a
 // handful of papers per session; bulk agents need hundreds.
-// Google crawlers (Googlebot, Google-InspectionTool, Mediapartners-Google) are
-// explicitly allow-listed. We do NOT trust User-Agent alone — we verify via
-// reverse DNS per https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot
-// (hostname must end with .googlebot.com or .google.com and forward lookup must match IP).
+// All Google crawlers are allow-listed WITHOUT loosening protection for others.
+// We do NOT trust User-Agent alone — we verify via reverse+forward DNS per
+// https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot
+// Common crawlers (Googlebot*, APIs-Google, Google-InspectionTool, Storebot-Google,
+// GoogleOther) must resolve to *.googlebot.com. Ads / Mediapartners crawlers
+// (AdsBot-Google*, Mediapartners-Google) must resolve to *.google.com
+// (typically rate-limited-proxy-*.google.com). Forward lookup must match IP.
+const GOOGLE_CRAWLER_RE = /Googlebot-Image|Googlebot-Video|Googlebot-News|Googlebot|Mediapartners-Google|AdsBot-Google-Mobile|AdsBot-Google|APIs-Google|Google-InspectionTool|Storebot-Google|GoogleOther/i;
 async function isVerifiedGooglebot(req) {
   const ua = req.get('User-Agent') || '';
-  if (!/Googlebot|Mediapartners-Google|Google-InspectionTool/i.test(ua)) return false;
+  if (!GOOGLE_CRAWLER_RE.test(ua)) return false;
+  const isAdsOrMediapartners = /Mediapartners-Google|AdsBot-Google/i.test(ua);
   // Cloudflare forwards real IP in CF-Connecting-IP, Railway sets X-Forwarded-For
   const ip = req.get('CF-Connecting-IP') || req.ip || (req.headers['x-forwarded-for'] || '').split(',')[0].trim();
-  if (!ip || ip.startsWith('127.')) return false;
+  if (!ip || ip.startsWith('127.') || ip === '::1' || ip === '::ffff:127.0.0.1') return false;
   try {
     const hostnames = await dns.reverse(ip);
-    const isGoogleHost = hostnames.some((h) => h.endsWith('.googlebot.com') || h.endsWith('.google.com'));
+    const expectedSuffix = isAdsOrMediapartners ? '.google.com' : '.googlebot.com';
+    const isGoogleHost = hostnames.some((h) => h.toLowerCase().endsWith(expectedSuffix));
     if (!isGoogleHost) return false;
-    const addrs = await dns.lookup(hostnames[0], { all: true });
-    return addrs.some((a) => a.address === ip);
+    for (const h of hostnames) {
+      if (!h.toLowerCase().endsWith(expectedSuffix)) continue;
+      try {
+        const addrs = await dns.lookup(h, { all: true });
+        if (addrs.some((a) => a.address === ip)) return true;
+      } catch {}
+    }
+    return false;
   } catch {
     return false;
   }
 }
+
+// Burst protection: 5 file requests per 10 seconds — stops rapid scraping.
+// Daily cap: 80 per 24h — stops bulk archival.
+// Both are skipped ONLY for verified Google crawlers and logged-in staff.
+// Staff bypass the cap (admins never get throttled while working).
+const burstLimiter = rateLimit({
+  windowMs: 10 * 1000, // 10 seconds
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+  skip: async (req) => {
+    if (await isVerifiedGooglebot(req)) return true;
+    return Boolean(getStaff(req));
+  },
+});
 
 const downloadLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
@@ -42,8 +70,9 @@ const downloadLimiter = rateLimit({
   },
 });
 
-// Staff bypass the cap (admins never get throttled while working).
-router.use('/:id/download', downloadLimiter);
+// Apply both limits to the download endpoint — keeps the 5/10s + 80/day
+// protection for everyone except verified Googlebot / staff.
+router.use('/:id/download', burstLimiter, downloadLimiter);
 
 // Fields exposed publicly. `r2_object_key` is selected server-side only so we
 // can derive the public CDN URL; it is stripped from the response (we send
