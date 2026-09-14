@@ -8699,10 +8699,11 @@ const WAIT_PHRASES = [
     try{ (materialsCache||[]).forEach(function(m){ if((m.category||'').toUpperCase()!=='SEC') return; var s=m.subject||'General'; (bySubject[s]=bySubject[s]||[]).push(m); }); }catch(e){}
     var html = OTHERS_SEC_SUBJECTS.map(function(s){
       var files=bySubject[s]||[];
+      var countLabel = files.length===0 ? `<span class="count" style="background:rgba(20,108,67,.08); color:var(--green); border-color:rgba(20,108,67,.18);">Guide available</span>` : `<span class="count">${files.length} file${files.length===1?'':'s'}</span>`;
       var impUrl=`imp.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('SEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
       var sylUrl=`syllabus.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('SEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
       var pyqUrl=`pyq.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('SEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
-      return `<div class="subj-card" data-key="SEC::${escapeHtml(s)}"><div class="subj-head"><div class="subj-title">📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length===1?'':'s'}</span></div><div style="display:flex; gap:6px; flex-shrink:0;"><a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a><a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a><a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>${state.isAdmin?`<button class=\"upload-btn\" onclick=\"openUpload('SEC','${encodeURIComponent(s)}')\">⬆ Add</button>`:''}</div></div></div>`;
+      return `<div class="subj-card" data-key="SEC::${escapeHtml(s)}"><div class="subj-head"><div class="subj-title">📁 <b>${escapeHtml(s)}</b> ${countLabel}</div><div style="display:flex; gap:6px; flex-shrink:0;"><a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a><a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a><a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>${state.isAdmin?`<button class=\"upload-btn\" onclick=\"openUpload('SEC','${encodeURIComponent(s)}')\">⬆ Add</button>`:''}</div></div></div>`;
     }).join('');
     grid.innerHTML = html || '<div class="mat-empty">112 SEC subjects ready — upload first syllabus (first 2 pages) to activate.</div>';
   }
@@ -8729,10 +8730,11 @@ const WAIT_PHRASES = [
     try{ (materialsCache||[]).forEach(function(m){ if((m.category||'').toUpperCase()!=='AEC') return; var s=m.subject||'General'; (bySubject[s]=bySubject[s]||[]).push(m); }); }catch(e){}
     var html = (typeof OTHERS_AEC_SUBJECTS!=='undefined'?OTHERS_AEC_SUBJECTS:[]).map(function(s){
       var files=bySubject[s]||[];
+      var countLabel = files.length===0 ? `<span class="count" style="background:rgba(20,108,67,.08); color:var(--green); border-color:rgba(20,108,67,.18);">Guide available</span>` : `<span class="count">${files.length} file${files.length===1?'':'s'}</span>`;
       var impUrl=`imp.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('AEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
       var sylUrl=`syllabus.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('AEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
       var pyqUrl=`pyq.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('AEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
-      return `<div class="subj-card" data-key="AEC::${escapeHtml(s)}"><div class="subj-head"><div class="subj-title">📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length===1?'':'s'}</span></div><div style="display:flex; gap:6px; flex-shrink:0;"><a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a><a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a><a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>${state.isAdmin?`<button class=\"upload-btn\" onclick=\"openUpload('AEC','${encodeURIComponent(s)}')\">⬆ Add</button>`:''}</div></div></div>`;
+      return `<div class="subj-card" data-key="AEC::${escapeHtml(s)}"><div class="subj-head"><div class="subj-title">📁 <b>${escapeHtml(s)}</b> ${countLabel}</div><div style="display:flex; gap:6px; flex-shrink:0;"><a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a><a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a><a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>${state.isAdmin?`<button class=\"upload-btn\" onclick=\"openUpload('AEC','${encodeURIComponent(s)}')\">⬆ Add</button>`:''}</div></div></div>`;
     }).join('');
     grid.innerHTML = html || '<div class="mat-empty">~85 AEC language papers ready — upload first syllabus to activate.</div>';
   }
@@ -9427,10 +9429,11 @@ const WAIT_PHRASES = [
         </div>
       </div>`;
     }
+    const countLabel = files.length===0 ? `<span class="count" style="background:rgba(20,108,67,.08); color:var(--green); border-color:rgba(20,108,67,.18);">Guide available</span>` : `<span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span>`;
     return `
       <div class="subj-card" data-key="${escapeHtml(key)}">
         <div class="subj-head">
-          <div class="subj-title">${s === 'Others' ? '📦' : '📁'} <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length === 1 ? '' : 's'}</span>${s === 'Others' ? '<div style="font-size:11.5px; font-weight:500; color:var(--muted); margin-top:3px;">Can’t find your subject? Check here.</div>' : ''}</div>
+          <div class="subj-title">${s === 'Others' ? '📦' : '📁'} <b>${escapeHtml(s)}</b> ${countLabel}${s === 'Others' ? '<div style="font-size:11.5px; font-weight:500; color:var(--muted); margin-top:3px;">Can’t find your subject? Check here.</div>' : ''}</div>
           <div style="display:flex; gap:6px; flex-shrink:0;">
             <a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a>
             <a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a>
