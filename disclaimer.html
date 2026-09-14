@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied','functionality_storage':'granted','security_storage':'granted'});</script>
+
 <script>
 (function(){var _s=document.createElement('style');_s.textContent='.ad{min-height:280px}ins.adsbygoogle{min-height:280px;display:block}';(document.head||document.documentElement).appendChild(_s);function sL(){if(window.__ads)return;window.__ads=1;var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775';document.head.appendChild(s);}window.__sgLoadAds=sL;try{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){sL();io.disconnect();}});},{rootMargin:'0px'});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('ins.adsbygoogle').forEach(function(el){io.observe(el);});});}catch(e){sL();}})();
 </script>
@@ -177,7 +179,6 @@
     </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="one-day.html">ONE DAY EXAMS</a></li>
       <li><a href="du.html">DU &amp; College</a></li>
       <li><a href="index.html#study">Study Material</a></li>
       <li><a href="guides.html">Guides</a></li>
@@ -191,7 +192,6 @@
   </nav>
   <div class="mobile-menu" id="mobileMenu">
     <a href="index.html">Home</a>
-    <a href="one-day.html">ONE DAY EXAMS</a>
     <a href="du.html">DU &amp; College</a>
     <a href="index.html#study">Study Material</a>
     <a href="guides.html">Guides</a>
@@ -205,7 +205,7 @@
     <div class="eyebrow">⚠️ Disclaimer</div>
     <h1>Disclaimer</h1>
     <p>Sulaksh is an educational website that provides study materials, notes, PYQs and related resources for informational and educational purposes.</p>
-    <p class="updated">Last updated: 15 August 2026</p>
+    <p class="updated">Last updated: 15 September 2026</p>
   </div>
 </section>
 
@@ -322,6 +322,62 @@
   document.getElementById('hamburger').addEventListener('click', () => {
     document.getElementById('mobileMenu').classList.toggle('open');
   });
+</script>
+
+
+<!-- Cookie Consent - GDPR / AdSense -->
+<style>
+.cookie-consent{position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;display:none;justify-content:center;pointer-events:none;}
+.cookie-consent.show{display:flex;pointer-events:auto;}
+.cookie-consent__inner{max-width:860px;width:100%;background:var(--card, #fff);border:1px solid var(--border, #E4E9F1);border-radius:14px;box-shadow:0 12px 40px rgba(12,35,64,.18);padding:16px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.cookie-consent__text{flex:1 1 280px;font-size:13.5px;line-height:1.6;color:var(--text, #1A2433);margin:0;}
+.cookie-consent__text a{color:var(--blue, #1E5FFF);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.cookie-consent__actions{display:flex;gap:8px;flex-shrink:0;align-items:center;}
+.cookie-btn{padding:10px 18px;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:transform .15s, background .2s;}
+.cookie-btn--accept{background:var(--navy, #0C2340);color:#fff;border-color:var(--navy, #0C2340);}
+.cookie-btn--accept:hover{background:var(--blue, #1E5FFF);transform:translateY(-1px);}
+.cookie-btn--decline{background:var(--bg, #F6F8FC);color:var(--text, #1A2433);border-color:var(--border, #E4E9F1);}
+.cookie-btn--decline:hover{background:var(--border, #E4E9F1);}
+@media(max-width:640px){.cookie-consent{left:10px;right:10px;bottom:10px;}.cookie-consent__inner{padding:14px;}.cookie-consent__actions{width:100%;justify-content:flex-end;}}
+</style>
+<div id="cookieConsent" class="cookie-consent" role="dialog" aria-label="Cookie consent" aria-live="polite">
+  <div class="cookie-consent__inner">
+    <p class="cookie-consent__text">We use cookies to remember your theme, improve our site and show relevant ads (Google AdSense). Choose Accept to allow personalised ads and analytics, or Decline for essential cookies only. <a href="privacy-policy.html">Privacy Policy</a>.</p>
+    <div class="cookie-consent__actions">
+      <button id="cookieDecline" class="cookie-btn cookie-btn--decline" type="button">Decline</button>
+      <button id="cookieAccept" class="cookie-btn cookie-btn--accept" type="button">Accept</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='sulaksh-consent';
+  var banner=document.getElementById('cookieConsent');
+  var acceptBtn=document.getElementById('cookieAccept');
+  var declineBtn=document.getElementById('cookieDecline');
+  function getConsent(){try{return localStorage.getItem(KEY);}catch(e){return null;}}
+  function setConsent(v){try{localStorage.setItem(KEY,v);}catch(e){}}
+  function updateGtag(grant){
+    try{
+      if(typeof gtag==='function'){
+        gtag('consent','update',{
+          'ad_storage': grant?'granted':'denied',
+          'ad_user_data': grant?'granted':'denied',
+          'ad_personalization': grant?'granted':'denied',
+          'analytics_storage': grant?'granted':'denied'
+        });
+      }
+    }catch(e){}
+  }
+  function hide(){ if(banner) banner.classList.remove('show'); setTimeout(function(){ if(banner) banner.style.display='none';},250); }
+  function show(){ if(!banner) return; banner.style.display='flex'; requestAnimationFrame(function(){ banner.classList.add('show'); }); }
+  var c=getConsent();
+  if(c==='accepted'){ updateGtag(true); }
+  else if(c==='declined'){ updateGtag(false); }
+  else { setTimeout(show, 700); }
+  if(acceptBtn) acceptBtn.addEventListener('click', function(){ setConsent('accepted'); updateGtag(true); hide(); try{if(window.__sgLoadAds) window.__sgLoadAds();}catch(e){} });
+  if(declineBtn) declineBtn.addEventListener('click', function(){ setConsent('declined'); updateGtag(false); hide(); });
+})();
 </script>
 
 </body>
