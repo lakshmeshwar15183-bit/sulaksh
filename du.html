@@ -591,6 +591,20 @@
     <div class="subj-grid" id="gridOthersSEC"></div>
   </section>
 
+  <!-- Others AEC - ~85 extra subjects to avoid cluttering main AEC grid -->
+  <section class="du-cat" id="viewOthersAEC">
+    <div class="du-cat-head aec" style="background:linear-gradient(90deg, var(--navy), var(--navy-2));">
+      <div>
+        <button class="back-btn" onclick="backToAEC()">← Back to AEC</button>
+        <h2>Others — More AEC Languages</h2>
+        <span class="sub">~85 more AEC language papers • 2 credits • semester-wise as per Academic Affairs</span>
+      </div>
+      <button class="upload-btn" onclick="openUpload('AEC','')">⬆ Upload</button>
+    </div>
+    <p style="font-size:13.5px; color:var(--muted); margin:0 0 14px; line-height:1.6;">Can’t find your AEC language? These ~85 language papers (Punjabi, Urdu, Sanskrit, Bengali, Tamil etc.) are grouped here to keep the main AEC page light. Tap any folder — Syllabus, PYQ and Notes are organised exactly like other AEC subjects.</p>
+    <div class="subj-grid" id="gridOthersAEC"></div>
+  </section>
+
   <!-- Programme catch-all chooser: BA / B.Com -->
   <section class="du-cat" id="viewCoreProgramme">
     <div class="du-cat-head core">
@@ -1122,6 +1136,94 @@
     'जनसंचार और रचनात्मक लेखन',
     'हिंदी भाषा और तकनीक',
     'Others',
+  ];
+
+  // ~81 missing AEC subjects (Academic Affairs ~90 - 9 present) - shown inside Others
+  const OTHERS_AEC_SUBJECTS = [
+    'Punjabi Bhasha da Mudhla Padhar(AEC-1)',
+    'Punjabi Bhasha da Uchera Padhar (AEC-2)',
+    'Punjabi Bhasha da Uchtam Padhar (AEC-3)',
+    'Punjabi Bhasha Ate Media',
+    'Punjabi Bhasha Ate Computer',
+    'Punjabi Bhasha ate Anuvad',
+    'विदेशी विद्यार्थियों के लिए पाठ्यक्रम',
+    'अनिवार्य हिन्दी पाठ्यक्रम – 2',
+    'Urud-A',
+    'Urdu-B',
+    'Urdu-C',
+    'Urdu-A',
+    'Urdu-B',
+    'Urdu-C',
+    'Sanskrit A: Advance Neeti Literature in Sanskrit',
+    'Sanskrit B: Introductory Upanishad and Geeta',
+    'Sanskrit C: Introduction to Sanskrit Language',
+    'Course A: Advance Ancient Indian Economy',
+    'Course B: Intermediate Administrative Structure in Kauṭilya’s Arthaśāstra',
+    'Course C: (Introductory) Culture and Society',
+    'Translation and Interpretation in Bengali',
+    'Basic Bengali',
+    'Journalistic Writing in Bengali',
+    'Intermediate Bengali',
+    'Translation and Interpretation in Assamese',
+    'Basic Assamese',
+    'Journalistic Writing in Assamese',
+    'Intermediate Assamese',
+    'Translation and Interpretation in Bodo',
+    'Basic Bodo',
+    'Journalistic Writing in Bodo',
+    'Intermediate Bodo',
+    'Translation and Interpretation in Dogri',
+    'Basic Dogri',
+    'Journalistic Writing in Dogri',
+    'Intermediate Dogri',
+    'Translation and Interpretation in Gujarati',
+    'Basic Gujarati',
+    'Journalistic Writing in Gujarati',
+    'Intermediate Gujarati',
+    'Translation and Interpretation in Kannada',
+    'Basic Kannada',
+    'Journalistic Writing in Kannada',
+    'Intermediate Kannada',
+    'Translation and Interpretation in Kashmiri',
+    'Basic Kashmiri',
+    'Journalistic Writing in Kashmiri',
+    'Intermediate Kashmiri',
+    'Translation and Interpretation in Konkani',
+    'Basic Konkani',
+    'Journalistic Writing in Konkani',
+    'Intermediate Konkani',
+    'Translation and Interpretation in Malayalam',
+    'Basic Malayalam',
+    'Journalistic Writing in Malayalam',
+    'Intermediate Malayalam',
+    'Translation and Interpretation in Manipuri',
+    'Basic Manipuri',
+    'Journalistic Writing in Manipuri',
+    'Intermediate Manipuri',
+    'Translation and Interpretation in Marathi',
+    'Basic Marathi',
+    'Journalistic Writing in Marathi',
+    'Intermediate Marathi',
+    'Translation and Interpretation in Maithili',
+    'Basic Maithili',
+    'Journalistic Writing in Maithili',
+    'Intermediate Maithili',
+    'Translation and Interpretation in Nepali',
+    'Basic Nepali',
+    'Journalistic Writing in Nepali',
+    'Intermediate Nepali',
+    'Translation and Interpretation in Santali',
+    'Basic Santali',
+    'Journalistic Writing in Santali',
+    'Intermediate Santali',
+    'Translation and Interpretation in Tamil',
+    'Basic Tamil',
+    'Journalistic Writing in Tamil',
+    'Intermediate Tamil',
+    'Translation and Interpretation in Telugu',
+    'Basic Telugu',
+    'Journalistic Writing in Telugu',
+    'Intermediate Telugu',
   ];
 
   const GE_SUBJECTS = [
@@ -8604,6 +8706,36 @@ const WAIT_PHRASES = [
     }).join('');
     grid.innerHTML = html || '<div class="mat-empty">112 SEC subjects ready — upload first syllabus (first 2 pages) to activate.</div>';
   }
+  function openOthersAEC(){
+    document.getElementById('duHome').style.display = 'none';
+    document.getElementById('catPicker').classList.add('hidden');
+    document.querySelectorAll('.du-cat').forEach(function(s){ s.classList.remove('active'); });
+    var v=document.getElementById('viewOthersAEC');
+    if(v){ v.classList.add('active'); renderOthersAEC(); v.scrollIntoView({behavior:'smooth', block:'start'}); }
+    history.replaceState(null,'','#cat-AEC-Others');
+  }
+  window.openOthersAEC = openOthersAEC;
+  function backToAEC(){
+    document.querySelectorAll('.du-cat').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById('cat-AEC').classList.add('active');
+    document.getElementById('cat-AEC').scrollIntoView({behavior:'smooth', block:'start'});
+    history.replaceState(null,'','#cat-AEC');
+  }
+  window.backToAEC = backToAEC;
+  function renderOthersAEC(){
+    var grid=document.getElementById('gridOthersAEC');
+    if(!grid) return;
+    var bySubject={};
+    try{ (materialsCache||[]).forEach(function(m){ if((m.category||'').toUpperCase()!=='AEC') return; var s=m.subject||'General'; (bySubject[s]=bySubject[s]||[]).push(m); }); }catch(e){}
+    var html = (typeof OTHERS_AEC_SUBJECTS!=='undefined'?OTHERS_AEC_SUBJECTS:[]).map(function(s){
+      var files=bySubject[s]||[];
+      var impUrl=`imp.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('AEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
+      var sylUrl=`syllabus.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('AEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
+      var pyqUrl=`pyq.html?exam=${encodeURIComponent('DU & College')}&category=${encodeURIComponent('AEC')}&subject=${encodeURIComponent(s)}&back=${encodeURIComponent('du.html')}`;
+      return `<div class="subj-card" data-key="AEC::${escapeHtml(s)}"><div class="subj-head"><div class="subj-title">📁 <b>${escapeHtml(s)}</b> <span class="count">${files.length} file${files.length===1?'':'s'}</span></div><div style="display:flex; gap:6px; flex-shrink:0;"><a class="pyq-btn" onclick="window.open('${pyqUrl}','_blank')">📜 PYQ</a><a class="syl-btn" onclick="window.open('${sylUrl}','_blank')">📑 Syllabus</a><a class="imp-btn" onclick="window.open('${impUrl}','_blank')">⭐ Imp Questions</a>${state.isAdmin?`<button class=\"upload-btn\" onclick=\"openUpload('AEC','${encodeURIComponent(s)}')\">⬆ Add</button>`:''}</div></div></div>`;
+    }).join('');
+    grid.innerHTML = html || '<div class="mat-empty">~85 AEC language papers ready — upload first syllabus to activate.</div>';
+  }
 
   function setMsg(el, text, ok) {
     el.textContent = text;
@@ -9267,6 +9399,28 @@ const WAIT_PHRASES = [
       <div class="subj-card" data-key="${escapeHtml(key)}" onclick="openOthersSEC()" style="cursor:pointer; border:1.5px dashed var(--blue); background:linear-gradient(135deg, rgba(30,95,255,.06), var(--card));">
         <div class="subj-head" style="cursor:pointer;">
           <div class="subj-title">📦 <b>${escapeHtml(s)}</b> <span class="count">${othersFiles} file${othersFiles===1?'':'s'} • ${othersCount} subjects</span><div style="font-size:11.5px; font-weight:500; color:var(--muted); margin-top:3px;">Can’t find your subject? Check here — ${othersCount} more SEC subjects →</div></div>
+          <div style="display:flex; gap:6px; flex-shrink:0; align-items:center;">
+            <span style="font-size:13px; font-weight:700; color:var(--blue);">Open →</span>
+          </div>
+        </div>
+      </div>`;
+    }
+    if (s === 'Others' && cat === 'AEC') {
+      const othersCount = (typeof OTHERS_AEC_SUBJECTS!=='undefined'?OTHERS_AEC_SUBJECTS.length:0);
+      const othersFiles = (function(){
+        try{
+          let n=0;
+          (typeof OTHERS_AEC_SUBJECTS!=='undefined'?OTHERS_AEC_SUBJECTS:[]).forEach(function(os){
+            const arr = (typeof materialsCache!=='undefined'?materialsCache:[]).filter(function(m){ return (m.category||'').toUpperCase()==='AEC' && (m.subject||'')===os; });
+            n+=arr.length;
+          });
+          return n;
+        }catch(e){ return 0; }
+      })();
+      return `
+      <div class="subj-card" data-key="${escapeHtml(key)}" onclick="openOthersAEC()" style="cursor:pointer; border:1.5px dashed var(--blue); background:linear-gradient(135deg, rgba(30,95,255,.06), var(--card));">
+        <div class="subj-head" style="cursor:pointer;">
+          <div class="subj-title">📦 <b>${escapeHtml(s)}</b> <span class="count">${othersFiles} file${othersFiles===1?'':'s'} • ${othersCount} subjects</span><div style="font-size:11.5px; font-weight:500; color:var(--muted); margin-top:3px;">Can’t find your subject? Check here — ${othersCount} more AEC subjects →</div></div>
           <div style="display:flex; gap:6px; flex-shrink:0; align-items:center;">
             <span style="font-size:13px; font-weight:700; color:var(--blue);">Open →</span>
           </div>
