@@ -1378,7 +1378,7 @@ for (const silo of siloDefs) {
 const TODAY = new Date().toISOString().slice(0, 10);
 const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !SITEMAP_EXCLUDE.has(f));
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-  + ['', 'index.html', 'du.html', 'one-day.html', 'guides.html', 'contact.html']
+  + ['', 'index.html', 'du.html', 'guides.html', 'contact.html']
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
@@ -1542,22 +1542,8 @@ try {
   } catch (e) {}
   // Count One Day Exams total and per-tile
   const oneDayTotal = idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day')).length;
-  // For RRB NTPC / SSC CGL, try subject match, fallback to total with min 1
-  const rrbCount = Math.max(1, idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day') && String(m.subject||'').toLowerCase().includes('rrb')).length || oneDayTotal || 1);
-  const sscCount = Math.max(1, idxMats.filter(m => String(m.exam||'').toLowerCase().includes('one day') && String(m.subject||'').toLowerCase().includes('ssc')).length || oneDayTotal || 1);
-  // Real counts without "Coming soon" framing — keep JS fallback but raw HTML must not look empty
-  // Idempotent: replace either hardcoded disabled "Coming soon · 2 files" OR already-baked "2 files"
-  const rrbLabel = rrbCount + ' file' + (rrbCount===1?'':'s');
-  const sscLabel = sscCount + ' file' + (sscCount===1?'':'s');
-  // RRB — matches disabled div OR baked a tag
-  idxHtml = idxHtml.replace(
-    /<(div|a)[^>]*><div class="exam-left">🔥 RRB NTPC<\/div><span class="badge-soon">[^<]*<\/span><\/(div|a)>/,
-    `<a href="one-day.html" class="exam-row" aria-label="Browse RRB NTPC — ${rrbLabel}"><div class="exam-left">🔥 RRB NTPC</div><span class="badge-soon">${rrbLabel}</span></a>`
-  );
-  idxHtml = idxHtml.replace(
-    /<(div|a)[^>]*><div class="exam-left">👥 SSC CGL<\/div><span class="badge-soon">[^<]*<\/span><\/(div|a)>/,
-    `<a href="one-day.html" class="exam-row" aria-label="Browse SSC CGL — ${sscLabel}"><div class="exam-left">👥 SSC CGL</div><span class="badge-soon">${sscLabel}</span></a>`
-  );
+  // One Day section removed per site owner request — no RRB/SSC tiles linking to one-day.html (file deleted)
+  // Previously this baked RRB/SSC counts to one-day.html; now removed — keep raw HTML as-is (no one-day hub)
   // Hero stats: bake total file count dynamically from sum of all materials (Core + SEC/VAC/AEC/GE)
   // Replaces hardcoded "2,909+" or placeholder "—" with live total so raw HTML is accurate without JS
   const totalFiles = idxMats.length;
@@ -1578,7 +1564,7 @@ try {
     console.log(`[index.html bake] featuredBadge ${duLabel} (DU & College ${duCount})`);
   }
   fs.writeFileSync(idxPath, idxHtml);
-  console.log(`[index.html bake] RRB ${rrbLabel}, SSC ${sscLabel} (oneDayTotal ${oneDayTotal}) — removed "Coming soon", baked real counts, kept JS fallback`);
+  console.log(`[index.html bake] one-day section removed — no RRB/SSC/one-day bake (file deleted per owner request)`);
   const stillComingSoon = (idxHtml.match(/<span class="badge-soon">Coming soon/g) || []).length;
   if (stillComingSoon) { console.error(`[index.html bake] ERROR: still ${stillComingSoon} "Coming soon" badge-soon in raw HTML — failing build`); process.exit(1); }
   else console.log('[index.html bake] OK — raw HTML no longer contains "Coming soon ·" for Popular Exams');
