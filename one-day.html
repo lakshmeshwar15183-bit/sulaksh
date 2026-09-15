@@ -495,6 +495,11 @@
     <label class="imp-check pyq"><input type="checkbox" id="upPyq"> 📜 PYQ</label>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
     <div id="upOptInfo"></div>
+    <div style="background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.22);border-radius:8px;padding:8px 10px;margin:10px 0 6px;font-size:12.5px;color:var(--muted);line-height:1.5;">📄 Only upload notes you personally wrote or materials you have the right to share. Do not upload pages scanned directly from copyrighted textbooks or paid coaching material.</div>
+    <label for="upRightsConfirm" style="display:flex; gap:8px; align-items:flex-start; font-size:13px; color:var(--muted); margin:10px 0; cursor:pointer; line-height:1.5;">
+      <input type="checkbox" id="upRightsConfirm" required style="margin-top:3px; width:16px; height:16px; flex-shrink:0;">
+      <span>I confirm this material was created by me or I have the right to share it, and it may be hosted on Sulaksh per the Terms.</span>
+    </label>
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
   </div>
