@@ -135,7 +135,7 @@ function getDefaultFaqs(opts) {
   // Generic fallback — should rarely be used (only for index/guides/silo)
   return [
     ['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'],
-    ['Is this official Delhi University material?', 'Yes — sourced from DU examinations and UGCF/NEP PDFs. Verify the final paper code and semester from your college handout.']
+    ['Is this official Delhi University material?', 'The syllabi and question papers themselves come from DU\'s own published examinations and UGCF/NEP curriculum documents. Sulaksh itself is an independent, student-run platform — not an official University of Delhi website or service. Always verify the final paper code and semester against your college handout.']
   ];
 }
 // pad any overview/detailed block that is <500w to guarantee >600 total page wc
@@ -208,7 +208,7 @@ const idToFile = new Map(materials.map(m => [m.id, `paper/${slug(m.title)}-${m.i
 // master index so crawlers can reach every hub with one hop.
 const HUBS = [];
 
-// Duplicate-content fixes: 11 exact-title duplicate groups (keep "and" / longer version) and 213 sem-X-pyq.html → sem-X-pyqs.html
+// Duplicate-content fixes: 12 exact-title duplicate groups (keep "and" / longer version) and 213 sem-X-pyq.html → sem-X-pyqs.html
 const CANONICAL_OVERRIDES = new Map([
   ['vac-culture-communication-imp.html', 'vac-culture-and-communication-imp.html'],
   ['vac-culture-communication-pyq.html', 'vac-culture-and-communication-pyq.html'],
@@ -221,6 +221,7 @@ const CANONICAL_OVERRIDES = new Map([
   ['vac-fit-india-study-material.html', 'vac-fit-india-2-study-material.html'],
   ['vac-yoga-philosophy-practice-imp.html', 'vac-yoga-philosophy-and-practice-imp.html'],
   ['vac-yoga-philosophy-practice-pyq.html', 'vac-yoga-philosophy-and-practice-pyq.html'],
+  ['vac-yoga-philosophy-practice-study-material.html', 'vac-yoga-philosophy-and-practice-study-material.html'],
 ]);
 const SITEMAP_EXCLUDE = new Set([...CANONICAL_OVERRIDES.keys()]);
 
@@ -252,7 +253,7 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 function pageHTML(o) {
   const faqH = (o.faqs || []).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const noIndexTag = o.noindex ? '<meta name="robots" content="noindex, follow">' : '';
-  const faqsForLd = o.faqs && o.faqs.length ? o.faqs : [['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'], ['Is this official Delhi University material?', 'Yes — sourced from DU examinations under the UGCF/NEP framework.']];
+  const faqsForLd = o.faqs && o.faqs.length ? o.faqs : [['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'], ['Is this official Delhi University material?', 'The syllabi and question papers themselves come from DU\'s own published examinations and UGCF/NEP curriculum documents. Sulaksh itself is an independent, student-run platform — not an official University of Delhi website or service. Always verify the final paper code and semester against your college handout.']];
   const faqLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -326,15 +327,14 @@ ${noIndexTag}
 <h1>${esc(o.h1)}</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="${today}">${today}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
  ${o.intro}
- <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#comments" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">💬 Doubts</a><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
-<nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li><li><a href="#comments" style="color:var(--blue)">Doubts & Discussion</a></li></ul></nav>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
+<nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li></ul></nav>
 <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.body}
 <div class="ad"><ins class="adsbygoogle" style="display:block;margin-top:20px" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.relHtml}
 ${o.aboutBlock || ""}
 <div class="faq" id="faqs"><h2>FAQs</h2>${o.faqH}</div>
-<div id="comments" style="margin-top:22px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px"><h2 style="margin:0 0 6px;font-size:16px">Doubts & Discussion</h2><p style="font-size:13px;color:var(--muted);margin:0 0 10px">Have a doubt about this paper? Ask below — replies from seniors and editors appear here. Be specific: mention your semester and unit.</p><div style="border:1px dashed var(--border);padding:14px;border-radius:10px;text-align:center;color:var(--muted);font-size:13px">Comments placeholder — coming soon. Meanwhile, use <a href="/contact.html" style="color:var(--blue)">Contact</a> or <a href="/du.html" style="color:var(--blue)">DU & College</a>.</div></div>
 </div>
 <footer><b>SULAKSH</b> — Learn. Prepare. Achieve.<br>Free study material for every DU aspirant · <a href="/">Home</a> · <a href="/du.html">DU &amp; College</a> · <a href="/pyq/index.html">All PYQs</a></footer>
 <script>
@@ -535,6 +535,11 @@ const badgeLabel = (n, hasGuide) => {
 };
 function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   if (pages.has(file)) return;
+  // Skip duplicate slugs that are canonicalized via 301 — don't generate duplicate HTML
+  if (SITEMAP_EXCLUDE.has(file)) {
+    console.log(`[emit] skip duplicate canonicalized: ${file} -> ${CANONICAL_OVERRIDES.get(file)}`);
+    return;
+  }
   // keep honest count — do not fabricate 1 when 0 (was minOne)
   if (opts && opts.total !== undefined) opts.total = honestCount(opts.total);
   const hasOriginalCustom = opts && opts.aboutBlock;
