@@ -87,7 +87,12 @@ const getSubjectPara = (subject) => {
   for (const [k, v] of Object.entries(subjectsContent)) {
     if (!v || !v.content) continue;
     const kParts = String(k).toLowerCase().split('-');
-    if (kParts.length > 1 && lowerSubj.includes(kParts[0])) {
+    const firstPart = kParts[0];
+    // Skip generic prefixes that cause false matches like "basic" matching any Basic subject
+    const generic = new Set(['basic','intermediate','advanced','course','introductory','translation','journalistic','isolation','plant','digital','financial']);
+    if (generic.has(firstPart)) continue;
+    // Require at least 4 chars and word-boundary match to avoid "b" matching "basic"
+    if (firstPart.length >= 4 && lowerSubj.split(/[\s\-]+/).includes(firstPart)) {
       return `<p>${esc(v.content)}</p>`;
     }
   }
@@ -1491,6 +1496,17 @@ try {
     /<(div|a)[^>]*><div class="exam-left">👥 SSC CGL<\/div><span class="badge-soon">[^<]*<\/span><\/(div|a)>/,
     `<a href="one-day.html" class="exam-row" aria-label="Browse SSC CGL — ${sscLabel}"><div class="exam-left">👥 SSC CGL</div><span class="badge-soon">${sscLabel}</span></a>`
   );
+  // Hero stats: bake total file count dynamically from sum of all materials (Core + SEC/VAC/AEC/GE)
+  // Replaces hardcoded "2,909+" or placeholder "—" with live total so raw HTML is accurate without JS
+  const totalFiles = idxMats.length;
+  const heroLabel = totalFiles.toLocaleString() + '+';
+  const heroRe = /<b id="heroDocs">[^<]*<\/b>/;
+  if (heroRe.test(idxHtml)) {
+    idxHtml = idxHtml.replace(heroRe, `<b id="heroDocs">${heroLabel}</b>`);
+    console.log(`[index.html bake] heroDocs ${heroLabel} (total materials ${totalFiles})`);
+  } else {
+    console.log('[index.html bake] heroDocs element not found — skipping');
+  }
   fs.writeFileSync(idxPath, idxHtml);
   console.log(`[index.html bake] RRB ${rrbLabel}, SSC ${sscLabel} (oneDayTotal ${oneDayTotal}) — removed "Coming soon", baked real counts, kept JS fallback`);
   const stillComingSoon = (idxHtml.match(/<span class="badge-soon">Coming soon/g) || []).length;
