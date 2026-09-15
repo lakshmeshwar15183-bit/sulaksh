@@ -18,6 +18,9 @@
 <style>
 :root{--navy:#0C2340;--blue:#1E5FFF;--bg:#F6F8FC;--card:#fff;--text:#1A2433;--muted:#5B6B80;--border:#E4E9F1;--radius:14px;--green:#146C43}
 [data-theme="dark"]{--navy:#0A192E;--bg:#0B1424;--card:#101B2E;--text:#EAF0FA;--muted:#8FA0B8;--border:#1E2C42}
+[data-theme="dark"] .brand .w,[data-theme="dark"] .brand-wordmark{filter:brightness(0) invert(1);opacity:.95}
+[data-theme="dark"] .nav-links a{color:var(--text)}
+[data-theme="dark"] .hero h1{color:var(--text)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
 header{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
