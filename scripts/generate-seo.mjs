@@ -225,6 +225,21 @@ const CANONICAL_OVERRIDES = new Map([
 ]);
 const SITEMAP_EXCLUDE = new Set([...CANONICAL_OVERRIDES.keys()]);
 
+// Faceted filter URLs: semester/year/type variants should not be indexed separately.
+// These are URLs containing -sem- (e.g. polsci-honours-sem-8-pyqs.html, sem-8-2026-pyqs.html, sem-8-syllabus.html)
+// They remain as in-page filters/tabs but canonicalize to the parent subject-level page
+// (e.g. polsci-honours-pyqs.html) with noindex,follow.
+function isFacetedFile(file) {
+  return file.includes('-sem-');
+}
+function getFacetedParent(file) {
+  if (file.includes('-sem-')) {
+    const base = file.split('-sem-')[0];
+    return base + '-pyqs.html';
+  }
+  return null;
+}
+
 const CSS = `
 :root{--navy:#0C2340;--blue:#1E5FFF;--bg:#F6F8FC;--card:#fff;--text:#1A2433;--muted:#5B6B80;--border:#E4E9F1}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -450,7 +465,6 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p>Recent years (2023-2026) match the current UGCF pattern most closely. Please verify the final unit list from your college PDF — this reference overview will be replaced when the official file is uploaded.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   }
-  block += `<div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this collection:</strong> Start with the official DU syllabus PDF — copy the Unit titles in order, then make one page per Unit with heading, 4-5 bullet points and one diagram or table. This one-page-per-unit format mirrors DU's marking scheme. For numerical papers, keep a formula sheet and solve one PYQ numerical daily; for theory, write one 15-mark answer weekly. Use senior notes only to cross-check your one-pagers. Time-box each Unit to two days and revise with the 10-minute PYQ mapping technique described above. Verify from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>`;
   return block;
 }
 function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
@@ -540,12 +554,24 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
     console.log(`[emit] skip duplicate canonicalized: ${file} -> ${CANONICAL_OVERRIDES.get(file)}`);
     return;
   }
+  // Faceted filter URLs: semester/year/type variants — keep as in-page filter but de-index
+  let isFaceted = isFacetedFile(file);
+  let facetedParent = null;
+  if (isFaceted) {
+    facetedParent = getFacetedParent(file);
+    if (facetedParent && facetedParent !== file) {
+      // For faceted, always canonicalize to parent subject page (overrides any prior -pyq -> -pyqs mapping)
+      CANONICAL_OVERRIDES.set(file, facetedParent);
+      console.log(`[emit] faceted ${file} -> canonical ${facetedParent} (noindex)`);
+    }
+  }
   // keep honest count — do not fabricate 1 when 0 (was minOne)
   if (opts && opts.total !== undefined) opts.total = honestCount(opts.total);
   const hasOriginalCustom = opts && opts.aboutBlock;
   const hasCustom = hasOriginalCustom || (opts && opts.subject && getSubjectPara(opts.subject));
   // Genuinely empty pages: listing pages only (not paper pages) with total <3 && no original custom content
   let isThin = opts && opts.total !== undefined && opts.total < 3 && !hasOriginalCustom && !file.startsWith('paper/');
+  let shouldNoIndex = isThin || isFaceted;
   const fallbackFaqs = getDefaultFaqs(opts);
   const faqH = (faqs && faqs.length ? faqs : fallbackFaqs).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const relHtml = (relItems && relItems.length)
@@ -564,9 +590,9 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
     <p>Pair these papers with semester notes, the official DU syllabus and timed practice for maximum scores. Recent years' papers carry the most weight as they follow the latest pattern.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   })();
-  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: isThin });
-  // Thin-content guard: genuinely empty pages (total <3 && no original custom) stay noindex
-  if (isThin) {
+  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex });
+  // Thin + faceted guard: empty or faceted filter pages stay noindex (sitemap will exclude)
+  if (shouldNoIndex) {
     noIndexFiles.add(file);
   } else {
     const textOnly = html.replace(/<[^>]+>/g, ' ');
@@ -1178,7 +1204,23 @@ emit('best-website-for-du-pyqs-study-material.html',
    ['Is this free for all semesters?', 'Yes — Sem 1 to Sem 8 for Honours, Programme and GE/VAC/AEC/SEC, all free.']]);
 
 // ===== hub (master index) — emitted LAST so every hub link exists =====
-const hubChips = HUBS.slice().sort((a, b) => a.label.localeCompare(b.label))
+// Deduplicate by display title: keep only canonical file (not in SITEMAP_EXCLUDE, prefer longer with -and- or -2)
+const dedupByLabel = new Map();
+for (const h of HUBS) {
+  if (SITEMAP_EXCLUDE.has(h.file)) continue;
+  const existing = dedupByLabel.get(h.label);
+  if (!existing) {
+    dedupByLabel.set(h.label, h);
+  } else {
+    // Prefer canonical with -and- or longer name (e.g. vac-fit-india-2 vs vac-fit-india)
+    const isBetter = h.file.length > existing.file.length || h.file.includes('-and-') || h.file.includes('-2');
+    if (isBetter && !existing.file.includes('-and-') && !existing.file.includes('-2')) {
+      dedupByLabel.set(h.label, h);
+    }
+  }
+}
+const dedupedHubs = [...dedupByLabel.values()];
+const hubChips = dedupedHubs.slice().sort((a, b) => a.label.localeCompare(b.label))
   .map(h => `<a href="/pyq/${h.file}">${esc(h.label)}</a>`).join('');
 const hubAbout = `<h2>About This PYQ Library — Delhi University (UGCF/NEP)</h2>
 <p>This master index brings together every Delhi University previous year question paper, syllabus and study material on Sulaksh — BA (Hons) and (Programme), BSc (Hons), BCom (Hons) and (Programme), plus GE, VAC, AEC and SEC courses under UGCF/NEP 2022. Each subject hub is organised semester-wise (Sem 1 to Sem 8) with syllabus, PYQs and notes in the taught order, so you see the reading sequence DU actually uses. All 2154+ documents are free to view instantly, no sign-up.</p>
@@ -1192,7 +1234,7 @@ emit('index.html',
   'Delhi University PYQs & Study Material - Complete Index',
   'Master Index',
   '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p>',
-  `<h2>Browse by Subject (${HUBS.length} collections)</h2>
+  `<h2>Browse by Subject (${dedupedHubs.length} collections)</h2>
    <div class="rel">${hubChips}</div>
    <h2>Silo Pages — Browse by Programme</h2>
    <div class="rel"><a href="/pyq/bcom-pyqs.html">BCom PYQs</a><a href="/pyq/ba-pyqs.html">BA PYQs</a><a href="/pyq/bsc-pyqs.html">BSc PYQs</a><a href="/pyq/programme-pyqs.html">Programme PYQs</a></div>
@@ -1200,7 +1242,7 @@ emit('index.html',
    <div class="rel"><a href="/pyq/where-to-find-du-pyqs.html">Where to Find DU PYQs</a><a href="/pyq/where-to-find-du-syllabus.html">Where to Find DU Syllabus</a><a href="/pyq/best-website-for-du-pyqs-study-material.html">Best Website for DU PYQs</a></div>
    <h2>More Ways In</h2>
    <p>Pick your programme from the <a href="/du.html">DU & College sections</a>, or go back <a href="/">Home</a>.</p>`,
-  null, null, { aboutBlock: hubAbout, total: HUBS.length });
+  null, null, { aboutBlock: hubAbout, total: dedupedHubs.length });
 
 // ===== silo pages — programme grouping to pass link equity =====
 const siloDefs = [
