@@ -16,11 +16,11 @@ const router = express.Router();
 // GoogleOther) must resolve to *.googlebot.com. Ads / Mediapartners crawlers
 // (AdsBot-Google*, Mediapartners-Google) must resolve to *.google.com
 // (typically rate-limited-proxy-*.google.com). Forward lookup must match IP.
-const GOOGLE_CRAWLER_RE = /Googlebot-Image|Googlebot-Video|Googlebot-News|Googlebot|Mediapartners-Google|AdsBot-Google-Mobile|AdsBot-Google|APIs-Google|Google-InspectionTool|Storebot-Google|GoogleOther/i;
+const GOOGLE_CRAWLER_RE = /Googlebot-Image|Googlebot-Video|Googlebot-News|Googlebot|Mediapartners-Google|AdsBot-Google-Mobile|AdsBot-Google|Google-Display-Ads-Bot|APIs-Google|Google-InspectionTool|Storebot-Google|GoogleOther/i;
 async function isVerifiedGooglebot(req) {
   const ua = req.get('User-Agent') || '';
   if (!GOOGLE_CRAWLER_RE.test(ua)) return false;
-  const isAdsOrMediapartners = /Mediapartners-Google|AdsBot-Google/i.test(ua);
+  const isAdsOrMediapartners = /Mediapartners-Google|AdsBot-Google|Google-Display-Ads-Bot/i.test(ua);
   // Cloudflare forwards real IP in CF-Connecting-IP, Railway sets X-Forwarded-For
   const ip = req.get('CF-Connecting-IP') || req.ip || (req.headers['x-forwarded-for'] || '').split(',')[0].trim();
   if (!ip || ip.startsWith('127.') || ip === '::1' || ip === '::ffff:127.0.0.1') return false;

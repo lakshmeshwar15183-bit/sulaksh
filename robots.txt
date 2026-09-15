@@ -47,6 +47,12 @@ Allow: /
 User-agent: Mediapartners-Google
 Allow: /
 
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Google-Display-Ads-Bot
+Allow: /
+
 # Everyone else
 User-agent: *
 Allow: /

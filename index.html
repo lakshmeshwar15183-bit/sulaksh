@@ -540,7 +540,7 @@
       </div>
       <div class="hero-stats">
         <div class="stat"><b>12+</b><span>Exam Categories</span></div>
-        <div class="stat"><b id="heroDocs">—</b><span>Notes &amp; PYQs</span></div>
+        <div class="stat"><b id="heroDocs">2,909+</b><span>Notes &amp; PYQs</span></div>
         <div class="stat"><b>DU</b><span>Students across North & South Campus</span></div>
       </div>
     </div>
@@ -720,6 +720,9 @@
     </div>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
     <div id="upOptInfo"></div>
+    <label style="display:flex; gap:8px; align-items:flex-start; margin:12px 0; font-size:13px; color:var(--muted); line-height:1.5; cursor:pointer;">
+      <input type="checkbox" id="upRightsConfirm" required style="margin-top:3px; flex-shrink:0;"> <span>I created this material or have the right to share it.</span>
+    </label>
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
   </div>
@@ -1225,6 +1228,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     document.getElementById('upSubject').value = '';
     document.getElementById('upYear').value = '';
     document.getElementById('upFile').value = '';
+    const _cb = document.getElementById('upRightsConfirm'); if (_cb) _cb.checked = false;
     setMsg(document.getElementById('uploadMsg'), '', false);
     openModal('uploadOverlay');
   }
@@ -1248,6 +1252,8 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     const year = document.getElementById('upYear').value.trim();
     const fileInput = document.getElementById('upFile');
     const file = fileInput.files[0];
+    const rightsOk = document.getElementById('upRightsConfirm')?.checked;
+    if (!rightsOk) return setMsg(msg, 'Please confirm you have the right to share this material.', false);
     if (!title || !exam || !category || !file) return setMsg(msg, 'Title, exam, category and a PDF file are required.', false);
 
     let uploadFile;
