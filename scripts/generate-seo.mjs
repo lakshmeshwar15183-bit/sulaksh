@@ -193,6 +193,49 @@ const safeSlug = s => {
   return 'misc-' + h.toString(36).slice(0,6);
 };
 const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Fix #2: deduplicate malformed titles like "VAC | VAC", "GE | GE", "SEC | SEC", "AEC | AEC" and truncated "90 ma"
+function cleanTitle(raw) {
+  let t = String(raw || '').trim();
+  // Fix truncated "90 ma" / "30 ma" / "30 mark" -> "90 marks"
+  t = t.replace(/\b(\d+)\s+marks?\b/gi, (m, n) => `${n} marks`); // normalize mark/marks
+  t = t.replace(/\b(\d+)\s+ma\b/gi, '$1 marks');
+  t = t.replace(/\b(\d+)\s+mar\b/gi, '$1 marks');
+  // Deduplicate category tokens separated by | or - : "VAC | VAC", "VAC - VAC", " - VAC | VAC"
+  let prev;
+  do {
+    prev = t;
+    t = t.replace(/\bVAC\s*[\|\-]\s*VAC\b/gi, 'VAC');
+    t = t.replace(/\bGE\s*[\|\-]\s*GE\b/gi, 'GE');
+    t = t.replace(/\bSEC\s*[\|\-]\s*SEC\b/gi, 'SEC');
+    t = t.replace(/\bAEC\s*[\|\-]\s*AEC\b/gi, 'AEC');
+    t = t.replace(/ - VAC\s*\|\s*VAC/gi, ' - VAC');
+    t = t.replace(/ - GE\s*\|\s*GE/gi, ' - GE');
+    t = t.replace(/ - SEC\s*\|\s*SEC/gi, ' - SEC');
+    t = t.replace(/ - AEC\s*\|\s*AEC/gi, ' - AEC');
+  } while (t !== prev);
+  // Handle "GE | GE – 2" -> "GE – 2"
+  t = t.replace(/\bGE\s*\|\s*GE(\s*–)/gi, 'GE$1');
+  t = t.replace(/\bVAC\s*\|\s*VAC(\s*–)/gi, 'VAC$1');
+  t = t.replace(/\bSEC\s*\|\s*SEC(\s*–)/gi, 'SEC$1');
+  t = t.replace(/\bAEC\s*\|\s*AEC(\s*–)/gi, 'AEC$1');
+  // Generic dedupe: split by '|' and remove consecutive case-insensitive duplicates
+  const parts = t.split('|').map(p => p.trim());
+  const deduped = [];
+  for (const p of parts) {
+    const last = deduped[deduped.length - 1];
+    if (last && last.toLowerCase() === p.toLowerCase()) continue;
+    if (last && p.toLowerCase().startsWith(last.toLowerCase().split(' ')[0]) && last.toLowerCase().split(' ')[0].length >= 2 && ['vac','ge','sec','aec'].includes(last.toLowerCase().split(' ')[0])) {
+      if (p.length > last.length) deduped[deduped.length - 1] = p;
+      continue;
+    }
+    deduped.push(p);
+  }
+  t = deduped.join(' | ');
+  t = t.replace(/\s{2,}/g, ' ').replace(/\s*\|\s*\|\s*/g, ' | ').trim();
+  t = t.replace(/vac\s*-\s*vac/gi, 'VAC');
+  t = t.replace(/ge\s*-\s*ge/gi, 'GE');
+  return t;
+}
 const TRACK = { 'Honours': 'Honours', 'As Major': 'Major', 'As Minor': 'Minor' };
 const TYPE_LABEL = { pyq: 'Previous Year Question Papers', syllabus: 'Syllabus PDF', notes: 'Notes & Study Material', 'imp-questions': 'Important Questions', imp: 'Important Questions' };
 const typeOf = m => m.material_category === 'syllabus' || m.is_syllabus ? 'syllabus'
@@ -201,6 +244,10 @@ const typeOf = m => m.material_category === 'syllabus' || m.is_syllabus ? 'sylla
 
 const res = await fetch(`${API}/api/materials`);
 const { materials } = await res.json();
+// Normalize titles before generating slugs — fixes VAC VAC / GE GE / truncated marks
+for (const m of materials) {
+  if (m.title) m.title = cleanTitle(m.title);
+}
 
 // material.id -> its static SEO page, so every listing can deep-link to it.
 const idToFile = new Map(materials.map(m => [m.id, `paper/${slug(m.title)}-${m.id.slice(0, 8)}.html`]));
@@ -407,7 +454,7 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p>${esc(s)} ${esc(track)} at Delhi University under NEP/UGCF is built around close reading, not memorising summaries. You are expected to read primary texts — novels, plays, poems, essays — and answer with form-aware analysis. This collection with <strong>${total} documents</strong> across ${semCount} semesters organises syllabus, PYQs and notes semester-wise so you see the reading order DU actually teaches.</p>
     <p><strong>Exam pattern:</strong> Most papers are 90 marks theory + 10 internal, or 75+25 depending on college. Questions are typically 10 marks (short) and 15 marks (long), with at least one passage-based question where quoting 1-2 lines matters. Because the syllabus lists specific chapters, not just book names — e.g., Whitman’s “O Captain!” or Morrison’s <em>Beloved</em> Units 1-3 — students who revise by the Unit division score faster.</p>
     <p><strong>Marking scheme:</strong> Examiners reward three things: accurate textual reference, a clear thesis in the first 3 lines, and awareness of form (sonnet vs dramatic monologue vs free verse). A one-page-per-text sheet with “what’s said / how it’s said / one quote” maps directly to the marking rubric and has helped thousands of DU students.</p>
-    <p><strong>How to use PYQs here:</strong> Open Sem 1’s syllabus tab, then the 10 PYQs for that sem side-by-side. You will notice 40-60% of concepts repeat — e.g., Chaucer’s General Prologue, Donne’s Valediction, or Post-colonial theory questions. Solve 3 past papers per semester under timed conditions; that alone covers time management and question style.</p>
+    <p><strong>How to use PYQs here:</strong> Open Sem 1’s syllabus tab, then the 10 PYQs for that sem side-by-side. You will notice many concepts repeat — e.g., Chaucer’s General Prologue, Donne’s Valediction, or Post-colonial theory questions. Solve 3 past papers per semester under timed conditions; that alone covers time management and question style.</p>
     <p>Pair these papers with the semester notes and the official DU syllabus. Recent years (2023-2025) follow the latest UGCF pattern and carry the most weight. Verify final unit details from your college PDF — this overview will be replaced once the official file is uploaded.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   } else if (isHistory) {
@@ -664,14 +711,10 @@ function paperSummary(m) {
   if (isPyq) {
     return `
     <h2>What this paper covers</h2>
-    <p>This is the <strong>${esc(m.title)}</strong> — a ${esc(subj)} ${sem} previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”. If you are in ${esc(sem)} for ${esc(subj)}, this is the single most predictive revision tool you have.</p>
-    <p><strong>Weightage to expect:</strong> In ${esc(subj)}, the heaviest units are usually the middle ones (Unit 2-3) — theory plus application. In this paper, expect at least one passage or case-based question from those units, plus one 15-mark essay that links two units. Recent DU papers (2023-2025) show 40-60% concept repetition, so solving this paper reveals what your college will ask next. For ${esc(subj)}, numerical or diagram questions cluster in Unit 3 for science/commerce and debate questions cluster in Unit 2 for humanities.</p>
-    <p><strong>How to use it:</strong> Solve timed (3 hours), then mark each question against the syllabus Units 1-4. That 10-minute mapping tells you where to revise. Keep one page per unit with “core idea + one quote/diagram + one PYQ Q-number” — verified notes on Sulaksh are formatted exactly that way. For ${esc(subj)} ${esc(sem)}, toppers do one timed paper weekly and spend the next two days only on the units where they lost marks. Within a month, that loop covers the entire syllabus twice.</p>
-    <p><strong>Marking insights for ${esc(subj)}:</strong> Examiners check three things — definition in first two lines, one authoritative reference (quote, case, formula or diagram), and a concluding line that answers “so what?”. Even if your final numerical answer is slightly off, full steps with units and a labelled diagram still fetch 8/12. For theory, one precise reference per answer (e.g., a section number, a thinker, or a data point) is the difference between 6/10 and 9/10.</p>
-    ${paperWeightageTable(subj, sem, hash)}
-    ${paperSolvedExample(subj, sem, hash, m.title)}
-    <p style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px"><strong>Study tip — ${esc(subj)} ${esc(sem)}:</strong> Do the most repeated unit first, not Unit 1. PYQ analysis for ${esc(subj)} shows that fetches more marks per hour. Make a one-page sheet per unit with heading, 4-5 bullets and one diagram or table; then solve one PYQ numerical daily or write one 15-mark answer weekly under timed conditions. Cross-check your one-pagers with senior notes, not the other way round. Check your college's final PDF for exact paper codes — this page is for practice, not the official notification. Verify from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</p>
-    <p>Official: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} ${esc(sem)} handout. The exact PDF will auto-appear when admin uploads — this detailed guide keeps you moving until then.</p>`;
+    <p>This is the <strong>${esc(m.title)}</strong> — a ${esc(subj)} ${sem} previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
+    <p style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px"><strong>What you get after opening:</strong> Scanned question paper PDF as per DU exam for this paper. <strong>Source/provenance:</strong> Official DU examination paper — verify paper code and semester from your college handout before relying on it. <em>Sulaksh is an independent student platform and is not affiliated with or endorsed by the University of Delhi.</em></p>
+    <p><strong>How to use it:</strong> Solve timed (3 hours), then mark each question against the syllabus Units 1-4. That 10-minute mapping tells you where to revise. Keep one page per unit with “core idea + one example or diagram + one PYQ reference” — this mirrors how DU frames questions.</p>
+    <p>Official: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} ${esc(sem)} handout.</p>`;
   } else if (isSyl) {
     return `
     <h2>Syllabus at a glance — ${esc(subj)} ${esc(sem)}</h2>
@@ -1144,8 +1187,8 @@ emit('where-to-find-du-pyqs.html',
    </ul>
    <h2>Popular Collections to Start With</h2>
    <div class="rel">${topHubLinks()}</div>
-   <h2>Why Solving PYQs Works — and How to Use Them</h2>
-   <p>Roughly 40–60% of DU exam questions repeat concepts from previous years. Solving even three past papers per subject gives you the exact question style, marking scheme and time pressure of the real exam. The technique that works is <em>PYQ mapping</em>: for each syllabus Unit 1-4, mark which past questions came from it. After three papers, you will know which units repeat most (usually Units 2-3) and where to spend the next two days. That compresses 200 pages into 20 revision pages.</p>
+    <h2>Why Solving PYQs Works — and How to Use Them</h2>
+    <p>Many DU exam questions repeat concepts from previous years. Solving even three past papers per subject gives you the exact question style, marking scheme and time pressure of the real exam. The technique that works is <em>PYQ mapping</em>: for each syllabus Unit 1-4, mark which past questions came from it. After three papers, you will know which units repeat most (usually Units 2-3) and where to spend the next two days. That compresses 200 pages into 20 revision pages.</p>
    <h2>How to verify you have the right PYQ</h2>
    <p>Before you solve, check three things on the paper: (1) paper code matches your syllabus handout, (2) year says 2023-2026 for current UGCF pattern, (3) semester tag matches your exam form. If any of those mismatch, open the syllabus tab for your subject on Sulaksh — it sits alongside the PYQs in the same semester folder and shows the correct DSC order.</p>
    <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college syllabus handout. All PYQs on Sulaksh are free to view; the exact verified PDF will auto-appear when admin uploads.</p>
@@ -1225,7 +1268,7 @@ const hubChips = dedupedHubs.slice().sort((a, b) => a.label.localeCompare(b.labe
 const hubAbout = `<h2>About This PYQ Library — Delhi University (UGCF/NEP)</h2>
 <p>This master index brings together every Delhi University previous year question paper, syllabus and study material on Sulaksh — BA (Hons) and (Programme), BSc (Hons), BCom (Hons) and (Programme), plus GE, VAC, AEC and SEC courses under UGCF/NEP 2022. Each subject hub is organised semester-wise (Sem 1 to Sem 8) with syllabus, PYQs and notes in the taught order, so you see the reading sequence DU actually uses. All 2154+ documents are free to view instantly, no sign-up.</p>
 <p><strong>How to use this index:</strong> Start with your programme — e.g., <em>B.Com (Hons)</em>, <em>Political Science Honours</em>, <em>English Honours</em> — then pick your semester. Each semester page shows the DSC order, and the PYQ mapping technique (mark which Unit each past question came from) tells you which units repeat most. Most students need only three past papers per subject to cover the pattern.</p>
-<p><strong>Why PYQs matter:</strong> DU examiners reuse 40-60% of concepts. The exam pattern (75+25 or 90+10, with 10-mark shorts and 15-mark longs) and marking rubric (definition + example + concluding line, one diagram or quote per answer) repeat every year. Solving PYQs under timed conditions is the single most effective revision.</p>
+<p><strong>Why PYQs matter:</strong> DU examiners often reuse concepts. The exam pattern (75+25 or 90+10, with 10-mark shorts and 15-mark longs) and marking rubric (definition + example + concluding line, one diagram or quote per answer) repeat every year. Solving PYQs under timed conditions is the single most effective revision.</p>
 <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this index:</strong> Open your semester’s syllabus page first, copy the Unit titles in order, make one page per unit, then solve the PYQs shown on the same page. That one-page-per-unit method mirrors DU’s marking scheme and helps toppers compress 200 pages into 20 revision pages. Verify the final unit list and paper code from your college handout — the broad overview here is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
 <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. The exact, verified PDFs auto-appear when admin uploads.</p>`;
 emit('index.html',
