@@ -245,17 +245,18 @@ function buildTree(){
  // auto-select first file like SOL default? Keep prompt until user clicks.
 }
 function openFile(sem,file,el){
- document.querySelectorAll('.file-item').forEach(x=>x.classList.remove('active'));
- if(el) el.classList.add('active');
- const url=pdfUrl(sem,file);
- document.getElementById('viewerTitle').textContent=file;
- document.getElementById('viewerSub').textContent=sem;
- const iframe=document.getElementById('sol-pdf');
- // Use Drive viewer friendly URL: if CDN_MAP already is cdn.sulaksh.online/file/... use it directly, else use SOL direct PDF
- // For PDFs not yet uploaded, use SOL direct — after upload script replaces via CDN_MAP
- iframe.src=url;
- document.getElementById('viewerDl').href=url;
- document.getElementById('viewerFallback').style.display='block';
+  document.querySelectorAll('.file-item').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const url=pdfUrl(sem,file);
+  document.getElementById('viewerTitle').textContent=file;
+  document.getElementById('viewerSub').textContent=sem;
+  const iframe=document.getElementById('sol-pdf');
+  // Use Google Docs viewer wrapper so phone shows inline viewer instead of download
+  // Direct CDN inline works on desktop, but mobile Chrome often forces download — wrapper fixes
+  const viewerUrl = url && url!=="#" ? 'https://docs.google.com/gview?embedded=true&url='+encodeURIComponent(url) : url;
+  iframe.src=viewerUrl;
+  document.getElementById('viewerDl').href=url;
+  document.getElementById('viewerFallback').style.display='block';
  // On phone, scroll to viewer automatically after tap
  if(window.innerWidth<980) document.getElementById('sol-data').scrollIntoView({behavior:'smooth',block:'start'});
  // push state for shareable link
