@@ -95,8 +95,7 @@ footer a{color:#fff;font-weight:600}
 <div class="wrap">
 <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(30,95,255,.08);color:var(--blue);padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700">📁 SOL DU Official • 3-click viewer</div>
 <h1>UG course structure based on NEP-Semester I, II and III</h1>
-<p>Same folders/files as <a href="https://web.sol.du.ac.in/info/ug-course-structure-based-on-nep-semester-i" target="_blank" rel="noopener">web.sol.du.ac.in → NEP : UG/PG Programmes → UG course structure (NEP)</a> — left tree = semesters, right = PDF preview. Mobile collapses to single column like your phone screenshot.</p>
-<p class="meta">Source: School of Open Learning, DU — Distance & Continuing Education. PDFs open in Sulaksh default Drive viewer (CDN) in 3 clicks: <b>1</b> Open semester → <b>2</b> Tap PDF → <b>3</b> View. Official: <a href="https://web.sol.du.ac.in/info/ug-course-structure-based-on-nep-semester-i" target="_blank">SOL original</a></p>
+<p style="background:rgba(255,193,7,.12);border-left:3px solid #FFC107;padding:10px 12px;border-radius:8px;margin-top:8px;color:var(--text);font-weight:600">⚠️ Students please note: SOL follows the same NEP course structure as regular DU programmes for most courses, but paper codes and combinations can vary by college. Always verify your exact semester and paper code with your college handout and the official DU notification — SOL is only one official source.</p>
 <div class="s-opt">
 <button onclick="expandAll()">Expand all</button>
 <button onclick="collapseAll()">Collapse all</button>
@@ -105,9 +104,7 @@ footer a{color:#fff;font-weight:600}
 </div>
 </section>
 
-<div class="ad wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>
-
-<div class="sol-layout">
+<div class="sol-layout" style="margin-top:18px">
 <div id="sol-tree" role="tree" aria-label="UG course structure"></div>
 <div id="sol-data">
 <div class="viewer-head"><b id="viewerTitle">Please select the file from the left menu.</b><span id="viewerSub" style="font-size:11px;opacity:.7">PDF viewer</span></div>
@@ -176,9 +173,43 @@ const MANIFEST = {
 "Semester VIII - B.com and other Hons for students enrolled in 2022-23.pdf"
 ]
 };
-// If sol-manifest.json exists (generated after upload), it maps "Semester/file.pdf" -> Sulaksh CDN url
-let CDN_MAP = {};
-fetch('assets/data/sol-manifest.json').then(r=>r.ok?r.json():null).then(j=>{ if(j) CDN_MAP=j; }).catch(()=>{});
+// Inlined CDN map — all 34 PDFs now hosted on Sulaksh CDN (inline disposition, not download)
+const CDN_MAP = {
+  "Semester-I-II/AEC-SEC-VAC Structure for all Courses.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/f4b893e2-f973-4589-b7eb-0eb91bfcc043.pdf?disposition=inline",
+  "Semester-I-II/B.A. Hons. Economics Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/30f72603-e649-449f-8316-5b41f79f2718.pdf?disposition=inline",
+  "Semester-I-II/B.A. Hons. English Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/f15e8f68-8671-4b59-867f-a366c5ee1b10.pdf?disposition=inline",
+  "Semester-I-II/B.A. Hons. Political Science Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/3c29ba7b-e50c-4d58-b46a-f8f90a1b04a2.pdf?disposition=inline",
+  "Semester-I-II/B.A. Hons. Psychology Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/db780a9c-13ad-40d1-ade5-24f058b186eb.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme Computer Application Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/d9367ee7-d13c-4467-ba65-453ecd0b0ca4.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Economics as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/8def3235-7ae0-414c-84f2-b07a1314efcb.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Education as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/337417e6-558a-422f-abad-ade8a7a6eb63.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Engish as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/4d8044b5-f39b-4675-8fca-317ba506254b.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Hindi as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/eeeaeaeb-fa0b-4170-948e-ed1541348b12.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with History as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/d098c08c-ab24-4da8-b028-d87eccf72824.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Mathematics as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/a27619c2-26dc-4393-8e87-2cef8373565d.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Political Science as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/bdd93814-7712-43d1-90ef-31ae4a83a227.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Psychology as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/f4eac559-62d4-43cb-9da1-8d6be1cd503a.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Sanskrit as a Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/021c57bb-a6ac-4f80-abb2-cbf0a06cf95f.pdf?disposition=inline",
+  "Semester-I-II/B.A. Programme with Urdu as Major.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/f03e9ce5-b4a4-4f5d-9423-4aa35e00dc0e.pdf?disposition=inline",
+  "Semester-I-II/B.Com Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/6974b02c-bf7e-4165-9731-c11f83c38f3b.pdf?disposition=inline",
+  "Semester-I-II/B.Com Hons. Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/3f6f661b-c6d9-449d-8324-8b87cd0cd431.pdf?disposition=inline",
+  "Semester-I-II/BBA-FIA Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/d4b9d806-db39-4cb7-ad63-269c9800109c.pdf?disposition=inline",
+  "Semester-I-II/BMS Course Structure.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/undated/fba33e32-e3d7-4d78-9567-a5f609339f93.pdf?disposition=inline",
+  "Semester-III/UG_Course_Structure - B.Com and Hons Courses for students enrolled in 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/ec26d13b-9a83-4013-a71d-a6a5d98c46d5.pdf?disposition=inline",
+  "Semester-III/UG_Course_Structure -AECC-SEC-VAC -III for students enrolled in Session 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/b01e2a63-0cc3-4f17-8143-3f64d9e5f136.pdf?disposition=inline",
+  "Semester-III/UG_Course_Structure -BA Programme -III for students enrolled in Session 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/bbccc0b2-9654-4577-a19d-ec17152b0bdd.pdf?disposition=inline",
+  "Semester-IV/Sem-IV AECC-SEC-VAC for students enrolled on 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/691e901a-ece1-4cd0-b6ea-ecf20f1b0092.pdf?disposition=inline",
+  "Semester-IV/Sem-IV BCOM and HONS Courses for students enrolled on 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/0cd0783f-1068-4266-b6b9-1565984d2ec9.pdf?disposition=inline",
+  "Semester-IV/Semester IV - B.A. PROGRAMME for students enrolled in 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/6995d354-e026-4cdb-aed0-653ccc32230f.pdf?disposition=inline",
+  "Semester-V/Semester V - B.A. Programme for students enrolled in 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/29041f97-e729-4efd-9ca0-2d5853809dc9.pdf?disposition=inline",
+  "Semester-V/Semester V - B.com and Hons for students enrolled in 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/6c6e4382-5eaf-4de1-9dbf-ba69f564e8bc.pdf?disposition=inline",
+  "Semester-VI/Semester VI - B.A. Programme for students enrolled in Session 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/235d835a-e331-4c24-b456-986c4a4c233f.pdf?disposition=inline",
+  "Semester-VI/Semester VI - B.com and other Hons for students enrolled in 2024-25.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2024/45d858d7-4ec2-4c6a-9b0d-7dd6759c0eb6.pdf?disposition=inline",
+  "Semester-VII/Semester VII - B.A. Programme  for students enrolled in Session 2022-23.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2022/0f969380-dd81-424e-9098-50e9c07c78eb.pdf?disposition=inline",
+  "Semester-VII/Semester VII - BCom and Hounors_Programme Semester - VII for students enrolled in Session 2022-23.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2022/c18ffc52-54b7-4c64-aae7-26c5f93957a1.pdf?disposition=inline",
+  "Semester-VIII/Semester VIII - B.A. Programme for students enrolled in 2022-23.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2022/b475239d-8768-445f-bffd-e8c52fdc213e.pdf?disposition=inline",
+  "Semester-VIII/Semester VIII - B.com and other Hons for students enrolled in 2022-23.pdf": "https://cdn.sulaksh.online/file/materials/du-college/ug-course-structure/2022/fe08a78d-33ed-40ef-95ef-3b26ee8a950c.pdf?disposition=inline"
+};
 function iconFor(name){ return name.toLowerCase().endsWith('.pdf') ? '📄' : '📁'; }
 function pdfUrl(sem,file){
  const key = sem+'/'+file;
