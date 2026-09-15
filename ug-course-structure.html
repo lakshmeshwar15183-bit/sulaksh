@@ -225,14 +225,14 @@ function buildTree(){
    head.innerHTML='<span class="chev">▼</span> <span>📁</span> <span>'+sem+'</span> <span style="margin-left:auto;font-size:11px;color:var(--muted);font-weight:600">'+MANIFEST[sem].length+'</span>';
    const kids=document.createElement('div');
    kids.className='folder-children';
-   MANIFEST[sem].forEach(f=>{
-     const fi=document.createElement('div');
-     fi.className='file-item';
-     fi.dataset.sem=sem; fi.dataset.file=f;
-     fi.innerHTML='<span class="ico">📄</span> <span class="name" title="'+f+'">'+f+'</span>';
-     fi.addEventListener('click',()=> openFile(sem,f,fi));
-     kids.appendChild(fi);
-   });
+    MANIFEST[sem].forEach(f=>{
+      const fi=document.createElement('div');
+      fi.className='file-item';
+      fi.dataset.sem=sem; fi.dataset.file=f;
+      fi.innerHTML='<span class="ico" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:#E53935;color:#fff;border-radius:2px;font-size:8px;font-weight:800;flex-shrink:0">PDF</span> <span class="name" title="'+f+'">'+f+'</span>';
+      fi.addEventListener('click',()=> openFile(sem,f,fi));
+      kids.appendChild(fi);
+    });
    head.addEventListener('click',()=>{
      head.classList.toggle('collapsed');
      kids.classList.toggle('collapsed');
