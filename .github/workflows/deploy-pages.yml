@@ -35,6 +35,16 @@ jobs:
 
           git checkout origin/main -- "${FILES[@]}"
 
+          # Delete files that were removed from main (prevent stale Netlify/Render configs etc. lingering on gh-pages).
+          # deploy-pages only syncs FILES above, so orphans like a deleted netlify.toml would otherwise survive.
+          # Exclude generated/owned paths (pyq/, assets/data/) — those are owned by seo-refresh / materials-sync.
+          comm -23 \
+            <(git ls-tree -r --name-only HEAD | grep -vE '^(worker/|scripts/|\.github/|pyq/|assets/data/)' | sort) \
+            <(git ls-tree -r --name-only origin/main | grep -vE '^(worker/|scripts/|\.github/|pyq/|assets/data/)' | sort) \
+            | xargs -r git rm -f -- 2>/dev/null || true
+          # Also handle deletions via git status (e.g., files renamed/deleted that checkout didn't remove)
+          git add -A
+
           # Keep generated/owned content exactly as it is on gh-pages.
           git checkout origin/gh-pages -- assets/data pyq 2>/dev/null || true
 
