@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UG Course Structure Based on NEP — Semester I to VIII | SOL DU | Sulaksh</title>
-<meta name="description" content="Same as DU SOL — UG course structure based on NEP Semester I to VIII — AEC-SEC-VAC, B.A. Hons., B.Com, Programme course structures. View PDFs in 3 clicks via Sulaksh Drive viewer. Official UGCF/NEP source.">
+<title>UG Course Structure Based on NEP — Semester I to VIII | Sulaksh</title>
+<meta name="description" content="UG course structure based on NEP Semester I to VIII — AEC-SEC-VAC, B.A. Hons., B.Com, Programme course structures. View PDFs in 3 clicks via Sulaksh Drive viewer. Official UGCF/NEP source.">
 <link rel="canonical" href="https://sulaksh.online/ug-course-structure.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="UG Course Structure Based on NEP — Semester I to VIII | Sulaksh">
-<meta property="og:description" content="Same as SOL — Semester-wise UG course structure PDFs. 3 clicks to viewer. Official NEP-UGCF source.">
+<meta property="og:description" content="Semester-wise UG course structure PDFs. 3 clicks to viewer. Official NEP-UGCF source.">
 <meta property="og:url" content="https://sulaksh.online/ug-course-structure.html">
 <meta property="og:image" content="https://sulaksh.online/assets/images/og-card.png">
 <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -93,9 +93,9 @@ footer a{color:#fff;font-weight:600}
 
 <section class="hero">
 <div class="wrap">
-<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(30,95,255,.08);color:var(--blue);padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700">📁 SOL DU Official • 3-click viewer</div>
-<h1>UG course structure based on NEP-Semester I, II and III</h1>
-<p style="background:rgba(255,193,7,.12);border-left:3px solid #FFC107;padding:10px 12px;border-radius:8px;margin-top:8px;color:var(--text);font-weight:600">⚠️ Students please note: SOL follows the same NEP course structure as regular DU programmes for most courses, but paper codes and combinations can vary by college. Always verify your exact semester and paper code with your college handout and the official DU notification — SOL is only one official source.</p>
+<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(30,95,255,.08);color:var(--blue);padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700">📁 UGCF/NEP • 3-click viewer</div>
+<h1>UG course structure based on NEP — Semester I to VIII</h1>
+<p style="background:rgba(255,193,7,.12);border-left:3px solid #FFC107;padding:10px 12px;border-radius:8px;margin-top:8px;color:var(--text);font-weight:600">⚠️ Students please note: This structure follows the same NEP-UGCF as regular DU programmes for most courses, but paper codes and combinations can vary by college. Always verify your exact semester and paper code with your college handout and the official DU notification.</p>
 <div class="s-opt">
 <button onclick="expandAll()">Expand all</button>
 <button onclick="collapseAll()">Collapse all</button>
@@ -116,13 +116,12 @@ footer a{color:#fff;font-weight:600}
 <div class="ad wrap"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>
 
 <footer>
-<b>SULAKSH</b> — Learn. Prepare. Achieve.<br>Same structure as SOL — enhanced 3-click viewer on Sulaksh CDN. Official sources: <a href="https://web.sol.du.ac.in/info/ug-course-structure-based-on-nep-semester-i" target="_blank">SOL DU</a> · <a href="https://www.du.ac.in" target="_blank">du.ac.in</a> · <a href="/">Home</a> · <a href="du.html">DU & College</a> · <a href="/pyq/index.html">All PYQs</a>
+<b>SULAKSH</b> — Learn. Prepare. Achieve.<br>UGC NEP course structure — all PDFs hosted on Sulaksh. Official sources: <a href="https://www.du.ac.in" target="_blank">du.ac.in</a> · <a href="http://exam.du.ac.in" target="_blank">exam.du.ac.in</a> · <a href="/">Home</a> · <a href="du.html">DU & College</a> · <a href="/pyq/index.html">All PYQs</a>
 </footer>
 
 <script>
 const API='https://sulaksh-backend-production.up.railway.app';
-const DATA_ROOT='https://web.sol.du.ac.in/my_modules/type/UG course structure based on NEP-Semester I-II/data/root';
-// Initial manifest mirrors SOL jstree — will be replaced by uploaded Sulaksh CDN URLs after upload script runs (see sol-manifest.json)
+// All PDFs hosted on Sulaksh CDN — no external SOL links, everything stays on Sulaksh
 const MANIFEST = {
 "Semester-I-II":[
 "AEC-SEC-VAC Structure for all Courses.pdf",
@@ -212,10 +211,8 @@ const CDN_MAP = {
 };
 function iconFor(name){ return name.toLowerCase().endsWith('.pdf') ? '📄' : '📁'; }
 function pdfUrl(sem,file){
- const key = sem+'/'+file;
- if(CDN_MAP[key]) return CDN_MAP[key];
- // fallback to direct SOL data root (uses same 3-click viewer, but via SOL host)
- return DATA_ROOT+'/'+encodeURIComponent(sem)+'/'+encodeURIComponent(file);
+  const key = sem+'/'+file;
+  return CDN_MAP[key] || "#";
 }
 function buildTree(){
  const tree=document.getElementById('sol-tree');
