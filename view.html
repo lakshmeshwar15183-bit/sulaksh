@@ -17,9 +17,12 @@ main{display:flex;flex-direction:column;flex:1;min-height:0}
 .topbar .brand{font-family:Sora,system-ui;font-weight:800;font-size:15px;letter-spacing:.5px}
 .topbar .openlink{background:rgba(127,176,255,.22);color:#cfe0ff}
 #title{flex:1;font-size:13px;color:#cfd9ec;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#iframeWrap{flex:1;min-height:0;background:#202a3a;position:relative}
+#iframeWrap{flex:1;min-height:0;background:#202a3a;position:relative;overflow:auto}
 iframe{width:100%;height:100%;border:none}
 #msg{max-width:640px;margin:60px auto;text-align:center;color:#cfd9ec;font-size:15px;line-height:1.7}
+#imageViewer{display:none; width:100%; height:100%; overflow:auto; background:#0e1626; text-align:center; padding:16px;}
+#imageViewer img{max-width:100%; height:auto; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,.4); cursor:zoom-in; transition:transform .2s;}
+#imageViewer img.zoomed{transform:scale(1.8); cursor:zoom-out;}
 #msg a{color:#7fb0ff}
 .spin{width:38px;height:38px;border:4px solid rgba(255,255,255,.15);border-top-color:#4d8dff;border-radius:50%;margin:80px auto 20px;animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -35,6 +38,7 @@ iframe{width:100%;height:100%;border:none}
 <div id="iframeWrap">
   <div class="spin"></div>
   <div id="msg" style="display:block"></div>
+  <div id="imageViewer"></div>
 </div>
 </main><script>
 const API_BASE = 'https://sulaksh-backend-production.up.railway.app';
@@ -73,7 +77,7 @@ async function findSource(){
     if (snap.ok){
       const j = await snap.json();
       const m = (j.materials || []).find((x) => x.id === id);
-      if (m && m.cdnUrl) return { url: m.cdnUrl };
+      if (m && m.cdnUrl) return { url: m.cdnUrl, contentType: m.content_type || m.contentType || '', fileName: m.file_name || '' };
     }
   } catch (e) {}
 
@@ -82,7 +86,7 @@ async function findSource(){
     const r = await fetchRetry(`${API_BASE}/api/materials/${id}`);
     if (r.ok){
       const d = await r.json().catch(() => ({}));
-      if (d && d.material && d.material.cdnUrl) return { url: d.material.cdnUrl };
+      if (d && d.material && d.material.cdnUrl) return { url: d.material.cdnUrl, contentType: d.material.content_type || '', fileName: d.material.file_name || '' };
     }
   } catch (e) {}
 
@@ -90,11 +94,36 @@ async function findSource(){
   try {
     const r = await fetchRetry(`${API_BASE}/api/materials/${id}/download?disposition=inline`);
     const d = await r.json().catch(() => ({}));
-    if (r.ok && d.url) return { url: d.url };
+    if (r.ok && d.url) return { url: d.url, contentType: d.contentType || '', fileName: d.fileName || '' };
     if (r.status === 429 || (d && d.error && /limit/i.test(d.error)))
       return { rateLimited: true };
   } catch (e) {}
   return null;
+}
+function isImageUrl(url, contentType, fileName){
+  const ct = (contentType||'').toLowerCase();
+  if(ct.startsWith('image/')) return true;
+  const name = (fileName||'').toLowerCase();
+  const u = (url||'').toLowerCase();
+  return /\.(png|jpe?g|webp|gif)(\?|$)/.test(name) || /\.(png|jpe?g|webp|gif)(\?|$)/.test(u);
+}
+function showImage(url){
+  const wrap = document.getElementById('iframeWrap');
+  const viewer = document.getElementById('imageViewer');
+  wrap.querySelectorAll('iframe,object,embed').forEach((e)=>e.remove());
+  viewer.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = 'Document image';
+  img.addEventListener('click', ()=> img.classList.toggle('zoomed'));
+  img.addEventListener('error', ()=> showFallback(url, 'Image could not be loaded.'));
+  viewer.appendChild(img);
+  viewer.style.display = 'block';
+  spin.style.display = 'none';
+  msg.style.display = 'none';
+  openLink.href = url;
+  openLink.style.display = '';
+  openLink.target = '_blank';
 }
 
 function isSafe(u){
@@ -144,11 +173,19 @@ function showFallback(url, note){
   const url = res.url;
   if (!isSafe(url)){ setMsg('Could not open this document.' + retryLink()); return; }
 
+  // Image files: use dedicated viewer with pinch-zoom, not PDF iframe
+  if(isImageUrl(url, res.contentType, res.fileName)){
+    titleEl.textContent = 'Sulaksh — Viewing image';
+    showImage(url);
+    return;
+  }
+
   titleEl.textContent = 'Sulaksh — Viewing document';
   openLink.href = openHref;
   openLink.style.display = '';
   const wrap = document.getElementById('iframeWrap');
   wrap.querySelectorAll('iframe,object,embed').forEach((e) => e.remove());
+  document.getElementById('imageViewer').style.display = 'none';
 
   // Mobile: use Google Docs viewer first - most reliable inline on phones
   // (blob iframe often blank on Android WebView, direct CDN triggers Download)
