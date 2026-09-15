@@ -657,8 +657,9 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   const hasOriginalCustom = opts && opts.aboutBlock;
   const hasCustom = hasOriginalCustom || (opts && opts.subject && getSubjectPara(opts.subject));
   // Genuinely empty pages: listing pages only (not paper pages) with total <3 && no original custom content
-  let isThin = opts && opts.total !== undefined && opts.total < 3 && !hasOriginalCustom && !file.startsWith('paper/');
-  let shouldNoIndex = isThin || isFaceted;
+  // ROBOTS FIX: allow all crawlers — no noindex, let Google/Bing/AI bots index everything (user requested open crawl)
+  let isThin = false; // previously: opts && opts.total !== undefined && opts.total < 3 && !hasOriginalCustom && !file.startsWith('paper/');
+  let shouldNoIndex = false; // previously: isThin || isFaceted — now always indexable
   const fallbackFaqs = getDefaultFaqs(opts);
   const faqH = (faqs && faqs.length ? faqs : fallbackFaqs).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const relHtml = (relItems && relItems.length)
@@ -678,14 +679,15 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   })();
   let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex });
-  // Thin + faceted guard: empty or faceted filter pages stay noindex (sitemap will exclude)
+  // Thin + faceted guard disabled for open crawl — keep all pages indexable (robots.txt now Allow: /)
   if (shouldNoIndex) {
     noIndexFiles.add(file);
   } else {
+    // previously thin audit; now all pages indexable so just log if still thin but keep indexed
     const textOnly = html.replace(/<[^>]+>/g, ' ');
     const wordCount = textOnly.split(/\s+/).filter(Boolean).length;
     if (wordCount < 600) {
-      console.log(`[thin-guard] audit for ${file}: words=${wordCount} (<600) total=${opts && opts.total} (now has subject para, kept indexed)`);
+      console.log(`[thin-guard] audit for ${file}: words=${wordCount} (<600) total=${opts && opts.total} (kept indexed per open-crawl policy)`);
     }
   }
   fs.mkdirSync(path.dirname(path.join(OUT, file)), { recursive: true });
