@@ -766,6 +766,10 @@
     </div>
     <input type="file" id="upFile" class="field" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif">
     <div id="upOptInfo"></div>
+    <label for="upRightsConfirm" style="display:flex; gap:8px; align-items:flex-start; font-size:13px; color:var(--muted); margin:10px 0; cursor:pointer; line-height:1.5;">
+      <input type="checkbox" id="upRightsConfirm" required style="margin-top:3px; width:16px; height:16px; flex-shrink:0;">
+      <span>I confirm this material was created by me or I have the right to share it, and it may be hosted on Sulaksh per the Terms.</span>
+    </label>
     <button class="btn-primary" id="uploadSubmit">Upload</button>
     <div class="modal-msg" id="uploadMsg"></div>
   </div>
@@ -8997,6 +9001,8 @@ const WAIT_PHRASES = [
     document.getElementById('upImp').checked = false;
     document.getElementById('upSyl').checked = false;
     document.getElementById('upPyq').checked = false;
+    const rc = document.getElementById('upRightsConfirm');
+    if (rc) rc.checked = false;
     setMsg(document.getElementById('uploadMsg'), '', false);
     syncCoreFields();
     hideSuggest();
@@ -9030,6 +9036,8 @@ const WAIT_PHRASES = [
     const fileInput = document.getElementById('upFile');
     const file = fileInput.files[0];
     if (!subject || !title || !file) return setMsg(msg, 'Subject folder, file title and a PDF are required.', false);
+    const rightsConfirm = document.getElementById('upRightsConfirm');
+    if (!rightsConfirm || !rightsConfirm.checked) return setMsg(msg, 'Please confirm you have the right to share this material.', false);
 
     let uploadFile;
     try {
