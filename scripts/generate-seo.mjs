@@ -1552,7 +1552,7 @@ try {
   }
   // Core subjects — same lists as du.html
   const CORE_SUBJECTS_BAKE = ['English','History','Economics','Political Science','Mathematics','Hindi','Sanskrit','Geography','B.Com (Hons)','Sociology','B.Sc.'];
-  const BSC_SUBJECTS_BAKE = ['B.Sc. (Hons) Chemistry','B.Sc. (Hons) Physics','B.Sc. (Hons) Zoology','B.Sc. (Hons) Botany','B.Sc. (Hons) Geology','B.Sc. (Hons) Statistics','B.Sc. (Hons) Food Technology','B.Sc. (Hons) Computer Science','B.Sc. (Hons) Biological Sciences','B.Sc. (Hons) Home Science','B.Sc. (Hons) Environmental Science','B.Sc. Applied Life Sciences','B.Sc. Physical Sciences with Chemistry'];
+  const BSC_SUBJECTS_BAKE = ['B.Sc. (Hons) Chemistry','B.Sc. (Hons) Physics','B.Sc. (Hons) Zoology','B.Sc. (Hons) Botany','B.Sc. (Hons) Geology','B.Sc. (Hons) Statistics','B.Sc. (Hons) Food Technology','B.Sc. (Hons) Computer Science','B.Sc. (Hons) Biological Sciences','B.Sc. (Hons) Home Science','B.Sc. (Hons) Environmental Science','B.Sc. Applied Life Sciences','B.Sc. Physical Sciences with Chemistry','B.Sc. Applied Physical Science with Analytical Methods in Chemistry & Biochemistry'];
   const coreCounts = {};
   for (const s of CORE_SUBJECTS_BAKE) {
     let files;
