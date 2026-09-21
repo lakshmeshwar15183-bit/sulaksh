@@ -147,6 +147,8 @@
   .btn-lg.solid:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(12,35,64,.25);}
   .btn-lg.outline{background:var(--card); color:var(--text); border:1.5px solid var(--border);}
   .btn-lg.outline:hover{border-color:var(--blue); color:var(--blue); transform:translateY(-2px);}
+  .btn-lg.btn-disabled{pointer-events:none; opacity:.65;}
+  .btn-lg.outline.btn-disabled:hover{transform:none; border-color:var(--border); color:var(--text);}
 
   .hero-stats{display:flex; gap:28px; margin-top:36px; flex-wrap:wrap;}
   .stat b{font-size:22px; font-family:'Sora',sans-serif; display:block;}
@@ -536,7 +538,7 @@
       <p>DU notes, PYQs, syllabus and question banks — organised by course, semester and paper for Honours, Programme and BSc.</p>
       <div class="hero-ctas">
         <a href="#exams" class="btn-lg solid">📖 Explore Exams</a>
-        <a href="#study" class="btn-lg outline">🔖 Study Material</a>
+        <span class="btn-lg outline btn-disabled" aria-disabled="true">🔖 Study Material</span>
       </div>
       <div class="hero-stats">
         <div class="stat"><b id="heroDocs">3,777+</b><span>Notes &amp; PYQs</span></div>
