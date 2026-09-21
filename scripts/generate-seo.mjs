@@ -390,13 +390,12 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 function pageHTML(o) {
   const faqH = (o.faqs || []).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const noIndexTag = o.noindex ? '<meta name="robots" content="noindex, follow">' : '';
-  const faqsForLd = o.faqs && o.faqs.length ? o.faqs : [['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'], ['Is this official Delhi University material?', 'The syllabi and question papers themselves come from DU\'s own published examinations and UGCF/NEP curriculum documents. Sulaksh itself is an independent, student-run platform — not an official University of Delhi website or service. Always verify the final paper code and semester against your college handout.']];
-  const faqLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    'mainEntity': faqsForLd.map(([q,a])=>({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a }}))
-  };
-  const today = new Date().toISOString().slice(0,10);
+  // NOTE: no FAQPage structured markup here on purpose — the same Q&A repeated
+  // on thousands of pages looks manipulative. Visible FAQ text (faqH) stays as normal content.
+  // Visible byline date mirrors the honest dateModified when the page has material
+  // data, so visible and structured dates never contradict each other.
+  const buildToday = new Date().toISOString().slice(0, 10);
+  const displayDate = o.dateModified || buildToday;
   // Duplicate fixes: 11 exact-title groups and 213 sem-X-pyq → pyqs canonicalize to preferred
   const canonicalFile = CANONICAL_OVERRIDES.get(o.file) || o.file;
   // Breadcrumb: Home > PYQs > current
@@ -415,8 +414,10 @@ function pageHTML(o) {
     description: o.desc,
     author: { '@type':'Person', name:'Lakshmeshwar Pandey' },
     publisher: { '@type':'Organization', name:'Sulaksh', logo:{ '@type':'ImageObject', url:`${SITE}/assets/images/favicon.png`} },
-    datePublished: '2024-01-01',
-    dateModified: today,
+    // datePublished omitted: no real first-published date per page in data (fake date is worse than none).
+    // dateModified only when backed by the page's own material timestamps (see maxMatDate).
+    ...(o.datePublished ? { datePublished: o.datePublished } : {}),
+    ...(o.dateModified ? { dateModified: o.dateModified } : {}),
     mainEntityOfPage: `${SITE}/pyq/${canonicalFile}`
   };
   // Fix Bug 2: canonical must be self-referential — every page's canonical equals its own URL
@@ -447,7 +448,6 @@ ${noIndexTag}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775" crossorigin="anonymous"></script>
-<script type="application/ld+json">${JSON.stringify(faqLd)}</script>
 <script type="application/ld+json">${JSON.stringify(bcLd)}</script>
 <script type="application/ld+json">${JSON.stringify(articleLd)}</script>
 <style>${CSS}</style></head>
@@ -462,7 +462,7 @@ ${noIndexTag}
 <div class="wrap">
 <span class="badge">${esc(o.badge)} · Delhi University · Free</span>
 <h1>${esc(o.h1)}</h1>
-<p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="${today}">${today}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
+<p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="${displayDate}">${displayDate}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
  ${o.intro}
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
 <nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li></ul></nav>
@@ -697,6 +697,21 @@ function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
     <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(s)} syllabus handout.</p>`;
 }
 const honestCount = n => Math.max(0, Number(n) || 0);
+// Honest Article dateModified: latest change among the page's own materials
+// (updated_at, falling back to created_at), as YYYY-MM-DD.
+// Returns null when the page has no material timestamps — the caller then
+// omits dateModified entirely rather than stamping the build date.
+function maxMatDate(mats) {
+  let best = null;
+  for (const m of mats || []) {
+    const v = m && (m.updated_at || m.created_at);
+    if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) {
+      const d = v.slice(0, 10);
+      if (best === null || d > best) best = d;
+    }
+  }
+  return best;
+}
 const displayLabel = (n, hasGuide) => {
   const num = honestCount(n);
   if (num === 0 && hasGuide) return 'Guide available';
@@ -753,7 +768,10 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
     <p>Pair these papers with semester notes, the official DU syllabus and timed practice for maximum scores. Recent years' papers carry the most weight as they follow the latest pattern.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   })();
-  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex });
+  // Honest dateModified from the page's own materials (opts.mats); explicit
+  // opts.dateModified wins if a caller passes one. Otherwise omitted.
+  const pageDateModified = (opts && opts.dateModified) || maxMatDate(opts && opts.mats) || undefined;
+  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex, dateModified: pageDateModified });
   // Thin + faceted guard disabled for open crawl — keep all pages indexable (robots.txt now Allow: /)
   if (shouldNoIndex) {
     noIndexFiles.add(file);
@@ -918,7 +936,7 @@ for (const m of materials) {
     }
     // About stays generic (now semester-agnostic after subjects-content fix) so no mismatch; intro is short so no duplicate
   }
-  const emitOpts = aboutBlockForPaper ? { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, aboutBlock: aboutBlockForPaper } : { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1 };
+  const emitOpts = aboutBlockForPaper ? { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, aboutBlock: aboutBlockForPaper, mats: [m] } : { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, mats: [m] };
   emit(file,
     `${m.title} – DU ${tn}${semBit} | Free View | Sulaksh`,
     `${m.title} — official Delhi University ${tn.toLowerCase()}${semBit}, free to view instantly on Sulaksh.`,
@@ -996,7 +1014,7 @@ for (const [key, semMap] of bySubjTrack) {
       `<h2>${sn}</h2><ul class="plist">${arr.slice(0, 12).map(listItem).join('')}</ul>`).join('') + hubNavHtml,
     [...bySubjTrack.keys()].filter(k => k !== key && k.split('||')[0] === subject)
       .map(k => ({ file: ovFile(...k.split('||')), label: `${k.split('||')[0]} ${TRACK[k.split('||')[1]] ?? ''}` })),
-    null, { aboutBlock, total, subject, faqCategory: 'notes' });
+    null, { aboutBlock, total, subject, faqCategory: 'notes', mats: [...semMap.values()].flat() });
   for (const [semName, arr] of semMap) {
     const semNum = (semName.match(/\d+/) || [''])[0];
     const baseSlug = `${slug(subject)}-${slug(track)}-${semNum ? 'sem-' + semNum + '-' : ''}`;
@@ -1028,7 +1046,7 @@ for (const [key, semMap] of bySubjTrack) {
       [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
         const n2 = (s2.match(/\d+/) || [''])[0];
         return { file: `${slug(subject)}-${slug(track)}-${n2 ? 'sem-' + n2 + '-' : ''}pyqs.html`, label: `${subject} ${track} ${s2}` };
-      }), null, { total: displayCountSem, aboutBlock: semBlock, subject, faqCategory: 'notes' });
+      }), null, { total: displayCountSem, aboutBlock: semBlock, subject, faqCategory: 'notes', mats: arr });
     for (const [t, arr2] of types) {
       if (t === 'pyq') {
         const pyqFile = `${baseSlug}${t}.html`;
@@ -1044,7 +1062,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${displayLabel(arr2.length, true)} — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
         'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${TN[t]}.</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountType, aboutBlock: typeBlock, subject, faqCategory: t });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountType, aboutBlock: typeBlock, subject, faqCategory: t, mats: arr2 });
     }
     for (const [y, arr2] of byYr) {
       const displayCountYr = honestCount(arr2.length);
@@ -1055,7 +1073,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
         'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${y}.</p>`,
-        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountYr, aboutBlock: yrBlock, subject, faqCategory: 'pyq' });
+        `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountYr, aboutBlock: yrBlock, subject, faqCategory: 'pyq', mats: arr2 });
     }
   }
   const typesAll = new Map();
@@ -1075,7 +1093,7 @@ for (const [key, semMap] of bySubjTrack) {
       `${displayLabel(arr.length, true)} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
       `${subject} ${track} — All ${TNA[t]}`,
       'Delhi University · Free', `<p><strong>${displayLabel(arr.length, true)}</strong>${displayLabel(arr.length, true).includes('Guide')||displayLabel(arr.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs across semesters.</p>`,
-      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: displayCountAll, aboutBlock: allBlock, subject, faqCategory: t });
+      `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: displayCountAll, aboutBlock: allBlock, subject, faqCategory: t, mats: arr });
   }
 }
 
@@ -1116,9 +1134,9 @@ for (const [k, arr] of ncByType) {
   else useCustom = padCommonBlock(`<h2>About ${esc(subject)} — ${esc(CAT_LABEL[cat])}</h2><p>${esc(subject)} (${esc(CAT_LABEL[cat])}) at Delhi University under UGCF/NEP — this ${esc(type)} collection for ${esc(subject)} is organised by syllabus Units 1-4. Verify paper code and units from your college handout for your batch.</p>`, subject, cat, type + '-' + slug(subject));
   const displayCount = honestCount(arr.length);
   const hasGuideNC = !!useCustom;
-  const opts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: type };
+  const opts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: type, mats: arr };
   // If we used detailed, ensure opts has detailed
-  const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom, subject, faqCategory: type } : opts;
+  const finalOpts = useCustom && useCustom !== custom ? { total: displayCount, aboutBlock: useCustom, subject, faqCategory: type, mats: arr } : opts;
   const subjFileSlug = safeSlug(subject);
   emit(cat.toLowerCase() + '-' + subjFileSlug + '-' + type + '.html',
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
@@ -1140,8 +1158,8 @@ for (const [k, arr] of ncByYear) {
   else useCustom = padCommonBlock(`<h2>About ${esc(subject)} — ${esc(CAT_LABEL[cat])} ${esc(y)}</h2><p>${esc(subject)} (${esc(CAT_LABEL[cat])}) — ${esc(y)} collection. This page groups ${esc(y)} PYQs for ${esc(subject)} under UGCF/NEP, organised by Units 1-4. Verify paper code for ${esc(y)} from your college handout.</p>`, subject, cat, y + '-' + slug(subject));
   const displayCount = honestCount(arr.length);
   const hasGuideNC2 = !!useCustom;
-  const opts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: 'pyq' };
-  const finalOpts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: 'pyq' };
+  const opts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: 'pyq', mats: arr };
+  const finalOpts = { total: displayCount, aboutBlock: useCustom, subject, faqCategory: 'pyq', mats: arr };
   const subjFileSlug2 = safeSlug(subject);
   emit(cat.toLowerCase() + '-' + subjFileSlug2 + '-' + y + '-pyqs.html',
     subject + ' ' + CAT_LABEL[cat] + ' PYQs ' + y + ' - Delhi University | Sulaksh',
@@ -1182,7 +1200,7 @@ for (const [k, v] of ncCombined) {
     v.subject + ' - Complete Study Material (' + v.label + ')',
     v.label,
     `<p><strong>${displayLabel(v.items.length, ncHasGuide)}</strong>${displayLabel(v.items.length, ncHasGuide).includes('Guide')||displayLabel(v.items.length, ncHasGuide).includes('Coming')?'':' documents'} - everything available for this course.</p>`,
-    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: honestTotalNC, subject: v.subject, faqCategory: 'notes' });
+    '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: honestTotalNC, subject: v.subject, faqCategory: 'notes', mats: v.items });
 }
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
   for (const [k, v] of ncCombined) {
