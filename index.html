@@ -582,16 +582,46 @@
   </div>
   <div class="panel" id="guides" style="margin-top:20px;">
     <div class="panel-head">
-      <h2>Latest Guides &amp; Exam Updates</h2>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <a href="guides.html" class="view-all">View All →</a>
-      </div>
+      <h2>📖 Latest Guides &amp; Exam Updates</h2>
     </div>
-    <!-- BLOG: latest articles (edit hrefs here when new posts publish) -->
-    <a href="blog/du-exam-pattern-ugcf-explained.html" class="exam-row" aria-label="Read DU Exam Pattern Explained"><div class="exam-left">📋 DU Exam Pattern Explained: UGCF Credits &amp; Marking</div><span>›</span></a>
-    <a href="blog/how-to-download-du-admit-card.html" class="exam-row" aria-label="Read How to Download Your DU Admit Card"><div class="exam-left">🧭 How to Download Your DU Admit Card (Step-by-Step)</div><span>›</span></a>
-    <a href="blog/how-to-score-9-cgpa-du-semester-exams.html" class="exam-row" aria-label="Read How to Score 9+ CGPA"><div class="exam-left">🎯 How to Score 9+ CGPA in DU Semester Exams</div><span>›</span></a>
+    <p style="font-size:13.5px; color:var(--muted); margin:-6px 0 16px;">Exam patterns, admit cards, results and study playbooks — written for DU students.</p>
+    <div class="guides-grid">
+      <a class="guide-card" href="blog/du-exam-pattern-ugcf-explained.html">
+        <span class="guide-badge">EXAM PATTERN</span>
+        <h3>DU Exam Pattern Explained: UGCF Credits, Marking &amp; Paper Codes</h3>
+        <p>Confused by DSC, SEC, VAC, AEC and GE? A clear breakdown of DU's UGCF exam pattern — credits, marking scheme, paper codes and CBCS vs UGCF.</p>
+        <span class="read">Read guide →</span>
+      </a>
+      <a class="guide-card" href="blog/how-to-download-du-admit-card.html">
+        <span class="guide-badge">HOW-TO</span>
+        <h3>How to Download Your DU Admit Card (Step-by-Step)</h3>
+        <p>No admit card, no entry. Download yours from exam.du.ac.in in about five minutes — the exact process, plus what to do if something on it is wrong.</p>
+        <span class="read">Read guide →</span>
+      </a>
+      <a class="guide-card" href="blog/how-to-score-9-cgpa-du-semester-exams.html">
+        <span class="guide-badge">STUDY GUIDE</span>
+        <h3>How to Score 9+ CGPA in DU Semester Exams</h3>
+        <p>Bank your internal assessment, use PYQs the smart way, and target high-weight papers first — a practical playbook for a 9+ CGPA.</p>
+        <span class="read">Read guide →</span>
+      </a>
+    </div>
+    <!-- BLOG: latest articles (edit hrefs/titles here when new posts publish) -->
+    <div style="text-align:center; margin-top:18px;">
+      <a href="guides.html" class="guides-cta">View all guides →</a>
+    </div>
   </div>
+  <style>
+    .guides-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+    .guide-card{background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:20px; display:flex; flex-direction:column; gap:10px; transition:transform .15s, border-color .2s;}
+    .guide-card:hover{transform:translateY(-3px); border-color:var(--blue);}
+    .guide-badge{align-self:flex-start; font-size:11px; font-weight:800; letter-spacing:.6px; color:var(--blue); background:rgba(30,95,255,.1); padding:4px 12px; border-radius:100px;}
+    .guide-card h3{font-size:16px; line-height:1.4;}
+    .guide-card p{font-size:13.5px; color:var(--muted); line-height:1.65; flex:1;}
+    .guide-card .read{color:var(--blue); font-weight:700; font-size:13.5px;}
+    .guides-cta{display:inline-block; background:var(--blue); color:#fff !important; font-weight:700; font-size:14.5px; padding:12px 30px; border-radius:12px;}
+    .guides-cta:hover{filter:brightness(1.08);}
+    @media(max-width:800px){.guides-grid{grid-template-columns:1fr;}}
+  </style>
   <a href="ug-course-structure.html" style="display:flex; align-items:center; gap:14px; margin-top:16px; background:linear-gradient(135deg, #EEF2FA 0%, #E6EFFF 100%); border:1.5px solid rgba(30,95,255,.22); border-radius:14px; padding:14px 18px; box-shadow:0 4px 20px rgba(30,95,255,.10); text-decoration:none; transition:transform .15s, box-shadow .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 28px rgba(30,95,255,.15)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 20px rgba(30,95,255,.10)'">
     <div style="width:42px; height:42px; border-radius:11px; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🎓</div>
     <div style="flex:1; min-width:0;">
