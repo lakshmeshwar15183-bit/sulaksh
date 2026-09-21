@@ -124,8 +124,9 @@
 
   /* ---------- Category sections ---------- */
   .du-main{padding:36px 0 64px;}
-  .du-cat{margin-bottom:36px; display:none;}
+  .du-cat{margin-bottom:36px; display:none; scroll-margin-top:80px;}
   .du-cat.active{display:block;}
+  #duHome{scroll-margin-top:80px;}
 
   /* ---------- Category picker tiles ---------- */
   .du-cats{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-bottom:16px;}
@@ -8706,7 +8707,7 @@ const WAIT_PHRASES = [
     document.getElementById('duHome').style.display = '';
     document.getElementById('catPicker').classList.remove('hidden');
     document.querySelectorAll('.du-cat').forEach((s) => s.classList.remove('active'));
-    document.getElementById('catPicker').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('duHome').scrollIntoView({ behavior: 'smooth', block: 'start' });
     history.replaceState(null, '', location.pathname + location.search);
   }
   window.backToCategories = backToCategories;
