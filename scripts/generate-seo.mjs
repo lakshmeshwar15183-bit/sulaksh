@@ -747,9 +747,11 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   const hasOriginalCustom = opts && opts.aboutBlock;
   const hasCustom = hasOriginalCustom || (opts && opts.subject && getSubjectPara(opts.subject));
   // Genuinely empty pages: listing pages only (not paper pages) with total <3 && no original custom content
-  // ROBOTS FIX: allow all crawlers — no noindex, let Google/Bing/AI bots index everything (user requested open crawl)
-  let isThin = false; // previously: opts && opts.total !== undefined && opts.total < 3 && !hasOriginalCustom && !file.startsWith('paper/');
-  let shouldNoIndex = false; // previously: isThin || isFaceted — now always indexable
+  // Thin-content policy (AdSense/Google): placeholder pages with NO real file yet
+  // ("PDF coming soon" guides) are noindexed + excluded from the sitemap until a
+  // real upload lands. Callers pass opts.noindex for these. Pages are never deleted.
+  // Material-backed pages (opts.mats non-empty) always stay indexed.
+  let shouldNoIndex = !!(opts && opts.noindex);
   const fallbackFaqs = getDefaultFaqs(opts);
   const faqH = (faqs && faqs.length ? faqs : fallbackFaqs).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
   const relHtml = (relItems && relItems.length)
@@ -772,7 +774,7 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   // opts.dateModified wins if a caller passes one. Otherwise omitted.
   const pageDateModified = (opts && opts.dateModified) || maxMatDate(opts && opts.mats) || undefined;
   let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex, dateModified: pageDateModified });
-  // Thin + faceted guard disabled for open crawl — keep all pages indexable (robots.txt now Allow: /)
+  // Thin-audit log: noindexed placeholders are out of the sitemap; everything else stays indexed.
   if (shouldNoIndex) {
     noIndexFiles.add(file);
   } else {
@@ -1241,7 +1243,8 @@ for (const [k, v] of ncCombined) {
       body,
       null,
       [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
-      { total: displayCount, aboutBlock: useCustom, subject: v.subject, faqCategory: t }
+      // Placeholder: no real file yet → noindex + out of sitemap until upload (page stays live).
+      { total: displayCount, aboutBlock: useCustom, subject: v.subject, faqCategory: t, noindex: true }
     );
   }
 }
@@ -1293,7 +1296,8 @@ for (const secKey of Object.keys(allOverviews)) {
       bodyWithNav,
       null,
       [['Is this the exact IMP?', 'Not yet — broad researched list. Verified PDF coming soon.']],
-      { total: displayCount, aboutBlock: custom, subject: name, faqCategory: t }
+      // Placeholder: no real file yet → noindex + out of sitemap until upload (page stays live).
+      { total: displayCount, aboutBlock: custom, subject: name, faqCategory: t, noindex: true }
     );
     placeholderFilesForHub.push({ file, label: t.toUpperCase() });
   }
@@ -1317,7 +1321,7 @@ for (const secKey of Object.keys(allOverviews)) {
         CAT_LABEL[cat],
         `<p><strong>Guide available</strong> - overview for this course.</p>`,
         `<p>Overview for ${esc(name)}.</p>` + hubNav + (getSubjectPara(name) || ''),
-        null, null, { aboutBlock: hubCustom, total: 0, subject: name, faqCategory: 'notes' }
+        null, null, { aboutBlock: hubCustom, total: 0, subject: name, faqCategory: 'notes', noindex: true }
       );
     }
   }
@@ -1473,13 +1477,17 @@ for (const silo of siloDefs) {
 const TODAY = new Date().toISOString().slice(0, 10);
 const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !SITEMAP_EXCLUDE.has(f));
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-  + ['', 'index.html', 'du.html', 'guides.html', 'contact.html']
+  + ['', 'index.html', 'du.html', 'guides.html', 'contact.html',
+     'blog/index.html',
+     'blog/du-exam-pattern-ugcf-explained.html',
+     'blog/how-to-download-du-admit-card.html',
+     'blog/how-to-score-9-cgpa-du-semester-exams.html']
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
 
-console.log('TOTAL SITEMAP URLs:', 6 + sitemapPages.length, `(excluded ${noIndexFiles.size} thin <3, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
-console.log('NoIndex thin files:', [...noIndexFiles].slice(0,10).join(', ') + (noIndexFiles.size>10?' ...':''));
+console.log('TOTAL SITEMAP URLs:', 9 + sitemapPages.length, `(excluded ${noIndexFiles.size} no-file placeholders, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
+console.log('NoIndex placeholder files:', [...noIndexFiles].slice(0,10).join(', ') + (noIndexFiles.size>10?' ...':''));
 
 // ===== orphan pyq/paper cleanup — 2-consecutive-run safety =====
 // Removes pyq/paper/*.html where the material ID no longer exists in live API.
