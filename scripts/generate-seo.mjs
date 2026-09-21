@@ -1564,6 +1564,10 @@ try {
   const progFiles = ['BCom prg','BAprog'];
   let progCount = 0;
   for (const pf of progFiles) progCount += duFiltered.filter(m => String(m.category||'').toUpperCase()==='CORE' && String(m.subject||'')===pf).length;
+  // Also Others catch-all (Computer Applications & more)
+  const othersFiles = ['Computer Applications'];
+  let othersCount = 0;
+  for (const pf of othersFiles) othersCount += duFiltered.filter(m => String(m.category||'').toUpperCase()==='CORE' && String(m.subject||'')===pf).length;
   // Read du.html, replace hardcoded 0 files + bake coreGrid
   const duPath = path.resolve(process.cwd(), 'du.html');
   let duHtml = fs.readFileSync(duPath, 'utf8');
@@ -1587,20 +1591,22 @@ try {
       const n = coreCounts[s] ?? 0;
       const escS = s.replace(/'/g, "\\'");
       return `<button class="core-card" onclick="openCoreSubject('${escS}')"><div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span class="core-type">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span></button>`;
-    }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>`;
+    }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>` + `<button class="core-card" onclick="openCoreOthers()"><div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span></button>`;
     // Idempotent: normalize any already-baked grid back to empty, then bake fresh (prevents duplication on re-run)
     // This handles the case where du.html was already baked with 10 cards — reset to empty first
     const normalized = duHtml.replace(/<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>\s*<\/div>\s*<!-- 2\. Common/, '<div class="core-grid" id="coreGrid"></div>\n  </div>\n\n  <!-- 2. Common');
     if (normalized !== duHtml) { duHtml = normalized; console.log('[du.html bake] normalized already-baked coreGrid to empty'); }
     const gridReEmpty = /<div class="core-grid" id="coreGrid"><\/div>/;
-    if (gridReEmpty.test(duHtml)) { duHtml = duHtml.replace(gridReEmpty, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] baked coreGrid with', CORE_SUBJECTS_BAKE.length+1, 'cards'); }
+    if (gridReEmpty.test(duHtml)) { duHtml = duHtml.replace(gridReEmpty, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] baked coreGrid with', CORE_SUBJECTS_BAKE.length+2, 'cards'); }
   } catch (e) { console.log('[du.html bake] coreGrid bake failed', e.message); }
   // Write back
   fs.writeFileSync(duPath, duHtml);
   console.log(`[du.html bake] injected ${replaced} category/core counts:`, JSON.stringify({...countByCat, ...coreCounts, progCount}));
   // Hard guard: fail build if 0 files still present (prevents regression)
+  // Others card is allowed to be 0 (new empty section) — exclude it from the check.
   const check = (duHtml.match(/catCount-(SEC|VAC|AEC|GE)">0 files<\/span>/g) || []).length;
-  const checkCoreBadgeZero = (duHtml.match(/core-badge">0 files<\/span>/g) || []).length;
+  const duWithoutOthers = duHtml.replace(/<button class="core-card" onclick="openCoreOthers\(\)">[\s\S]*?<\/button>/g, '');
+  const checkCoreBadgeZero = (duWithoutOthers.match(/core-badge">0 files<\/span>/g) || []).length;
   if (check || checkCoreBadgeZero) { console.error(`[du.html bake] ERROR: still ${check} catCount 0 and ${checkCoreBadgeZero} core-badge 0 remain — failing build to prevent thin regression`); process.exit(1); }
   else console.log('[du.html bake] OK — raw HTML now contains real numbers, JS remains as live fallback');
 } catch (e) {
