@@ -1551,7 +1551,7 @@ try {
     countByCat[cat] = duFiltered.filter(m => String(m.category||'').toUpperCase() === cat).length;
   }
   // Core subjects — same lists as du.html
-  const CORE_SUBJECTS_BAKE = ['English','History','Economics','Political Science','Mathematics','Hindi','Sanskrit','Geography','B.Com (Hons)','Sociology','B.Sc.'];
+  const CORE_SUBJECTS_BAKE = ['English','History','Economics','Political Science','Mathematics','Hindi','Sanskrit','Geography','Philosophy','B.Com (Hons)','Sociology','B.Sc.'];
   const BSC_SUBJECTS_BAKE = ['B.Sc. (Hons) Chemistry','B.Sc. (Hons) Physics','B.Sc. (Hons) Zoology','B.Sc. (Hons) Botany','B.Sc. (Hons) Geology','B.Sc. (Hons) Statistics','B.Sc. (Hons) Food Technology','B.Sc. (Hons) Computer Science','B.Sc. (Hons) Biological Sciences','B.Sc. (Hons) Home Science','B.Sc. (Hons) Environmental Science','B.Sc. Applied Life Sciences','B.Sc. Physical Sciences with Chemistry','B.Sc. Applied Physical Science with Analytical Methods in Chemistry & Biochemistry'];
   const coreCounts = {};
   for (const s of CORE_SUBJECTS_BAKE) {
@@ -1582,9 +1582,9 @@ try {
   // Build static fallback cards with real counts so Google sees numbers without JS
   try {
     const CORE_META_BAKE = {
-      'English':{ico:'📖',tag:'Core Queue'},'History':{ico:'🏛️',tag:'Core Queue'},'Economics':{ico:'📊',tag:'Core Queue'},'Political Science':{ico:'⚖️',tag:'Core Queue'},'Mathematics':{ico:'➗',tag:'Core Queue'},'Hindi':{ico:'📗',tag:'Core Queue'},'Sanskrit':{ico:'🕉️',tag:'Core Queue'},'Geography':{ico:'🌍',tag:'Core Queue'},'B.Com (Hons)':{ico:'💼',tag:'Core Queue'},'Sociology':{ico:'👥',tag:'Core Queue'},'B.Sc.':{ico:'🔬',tag:'BSc Hons'}
+      'English':{ico:'📖',tag:'Core Queue'},'History':{ico:'🏛️',tag:'Core Queue'},'Economics':{ico:'📊',tag:'Core Queue'},'Political Science':{ico:'⚖️',tag:'Core Queue'},'Mathematics':{ico:'➗',tag:'Core Queue'},'Hindi':{ico:'📗',tag:'Core Queue'},'Sanskrit':{ico:'🕉️',tag:'Core Queue'},'Geography':{ico:'🌍',tag:'Core Queue'},'Philosophy':{ico:'🧠',tag:'Core Queue'},'B.Com (Hons)':{ico:'💼',tag:'Core Queue'},'Sociology':{ico:'👥',tag:'Core Queue'},'B.Sc.':{ico:'🔬',tag:'BSc Hons'}
     };
-    const progTagMap = {'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Sanskrit':'BA','Geography':'BA','Mathematics':'BA/BSc','Sociology':'BA','B.Sc.':'BSc'};
+    const progTagMap = {'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Sanskrit':'BA','Geography':'BA','Philosophy':'BA','Mathematics':'BA/BSc','Sociology':'BA','B.Sc.':'BSc'};
     const coreGridHtml = CORE_SUBJECTS_BAKE.map(s=>{
       const meta = CORE_META_BAKE[s] || {ico:'📘',tag:'Core'};
       const progTag = progTagMap[s] || '';
@@ -1603,10 +1603,10 @@ try {
   fs.writeFileSync(duPath, duHtml);
   console.log(`[du.html bake] injected ${replaced} category/core counts:`, JSON.stringify({...countByCat, ...coreCounts, progCount}));
   // Hard guard: fail build if 0 files still present (prevents regression)
-  // Others card is allowed to be 0 (new empty section) — exclude it from the check.
+  // Others + Philosophy cards are allowed to be 0 (new empty sections) — exclude them from the check.
   const check = (duHtml.match(/catCount-(SEC|VAC|AEC|GE)">0 files<\/span>/g) || []).length;
-  const duWithoutOthers = duHtml.replace(/<button class="core-card" onclick="openCoreOthers\(\)">[\s\S]*?<\/button>/g, '');
-  const checkCoreBadgeZero = (duWithoutOthers.match(/core-badge">0 files<\/span>/g) || []).length;
+  const duWithoutNew = duHtml.replace(/<button class="core-card" onclick="openCoreOthers\(\)">[\s\S]*?<\/button>/g, '').replace(/<button class="core-card" onclick="openCoreSubject\('Philosophy'\)">[\s\S]*?<\/button>/g, '');
+  const checkCoreBadgeZero = (duWithoutNew.match(/core-badge">0 files<\/span>/g) || []).length;
   if (check || checkCoreBadgeZero) { console.error(`[du.html bake] ERROR: still ${check} catCount 0 and ${checkCoreBadgeZero} core-badge 0 remain — failing build to prevent thin regression`); process.exit(1); }
   else console.log('[du.html bake] OK — raw HTML now contains real numbers, JS remains as live fallback');
 } catch (e) {
