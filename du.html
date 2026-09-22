@@ -8366,7 +8366,9 @@ const WAIT_PHRASES = [
     return d ? d.sub : '';
   }
   function coreCatsFor(subject) {
-    if (CORE_DISPLAY[subject]) return [CORE_CAT_BY_ID.syllabus];
+    // Programmes show all four (Syllabus / Notes / PYQs / Books) like Honours subjects.
+    // Others (Computer Applications) stays at 3 — no Books, per site owner.
+    // Empty cats auto-hide for visitors until files are uploaded.
     if (typeof CORE_OTHERS_FILES !== 'undefined' && CORE_OTHERS_FILES.includes(subject)) {
       return [CORE_CAT_BY_ID.syllabus, CORE_CAT_BY_ID.notes, CORE_CAT_BY_ID.pyqs].filter(Boolean);
     }
@@ -8495,7 +8497,7 @@ const WAIT_PHRASES = [
     document.getElementById('coreSubjectSub').textContent = coreSubText(subject) || (isOthers ? 'Pick a semester to see syllabus, PYQs & notes.' : (track ? track + ' track — pick a semester' : 'Pick a semester to see its material categories.'));
     document.getElementById('coreBreadcrumb').innerHTML = coreBreadcrumb(subject, null, null, track);
     renderSemPills(subject, null);
-    document.getElementById('coreSemPrompt').textContent = CORE_DISPLAY[subject] ? 'Pick a semester to get its syllabus.' : (isOthers ? 'Pick a semester to see syllabus, PYQs & notes.' : 'Pick a semester to see its material categories.');
+    document.getElementById('coreSemPrompt').textContent = CORE_DISPLAY[subject] ? 'Pick a semester to see syllabus, notes, PYQs & books.' : (isOthers ? 'Pick a semester to see syllabus, PYQs & notes.' : 'Pick a semester to see its material categories.');
     document.getElementById('coreSemPrompt').style.display = '';
     document.getElementById('coreCatGrid').innerHTML = '';
   }
