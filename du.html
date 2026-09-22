@@ -1380,13 +1380,14 @@
     upSuggestEl.classList.add('show');
   }
   upSubjectEl.addEventListener('input', showSuggest);
+  upSubjectEl.addEventListener('input', syncCoreFields);
   upCatEl.addEventListener('change', showSuggest);
   upCatEl.addEventListener('change', syncCoreFields);
   upSubjectEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideSuggest(); });
   upSubjectEl.addEventListener('blur', () => setTimeout(hideSuggest, 150));
   document.addEventListener('click', (e) => {
     const item = e.target.closest('.up-suggest-item');
-    if (item) { upSubjectEl.value = item.dataset.v; hideSuggest(); }
+    if (item) { upSubjectEl.value = item.dataset.v; hideSuggest(); syncCoreFields(); }
   });
 
   function openCategory(cat) {
@@ -9153,7 +9154,13 @@ const WAIT_PHRASES = [
 
   function syncCoreFields() {
     const isCore = document.getElementById('upCat').value === 'CORE';
-    document.getElementById('upTrack').style.display = isCore ? '' : 'none';
+    const subj = (document.getElementById('upSubject').value || '').trim();
+    // Programme catch-alls (BCom prg / BAprog) have no Honours/As Major/As Minor
+    // tracks — it is already a programme, so go straight to semester selection.
+    const isProg = isCore && typeof CORE_DISPLAY !== 'undefined' && !!CORE_DISPLAY[subj];
+    const trackEl = document.getElementById('upTrack');
+    if (isProg) { trackEl.value = 'General'; trackEl.style.display = 'none'; }
+    else trackEl.style.display = isCore ? '' : 'none';
     document.getElementById('upSem').style.display = isCore ? '' : 'none';
     document.getElementById('upCategory').style.display = isCore ? '' : 'none';
     document.getElementById('upFlagsRow').style.display = isCore ? 'none' : '';
