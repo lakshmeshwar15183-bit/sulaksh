@@ -1334,7 +1334,7 @@ for (const secKey of Object.keys(allOverviews)) {
 // through emit() so they land in pyq/ and auto-enter the sitemap.
 const topHubLinks = () => {
   const picks = HUBS.filter(h => /economics|english|history|political/i.test(h.label)).slice(0, 6);
-  return picks.map(h => `<a href="/pyq/${h.file}">${esc(h.label)}</a>`).join('');
+  return picks.map(h => `<a href="/pyq/${h.file}">${esc(chipLabel(h))}</a>`).join('');
 };
 emit('where-to-find-du-pyqs.html',
   'Where to Find DU Previous Year Question Papers Online (Free) | Sulaksh',
@@ -1429,8 +1429,22 @@ for (const h of HUBS) {
   }
 }
 const dedupedHubs = [...dedupByLabel.values()];
+// Student-friendly chip labels: full category names ("Skill Enhancement Course")
+// and doubled Honours ("B.Com (Hons) Honours") confuse on a 360+ pill wall.
+// Short codes + deduped Honours + readable programme names. Display-only;
+// dedup keys, URLs, h1s and titles above are untouched.
+function chipLabel(h) {
+  let l = h.label;
+  l = l.replace(' (Skill Enhancement Course)', ' · SEC')
+    .replace(' (Ability Enhancement Course)', ' · AEC')
+    .replace(' (Generic Elective)', ' · GE')
+    .replace(' (Value Added Course)', ' · VAC');
+  if (/\(Hons\)/i.test(l)) l = l.replace(/\s+Honours\s*$/, '');
+  l = l.replace(/^BAprog General$/, 'BA Programme').replace(/^BCom prg General$/, 'B.Com Programme');
+  return l;
+}
 const hubChips = dedupedHubs.slice().sort((a, b) => a.label.localeCompare(b.label))
-  .map(h => `<a href="/pyq/${h.file}">${esc(h.label)}</a>`).join('');
+  .map(h => `<a href="/pyq/${h.file}">${esc(chipLabel(h))}</a>`).join('');
 const hubAbout = `<h2>About This PYQ Library — Delhi University (UGCF/NEP)</h2>
 <p>This master index brings together every Delhi University previous year question paper, syllabus and study material on Sulaksh — BA (Hons) and (Programme), BSc (Hons), BCom (Hons) and (Programme), plus GE, VAC, AEC and SEC courses under UGCF/NEP 2022. Each subject hub is organised semester-wise (Sem 1 to Sem 8) with syllabus, PYQs and notes in the taught order, so you see the reading sequence DU actually uses. All ${totalDocsLabel} documents are free to view instantly, no sign-up.</p>
 <p><strong>How to use this index:</strong> Start with your programme — e.g., <em>B.Com (Hons)</em>, <em>Political Science Honours</em>, <em>English Honours</em> — then pick your semester. Each semester page shows the DSC order, and the PYQ mapping technique (mark which Unit each past question came from) tells you which units repeat most. Most students need only three past papers per subject to cover the pattern.</p>
@@ -1498,7 +1512,7 @@ const siloDefs = [
 for (const silo of siloDefs) {
   const picks = HUBS.filter(silo.test);
   if (!picks.length) continue;
-  const chips = picks.map(h=>`<a href="/pyq/${h.file}">${esc(h.label)}</a>`).join('');
+  const chips = picks.map(h=>`<a href="/pyq/${h.file}">${esc(chipLabel(h))}</a>`).join('');
   // Dynamic count: totalDocs from same source as hubAbout + homepage heroDocs (single source of truth)
   const flatLinks = (HUBS.length + pages.size).toLocaleString();
   let aboutSilo = `<h2>About ${silo.label} — Delhi University (UGCF/NEP)</h2><p>This ${silo.label} silo groups <strong>${picks.length} collections</strong> for ${esc(silo.label)} under UGCF/NEP — Honours, Programme, Major/Minor where applicable. Each hub is semester-wise with syllabus + PYQ + notes in taught order, mirroring how DU teaches. All ${totalDocsLabel} documents are free to view instantly, no sign-up. The ${silo.label} silo exists to pass link equity between related subjects and to give crawlers a shallow hub (depth 2) instead of chasing ${flatLinks} flat links.</p>
