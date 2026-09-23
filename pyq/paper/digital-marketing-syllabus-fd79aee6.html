@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Digital Marketing-Syllabus</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-08-16">2026-08-16</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Syllabus</strong>  · DU &amp; College · Digital Marketing</p>
-      <a href="/view.html?v=4&id=fd79aee6-4380-4d62-b7fd-11a6040ea128" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=fd79aee6-4380-4d62-b7fd-11a6040ea128" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/c10fb648-08f7-45d0-8404-69c26ad09263.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=fd79aee6-4380-4d62-b7fd-11a6040ea128" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/c10fb648-08f7-45d0-8404-69c26ad09263.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>latest Semester Syllabus</strong> for <strong>Digital Marketing</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Digital Marketing is a 2-credit SEC (0 lecture +0 tutorial +2 practical, Theme 17 Sl.96, UPC 2926000002) under UGCF 2022, offered to BA/BSc/BCom in Semesters 3–5 and verified for 2025-26 as a practice-oriented paper. The official syllabus divides into four blocks: Unit 1 Marketing in the Digital World (3 weeks) — digital marketing concept and how it differs from traditional, the four channel buckets (Intent-Based SEO/Search Advertising, Brand-Based Display, Community-Based Social Media, plus Affiliate/Email/Content/Mobile), Customer Value Journey 5As Framework and the Ozone O3 concept; Unit 2 Content and Email Marketing (2 weeks) — step-by-step content strategy and email types with best practices. Units 3 and 4 are the large ones: Unit 3 Social Media and Display Marketing (5 weeks) — building a social strategy for Facebook/LinkedIn/YouTube and the full display process (customer/publisher/objectives, budget/media/ad formats/ad copy); Unit 4 Search Engine Marketing (5 weeks) — how search engines and SERP positioning work, DMI's 5P Model, SEO on-page (keyword research, sitemaps, structured markup) and off-page (link building, black vs white hat), and Search Advertising/PPC (Google Ads account, campaign architecture, targeting, bid strategy). A DU-specific verified detail is the same 100-mark split printed on page 3: Internal Assessment 25, Practical Exam (Internal) 25, End Semester University Exam 50. Students find it difficult because the paper mixes vocabulary (SERP, PPC, black-hat) with a hands-on Google Ads setup; writing definitions for SEO without showing on-page vs off-page steps or a dummy campaign structure is where most lose marks as taught in 2025-26.</p>
     <h2>About these notes — Digital Marketing your semester</h2>
     <p>These are study notes for <strong>Digital Marketing-Syllabus</strong> — Digital Marketing your semester (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
@@ -106,6 +107,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

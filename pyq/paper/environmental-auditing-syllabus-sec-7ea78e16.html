@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Environmental Auditing - Syllabus (SEC)</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-14">2026-09-14</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Syllabus</strong>  · DU &amp; College · Environmental Auditing</p>
-      <a href="/view.html?v=4&id=7ea78e16-aaf8-4c82-8c5b-d783c533fc7e" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=7ea78e16-aaf8-4c82-8c5b-d783c533fc7e" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/9e0d4431-202a-495b-b869-e6d6bedac9ed.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=7ea78e16-aaf8-4c82-8c5b-d783c533fc7e" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/9e0d4431-202a-495b-b869-e6d6bedac9ed.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>latest Semester Syllabus</strong> for <strong>Environmental Auditing</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Environmental Science as a Generic Elective is a 4-credit GE under UGCF 2022, taught in 2025-26 in the GE pool alongside the 2-credit AEC EVS papers, with 3 lectures+1 practical/tutorial as per Faculty of Science GE listing (as seen on the GE PYQ 'AECC - Environmental Science Semester 2nd' and the AEC notification 01.09.2023 for AEC-II Environmental Science Theory into Practice-II). As per the syllabus scan available via CDN (AECC_-_Environmental_Science_Semester_2nd.pdf) and the live AEC notification at du.ac.in/uploads/new-web/05092023_NEP_Enha.pdf (which details EVS II units on biodiversity, pollution, etc.), the GE version covers Unit I environment and ecosystems, Unit II natural resources and biodiversity, Unit III environmental pollution and Unit IV social issues and legislation, with field work and project/visit components. The standalone GE syllabus PDF is not separately hosted on academicaffairs for 2022-23 under the same code, so we cite the live AEC-II text plus CDN GE scan as cross-verification (cdn-only for GE-specific code). Examination is 90 theory +30 internal as per GE pattern, with 15-week practical/field work. Students lose marks by writing generic pollution without the field-visit data or biodiversity specifics Viva checks (as of 12 Sept 2026).</p>
     <h2>About these notes — Environmental Auditing your semester</h2>
     <p>These are study notes for <strong>Environmental Auditing - Syllabus (SEC)</strong> — Environmental Auditing your semester (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
@@ -106,6 +107,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

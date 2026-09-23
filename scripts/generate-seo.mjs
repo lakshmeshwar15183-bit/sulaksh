@@ -251,7 +251,7 @@ const getImpQuestionsBlock = (slugKey) => {
 };
 // Bump this when you edit view.html so the cached page is bypassed (the "?v="
 // makes a fresh cache key, just like the auth JS). Resync after bumping.
-const VIEW_VERSION = '4';
+const VIEW_VERSION = '5';
 const slug = s => String(s || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // Fallback for Hindi/other non-Latin subjects where slug() would be empty — ensures they still get a listing hub instead of being orphaned
 const safeSlug = s => {
@@ -263,6 +263,25 @@ const safeSlug = s => {
   return 'misc-' + h.toString(36).slice(0,6);
 };
 const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const escAttr = s => esc(s).replace(/"/g, '&quot;');
+const isImageMat = m => {
+  const ct = String(m.content_type || m.contentType || '').toLowerCase();
+  if (ct.startsWith('image/')) return true;
+  const nm = String(m.file_name || m.fileName || '').toLowerCase();
+  return /\.(png|jpe?g|webp|gif|bmp|svg)$/.test(nm);
+};
+// Embedded document viewer, pre-rendered into the INITIAL HTML so crawlers and
+// view-source see the actual file below the text content — never a JS-only shell.
+// PDFs are click-to-load (avoids unwanted downloads on scroll); images embed directly.
+function paperViewer(m) {
+  const url = m.cdnUrl || m.cdn_url || '';
+  if (!url) return '';
+  const u = escAttr(url);
+  if (isImageMat(m)) {
+    return `<h2 id="view-document">View document</h2><p><img loading="lazy" decoding="async" src="${u}" alt="${escAttr(m.title || 'Document')}" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:10px"></p>`;
+  }
+  return `<h2 id="view-document">View document</h2><div class="docviewer" data-url="${u}"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=${VIEW_VERSION}&amp;id=${m.id}" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="${u}" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>`;
+}
 // Fix #2: deduplicate malformed titles like "VAC | VAC", "GE | GE", "SEC | SEC", "AEC | AEC" and truncated "90 ma"
 function cleanTitle(raw) {
   let t = String(raw || '').trim();
@@ -500,6 +519,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
@@ -941,6 +976,9 @@ for (const m of materials) {
     // About stays generic (now semester-agnostic after subjects-content fix) so no mismatch; intro is short so no duplicate
   }
   const emitOpts = aboutBlockForPaper ? { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, aboutBlock: aboutBlockForPaper, mats: [m] } : { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, mats: [m] };
+  // Embedded viewer below the text: the document itself is part of the initial
+  // HTML (unique per page), not a JS-only "Loading document…" shell.
+  const viewerHtml = paperViewer(m);
   emit(file,
     `${m.title} – DU ${tn}${semBit} | Free View | Sulaksh`,
     `${m.title} — official Delhi University ${tn.toLowerCase()}${semBit}, free to view instantly on Sulaksh.`,
@@ -948,6 +986,7 @@ for (const m of materials) {
     'Delhi University · Free',
     `<p><strong>${tn}</strong>${semBit} ${yr} · ${esc(m.exam || 'Delhi University')}${m.subject ? ' · ' + esc(m.subject) : ''}</p>
       <a href="${docHrefPaper}" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      ${viewerHtml}
       <p style="margin-top:14px">This is the <strong>${yearLabel} ${semLabel} ${esc(tn)}</strong> for <strong>${esc(m.subject || m.category || 'Delhi University')}</strong> — Delhi University ${esc(m.exam || 'UGCF/NEP')} under the UGCF/NEP framework. Free to view on Sulaksh.</p>${paperIntroPara}${summary}`,
     '', related, faqs, emitOpts);
 }
@@ -1724,13 +1763,37 @@ try {
       'English':{ico:'📖',tag:'Core Queue'},'History':{ico:'🏛️',tag:'Core Queue'},'Economics':{ico:'📊',tag:'Core Queue'},'Political Science':{ico:'⚖️',tag:'Core Queue'},'Mathematics':{ico:'➗',tag:'Core Queue'},'Hindi':{ico:'📗',tag:'Core Queue'},'Sanskrit':{ico:'🕉️',tag:'Core Queue'},'Geography':{ico:'🌍',tag:'Core Queue'},'Philosophy':{ico:'🧠',tag:'Core Queue'},'B.Com (Hons)':{ico:'💼',tag:'Core Queue'},'Sociology':{ico:'👥',tag:'Core Queue'},'B.Sc.':{ico:'🔬',tag:'BSc Hons'}
     };
     const progTagMap = {'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Sanskrit':'BA','Geography':'BA','Philosophy':'BA','Mathematics':'BA/BSc','Sociology':'BA','B.Sc.':'BSc'};
+    // Subject -> emitted hub files (single source of truth: same groups the hub
+    // pages were generated from). A subject card becomes a real <a> link only
+    // when it maps to exactly one emitted hub — crawlers get a real URL per
+    // subject while the onclick JS view keeps working for visitors.
+    const hubMapBake = new Map();
+    for (const [key] of bySubjTrack) {
+      const [bs, bt] = key.split('||');
+      const f = ovFile(bs, bt);
+      if (!pages.has(f)) continue; // skipped as duplicate — don't link it
+      if (!hubMapBake.has(bs)) hubMapBake.set(bs, []);
+      if (!hubMapBake.get(bs).includes(f)) hubMapBake.get(bs).push(f);
+    }
+    const singleHub = (s) => { const h = hubMapBake.get(s) || []; return h.length === 1 ? h[0] : null; };
+    const cardTag = (hub, js) => hub
+      ? `<a class="core-card" href="/pyq/${hub}" onclick="${js};return false;">`
+      : `<button class="core-card" onclick="${js}">`;
+    const cardClose = (hub) => hub ? '</a>' : '</button>';
     const coreGridHtml = CORE_SUBJECTS_BAKE.map(s=>{
       const meta = CORE_META_BAKE[s] || {ico:'📘',tag:'Core'};
       const progTag = progTagMap[s] || '';
       const n = coreCounts[s] ?? 0;
       const escS = s.replace(/'/g, "\\'");
-      return `<button class="core-card" onclick="openCoreSubject('${escS}')"><div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span class="core-type">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span></button>`;
-    }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>` + `<button class="core-card" onclick="openCoreProgramme('BCom prg')"><div class="top"><span class="core-ico">💼</span><span class="core-badge">${bcomCount} file${bcomCount===1?'':'s'}</span></div><span class="core-name">B.Com Programme</span><span class="core-desc">सब कुछ मिलेगा — Everything is here</span><span class="core-count">${bcomCount} materials</span><span class="core-btn">Open →</span></button>` + `<button class="core-card" onclick="openCoreOthers()"><div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span></button>`;
+      // B.Sc. fans out to 11 programmes (no single hub) — keep as button
+      const hub = (s === 'B.Sc.') ? null : singleHub(s);
+      const js = `openCoreSubject('${escS}')`;
+      return `${cardTag(hub, js)}<div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span class="core-type">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span>${cardClose(hub)}`;
+    }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>` + (() => {
+      const hub = singleHub('BCom prg');
+      const js = `openCoreProgramme('BCom prg')`;
+      return `${cardTag(hub, js)}<div class="top"><span class="core-ico">💼</span><span class="core-badge">${bcomCount} file${bcomCount===1?'':'s'}</span></div><span class="core-name">B.Com Programme</span><span class="core-desc">सब कुछ मिलेगा — Everything is here</span><span class="core-count">${bcomCount} materials</span><span class="core-btn">Open →</span>${cardClose(hub)}`;
+    })() + `<button class="core-card" onclick="openCoreOthers()"><div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span></button>`;
     // Idempotent: normalize any already-baked grid back to empty, then bake fresh (prevents duplication on re-run)
     // This handles the case where du.html was already baked with 10 cards — reset to empty first
     const normalized = duHtml.replace(/<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>\s*<\/div>\s*<!-- 2\. Common/, '<div class="core-grid" id="coreGrid"></div>\n  </div>\n\n  <!-- 2. Common');
@@ -1744,7 +1807,8 @@ try {
   // Hard guard: fail build if 0 files still present (prevents regression)
   // Others + Philosophy cards are allowed to be 0 (new empty sections) — exclude them from the check.
   const check = (duHtml.match(/catCount-(SEC|VAC|AEC|GE)">0 files<\/span>/g) || []).length;
-  const duWithoutNew = duHtml.replace(/<button class="core-card" onclick="openCoreOthers\(\)">[\s\S]*?<\/button>/g, '').replace(/<button class="core-card" onclick="openCoreSubject\('Philosophy'\)">[\s\S]*?<\/button>/g, '');
+  // Tag-agnostic: single-hub subjects bake as <a>, the rest as <button>.
+  const duWithoutNew = duHtml.replace(/<(?:button|a)[^>]*onclick="openCoreOthers\(\)"[^>]*>[\s\S]*?<\/(?:button|a)>/g, '').replace(/<(?:button|a)[^>]*onclick="openCoreSubject\('Philosophy'\)[^>]*>[\s\S]*?<\/(?:button|a)>/g, '');
   const checkCoreBadgeZero = (duWithoutNew.match(/core-badge">0 files<\/span>/g) || []).length;
   if (check || checkCoreBadgeZero) { console.error(`[du.html bake] ERROR: still ${check} catCount 0 and ${checkCoreBadgeZero} core-badge 0 remain — failing build to prevent thin regression`); process.exit(1); }
   else console.log('[du.html bake] OK — raw HTML now contains real numbers, JS remains as live fallback');
@@ -1792,4 +1856,41 @@ try {
   else console.log('[index.html bake] OK — raw HTML no longer contains "Coming soon ·" for Popular Exams');
 } catch (e) {
   console.error('[index.html bake] failed', e);
+}
+// ===== bake du.html static subject index — crawlable hub links in raw HTML =====
+// du.html Core browsing is JS-driven (#c= state restores); crawlers never click.
+// This block injects plain <a href> links to every CORE subject-track hub so each
+// subject-semester tree is reachable without JS. Idempotent: refreshes the content
+// between STATIC-INDEX markers each run; inserts the markers on first run.
+try {
+  const duPath2 = path.resolve(process.cwd(), 'du.html');
+  let du2 = fs.readFileSync(duPath2, 'utf8');
+  const subjHubs = new Map();
+  for (const [key] of bySubjTrack) {
+    const [s, t] = key.split('||');
+    const f = ovFile(s, t);
+    if (!pages.has(f)) continue;
+    if (!subjHubs.has(s)) subjHubs.set(s, []);
+    if (!subjHubs.get(s).some(h => h.file === f)) subjHubs.get(s).push({ track: t, file: f });
+  }
+  const subjNames = [...subjHubs.keys()].sort((a, b) => String(a).localeCompare(String(b)));
+  const idxInner = subjNames.map(s => {
+    const hubs = subjHubs.get(s).sort((a, b) => a.track.localeCompare(b.track));
+    const links = hubs.map(h => `<a href="/pyq/${h.file}" style="background:var(--card);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none">${esc(s)} ${esc(h.track)}</a>`).join('');
+    return `<div style="margin:0 0 12px"><div style="font-weight:800;font-size:14px;margin-bottom:6px">${esc(s)}</div><div style="display:flex;flex-wrap:wrap;gap:8px">${links}</div></div>`;
+  }).join('');
+  const idxBlock = `<!-- STATIC-INDEX-START -->\n  <section class="du-sec" id="allSubjects" style="margin-top:8px">\n    <div class="du-sec-head">\n      <span class="num">§</span>\n      <div>\n        <h2>Browse all DU subjects</h2>\n        <span class="sub">Every subject hub — crawlable index</span>\n      </div>\n    </div>\n    <p style="font-size:13.5px;line-height:1.7;color:var(--muted);margin:0 0 14px;max-width:800px;">Full subject pages with semester-wise syllabus, PYQs and notes — no app needed, every link below opens a complete page.</p>\n    ${idxInner}\n  </section>\n  <!-- STATIC-INDEX-END -->`;
+  const idxRe = /<!-- STATIC-INDEX-START -->[\s\S]*?<!-- STATIC-INDEX-END -->/;
+  if (idxRe.test(du2)) {
+    du2 = du2.replace(idxRe, () => idxBlock);
+    console.log(`[du.html static-index] refreshed ${subjNames.length} subjects`);
+  } else if (du2.includes('\n  <!-- 2. Common')) {
+    du2 = du2.replace('\n  <!-- 2. Common', '\n  ' + idxBlock + '\n\n  <!-- 2. Common');
+    console.log(`[du.html static-index] inserted ${subjNames.length} subjects before section 2`);
+  } else {
+    console.log('[du.html static-index] anchor comment not found — skipping (non-fatal)');
+  }
+  fs.writeFileSync(duPath2, du2);
+} catch (e) {
+  console.error('[du.html static-index] failed (non-fatal)', e);
 }

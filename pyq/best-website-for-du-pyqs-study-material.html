@@ -117,6 +117,22 @@ function sharePage(){
     prompt('Copy link:', url);
   }
 }
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
+}
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 <!-- Default Statcounter code for https://sulaksh.online -->

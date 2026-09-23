@@ -66,7 +66,7 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
 <nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li></ul></nav>
 <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
-<ul class="plist"><li><span class="pt"><a href="/pyq/paper/b-sc-hons-geology-sem-7-syllabus-dsc-19-crustal-evolution-through-time-ugcf-2022-4cb1b268.html">B.Sc. (Hons) Geology Sem 7 Syllabus - DSC 19 Crustal Evolution through Time - UGCF 2022</a></span><span class="ty">SYLLABUS</span><a href="/view.html?v=4&id=4cb1b268-d86d-48c6-af4f-2a1b15ecfc1a" target="_blank" rel="noopener" class="plist-open">Open</a></li></ul><p style="margin-top:10px"><a href="/pyq/b-sc-hons-geology-honours-sem-7-pyqs.html" style="color:var(--blue);font-size:13px">← Back to Semester 7</a> · <a href="/pyq/b-sc-hons-geology-honours-pyqs.html" style="color:var(--blue);font-size:13px">B.Sc. (Hons) Geology hub</a></p>
+<ul class="plist"><li><span class="pt"><a href="/pyq/paper/b-sc-hons-geology-sem-7-syllabus-dsc-19-crustal-evolution-through-time-ugcf-2022-4cb1b268.html">B.Sc. (Hons) Geology Sem 7 Syllabus - DSC 19 Crustal Evolution through Time - UGCF 2022</a></span><span class="ty">SYLLABUS</span><a href="/view.html?v=5&id=4cb1b268-d86d-48c6-af4f-2a1b15ecfc1a" target="_blank" rel="noopener" class="plist-open">Open</a></li></ul><p style="margin-top:10px"><a href="/pyq/b-sc-hons-geology-honours-sem-7-pyqs.html" style="color:var(--blue);font-size:13px">← Back to Semester 7</a> · <a href="/pyq/b-sc-hons-geology-honours-pyqs.html" style="color:var(--blue);font-size:13px">B.Sc. (Hons) Geology hub</a></p>
 <div class="ad"><ins class="adsbygoogle" style="display:block;margin-top:20px" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 
 
@@ -118,6 +118,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

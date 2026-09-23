@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Culture and Communication - VAC | MAY-JUNE-2026 | SET-1 | 30 marks</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-08">2026-09-08</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  (2026) · DU &amp; College · Culture and Communication</p>
-      <a href="/view.html?v=4&id=82b166f2-d5e8-47e1-9c61-310adea760a9" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=82b166f2-d5e8-47e1-9c61-310adea760a9" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/vac/2026/6eacf9fe-b7bc-4d8b-a8b7-4ac69f218fb5.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=82b166f2-d5e8-47e1-9c61-310adea760a9" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/vac/2026/6eacf9fe-b7bc-4d8b-a8b7-4ac69f218fb5.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>2026 Semester Previous Year Question Paper</strong> for <strong>Culture and Communication</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Culture and Communication is a 2-credit VAC (1-0-1) under UGCF 2022, taught in 2025-26 as a heritage-plus-skills paper (p.8 credit table). As per the official syllabus at du.ac.in/uploads/new-web/26102022_VAC.pdf, the course covers Unit I Ethical Values from Indian Cultural Heritage (3 classes) on Vasudhaiva Kutumbakam, United We Stand/Divided We Fall and Ek Bharat Shreshtha Bharat; Unit II Developing Life Skills (4 classes) on empathy, adaptability and conserving natural/knowledge resources; and Unit III Effective Communication in Everyday Life on empathetic listening, considerate speaking, analytical reading and informed writing — with additional units on extension activities and team work (pp.8-9). The syllabus stresses extension activities and inclusive community work as the practical lens, not just definitions (p.9). Examination is 'Subject to directions from the Examination Branch' with no printed 50/50 table in this PDF. Students lose marks by writing slogans about culture without demonstrating the four communication skills with a quotidian example, which examiners ask as 5-mark shorts (as of 12 Sept 2026).</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Culture and Communication - VAC | MAY-JUNE-2026 | SET-1 | 30 marks</strong> — a Culture and Communication your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

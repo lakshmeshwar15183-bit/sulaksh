@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Syllabus</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-08-20">2026-08-20</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Syllabus</strong>  · DU &amp; College · Business Management / Organisation</p>
-      <a href="/view.html?v=4&id=77e09b9c-dcd3-449b-9007-69304df5c4af" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=77e09b9c-dcd3-449b-9007-69304df5c4af" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><p><img loading="lazy" decoding="async" src="https://cdn.sulaksh.online/file/materials/du-college/ge/undated/bfff3eba-ba83-426b-b061-0bf2b29d4a29.webp?disposition=inline" alt="Syllabus" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:10px"></p>
       <p style="margin-top:14px">This is the <strong>latest Semester Syllabus</strong> for <strong>Business Management / Organisation</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Business Organisation — BCH: GE-1.1 in the Commerce common pool as notified in 2022 and offered in 2025-26 — is a 4-credit generic elective (3 lectures +1 tutorial) that, in the verified CDN syllabus, runs five units of 12 hours each: Introduction (business as a system, ethics and social responsibility), Business Enterprises (sole proprietorship through MNC plus LLP, one-person company and mergers/takeovers), Business Environment (internal/external dimensions and SWOT/ETOP), Entrepreneurship (the entrepreneur-enterprise link and Skill India, Startup India, Make in India and glocalisation) and Contemporary Issues (learning organisations, workforce diversity, franchising, outsourcing, e-commerce, sustainability and digitalisation). A DU-specific assessment on page 2 is the practical: you are given a scenario — capital, liability and scale — and must choose a business form and justify it, plus a SWOT for a chosen firm.</p>
     <h2>About these notes — Business Management / Organisation your semester</h2>
     <p>These are study notes for <strong>Syllabus</strong> — Business Management / Organisation your semester (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
@@ -106,6 +107,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

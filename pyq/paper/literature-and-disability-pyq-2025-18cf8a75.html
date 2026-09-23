@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Literature and Disability PYQ 2025</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-08-23">2026-08-23</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong> Semester 6  · DU &amp; College · English</p>
-      <a href="/view.html?v=4&id=18cf8a75-f95c-42b1-bc4a-5489a9240656" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=18cf8a75-f95c-42b1-bc4a-5489a9240656" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/core/undated/328ff2b9-f9b6-4cef-b0a0-7d6f3d5635d8.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=18cf8a75-f95c-42b1-bc4a-5489a9240656" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/core/undated/328ff2b9-f9b6-4cef-b0a0-7d6f3d5635d8.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>latest Semester 6 Previous Year Question Paper</strong> for <strong>English</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>This Semester 6 <strong>English</strong> paper is part of the English Semester 6 collection under UGCF/NEP — verify DSC/paper code for Semester 6 from your college handout.</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Literature and Disability PYQ 2025</strong> — a English Semester 6 previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -125,6 +126,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

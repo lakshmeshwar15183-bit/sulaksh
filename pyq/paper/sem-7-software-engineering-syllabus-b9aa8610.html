@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Sem 7 Software Engineering Syllabus</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-21">2026-09-21</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Syllabus</strong> Semester 7  · DU &amp; College · Computer Applications</p>
-      <a href="/view.html?v=4&id=b9aa8610-16fc-414c-b35d-0bd31a5cee6d" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=b9aa8610-16fc-414c-b35d-0bd31a5cee6d" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/core/undated/6b836d09-b41e-4455-9b8b-ddbb292510cb.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=b9aa8610-16fc-414c-b35d-0bd31a5cee6d" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/core/undated/6b836d09-b41e-4455-9b8b-ddbb292510cb.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>latest Semester 7 Syllabus</strong> for <strong>Computer Applications</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>This Semester 7 <strong>Computer Applications</strong> paper is part of the Computer Applications Semester 7 collection under UGCF/NEP — verify DSC/paper code for Semester 7 from your college handout.</p>
     <h2>About these notes — Computer Applications Semester 7</h2>
     <p>These are study notes for <strong>Sem 7 Software Engineering Syllabus</strong> — Computer Applications Semester 7 (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
@@ -127,6 +128,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

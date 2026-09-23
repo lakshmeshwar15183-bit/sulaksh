@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>R Programming for Business Analytics - Syllabus (SEC)</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-14">2026-09-14</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Syllabus</strong>  · DU &amp; College · R Programming for Business Analytics</p>
-      <a href="/view.html?v=4&id=0114d466-d7b4-4360-aba7-07c7c20b4a51" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=0114d466-d7b4-4360-aba7-07c7c20b4a51" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/d971d773-ea07-4f75-8397-ae474cb941ab.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=0114d466-d7b4-4360-aba7-07c7c20b4a51" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/d971d773-ea07-4f75-8397-ae474cb941ab.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>latest Semester Syllabus</strong> for <strong>R Programming for Business Analytics</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Business Organisation — BCH: GE-1.1 in the Commerce common pool as notified in 2022 and offered in 2025-26 — is a 4-credit generic elective (3 lectures +1 tutorial) that, in the verified CDN syllabus, runs five units of 12 hours each: Introduction (business as a system, ethics and social responsibility), Business Enterprises (sole proprietorship through MNC plus LLP, one-person company and mergers/takeovers), Business Environment (internal/external dimensions and SWOT/ETOP), Entrepreneurship (the entrepreneur-enterprise link and Skill India, Startup India, Make in India and glocalisation) and Contemporary Issues (learning organisations, workforce diversity, franchising, outsourcing, e-commerce, sustainability and digitalisation). A DU-specific assessment on page 2 is the practical: you are given a scenario — capital, liability and scale — and must choose a business form and justify it, plus a SWOT for a chosen firm.</p>
     <h2>About these notes — R Programming for Business Analytics your semester</h2>
     <p>These are study notes for <strong>R Programming for Business Analytics - Syllabus (SEC)</strong> — R Programming for Business Analytics your semester (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
@@ -106,6 +107,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

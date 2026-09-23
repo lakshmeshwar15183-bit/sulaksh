@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Stress Management - [A] ANDC | UPC 2654001202</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-08">2026-09-08</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  (2025) · DU &amp; College · Stress Management</p>
-      <a href="/view.html?v=4&id=2e696344-d129-4870-83e3-7603989a2350" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=2e696344-d129-4870-83e3-7603989a2350" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/ge/2025/1d218902-fa3f-4b56-8a58-197caa3a83f3.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=2e696344-d129-4870-83e3-7603989a2350" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/ge/2025/1d218902-fa3f-4b56-8a58-197caa3a83f3.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>2025 Semester Previous Year Question Paper</strong> for <strong>Stress Management</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Stress Management is a 4-credit Generic Elective (GE) offered by the Department of Psychology (B.A. Hons Applied Psychology / Psychology) under UGCF 2022, taught in 2025-26 as a stress and wellness GE (as seen in the syllabus file 'B.A._H_Psychology_Stress_Management_Semester_4th.pdf' on CDN and on psychology.du.ac.in GE booklets). As per the syllabus scan on CDN (pp.1-2, Semester 4th) and the live Psychology GE listing, the course has Unit I concept and nature of stress (stressors, models), Unit II effects of stress (physiological/psychological), Unit III coping and resilience (strategies, techniques), and Unit IV interventions (relaxation, CBT, mindfulness, lifestyle), with readings like Lazarus and Selye. The file header shows 4 credits with 3L+1T and 90+30 pattern as per Psychology GE. Students lose marks by writing generic stress advice without the Lazarus/Selye model or without a coping-technique demonstration, which the syllabus evaluates (as of 12 Sept 2026).</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Stress Management - [A] ANDC | UPC 2654001202</strong> — a Stress Management your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

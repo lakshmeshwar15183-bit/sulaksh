@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Big Data Analytics - UPC 2346000013 | SEC | MAY-JUNE-2026 | SET-1 | 30 marks</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-08">2026-09-08</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  (2026) · DU &amp; College · Big Data Analytics</p>
-      <a href="/view.html?v=4&id=a51fd65b-b573-41cd-8973-c065b032c498" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=a51fd65b-b573-41cd-8973-c065b032c498" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/sec/2026/0d9c8808-1599-4fb0-89c5-6dfc8fc93974.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=a51fd65b-b573-41cd-8973-c065b032c498" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/sec/2026/0d9c8808-1599-4fb0-89c5-6dfc8fc93974.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>2026 Semester Previous Year Question Paper</strong> for <strong>Big Data Analytics</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Big Data Analytics is a 2-credit Skill Enhancement Course (SEC) under Delhi University's UGCF 2022, taught in 2025-26 as a 1 lecture, 0 tutorial, 1 practical (2 credits, 60 hours) — note Big Data Analytics-I in PDF; Analytics-II is separate 1-0-1 paper (p.1 credit table). As per the official syllabus on academicaffairs.du.ac.in, the course is organised as four units — Unit-1 Understanding Big Data, Unit-2 Foundations of Big Data Systems, Unit-3 HDFS (Hadoop Distributed File System), and Unit-4 Introduction to Parallel Programming with Map Reduce. Prerequisites include basic programming (preferably Java), shell scripting and SQL queries (p.1). Evaluation is detailed in the UGCF structure; for this PDF the credit split is 1-0-1 and scheme follows University guidelines with practical component (p.1-2). Students often write Hadoop definitions without explaining HDFS replication or Map Reduce flow, and lose marks in the practical where they must show a small cluster/job execution rather than theory alone. For revision, map each PYQ to its unit — middle units repeat most — and confirm your college's exact paper code before the exam, as SEC codes vary by theme (as of 12 Sept 2026).</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Big Data Analytics - UPC 2346000013 | SEC | MAY-JUNE-2026 | SET-1 | 30 marks</strong> — a Big Data Analytics your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
