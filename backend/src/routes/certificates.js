@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 const { generateCertificatePdf } = require('../utils/certificate-pdf');
-const { uploadObject, getPresignedDownloadUrl } = require('../r2');
+const { uploadObject, deleteObject, getPresignedDownloadUrl } = require('../r2');
 
 const router = express.Router();
 
@@ -40,6 +40,7 @@ function adminView(r) {
     id: r.id,
     ...publicView(r),
     status: r.status,
+    has_pdf: !!r.r2_object_key,
     created_by: r.created_by,
     created_at: r.created_at,
     updated_at: r.updated_at,
@@ -204,7 +205,7 @@ router.post('/', async (req, res) => {
     console.error('[certificates] insert failed:', e.message);
     return res.status(500).json({ error: 'Could not save the certificate.' });
   }
-  res.status(201).json({ certificate: adminView({ ...record, status: 'valid', created_by: (req.admin && req.admin.email) || null, created_at: now, updated_at: now }), verify_url: verifyUrlFor(number) });
+  res.status(201).json({ certificate: adminView({ ...record, status: 'valid', r2_object_key: key, created_by: (req.admin && req.admin.email) || null, created_at: now, updated_at: now }), verify_url: verifyUrlFor(number) });
 });
 
 // Detail
@@ -214,22 +215,41 @@ router.get('/:id', (req, res) => {
   res.json({ certificate: adminView(row) });
 });
 
-// Revoke (idempotent)
-router.post('/:id/revoke', (req, res) => {
+// Revoke (idempotent). Revocation DESTROYS the stored PDF so the document can
+// never be opened again — no proof of anything remains except the ledger row
+// itself, which is what lets verification truthfully answer "Revoked" instead
+// of "Not Found". Status is flipped first so revocation sticks even if storage
+// is momentarily unreachable; the key is always cleared so no new download
+// can ever be minted for a revoked certificate.
+router.post('/:id/revoke', async (req, res) => {
   const row = db.prepare('SELECT * FROM certificates WHERE id = ?').get(String(req.params.id || ''));
   if (!row) return res.status(404).json({ error: 'Certificate not found.' });
+  const now = new Date().toISOString();
   if (row.status !== 'revoked') {
     db.prepare('UPDATE certificates SET status = ?, updated_at = ? WHERE id = ?')
-      .run('revoked', new Date().toISOString(), row.id);
+      .run('revoked', now, row.id);
   }
-  res.json({ certificate: adminView({ ...row, status: 'revoked' }) });
+  if (row.r2_object_key) {
+    try {
+      await deleteObject(row.r2_object_key);
+    } catch (e) {
+      console.error('[certificates] revoke storage delete failed:', e.message);
+    }
+    db.prepare('UPDATE certificates SET r2_object_key = NULL, updated_at = ? WHERE id = ?')
+      .run(now, row.id);
+  }
+  const fresh = db.prepare('SELECT * FROM certificates WHERE id = ?').get(row.id);
+  res.json({ certificate: adminView(fresh) });
 });
 
-// Admin download (short-lived presigned URL, same pattern as materials)
+// Admin download (short-lived presigned URL, same pattern as materials).
+// Revoked certificates can never be downloaded — their PDFs are destroyed.
 router.get('/:id/download', async (req, res) => {
   const row = db.prepare('SELECT * FROM certificates WHERE id = ?').get(String(req.params.id || ''));
   if (!row) return res.status(404).json({ error: 'Certificate not found.' });
-  if (!row.r2_object_key) return res.status(404).json({ error: 'No PDF stored for this certificate.' });
+  if (row.status === 'revoked' || !row.r2_object_key) {
+    return res.status(404).json({ error: 'No document available for this certificate.' });
+  }
   try {
     const url = await getPresignedDownloadUrl(row.r2_object_key, {
       fileName: `${row.certificate_number}.pdf`,
