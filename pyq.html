@@ -582,7 +582,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     const list = document.getElementById('matList');
     let mats = null;
     try {
-      const data = await getJsonRetry(`${SULAKSH_API}/api/materials`);
+      const data = await getJsonRetry(`${SULAKSH_API}/api/materials?exam=DU%20%26%20College`);
       if (data) { mats = data.materials || []; listCacheSet(mats); }
     } catch (err) { mats = null; }
     if (!mats) mats = listCacheGet();
