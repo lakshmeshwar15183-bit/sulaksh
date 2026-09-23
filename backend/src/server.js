@@ -10,6 +10,7 @@ const materialsRoutes = require('./routes/materials');
 const subjectsRoutes = require('./routes/subjects');
 const adminRoutes = require('./routes/admin');
 const reportsRoutes = require('./routes/reports');
+const certificatesRoutes = require('./routes/certificates');
 
 const app = express();
 // Express discloses itself via X-Powered-By; disable it.
@@ -101,6 +102,7 @@ const PUBLIC_READ_PREFIXES = [
   '/api/subjects',
   '/api/maintenance-status',
   '/api/health',
+  '/api/certificates/verify',
 ];
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -154,6 +156,7 @@ app.use('/api/materials', materialsRoutes);
 app.use('/api/subjects', subjectsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/certificates', certificatesRoutes);
 
 // ---- Admin panel static UI (separate from the public marketing site) ----
 app.use(ADMIN_PANEL_PATH, express.static(path.join(__dirname, '..', 'public', 'manage-k7q2mx')));
