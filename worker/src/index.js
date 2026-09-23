@@ -334,15 +334,15 @@ async function doLogin(request, env) {
   const clean = email.toLowerCase().trim();
   const ip = clientIp(request);
 
-  if (isLocked(loginEmail, clean)) {
+  if (isLocked(loginEmail, clean) || isLocked(loginIp, ip)) {
     await logAuthEvent(env, clean, 'login', false, ip, request.headers.get('user-agent'));
     return json({ error: 'Account temporarily locked. Try again in 15 minutes.' }, 429);
   }
 
   const admin = await get(env, 'SELECT * FROM admins WHERE email = ?', clean);
   if (!admin || !(await verifyPassword(password, admin.password_hash))) {
-    addLocked(loginIp, ip, parseInt(env.LOGIN_ATTEMPTS_LIMIT || '10', 10));
-    addLocked(loginEmail, clean, parseInt(env.LOGIN_EMAIL_LOCK || '8', 10));
+    addLocked(loginIp, ip, parseInt(env.LOGIN_ATTEMPTS_LIMIT || '5', 10));
+    addLocked(loginEmail, clean, parseInt(env.LOGIN_EMAIL_LOCK || '5', 10));
     await logAuthEvent(env, clean, 'login', false, ip, request.headers.get('user-agent'));
     // Constant-shape response either way.
     return json({ error: 'Invalid email or password.' }, 401);

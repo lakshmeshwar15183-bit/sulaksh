@@ -1451,6 +1451,29 @@ const hubAbout = `<h2>About This PYQ Library — Delhi University (UGCF/NEP)</h2
 <p><strong>Why PYQs matter:</strong> DU examiners often reuse concepts. The exam pattern (75+25 or 90+10, with 10-mark shorts and 15-mark longs) and marking rubric (definition + example + concluding line, one diagram or quote per answer) repeat every year. Solving PYQs under timed conditions is the single most effective revision.</p>
 <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this index:</strong> Open your semester’s syllabus page first, copy the Unit titles in order, make one page per unit, then solve the PYQs shown on the same page. That one-page-per-unit method mirrors DU’s marking scheme and helps toppers compress 200 pages into 20 revision pages. Verify the final unit list and paper code from your college handout — the broad overview here is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
 <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. The exact, verified PDFs auto-appear when admin uploads.</p>`;
+// Featured archive files on the master index: real PYQs with View/Save so the
+// page shows files, not just a 360+ button wall. Live-fetched (PYQ Archive
+// exam); if the fetch fails the section is omitted and the page still builds.
+let featRows = '';
+try {
+  const ar = await fetch(`${API}/api/materials?exam=${encodeURIComponent('PYQ Archive')}&limit=200`);
+  const ad = await ar.json().catch(() => ({}));
+  const seenSubj = new Set(); const featPicks = [];
+  for (const m of (ad.materials || [])) {
+    const key = String(m.subject || '').toLowerCase();
+    if (!key || seenSubj.has(key)) continue;
+    seenSubj.add(key); featPicks.push(m);
+    if (featPicks.length >= 12) break;
+  }
+  const featBits = m => [m.subject, m.semester ? ('Sem ' + m.semester) : '', m.year || ''].filter(Boolean).join(' · ');
+  featRows = featPicks.map(m =>
+    '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13.5px">'
+    + '<div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">' + esc(m.title) + '</div>'
+    + '<div style="font-size:12px;color:var(--muted)">' + esc(featBits(m)) + '</div></div>'
+    + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id=' + encodeURIComponent(m.id) + '" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
+    + '<button data-dl="' + esc(m.id) + '" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button></div></div>'
+  ).join('');
+} catch (e) { featRows = ''; }
 emit('index.html',
   'All DU Previous Year Question Papers, Syllabus & Notes - Free | Sulaksh',
   'Complete DU PYQs, syllabus & study material - BA/BSc/BCom majors, minors, honours, GE, VAC, AEC, SEC. Free.',
@@ -1471,8 +1494,8 @@ emit('index.html',
          + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id='+encodeURIComponent(m.id)+'" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
          + '<button data-dl="'+esc(m.id)+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button></div></div>';
      }
-     box.addEventListener('click', function(e){
-       var b=e.target.closest('[data-dl]'); if(!b) return;
+      document.addEventListener('click', function(e){
+        var b=e.target.closest('#archResults [data-dl], #featList [data-dl]'); if(!b) return;
        fetch(API+'/api/materials/'+encodeURIComponent(b.getAttribute('data-dl'))+'/download?disposition=inline')
          .then(function(r){return r.json();}).then(function(d){ if(d&&d.url) location.href=d.url; }).catch(function(){});
      });
@@ -1492,8 +1515,11 @@ emit('index.html',
      });
    })();
    </script>
-   <h2>Browse by Subject (${dedupedHubs.length} collections)</h2>
-   <div class="rel">${hubChips}</div>
+    <h2>Featured PYQs from the Archive</h2>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Hand-picked popular papers — open any to view or save it.</p>
+    <div id="featList">${featRows}</div>
+    <p style="font-size:13.5px;margin:10px 0 0"><b>…and 23,000+ more in the archive</b> — <a href="#archSearch" style="color:var(--blue);font-weight:700">type a paper name in the search ↑</a>.</p>
+    <details style="margin-top:14px"><summary style="font-size:13.5px;font-weight:700;color:var(--blue);cursor:pointer">Browse all ${dedupedHubs.length} collections A–Z</summary><div class="rel" style="margin-top:10px">${hubChips}</div></details>
    <h2>Silo Pages — Browse by Programme</h2>
    <div class="rel"><a href="/pyq/bcom-pyqs.html">BCom PYQs</a><a href="/pyq/ba-pyqs.html">BA PYQs</a><a href="/pyq/bsc-pyqs.html">BSc PYQs</a><a href="/pyq/programme-pyqs.html">Programme PYQs</a></div>
    <h2>Guides</h2>
