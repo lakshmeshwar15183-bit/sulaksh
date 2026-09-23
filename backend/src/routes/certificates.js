@@ -10,9 +10,9 @@ const { uploadObject, getPresignedDownloadUrl } = require('../r2');
 
 const router = express.Router();
 
-const TYPES = { internship: 'INT', participation: 'PAR', lor: 'LOR' };
+const TYPES = { internship: 'INT', participation: 'PAR', lor: 'LOR', joining: 'JL' };
 const SITE = (process.env.PUBLIC_SITE_URL || 'https://sulaksh.online').replace(/\/$/, '');
-const NUMBER_RE = /^SUL-(INT|PAR|LOR)-\d{4}-\d{4}$/;
+const NUMBER_RE = /^SUL-(INT|PAR|LOR|JL)-\d{4}-\d{4}$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const verifyUrlFor = (n) => `${SITE}/verify.html?id=${encodeURIComponent(n)}`;
@@ -29,6 +29,9 @@ function publicView(r) {
     description: r.description,
     issued_by_name: r.issued_by_name,
     issued_by_title: r.issued_by_title,
+    department: r.department,
+    supervisor: r.supervisor,
+    responsibilities: r.responsibilities,
   };
 }
 
@@ -105,6 +108,18 @@ function validateBody(b) {
   if (byName.length < 2 || byName.length > 120) return fail('Issuing person name must be 2–120 characters.');
   const byTitle = b.issued_by_title ? String(b.issued_by_title).trim() : null;
   if (byTitle && byTitle.length > 120) return fail('Designation too long (max 120 characters).');
+  const dept = b.department ? String(b.department).trim() : null;
+  if (dept && dept.length > 120) return fail('Department too long (max 120 characters).');
+  const sup = b.supervisor ? String(b.supervisor).trim() : null;
+  if (sup && sup.length > 120) return fail('Supervisor name too long (max 120 characters).');
+  const resp = b.responsibilities ? String(b.responsibilities).trim() : null;
+  if (resp && resp.length > 2000) return fail('Responsibilities too long (max 2000 characters).');
+  if (b.certificate_type === 'joining') {
+    if (!sd || !ed) return fail('Joining letters require start and end dates.');
+    if (!dept || dept.length < 2) return fail('Joining letters require a department / team.');
+    if (!sup || sup.length < 2) return fail('Joining letters require a reporting supervisor.');
+    if (!resp) return fail('Joining letters require key responsibilities.');
+  }
   return {
     ok: true,
     value: {
@@ -117,6 +132,9 @@ function validateBody(b) {
       description: desc,
       issued_by_name: byName,
       issued_by_title: byTitle,
+      department: dept,
+      supervisor: sup,
+      responsibilities: resp,
     },
   };
 }
@@ -172,12 +190,14 @@ router.post('/', async (req, res) => {
       `INSERT INTO certificates
        (id, certificate_number, certificate_type, recipient_name, role, start_date, end_date,
         issue_date, description, issued_by_name, issued_by_title, status,
+        department, supervisor, responsibilities,
         r2_object_key, created_by, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'valid', ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'valid', ?, ?, ?, ?, ?, ?, ?)`
     ).run(
       record.id, number, v.value.certificate_type, v.value.recipient_name, v.value.role,
       v.value.start_date, v.value.end_date, v.value.issue_date, v.value.description,
       v.value.issued_by_name, v.value.issued_by_title,
+      v.value.department, v.value.supervisor, v.value.responsibilities,
       key, (req.admin && req.admin.email) || null, now, now
     );
   } catch (e) {

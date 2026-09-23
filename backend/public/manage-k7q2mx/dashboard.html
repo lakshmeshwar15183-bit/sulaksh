@@ -163,11 +163,28 @@
             <option value="internship">Internship (SUL-INT-…)</option>
             <option value="participation">Participation (SUL-PAR-…)</option>
             <option value="lor">Letter of Recommendation (SUL-LOR-…)</option>
+            <option value="joining">Internship Offer Letter (SUL-JL-…)</option>
           </select>
           <label>Recipient name *</label>
           <input type="text" id="certName" required maxlength="120">
-          <label>Role / Program *</label>
-          <input type="text" id="certRole" required maxlength="160" placeholder="e.g. Content Research Intern">
+          <label>Role *</label>
+          <select id="certRoleSel">
+            <option value="Management">Management</option>
+            <option value="Script Writing">Script Writing</option>
+            <option value="Engagement">Engagement</option>
+            <option value="Digital Marketing">Digital Marketing</option>
+            <option value="Social Media Management">Social Media Management</option>
+            <option value="__other">Other (type below)</option>
+          </select>
+          <input type="text" id="certRoleCustom" maxlength="160" placeholder="Custom role" style="display:none; margin-top:6px;">
+          <div id="joiningFields" style="display:none;">
+            <label>Department / Team * (joining letter)</label>
+            <input type="text" id="certDept" maxlength="120" placeholder="e.g. Marketing">
+            <label>Reporting supervisor * (joining letter)</label>
+            <input type="text" id="certSupervisor" maxlength="120" placeholder="e.g. Priya Nair">
+            <label>Key responsibilities * (joining letter, one per line)</label>
+            <textarea id="certResp" maxlength="2000" rows="4" placeholder="e.g. Run the Instagram content calendar"></textarea>
+          </div>
           <label>Start date (required for internships)</label>
           <input type="date" id="certStart">
           <label>End date (required for internships)</label>
@@ -529,6 +546,16 @@
 
   // ---- Certificates & LORs ----
   const PUBLIC_SITE = 'https://sulaksh.online'; // public verify pages live on the static site, not this backend origin
+  const CERT_TYPE_LABELS = { internship: 'Internship', participation: 'Participation', lor: 'LOR', joining: 'Offer Letter' };
+  const certRoleValue = () => ($('certRoleSel').value === '__other' ? $('certRoleCustom').value.trim() : $('certRoleSel').value);
+  $('certRoleSel').addEventListener('change', () => {
+    $('certRoleCustom').style.display = $('certRoleSel').value === '__other' ? '' : 'none';
+  });
+  const syncJoiningFields = () => {
+    $('joiningFields').style.display = $('certType').value === 'joining' ? '' : 'none';
+  };
+  $('certType').addEventListener('change', syncJoiningFields);
+  syncJoiningFields();
   try { $('certIssue').value = new Date().toISOString().slice(0, 10); } catch (e) {}
   async function loadCerts() {
     const wrap = $('certWrap');
@@ -550,7 +577,7 @@
     if (!rows.length) { wrap.innerHTML = '<div class="empty">No certificates yet.</div>'; return; }
     wrap.innerHTML = `<table><thead><tr><th>Certificate</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows.map((c) => `
       <tr>
-        <td><strong>${escapeHtml(c.certificate_number)}</strong><br>${escapeHtml(c.recipient_name)} · ${escapeHtml(c.certificate_type)}<br><span style="color:var(--muted);font-size:12px;">${escapeHtml(c.role)} · issued ${escapeHtml(c.issue_date || '')}</span></td>
+        <td><strong>${escapeHtml(c.certificate_number)}</strong><br>${escapeHtml(c.recipient_name)} · ${escapeHtml(CERT_TYPE_LABELS[c.certificate_type] || c.certificate_type)}<br><span style="color:var(--muted);font-size:12px;">${escapeHtml(c.role)} · issued ${escapeHtml(c.issue_date || '')}</span></td>
         <td>${c.status === 'revoked' ? '<span class="pill" style="background:rgba(214,69,69,.12);color:var(--danger);">revoked</span>' : '<span class="pill" style="background:rgba(20,108,67,.12);color:var(--green);">valid</span>'}</td>
         <td><div class="row-actions">
           <button onclick="window.open('${PUBLIC_SITE}/verify.html?id=${encodeURIComponent(c.certificate_number)}', '_blank')">Verify ↗</button>
@@ -573,13 +600,16 @@
         body: JSON.stringify({
           certificate_type: $('certType').value,
           recipient_name: $('certName').value,
-          role: $('certRole').value,
+          role: certRoleValue(),
           start_date: $('certStart').value || null,
           end_date: $('certEnd').value || null,
           issue_date: $('certIssue').value,
           description: $('certDesc').value || null,
           issued_by_name: $('certByName').value,
           issued_by_title: $('certByTitle').value || null,
+          department: $('certDept').value || null,
+          supervisor: $('certSupervisor').value || null,
+          responsibilities: $('certResp').value || null,
         }),
       });
       const data = await res.json();

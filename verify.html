@@ -59,7 +59,8 @@ function esc(s){
 function typeLabel(t){
   return t === 'internship' ? 'Internship Certificate'
     : t === 'participation' ? 'Participation Certificate'
-    : t === 'lor' ? 'Letter of Recommendation' : 'Certificate';
+    : t === 'lor' ? 'Letter of Recommendation'
+    : t === 'joining' ? 'Internship Offer Letter' : 'Certificate';
 }
 function showMissing(number){
   document.title = 'Certificate Not Found – Sulaksh';
@@ -77,6 +78,8 @@ function show(cert, state){
       <dt>Type</dt><dd>${esc(typeLabel(cert.certificate_type))}</dd>
       <dt>Organization</dt><dd>Sulaksh</dd>
       <dt>Role / Program</dt><dd>${esc(cert.role)}</dd>
+      ${cert.department ? `<dt>Department</dt><dd>${esc(cert.department)}</dd>` : ''}
+      ${cert.supervisor ? `<dt>Reporting To</dt><dd>${esc(cert.supervisor)}</dd>` : ''}
       ${dates ? `<dt>Dates</dt><dd>${esc(dates)}</dd>` : ''}
       <dt>Issue date</dt><dd>${esc(cert.issue_date)}</dd>
       <dt>Issued by</dt><dd>${esc(cert.issued_by_name)}${cert.issued_by_title ? ' · ' + esc(cert.issued_by_title) : ''}</dd>
