@@ -312,7 +312,9 @@ const typeOf = m => m.material_category === 'syllabus' || m.is_syllabus ? 'sylla
   : m.material_category === 'pyqs' || m.is_pyq ? 'pyq'
   : m.material_category === 'important-questions' || m.is_imp ? 'imp-questions' : 'notes';
 
-const res = await fetch(`${API}/api/materials`);
+const res = await fetch(`${API}/api/materials?exam=${encodeURIComponent('DU & College')}`);
+// NOTE: exam-scoped on purpose. The unfiltered listing is capped server-side and a
+// large second exam (PYQ Archive) would crowd DU & College rows out of generation.
 const { materials } = await res.json();
 // Normalize titles before generating slugs — fixes VAC VAC / GE GE / truncated marks
 for (const m of materials) {
@@ -1441,7 +1443,42 @@ emit('index.html',
   'Delhi University PYQs & Study Material - Complete Index',
   'Master Index',
   '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p>',
-  `<h2>Browse by Subject (${dedupedHubs.length} collections)</h2>
+  `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:0 0 18px"><label for="archSearch" style="font-size:14px;font-weight:800;display:block;margin-bottom:8px">🔍 Search the 23,000+ PYQ Archive</label><input id="archSearch" type="search" placeholder="Type paper name — e.g. data privacy, corporate accounting…" autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:var(--bg);color:var(--text);outline:none"><p id="archCount" style="font-size:12.5px;color:var(--muted);margin:8px 0 0"></p><div id="archResults"></div></div>
+   <script>
+   (function(){
+     var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), t=null;
+     var API='https://sulaksh-backend-production.up.railway.app';
+     function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+     function row(m){
+       var bits=[m.subject, m.semester?('Sem '+m.semester):'', m.year||''].filter(Boolean).join(' · ');
+       return '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13.5px">'
+         + '<div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">'+esc(m.title)+'</div>'
+         + '<div style="font-size:12px;color:var(--muted)">'+esc(bits)+'</div></div>'
+         + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id='+encodeURIComponent(m.id)+'" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
+         + '<button data-dl="'+esc(m.id)+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button></div></div>';
+     }
+     box.addEventListener('click', function(e){
+       var b=e.target.closest('[data-dl]'); if(!b) return;
+       fetch(API+'/api/materials/'+encodeURIComponent(b.getAttribute('data-dl'))+'/download?disposition=inline')
+         .then(function(r){return r.json();}).then(function(d){ if(d&&d.url) location.href=d.url; }).catch(function(){});
+     });
+     input.addEventListener('input', function(){
+       clearTimeout(t);
+       var q=input.value.trim();
+       if(q.length<2){ box.innerHTML=''; meta.textContent=''; return; }
+       meta.textContent='Searching…';
+       t=setTimeout(function(){
+         fetch(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(q)+'&limit=20')
+           .then(function(r){return r.json();}).then(function(d){
+             var arr=(d&&d.materials)||[];
+             meta.textContent=arr.length?('Showing '+arr.length+' matches — open any paper to view or save it.'):'No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
+             box.innerHTML=arr.map(row).join('');
+           }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
+       }, 300);
+     });
+   })();
+   </script>
+   <h2>Browse by Subject (${dedupedHubs.length} collections)</h2>
    <div class="rel">${hubChips}</div>
    <h2>Silo Pages — Browse by Programme</h2>
    <div class="rel"><a href="/pyq/bcom-pyqs.html">BCom PYQs</a><a href="/pyq/ba-pyqs.html">BA PYQs</a><a href="/pyq/bsc-pyqs.html">BSc PYQs</a><a href="/pyq/programme-pyqs.html">Programme PYQs</a></div>

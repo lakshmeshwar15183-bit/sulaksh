@@ -23,7 +23,9 @@ async function get(url) {
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const [mats, subs] = await Promise.all([
-    get(`${API}/api/materials`),
+    // Exam-scoped: the snapshot backs DU & College pages, and the unfiltered
+    // listing is capped server-side (PYQ Archive rows would crowd it out).
+    get(`${API}/api/materials?exam=${encodeURIComponent(EXAM)}`),
     get(`${API}/api/subjects?exam=${encodeURIComponent(EXAM)}`),
   ]);
   if (!mats || !Array.isArray(mats.materials)) throw new Error('materials payload unexpected');
