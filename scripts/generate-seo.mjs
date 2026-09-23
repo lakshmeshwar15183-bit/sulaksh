@@ -312,7 +312,9 @@ const typeOf = m => m.material_category === 'syllabus' || m.is_syllabus ? 'sylla
   : m.material_category === 'pyqs' || m.is_pyq ? 'pyq'
   : m.material_category === 'important-questions' || m.is_imp ? 'imp-questions' : 'notes';
 
-const res = await fetch(`${API}/api/materials`);
+const res = await fetch(`${API}/api/materials?exam=${encodeURIComponent('DU & College')}`);
+// NOTE: exam-scoped on purpose. The unfiltered listing is capped server-side and a
+// large second exam (PYQ Archive) would crowd DU & College rows out of generation.
 const { materials } = await res.json();
 // Normalize titles before generating slugs — fixes VAC VAC / GE GE / truncated marks
 for (const m of materials) {

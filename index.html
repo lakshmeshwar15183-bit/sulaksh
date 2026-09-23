@@ -900,7 +900,7 @@
   async function ensureMaterialIndex() {
     if (materialIndex.length) return;
     try {
-      const res = await fetch(`${SULAKSH_API}/api/materials`);
+      const res = await fetch(`${SULAKSH_API}/api/materials?exam=DU%20%26%20College`);
       if (!res.ok) return;
       const data = await res.json();
       materialIndex = (data.materials || []).map((m) => ({
@@ -1411,7 +1411,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
       if (sm && Array.isArray(sm.materials)) mats = sm.materials;
     } catch (e) { /* snapshot missing — fall through */ }
     try {
-      const data = await apiGet('/api/materials');
+      const data = await apiGet('/api/materials?exam=' + encodeURIComponent('DU & College'));
       if (data && Array.isArray(data.materials) && data.materials.length) {
         mats = data.materials;
         homeCacheSet(mats);
@@ -1529,7 +1529,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
       try {
         let mats = null;
         try {
-          const r = await fetch(SULAKSH_API + '/api/materials', {cache:'no-store'});
+          const r = await fetch(SULAKSH_API + '/api/materials?exam=DU%20%26%20College', {cache:'no-store'});
           if (r.ok) { const d = await r.json(); if (d && Array.isArray(d.materials)) mats = d.materials; }
         } catch(e){}
         if (!mats) {

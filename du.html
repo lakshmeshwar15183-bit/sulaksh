@@ -9347,7 +9347,9 @@ const WAIT_PHRASES = [
     // (2) Live API for fresher data when reachable (worker, then backend direct).
     try {
       const [d, sd] = await Promise.all([
-        apiGet('/api/materials'),
+        // Exam-scoped: unfiltered listing is capped server-side and the PYQ Archive
+        // push would crowd DU & College rows out (zero-materials bug of Sep 2026).
+        apiGet('/api/materials?exam=' + encodeURIComponent('DU & College')),
         apiGet('/api/subjects?exam=' + encodeURIComponent('DU & College')),
       ]);
       if (d) {
