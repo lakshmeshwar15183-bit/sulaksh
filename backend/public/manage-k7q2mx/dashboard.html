@@ -581,7 +581,7 @@
         <td>${c.status === 'revoked' ? '<span class="pill" style="background:rgba(214,69,69,.12);color:var(--danger);">revoked</span>' : '<span class="pill" style="background:rgba(20,108,67,.12);color:var(--green);">valid</span>'}</td>
         <td><div class="row-actions">
           <button onclick="window.open('${PUBLIC_SITE}/verify.html?id=${encodeURIComponent(c.certificate_number)}', '_blank')">Verify ↗</button>
-          <button onclick="downloadCert('${c.id}')">PDF</button>
+          ${c.has_pdf ? `<button onclick="downloadCert('${c.id}')">PDF</button>` : ''}
           ${c.status !== 'revoked' ? `<button class="danger" onclick="revokeCert('${c.id}', '${escapeHtml(c.certificate_number)}')">Revoke</button>` : ''}
         </div></td>
       </tr>`).join('')}</tbody></table>`;
@@ -634,7 +634,7 @@
     } catch (e) { alert(e.message); }
   };
   window.revokeCert = async (id, number) => {
-    if (!confirm(`Revoke ${number}? The public page will show "Certificate Revoked".`)) return;
+    if (!confirm(`Revoke ${number}? Its PDF will be permanently destroyed and the public page will show "Certificate Revoked".`)) return;
     try {
       const res = await authFetch(`${API}/api/certificates/${id}/revoke`, { method: 'POST' });
       const data = await res.json();
