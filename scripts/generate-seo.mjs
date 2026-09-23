@@ -1140,6 +1140,52 @@ for (const [key, semMap] of bySubjTrack) {
   }
 }
 
+// ===== 2b) CORE subject aggregates — one hub per multi-track subject =====
+// Multi-track subjects (English, History, …) have no single track hub, so their
+// du.html tiles couldn't link anywhere real. These aggregate pages (one per
+// subject + one for the B.Sc. programme group) are the canonical tile targets.
+// Single-track subjects keep linking to their track hub (no near-duplicate).
+const SUBJECT_HUB = new Map(); // subject -> hub file (only successfully emitted)
+{
+  const tracksBySubject = new Map();
+  for (const [key] of bySubjTrack) {
+    const [s, t] = key.split('||');
+    if (!tracksBySubject.has(s)) tracksBySubject.set(s, []);
+    tracksBySubject.get(s).push(t);
+  }
+  const emitSubjectAgg = (s, subjMats, file, aggLabel) => {
+    if (pages.has(file)) { console.log(`[subject-hub] skip ${s}: ${file} already emitted`); return; }
+    const total = honestCount(subjMats.length);
+    if (!total) return;
+    const trackLinks = [];
+    for (const [key] of bySubjTrack) {
+      const [ks, kt] = key.split('||');
+      if (ks === s || (s === 'B.Sc.' && String(ks).startsWith('B.Sc.'))) trackLinks.push({ file: ovFile(ks, kt), label: `${ks} ${kt}` });
+    }
+    trackLinks.sort((a, b) => a.label.localeCompare(b.label));
+    const firstTrack = (tracksBySubject.get(s) || ['General']).sort()[0];
+    let aggBlock = uniqueAboutBlock(s === 'B.Sc.' ? 'B.Sc. programmes' : s, firstTrack, total, trackLinks.length);
+    aggBlock = padCommonBlock(aggBlock, s, 'CORE-subject', s + '-aggregate');
+    emit(file,
+      `${aggLabel} PYQs, Syllabus & Notes – DU | Sulaksh`,
+      `All ${aggLabel} material for Delhi University — ${honestCount(total)} docs, semester-wise PYQs, syllabus & notes across course types. Free.`,
+      `${aggLabel} — Question Papers & Study Material`,
+      'Delhi University · Core',
+      `<p><strong>${displayLabel(total, true)}</strong> documents, all free.</p>`,
+      `<h2>Browse by Course Type</h2><div class="rel">${trackLinks.map(c => `<a href="/pyq/${c.file}">${esc(c.label)}</a>`).join('')}</div>` +
+      `<h2>Latest ${esc(aggLabel)} documents</h2><ul class="plist">${subjMats.slice(0, 12).map(listItem).join('')}</ul>`,
+      trackLinks, null, { aboutBlock: aggBlock, total, subject: s, faqCategory: 'notes', mats: subjMats });
+    if (pages.has(file)) { SUBJECT_HUB.set(s, file); HUBS.push({ file, label: `${aggLabel} (All)` }); }
+  };
+  for (const [s, tracks] of tracksBySubject) {
+    if (tracks.length < 2) continue;
+    emitSubjectAgg(s, materials.filter(m => m.category === 'CORE' && (m.subject || '') === s), `${slug(s)}-pyqs.html`, s);
+  }
+  // B.Sc. tile fans out to 11 programmes — aggregate them under one hub.
+  const bscMats = materials.filter(m => m.category === 'CORE' && String(m.subject || '').startsWith('B.Sc.'));
+  if (bscMats.length && !tracksBySubject.has('B.Sc.')) emitSubjectAgg('B.Sc.', bscMats, 'b-sc-pyqs.html', 'B.Sc.');
+}
+
 // ===== 3) GE/VAC/AEC/SEC =====
 const CAT_LABEL = Object.fromEntries([['GE', 'Generic Elective'], ['VAC', 'Value Added Course'], ['AEC', 'Ability Enhancement Course'], ['SEC', 'Skill Enhancement Course']]);
 const ncByType = new Map(); const ncByYear = new Map(); const ncCombined = new Map();
@@ -1776,6 +1822,9 @@ try {
       if (!hubMapBake.get(bs).includes(f)) hubMapBake.get(bs).push(f);
     }
     const singleHub = (s) => { const h = hubMapBake.get(s) || []; return h.length === 1 ? h[0] : null; };
+    // Tile target: subject aggregate for multi-track subjects, track hub for
+    // single-track ones (SUBJECT_HUB only holds successfully emitted files).
+    const tileHub = (s) => SUBJECT_HUB.get(s) || singleHub(s);
     const cardTag = (hub, js) => hub
       ? `<a class="core-card" href="/pyq/${hub}" onclick="${js};return false;">`
       : `<button class="core-card" onclick="${js}">`;
@@ -1785,8 +1834,9 @@ try {
       const progTag = progTagMap[s] || '';
       const n = coreCounts[s] ?? 0;
       const escS = s.replace(/'/g, "\\'");
-      // B.Sc. fans out to 11 programmes (no single hub) — keep as button
-      const hub = (s === 'B.Sc.') ? null : singleHub(s);
+      // Every subject tile is a real link now (aggregate or track hub); B.Sc.
+      // resolves via SUBJECT_HUB to its programme aggregate.
+      const hub = tileHub(s);
       const js = `openCoreSubject('${escS}')`;
       return `${cardTag(hub, js)}<div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span class="core-type">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span>${cardClose(hub)}`;
     }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>` + (() => {
@@ -1795,12 +1845,36 @@ try {
       return `${cardTag(hub, js)}<div class="top"><span class="core-ico">💼</span><span class="core-badge">${bcomCount} file${bcomCount===1?'':'s'}</span></div><span class="core-name">B.Com Programme</span><span class="core-desc">सब कुछ मिलेगा — Everything is here</span><span class="core-count">${bcomCount} materials</span><span class="core-btn">Open →</span>${cardClose(hub)}`;
     })() + `<button class="core-card" onclick="openCoreOthers()"><div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span></button>`;
     // Idempotent: normalize any already-baked grid back to empty, then bake fresh (prevents duplication on re-run)
-    // This handles the case where du.html was already baked with 10 cards — reset to empty first
-    const normalized = duHtml.replace(/<div class="core-grid" id="coreGrid">[\s\S]*?<\/div>\s*<\/div>\s*<!-- 2\. Common/, '<div class="core-grid" id="coreGrid"></div>\n  </div>\n\n  <!-- 2. Common');
-    if (normalized !== duHtml) { duHtml = normalized; console.log('[du.html bake] normalized already-baked coreGrid to empty'); }
+    // Matches the grid's own closing tag via the section tail (nested card divs
+    // are skipped by backtracking). Handles both marker and legacy layouts —
+    // the old tail regex broke once the static-index block was inserted.
+    const gridTailRe = /(<div class="core-grid" id="coreGrid">)[\s\S]*?(<\/div>)(\n  <\/div>\n\n  <!-- STATIC-INDEX-START -->)/;
+    const gridTailLegacy = /(<div class="core-grid" id="coreGrid">)[\s\S]*?(<\/div>)(\n  <\/div>\n\n  <!-- 2\. Common)/;
+    if (gridTailRe.test(duHtml)) { duHtml = duHtml.replace(gridTailRe, '$1</div>$3'); console.log('[du.html bake] normalized already-baked coreGrid to empty'); }
+    else if (gridTailLegacy.test(duHtml)) { duHtml = duHtml.replace(gridTailLegacy, '$1</div>$3'); console.log('[du.html bake] normalized already-baked coreGrid to empty (legacy)'); }
     const gridReEmpty = /<div class="core-grid" id="coreGrid"><\/div>/;
     if (gridReEmpty.test(duHtml)) { duHtml = duHtml.replace(gridReEmpty, `<div class="core-grid" id="coreGrid">${coreGridHtml}</div>`); replaced++; console.log('[du.html bake] baked coreGrid with', CORE_SUBJECTS_BAKE.length+3, 'cards'); }
   } catch (e) { console.log('[du.html bake] coreGrid bake failed', e.message); }
+  // Bake SUBJECT_HUBS map for the JS grid re-render (single source of truth:
+  // aggregates for multi-track subjects, track hubs for single-track ones).
+  try {
+    const hubsObj = {};
+    for (const [s, f] of SUBJECT_HUB) hubsObj[s] = f;
+    // single-track fallback rebuilt here (hubMapBake is scoped to the grid bake above)
+    const seenSingle = new Map();
+    for (const [key] of bySubjTrack) {
+      const [bs, bt] = key.split('||');
+      const f = ovFile(bs, bt);
+      if (!pages.has(f)) continue;
+      if (!seenSingle.has(bs)) seenSingle.set(bs, []);
+      if (!seenSingle.get(bs).includes(f)) seenSingle.get(bs).push(f);
+    }
+    for (const [s, arr] of seenSingle) { if (arr.length === 1 && !hubsObj[s]) hubsObj[s] = arr[0]; }
+    const hubsJs = 'let SUBJECT_HUBS = ' + JSON.stringify(hubsObj) + ';';
+    const hubsRe = /let SUBJECT_HUBS = \{[^}]*\};/;
+    if (hubsRe.test(duHtml)) { duHtml = duHtml.replace(hubsRe, () => hubsJs); console.log('[du.html bake] SUBJECT_HUBS baked:', Object.keys(hubsObj).length, 'subjects'); }
+    else console.log('[du.html bake] SUBJECT_HUBS marker missing — JS grid keeps runtime fallback (non-fatal)');
+  } catch (e) { console.log('[du.html bake] SUBJECT_HUBS bake failed (non-fatal)', e.message); }
   // Write back
   fs.writeFileSync(duPath, duHtml);
   console.log(`[du.html bake] injected ${replaced} category/core counts:`, JSON.stringify({...countByCat, ...coreCounts, progCount}));
@@ -1873,10 +1947,14 @@ try {
     if (!subjHubs.has(s)) subjHubs.set(s, []);
     if (!subjHubs.get(s).some(h => h.file === f)) subjHubs.get(s).push({ track: t, file: f });
   }
+  // B.Sc. programmes live under their own subjects — surface the aggregate too.
+  if (SUBJECT_HUB.has('B.Sc.') && !subjHubs.has('B.Sc.')) subjHubs.set('B.Sc.', []);
   const subjNames = [...subjHubs.keys()].sort((a, b) => String(a).localeCompare(String(b)));
   const idxInner = subjNames.map(s => {
     const hubs = subjHubs.get(s).sort((a, b) => a.track.localeCompare(b.track));
-    const links = hubs.map(h => `<a href="/pyq/${h.file}" style="background:var(--card);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none">${esc(s)} ${esc(h.track)}</a>`).join('');
+    const agg = SUBJECT_HUB.get(s);
+    const aggLink = agg ? `<a href="/pyq/${agg}" style="background:var(--navy);border:1px solid var(--navy);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:700;color:#fff;text-decoration:none">All ${esc(s)}</a>` : '';
+    const links = aggLink + hubs.map(h => `<a href="/pyq/${h.file}" style="background:var(--card);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none">${esc(s)} ${esc(h.track)}</a>`).join('');
     return `<div style="margin:0 0 12px"><div style="font-weight:800;font-size:14px;margin-bottom:6px">${esc(s)}</div><div style="display:flex;flex-wrap:wrap;gap:8px">${links}</div></div>`;
   }).join('');
   const idxBlock = `<!-- STATIC-INDEX-START -->\n  <section class="du-sec" id="allSubjects" style="margin-top:8px">\n    <div class="du-sec-head">\n      <span class="num">§</span>\n      <div>\n        <h2>Browse all DU subjects</h2>\n        <span class="sub">Every subject hub — crawlable index</span>\n      </div>\n    </div>\n    <p style="font-size:13.5px;line-height:1.7;color:var(--muted);margin:0 0 14px;max-width:800px;">Full subject pages with semester-wise syllabus, PYQs and notes — no app needed, every link below opens a complete page.</p>\n    ${idxInner}\n  </section>\n  <!-- STATIC-INDEX-END -->`;
