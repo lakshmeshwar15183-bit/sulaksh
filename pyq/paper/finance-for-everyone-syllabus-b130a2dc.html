@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Finance for everyone syllabus</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-08-17">2026-08-17</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Syllabus</strong>  · DU &amp; College · Finance for Everyone</p>
-      <a href="/view.html?v=4&id=b130a2dc-c867-4a95-a85b-d7af2155ce72" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=b130a2dc-c867-4a95-a85b-d7af2155ce72" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><p><img loading="lazy" decoding="async" src="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/008eef20-ab7e-424c-a2e3-ab9e0418e566.webp?disposition=inline" alt="Finance for everyone syllabus" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:10px"></p>
       <p style="margin-top:14px">This is the <strong>latest Semester Syllabus</strong> for <strong>Finance for Everyone</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Finance for Everyone is a 2-credit Skill Enhancement Course (SEC) under Delhi University's UGCF 2022, taught in 2025-26 as a 1 lecture, 0 tutorial, 1 practical (2 credits) (p.1 credit table). As per the official syllabus on academicaffairs.du.ac.in, the course is organised as five 3-week units — Unit 1 Financial Planning and Budgeting, Unit 2 Banking Services, Unit 3 India Post Office Financial Services, Unit 4 Insurance Services, and Unit 5 Stock Markets basic concepts. Units cover budgeting, banking, post office savings, insurance and stock market basics with practical financial planning tasks (p.1-2). Total marks 100: 25 Internal + 25 Practical + 50 End Semester (p.3). Students often memorise definitions of banking/insurance without practising a household budget, post office scheme comparison, or basic stock concept — the practical asks for those applications. For revision, map each PYQ to its unit — middle units repeat most — and confirm your college's exact paper code before the exam, as SEC codes vary by theme (as of 12 Sept 2026).</p>
     <h2>About these notes — Finance for Everyone your semester</h2>
     <p>These are study notes for <strong>Finance for everyone syllabus</strong> — Finance for Everyone your semester (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
@@ -106,6 +107,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

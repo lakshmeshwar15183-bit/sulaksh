@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Digital Empowerment - VAC | NOV-DEC-2025 | SET-1 | 30 marks</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-08">2026-09-08</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  (2025) · DU &amp; College · Digital Empowerment</p>
-      <a href="/view.html?v=4&id=45508f44-0282-4b66-bb7f-7cdd5419901d" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=45508f44-0282-4b66-bb7f-7cdd5419901d" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/vac/2025/5d486c44-b524-4308-9440-ee3b2611a28c.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=45508f44-0282-4b66-bb7f-7cdd5419901d" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/vac/2025/5d486c44-b524-4308-9440-ee3b2611a28c.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>2025 Semester Previous Year Question Paper</strong> for <strong>Digital Empowerment</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>As notified in the UGCF 2022 VAC pool and taught in 2025-26, Digital Empowerment is a 2-credit VAC (1 lecture +1 practical) that moves in four blocks: Digital inclusion and the Vision of Digital India — DigiLocker, E-Hospitals, e-Pathshala, BHIM, e-Kranti and portals for RTI, health, finance and tax filing — then Communication and Collaboration (email, blogs, social media, file-sharing, messaging and video conferencing), then Safe and Secure Cyberspace (privacy, data breach, cyber attacks, Blockchain and government security initiatives) and finally Ethical Issues including netiquettes. A DU-specific requirement on page 12 that most students miss is the 15-week practical: interactive demonstrations, workshops on Digital India services, outreach to street vendors, domestic help, security guards and senior citizens, and team projects on education, health, farming and financial inclusion. The paper feels easy, so students cram definitions and write paragraphs where the syllabus asks for steps — for example, exact steps to collaborate on Drive or secure a transaction.</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Digital Empowerment - VAC | NOV-DEC-2025 | SET-1 | 30 marks</strong> — a Digital Empowerment your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

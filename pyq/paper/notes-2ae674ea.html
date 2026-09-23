@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Notes</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-08-22">2026-08-22</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Important Questions</strong>  · DU &amp; College · APP Development using Flutter</p>
-      <a href="/view.html?v=4&id=2ae674ea-bc92-4c1d-9262-9e336c828b32" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=2ae674ea-bc92-4c1d-9262-9e336c828b32" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/91a63155-dbed-49e2-8299-be97fcb77647.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=2ae674ea-bc92-4c1d-9262-9e336c828b32" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/sec/undated/91a63155-dbed-49e2-8299-be97fcb77647.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>latest Semester Important Questions</strong> for <strong>APP Development using Flutter</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>APP Development using Flutter is a 2-credit Skill Enhancement Course (SEC) under Delhi University's UGCF 2022, taught in 2025-26 as a 0 lecture, 0 tutorial, 2 practical (60 hours practical) (p.1 credit table). As per the official syllabus on academicaffairs.du.ac.in, the course is organised as four 8-hour theory blocks — Unit-1 Flutter installation/widgets/gestures, Unit-2 state management and Dart packages/containers/Scaffold, Unit-3 REST API/database and widget testing, and Unit-4 deployment to Play Store/App Store — followed by 28 hours of practical exercises. The syllabus lists two compulsory builds: a quiz app for Android/iOS/web and an original cross-platform app using as many Flutter features as possible (p.2). Examination scheme is stated as 'as per guidelines notified by the University of Delhi' (p.2), so no fixed 25/25/50 split is printed in this PDF. Students often lose marks by memorising widget names without running Flutter and by skipping GitHub repo practice, while the viva asks you to debug a build method or explain Scaffold and Containers live. For revision, map each PYQ to its unit — middle units repeat most — and confirm your college's exact paper code before the exam, as SEC codes vary by theme (as of 12 Sept 2026).</p>
     <h2>About these notes — APP Development using Flutter your semester</h2>
     <p>These are study notes for <strong>Notes</strong> — APP Development using Flutter your semester (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
@@ -106,6 +107,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

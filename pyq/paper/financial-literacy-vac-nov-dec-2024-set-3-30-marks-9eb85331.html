@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Financial Literacy - VAC | NOV-DEC-2024 | SET-3 | 30 marks</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-08">2026-09-08</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  (2024) · DU &amp; College · Financial Literacy</p>
-      <a href="/view.html?v=4&id=9eb85331-8d06-4c5e-b475-b943323da497" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=9eb85331-8d06-4c5e-b475-b943323da497" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/vac/2024/b940ff3c-dc6f-4403-ab51-8fa880458c26.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=9eb85331-8d06-4c5e-b475-b943323da497" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/vac/2024/b940ff3c-dc6f-4403-ab51-8fa880458c26.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>2024 Semester Previous Year Question Paper</strong> for <strong>Financial Literacy</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Financial Literacy is DU's 2-credit VAC that teaches you personal finance in four short blocks: Financial Planning and Financial Products (saving, time value of money, spending discipline), Banking and Digital Payment, Investment Planning and Management (including life and medical insurance), and Personal Tax. As of 2026, DU's official syllabus still lists exactly what you use daily — debit/ATM and credit cards, net banking and UPI, digital wallets, plus security against Ponzi schemes and online frauds, and e-filing for tax — so the paper ages with your phone, not your textbook. DU counts it as 1 lecture + 1 practical hour per week and expects a practical file: banking product comparison, a dummy stock portfolio, an investment budget that balances return and tax, a dummy ITR, and even a financial-literacy survey of 25 people. Students lose the most marks on the numericals (time value of money, tax deductions) and by writing definitions of UPI without the precaution or comparison the syllabus asks for. Solving last year's numbers and keeping one page per unit with a formula and a live-bank example is how you turn a theory paper into a scoring one.</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Financial Literacy - VAC | NOV-DEC-2024 | SET-3 | 30 marks</strong> — a Financial Literacy your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

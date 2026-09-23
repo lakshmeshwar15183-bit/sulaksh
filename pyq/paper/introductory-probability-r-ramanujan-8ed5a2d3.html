@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Introductory Probability - [R] Ramanujan</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-08">2026-09-08</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  (2022) · DU &amp; College · Introductory Probability</p>
-      <a href="/view.html?v=4&id=8ed5a2d3-59aa-4d67-a21d-205fd0faf467" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=8ed5a2d3-59aa-4d67-a21d-205fd0faf467" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/ge/2022/b3fe0246-2cda-4345-9ff9-992a3d79d618.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=8ed5a2d3-59aa-4d67-a21d-205fd0faf467" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/ge/2022/b3fe0246-2cda-4345-9ff9-992a3d79d618.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>2022 Semester Previous Year Question Paper</strong> for <strong>Introductory Probability</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Introductory Probability is a 4-credit Generic Elective (GE) offered by the Department of Statistics (also taken as Maths GE) under UGCF 2022, taught in 2025-26 as 3L+1T with eligibility Class XII pass with Mathematics (as per the syllabus file 'B.Sc._H_Statistics_Introductory_Probability_Semester_2nd.pdf' on CDN and the maths.du.ac.in GE pool). As per the syllabus scan on CDN and the live Statistics DSC/GE booklet on atishay/stat.du.ac.in, the course has Unit I basic probability (sample space/events, conditional probability/Bayes), Unit II random variables and distributions (discrete/continuous, expectation), Unit III standard distributions (binomial/Poisson/normal) and Unit IV limit theorems, with PYQ 'Introductory Probability GE PYQ 2024 - Paper 1' showing 90 marks theory on qb.exam.du.ac.in. Examination is 90+30. Students lose marks by not showing conditional probability steps or by missing the binomial/Poisson distinction, both 10-mark questions (as of 12 Sept 2026).</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Introductory Probability - [R] Ramanujan</strong> — a Introductory Probability your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

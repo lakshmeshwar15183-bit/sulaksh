@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Hindi Bhasha Sampreshan aur Sanchar PYQ 2023 Paper 1</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-08-24">2026-08-24</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  · DU &amp; College · हिंदी भाषा : सम्प्रेषण और संचार (क)</p>
-      <a href="/view.html?v=4&id=19d191ea-37a7-4b5e-817f-6d3d09c1de7b" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=19d191ea-37a7-4b5e-817f-6d3d09c1de7b" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/aec/undated/347b8ad1-c216-40bf-8f44-62a52c533d67.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=19d191ea-37a7-4b5e-817f-6d3d09c1de7b" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/aec/undated/347b8ad1-c216-40bf-8f44-62a52c533d67.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>latest Semester Previous Year Question Paper</strong> for <strong>हिंदी भाषा : सम्प्रेषण और संचार (क)</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>हिंदी भाषा : सम्प्रेषण और संचार (Hindi Ka) is a 2-credit AEC (2-0-0, lecture 2) for students who studied Hindi till Class 12th, taught in 2025-26 as AEC-1 (p.77 credit table, du.ac.in/uploads/new-web/24022023_AEC.pdf). As per the official syllabus at that live PDF, the course has two blocks — इकाई 1 सम्प्रेषण: सामान्य परिचय (1-7 weeks) सम्प्रेषण की अवधारणा/प्रक्रिया/विविध आयाम and सम्प्रेषण और संचार; and इकाई 2 सम्प्रेषण और संचार के विविध रूप (8-15 weeks) सम्प्रेषण के प्रकार, COVID/mansik swasthya etc. par sarvekshan-adharit report, anuched/samvad/diary and blog/sampadakiya lekhan, plus sahayak granth list including Sudhish Pachauri and Smita Mishra (pp.77-78). The assessment printed is कुल अंक 50: लिखित परीक्षा 38 अंक लिखित, आंतरिक 12 अंक (p.78). Students often lose marks by summarising Sampreshan definitions without the sarvekshan-report or blog/sampadakiya samples the syllabus specifies, which the 38-mark written paper asks (as of 12 Sept 2026).</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Hindi Bhasha Sampreshan aur Sanchar PYQ 2023 Paper 1</strong> — a हिंदी भाषा : सम्प्रेषण और संचार (क) your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>

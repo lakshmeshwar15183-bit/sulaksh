@@ -63,7 +63,8 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 <h1>Reading the Archive - [K] Kalindi | UPC 2316000002 | SEC</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="2026-09-08">2026-09-08</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   <p><strong>Previous Year Question Paper</strong>  (2025) · DU &amp; College · Reading the Archive</p>
-      <a href="/view.html?v=4&id=d2fdccb6-f4bb-4cea-8e2c-b8fcf019f514" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <a href="/view.html?v=5&id=d2fdccb6-f4bb-4cea-8e2c-b8fcf019f514" target="_blank" rel="noopener" class="doc-open">📖 Open this document</a>
+      <h2 id="view-document">View document</h2><div class="docviewer" data-url="https://cdn.sulaksh.online/file/materials/du-college/sec/2025/20552010-fdb1-4a7f-82af-4887bdb8717d.pdf?disposition=inline"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=5&amp;id=d2fdccb6-f4bb-4cea-8e2c-b8fcf019f514" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="https://cdn.sulaksh.online/file/materials/du-college/sec/2025/20552010-fdb1-4a7f-82af-4887bdb8717d.pdf?disposition=inline" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>
       <p style="margin-top:14px">This is the <strong>2025 Semester Previous Year Question Paper</strong> for <strong>Reading the Archive</strong> — Delhi University DU &amp; College under the UGCF/NEP framework. Free to view on Sulaksh.</p><p>Reading the Archive is a 2-credit Skill Enhancement Course (SEC) under Delhi University's UGCF 2022, taught in 2025-26 as a 1 lecture, 0 tutorial, 1 practical (2 credits) (p.1 credit table). As per the official syllabus on academicaffairs.du.ac.in, the course is organised as two parts — Unit 1 Theory (15 hours) Introduction to Primary Sources: Power and Memory in the Archive (with guided visit to National Archives of India/Delhi State Archives); and Unit 2 Practical/Projects (30 hours) with three research projects: 1) documentary archive (colonialism/nationalism — Risley/Gait Census or Champaran Indigo), 2) photography/visual archive, and 3) gender/law and the archive. Each project pairs a primary source with a historian's reading (e.g., Bernard Cohn on Census, Shahid Amin on Champaran) and includes archival visit (pp.2-3). 15 hours theory +30 hours practical; evaluation per University guidelines (p.2). Examiners penalise treating archives as neutral information; you must discuss authorship, representation, access and digitisation (Unit 1) and contextualise a chosen primary source with its secondary reading — not just summarise it. For revision, map each PYQ to its unit — middle units repeat most — and confirm your college's exact paper code before the exam, as SEC codes vary by theme (as of 12 Sept 2026).</p>
     <h2>What this paper covers</h2>
     <p>This is the <strong>Reading the Archive - [K] Kalindi | UPC 2316000002 | SEC</strong> — a Reading the Archive your semester previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
@@ -104,6 +105,22 @@ function sharePage(){
   } else {
     prompt('Copy link:', url);
   }
+}
+// Click-to-load for the pre-rendered per-paper viewer (paperViewer): swaps the
+// placeholder for the real file iframe. The file URL is already in the initial
+// HTML (data-url), so crawlers see the embed without executing this.
+function loadViewer(btn){
+  try{
+    const box = btn.closest('.docviewer');
+    const url = box && box.getAttribute('data-url');
+    if(!url) return;
+    const f = document.createElement('iframe');
+    f.src = url;
+    f.loading = 'lazy';
+    f.title = document.title;
+    f.style.cssText = 'width:100%;height:80vh;border:1px solid var(--border);border-radius:10px;background:#fff';
+    box.replaceChildren(f);
+  }catch(e){}
 }
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
