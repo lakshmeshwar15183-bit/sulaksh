@@ -1480,11 +1480,24 @@ emit('index.html',
   'Delhi University PYQs & Study Material - Complete Index',
   'Master Index',
   '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p>',
-  `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:0 0 18px"><label for="archSearch" style="font-size:14px;font-weight:800;display:block;margin-bottom:8px">🔍 Search the 23,000+ PYQ Archive</label><input id="archSearch" type="search" placeholder="Type paper name — e.g. data privacy, corporate accounting…" autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:var(--bg);color:var(--text);outline:none"><p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">💡 Tip: use this search for best results — type the exact paper name to see every matching PYQ across years. Browsing below is by course; searching finds the paper directly.</p><p id="archCount" style="font-size:12.5px;color:var(--muted);margin:8px 0 0"></p><div id="archResults"></div></div>
+  `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:0 0 18px"><label for="archSearch" style="font-size:14px;font-weight:800;display:block;margin-bottom:8px">🔍 Search the 23,000+ PYQ Archive</label><input id="archSearch" type="search" placeholder="Type paper name — e.g. data privacy, corporate accounting…" autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:var(--bg);color:var(--text);outline:none"><p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">💡 Tip: use this search for best results — type the exact paper name to see every matching PYQ across years. Browsing below is by course; searching finds the paper directly.</p><p id="archCount" style="font-size:12.5px;color:var(--muted);margin:8px 0 0"></p><div id="archResults"></div><button id="archMore" style="display:none;width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-weight:700;font-size:13.5px;cursor:pointer"></button></div>
    <script>
    (function(){
-     var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), t=null;
-     var API='https://sulaksh-backend-production.up.railway.app';
+      var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), more=document.getElementById('archMore'), t=null, lastEff='', lastTotal=0;
+      var API='https://sulaksh-backend-production.up.railway.app';
+      // Acronym/shorthand expansion: 2-letter queries otherwise match substrings
+      // like "ml" inside "html". Exact acronym hits search the full paper name.
+      var ALIAS={ml:'machine learning', ai:'artificial intelligence', dbms:'database management systems', os:'operating systems', cn:'computer networks', hr:'human resource management', it:'information technology', stats:'statistics', maths:'mathematics', mathematics:'mathematics', eco:'economics', econ:'economics', polsci:'political science', soci:'sociology', phil:'philosophy', sans:'sanskrit', chem:'chemistry', phy:'physics', bio:'biology', zoo:'zoology', bot:'botany', acc:'accounting', fin:'finance', mkt:'marketing', mgmt:'management', cs:'computer science'};
+      function rankFirst(arr, q0){
+        // Whole-word hits first, title-starts-with second, substring last.
+        function score(m){
+          var t=' '+String(m.title||'').toLowerCase()+' ';
+          if(t.indexOf(' '+q0+' ')>=0) return 0;
+          if(String(m.title||'').toLowerCase().indexOf(q0)===0) return 1;
+          return 2;
+        }
+        return arr.slice().sort(function(a,b){return score(a)-score(b);});
+      }
      function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
      function row(m){
        var bits=[m.subject, m.semester?('Sem '+m.semester):'', m.year||''].filter(Boolean).join(' · ');
@@ -1502,17 +1515,32 @@ emit('index.html',
      input.addEventListener('input', function(){
        clearTimeout(t);
        var q=input.value.trim();
-       if(q.length<2){ box.innerHTML=''; meta.textContent=''; return; }
+        if(q.length<2){ box.innerHTML=''; meta.textContent=''; more.style.display='none'; return; }
        meta.textContent='Searching…';
-       t=setTimeout(function(){
-         fetch(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(q)+'&limit=20')
-           .then(function(r){return r.json();}).then(function(d){
-             var arr=(d&&d.materials)||[];
-             meta.textContent=arr.length?('Showing '+arr.length+' matches — open any paper to view or save it.'):'No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
-             box.innerHTML=arr.map(row).join('');
-           }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
-       }, 300);
-     });
+        t=setTimeout(function(){
+          var raw=q.toLowerCase();
+          var eff=ALIAS[raw]||q;
+          fetch(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(eff)+'&limit=20')
+            .then(function(r){return r.json();}).then(function(d){
+              var arr=rankFirst((d&&d.materials)||[], eff.toLowerCase());
+              var total=(d&&typeof d.total==='number')?d.total:arr.length;
+              lastEff=eff; lastTotal=total;
+              if(total>arr.length){ more.style.display=''; more.textContent='Show '+(total-arr.length)+' more results'; }
+              else { more.style.display='none'; }
+              meta.textContent=arr.length?('Showing '+arr.length+' of '+total+' matches — open any paper to view or save it.'):'No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
+              box.innerHTML=arr.map(row).join('');
+            }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
+        }, 300);
+      });
+      more.addEventListener('click', function(){
+        more.style.display='none'; meta.textContent='Loading all matches…';
+        fetch(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(lastEff)+'&limit=100')
+          .then(function(r){return r.json();}).then(function(d){
+            var arr=rankFirst((d&&d.materials)||[], String(lastEff).toLowerCase());
+            meta.textContent=arr.length?('Showing all '+arr.length+' matches — open any paper to view or save it.'):'No matches.';
+            box.innerHTML=arr.map(row).join('');
+          }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
+      });
    })();
    </script>
     <h2>Featured PYQs from the Archive</h2>
