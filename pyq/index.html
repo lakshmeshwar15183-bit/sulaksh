@@ -70,6 +70,12 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
    (function(){
       var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), more=document.getElementById('archMore'), t=null, lastEff='', lastTotal=0;
       var API='https://sulaksh-backend-production.up.railway.app';
+      // Honor the admin "Downloads enabled" toggle: hide every Save button when
+      // downloads are off (View always stays). Defaults to visible until the
+      // config check resolves, matching the rest of the site.
+      var DL_ON=true;
+      function hideDl(){ if(DL_ON) return; var els=document.querySelectorAll('#archResults [data-dl], #featList [data-dl]'); for(var i=0;i<els.length;i++){ els[i].style.display='none'; } }
+      fetch(API+'/api/config').then(function(r){return r.json();}).then(function(c){ if(c&&c.downloads_enabled===false){ DL_ON=false; hideDl(); } }).catch(function(){});
       // Acronym/shorthand expansion: 2-letter queries otherwise match substrings
       // like "ml" inside "html". Exact acronym hits search the full paper name.
       var ALIAS={ml:'machine learning', ai:'artificial intelligence', dbms:'database management systems', os:'operating systems', cn:'computer networks', hr:'human resource management', it:'information technology', stats:'statistics', maths:'mathematics', mathematics:'mathematics', eco:'economics', econ:'economics', polsci:'political science', soci:'sociology', phil:'philosophy', sans:'sanskrit', chem:'chemistry', phy:'physics', bio:'biology', zoo:'zoology', bot:'botany', acc:'accounting', fin:'finance', mkt:'marketing', mgmt:'management', cs:'computer science'};
@@ -89,9 +95,9 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
        return '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13.5px">'
          + '<div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">'+esc(m.title)+'</div>'
          + '<div style="font-size:12px;color:var(--muted)">'+esc(bits)+'</div></div>'
-         + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id='+encodeURIComponent(m.id)+'" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
-         + '<button data-dl="'+esc(m.id)+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button></div></div>';
-     }
+          + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id='+encodeURIComponent(m.id)+'" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
+          + (DL_ON?'<button data-dl="'+esc(m.id)+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button>':'') + '</div></div>';
+      }
       document.addEventListener('click', function(e){
         var b=e.target.closest('#archResults [data-dl], #featList [data-dl]'); if(!b) return;
        fetch(API+'/api/materials/'+encodeURIComponent(b.getAttribute('data-dl'))+'/download?disposition=inline')
@@ -113,7 +119,7 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
               if(total>arr.length){ more.style.display=''; more.textContent='Show '+(total-arr.length)+' more results'; }
               else { more.style.display='none'; }
               meta.textContent=arr.length?('Showing '+arr.length+' of '+total+' matches — open any paper to view or save it.'):'No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
-              box.innerHTML=arr.map(row).join('');
+              box.innerHTML=arr.map(row).join(''); hideDl();
             }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
         }, 300);
       });
@@ -123,7 +129,7 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
           .then(function(r){return r.json();}).then(function(d){
             var arr=rankFirst((d&&d.materials)||[], String(lastEff).toLowerCase());
             meta.textContent=arr.length?('Showing all '+arr.length+' matches — open any paper to view or save it.'):'No matches.';
-            box.innerHTML=arr.map(row).join('');
+            box.innerHTML=arr.map(row).join(''); hideDl();
           }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
       });
    })();
