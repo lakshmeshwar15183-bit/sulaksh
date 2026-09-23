@@ -17,6 +17,7 @@ const TITLES = {
   internship: 'Certificate of Internship',
   participation: 'Certificate of Participation',
   lor: 'Letter of Recommendation',
+  joining: 'Internship Offer Letter',
 };
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
@@ -26,6 +27,19 @@ function fmtDate(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
   if (!m) return String(iso || '');
   return `${m[3]} ${MONTHS[parseInt(m[2], 10) - 1] || ''} ${m[1]}`;
+}
+
+// "3 months (01 September 2026 to 30 November 2026)" — never promises more.
+function durationText(startIso, endIso) {
+  const range = `${fmtDate(startIso)} to ${fmtDate(endIso)}`;
+  const a = new Date(String(startIso) + 'T00:00:00Z');
+  const b = new Date(String(endIso) + 'T00:00:00Z');
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime()) || b < a) return range;
+  let months = (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth());
+  if (b.getUTCDate() < a.getUTCDate()) months -= 1;
+  if (months >= 1) return `${months} month${months === 1 ? '' : 's'} (${range})`;
+  const weeks = Math.max(1, Math.round((b - a) / (7 * 86400000)));
+  return `${weeks} week${weeks === 1 ? '' : 's'} (${range})`;
 }
 
 // Letterspaced small-caps labels: C E R T I F I C A T E
@@ -260,6 +274,148 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr) {
   last.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
 }
 
+// ---------------- Internship Offer Letter (portrait, minimum 2 pages) ----------------
+// Deliberately an offer/engagement letter, never an employment appointment.
+// Terms page always starts on a fresh page, so the document is >= 2 pages.
+async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr) {
+  const { helv, helvBold } = fonts;
+  const PW = 595.28;
+  const PH = 841.89;
+  const ML = 72;
+  const maxW = PW - ML * 2;
+
+  let page = pdf.addPage([PW, PH]);
+  let y = PH - 60;
+  const freshPage = () => {
+    page = pdf.addPage([PW, PH]);
+    return PH - 70;
+  };
+
+  // Letterhead (same family as the LOR)
+  if (logo) {
+    const lw = 52;
+    const lh = (logo.height / logo.width) * lw;
+    page.drawImage(logo, { x: ML, y: y - lh, width: lw, height: lh });
+  }
+  page.drawText('SULAKSH', { x: ML + 64, y: y - 24, size: 22, font: helvBold, color: NAVY });
+  page.drawText('Learn. Prepare. Achieve.  |  sulaksh.online', { x: ML + 64, y: y - 40, size: 9.5, font: helv, color: MUTED });
+  y -= 62;
+  page.drawLine({ start: { x: ML, y }, end: { x: PW - ML, y }, thickness: 1.2, color: GOLD });
+  page.drawLine({ start: { x: ML, y: y - 3 }, end: { x: PW - ML, y: y - 3 }, thickness: 0.6, color: GOLD_LIGHT });
+  y -= 32;
+
+  const dateLine = `Date : ${fmtDate(record.issue_date)}`;
+  page.drawText(dateLine, { x: PW - ML - helv.widthOfTextAtSize(dateLine, 10.5), y: y - 11, size: 10.5, font: helv, color: DARK });
+  const refLine = `Ref : ${record.certificate_number || ''}`;
+  page.drawText(refLine, { x: ML, y: y - 11, size: 10.5, font: helvBold, color: NAVY });
+  y -= 36;
+
+  const docTitle = spaced('INTERNSHIP OFFER LETTER');
+  page.drawText(docTitle, { x: PW / 2 - helvBold.widthOfTextAtSize(docTitle, 15) / 2, y: y - 15, size: 15, font: helvBold, color: NAVY });
+  y -= 26;
+  goldRule(page, PW / 2 - 120, PW / 2 + 120, y);
+  y -= 30;
+
+  const para = (text, size, font, gap) => {
+    for (const ln of wrapText(text, font, size, maxW)) {
+      if (y < 90) y = freshPage();
+      page.drawText(ln, { x: ML, y: y - size, size, font, color: DARK });
+      y -= size + 7;
+    }
+    y -= (gap == null ? 6 : gap);
+  };
+  const head = (text) => {
+    if (y < 120) y = freshPage();
+    page.drawText(text, { x: ML, y: y - 12, size: 12, font: helvBold, color: NAVY });
+    y -= 24;
+  };
+
+  para(`Dear ${record.recipient_name || ''},`, 11.5, helv, 4);
+  para(`We are pleased to offer you the position of ${record.role || ''} in the ${record.department || ''} team at Sulaksh, commencing on ${fmtDate(record.start_date)}. This letter sets out the terms of this internship opportunity.`, 11.5, helv, 6);
+
+  head('Role Details');
+  const details = [
+    ['Internship Title', record.role || ''],
+    ['Department / Team', record.department || ''],
+    ['Start Date', fmtDate(record.start_date)],
+    ['Expected Duration', durationText(record.start_date, record.end_date)],
+    ['Reporting To', record.supervisor || ''],
+  ];
+  for (const [k, v] of details) {
+    if (y < 90) y = freshPage();
+    page.drawText(k + ' :', { x: ML, y: y - 11, size: 11, font: helvBold, color: DARK });
+    for (const ln of wrapText(v, helv, 11, maxW - 170)) {
+      page.drawText(ln, { x: ML + 165, y: y - 11, size: 11, font: helv, color: DARK });
+      y -= 18;
+    }
+    y -= 2;
+  }
+  y -= 6;
+
+  head('Key Responsibilities');
+  const duties = String(record.responsibilities || '').split(/\n+/).map((s) => s.trim()).filter(Boolean);
+  for (const d of duties) {
+    for (const ln of wrapText('\u2022  ' + d, helv, 11, maxW - 20)) {
+      if (y < 90) y = freshPage();
+      page.drawText(ln, { x: ML + 14, y: y - 11, size: 11, font: helv, color: DARK });
+      y -= 18;
+    }
+    y -= 2;
+  }
+  y -= 4;
+
+  head('Compensation');
+  para('Compensation: This is an unpaid internship opportunity. No stipend or monetary compensation will be provided during the internship period.', 11.5, helv, 0);
+
+  // ---- Page 2+ : terms always start on a fresh page (minimum-2-pages rule)
+  y = freshPage();
+  const cont = `(Ref : ${record.certificate_number || ''} - continued)`;
+  page.drawText(cont, { x: PW - ML - helv.widthOfTextAtSize(cont, 8.5), y: y - 9, size: 8.5, font: helv, color: MUTED });
+  y -= 28;
+
+  head('Performance and Conduct');
+  const terms = [
+    'Maintain professional conduct and sincerity towards all assigned work throughout the internship period.',
+    'Follow the guidance of the reporting supervisor and meet the timelines communicated for each task.',
+    'Maintain confidentiality of Sulaksh internal material, data and processes during and after the internship.',
+    'Sulaksh reserves the right to conclude the internship early in case of unsatisfactory performance or misconduct.',
+  ];
+  for (const t of terms) {
+    for (const ln of wrapText('\u2022  ' + t, helv, 11, maxW - 20)) {
+      if (y < 200) y = freshPage();
+      page.drawText(ln, { x: ML + 14, y: y - 11, size: 11, font: helv, color: DARK });
+      y -= 18;
+    }
+    y -= 2;
+  }
+  y -= 6;
+
+  head('Certification');
+  para("Upon successful completion of the internship, an Internship Certificate may be issued based on the intern's performance, conduct, and contribution. A Letter of Recommendation may be issued separately at the discretion of Sulaksh based on demonstrated performance and contribution.", 11.5, helv, 6);
+
+  head('Acceptance');
+  para(`I, ${record.recipient_name || ''}, hereby accept the terms of this internship offer as set out above.`, 11.5, helv, 10);
+  if (y < 260) y = freshPage();
+  page.drawLine({ start: { x: ML, y: y - 2 }, end: { x: ML + 200, y: y - 2 }, thickness: 1, color: MUTED });
+  page.drawLine({ start: { x: PW - ML - 200, y: y - 2 }, end: { x: PW - ML, y: y - 2 }, thickness: 1, color: MUTED });
+  y -= 18;
+  page.drawText("Intern's Signature & Date", { x: ML, y: y - 10, size: 9.5, font: helv, color: MUTED });
+  const byName = record.issued_by_name || '';
+  page.drawText(byName, { x: PW - ML - 200, y: y + 8, size: 12, font: helvBold, color: DARK });
+  const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Authorised Signatory, Sulaksh';
+  page.drawText(byTitle, { x: PW - ML - 200, y: y - 8, size: 9.5, font: helv, color: MUTED });
+
+  // Verification footer on the final page
+  page.drawLine({ start: { x: ML, y: 96 }, end: { x: PW - ML, y: 96 }, thickness: 0.6, color: GOLD_LIGHT });
+  const qs = 62;
+  page.drawImage(qr, { x: ML, y: 24, width: qs, height: qs });
+  const vt = 'Verify this letter :';
+  page.drawText(vt, { x: ML + qs + 12, y: 66, size: 9, font: helvBold, color: NAVY });
+  const vu = String(verifyUrl);
+  page.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
+  page.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
+}
+
 async function generateCertificatePdf(record, verifyUrl) {
   const pdf = await PDFDocument.create();
   const fonts = {
@@ -269,8 +425,11 @@ async function generateCertificatePdf(record, verifyUrl) {
   };
   const logo = await loadLogo(pdf);
   const qr = await makeQr(pdf, verifyUrl);
-  if ((record.certificate_type || '') === 'lor') {
+  const t = record.certificate_type || '';
+  if (t === 'lor') {
     await lorPages(pdf, record, verifyUrl, fonts, logo, qr);
+  } else if (t === 'joining') {
+    await joiningPages(pdf, record, verifyUrl, fonts, logo, qr);
   } else {
     await certificatePage(pdf, record, verifyUrl, fonts, logo, qr);
   }

@@ -165,6 +165,16 @@ CREATE TABLE IF NOT EXISTS certificate_counters (
 );
 `);
 
+// Joining-letter columns (nullable — older certificate/LOR rows unaffected).
+// department / supervisor / responsibilities are required for type 'joining'.
+const certCols = db.prepare('PRAGMA table_info(certificates)').all();
+for (const col of ['department', 'supervisor', 'responsibilities']) {
+  if (!certCols.some((c) => c.name === col)) {
+    db.exec(`ALTER TABLE certificates ADD COLUMN ${col} TEXT`);
+    console.log(`[db] Added ${col} column to certificates`);
+  }
+}
+
 // ---- Auth sessions (server-side revocation + sliding expiry) ----
 db.exec(`
 CREATE TABLE IF NOT EXISTS auth_sessions (
