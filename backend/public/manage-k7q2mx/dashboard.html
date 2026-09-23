@@ -151,6 +151,49 @@
     </div>
     <div id="reportWrap"><div class="empty">Loading reports…</div></div>
   </section>
+
+  <section class="panel" id="certPanel" style="margin-top:20px;">
+    <h2>Certificates &amp; LORs</h2>
+    <div class="grid" style="grid-template-columns:340px 1fr;">
+      <div>
+        <h2 style="font-size:13.5px;">Issue New Certificate</h2>
+        <form id="certForm">
+          <label>Type *</label>
+          <select id="certType">
+            <option value="internship">Internship (SUL-INT-…)</option>
+            <option value="participation">Participation (SUL-PAR-…)</option>
+            <option value="lor">Letter of Recommendation (SUL-LOR-…)</option>
+          </select>
+          <label>Recipient name *</label>
+          <input type="text" id="certName" required maxlength="120">
+          <label>Role / Program *</label>
+          <input type="text" id="certRole" required maxlength="160" placeholder="e.g. Content Research Intern">
+          <label>Start date (required for internships)</label>
+          <input type="date" id="certStart">
+          <label>End date (required for internships)</label>
+          <input type="date" id="certEnd">
+          <label>Issue date *</label>
+          <input type="date" id="certIssue" required>
+          <label>Description / details</label>
+          <textarea id="certDesc" maxlength="2000" placeholder="optional"></textarea>
+          <label>Issued by (name) *</label>
+          <input type="text" id="certByName" required maxlength="120">
+          <label>Issued by (designation)</label>
+          <input type="text" id="certByTitle" maxlength="120" placeholder="e.g. Founder, Sulaksh">
+          <button type="submit" class="primary" id="certSubmitBtn">Generate Certificate + PDF</button>
+          <div class="msg" id="certFormMsg"></div>
+        </form>
+      </div>
+      <div>
+        <h2 style="font-size:13.5px;">Issued Certificates</h2>
+        <div class="filters">
+          <input type="text" id="certQ" placeholder="Search name or ID (e.g. SUL-INT-2026-0001)">
+          <button id="certFilterBtn" style="padding:9px 14px; border-radius:7px; border:1px solid var(--border); background:#fff; cursor:pointer;">Search</button>
+        </div>
+        <div id="certWrap"><div class="empty">Loading…</div></div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script>
@@ -484,7 +527,93 @@
   $('reportStatus').addEventListener('change', loadReports);
   $('reportRefreshBtn').addEventListener('click', loadReports);
 
-  checkAuth().then(() => { loadMaterials(); loadReports(); });
+  // ---- Certificates & LORs ----
+  const PUBLIC_SITE = 'https://sulaksh.online'; // public verify pages live on the static site, not this backend origin
+  try { $('certIssue').value = new Date().toISOString().slice(0, 10); } catch (e) {}
+  async function loadCerts() {
+    const wrap = $('certWrap');
+    try {
+      const params = new URLSearchParams();
+      if ($('certQ').value.trim()) params.set('q', $('certQ').value.trim());
+      const res = await authFetch(`${API}/api/certificates?${params}`);
+      if (res.status === 401) { setToken(null); window.location.href = './login.html'; return; }
+      if (res.status === 403) { wrap.innerHTML = '<div class="empty">Your account cannot manage certificates.</div>'; return; }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not load certificates.');
+      renderCerts(data.certificates || []);
+    } catch (e) {
+      wrap.innerHTML = `<div class="empty">${escapeHtml(e.message)}</div>`;
+    }
+  }
+  function renderCerts(rows) {
+    const wrap = $('certWrap');
+    if (!rows.length) { wrap.innerHTML = '<div class="empty">No certificates yet.</div>'; return; }
+    wrap.innerHTML = `<table><thead><tr><th>Certificate</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows.map((c) => `
+      <tr>
+        <td><strong>${escapeHtml(c.certificate_number)}</strong><br>${escapeHtml(c.recipient_name)} · ${escapeHtml(c.certificate_type)}<br><span style="color:var(--muted);font-size:12px;">${escapeHtml(c.role)} · issued ${escapeHtml(c.issue_date || '')}</span></td>
+        <td>${c.status === 'revoked' ? '<span class="pill" style="background:rgba(214,69,69,.12);color:var(--danger);">revoked</span>' : '<span class="pill" style="background:rgba(20,108,67,.12);color:var(--green);">valid</span>'}</td>
+        <td><div class="row-actions">
+          <button onclick="window.open('${PUBLIC_SITE}/verify.html?id=${encodeURIComponent(c.certificate_number)}', '_blank')">Verify ↗</button>
+          <button onclick="downloadCert('${c.id}')">PDF</button>
+          ${c.status !== 'revoked' ? `<button class="danger" onclick="revokeCert('${c.id}', '${escapeHtml(c.certificate_number)}')">Revoke</button>` : ''}
+        </div></td>
+      </tr>`).join('')}</tbody></table>`;
+  }
+  $('certFilterBtn').addEventListener('click', loadCerts);
+  $('certQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); loadCerts(); } });
+  $('certForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = $('certFormMsg');
+    msg.textContent = ''; msg.className = 'msg';
+    $('certSubmitBtn').disabled = true;
+    try {
+      const res = await authFetch(`${API}/api/certificates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          certificate_type: $('certType').value,
+          recipient_name: $('certName').value,
+          role: $('certRole').value,
+          start_date: $('certStart').value || null,
+          end_date: $('certEnd').value || null,
+          issue_date: $('certIssue').value,
+          description: $('certDesc').value || null,
+          issued_by_name: $('certByName').value,
+          issued_by_title: $('certByTitle').value || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not create certificate.');
+      msg.textContent = `Issued ${data.certificate.certificate_number} — PDF ready in the list below.`;
+      msg.className = 'msg ok';
+      $('certForm').reset();
+      try { $('certIssue').value = new Date().toISOString().slice(0, 10); } catch (err) {}
+      loadCerts();
+    } catch (err) {
+      msg.textContent = err.message; msg.className = 'msg err';
+    } finally {
+      $('certSubmitBtn').disabled = false;
+    }
+  });
+  window.downloadCert = async (id) => {
+    try {
+      const res = await authFetch(`${API}/api/certificates/${id}/download`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Download failed.');
+      window.open(data.url, '_blank');
+    } catch (e) { alert(e.message); }
+  };
+  window.revokeCert = async (id, number) => {
+    if (!confirm(`Revoke ${number}? The public page will show "Certificate Revoked".`)) return;
+    try {
+      const res = await authFetch(`${API}/api/certificates/${id}/revoke`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Revoke failed.');
+      loadCerts();
+    } catch (e) { alert(e.message); }
+  };
+
+  checkAuth().then(() => { loadMaterials(); loadReports(); loadCerts(); });
 </script>
   <script src="/admin/assets/js/delete-flag.js"></script>
 </body>

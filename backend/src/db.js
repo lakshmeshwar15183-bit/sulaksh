@@ -129,6 +129,42 @@ CREATE INDEX IF NOT EXISTS idx_reports_material ON reports(material_id);
 CREATE INDEX IF NOT EXISTS idx_reports_created ON reports(created_at);
 `);
 
+// ---- Certificates & LOR verification (isolated feature) ----
+// Server-generated numbers like SUL-INT-2026-0001. Sequences come from
+// certificate_counters (per type+year, bumped inside a transaction) so numbers
+// can never duplicate or be edited. status: 'valid' | 'revoked'.
+// r2_object_key points at the generated PDF in private storage (presigned
+// download for admins only). Public verification exposes a subset of fields.
+db.exec(`
+CREATE TABLE IF NOT EXISTS certificates (
+  id TEXT PRIMARY KEY,
+  certificate_number TEXT NOT NULL UNIQUE,
+  certificate_type TEXT NOT NULL,
+  recipient_name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  start_date TEXT,
+  end_date TEXT,
+  issue_date TEXT NOT NULL,
+  description TEXT,
+  issued_by_name TEXT NOT NULL,
+  issued_by_title TEXT,
+  status TEXT NOT NULL DEFAULT 'valid',
+  r2_object_key TEXT,
+  created_by TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_certificates_number ON certificates(certificate_number);
+CREATE INDEX IF NOT EXISTS idx_certificates_recipient ON certificates(recipient_name);
+CREATE INDEX IF NOT EXISTS idx_certificates_status ON certificates(status);
+CREATE TABLE IF NOT EXISTS certificate_counters (
+  type TEXT NOT NULL,
+  year INTEGER NOT NULL,
+  last_seq INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (type, year)
+);
+`);
+
 // ---- Auth sessions (server-side revocation + sliding expiry) ----
 db.exec(`
 CREATE TABLE IF NOT EXISTS auth_sessions (
