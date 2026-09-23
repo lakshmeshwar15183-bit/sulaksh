@@ -8,6 +8,7 @@ const { PDFDocument, StandardFonts, degrees, rgb } = require('pdf-lib');
 const QRCode = require('qrcode');
 
 const NAVY = rgb(12 / 255, 35 / 255, 64 / 255);
+const BLUE = rgb(30 / 255, 95 / 255, 255 / 255);
 const GOLD = rgb(176 / 255, 134 / 255, 30 / 255);
 const GOLD_LIGHT = rgb(201 / 255, 178 / 255, 90 / 255);
 const MUTED = rgb(100 / 255, 112 / 255, 130 / 255);
@@ -79,6 +80,22 @@ async function makeQr(pdf, url) {
 
 function diamond(page, x, y, s, color) {
   page.drawRectangle({ x: x - s / 2, y: y - s / 2, width: s, height: s, rotate: degrees(45), color });
+}
+
+// Round blue owner muhar: double ring + SULAKSH / OWNER stacked centre.
+// Generic authority seal — never a personal name. r = outer radius.
+function ownerSeal(page, cx, cy, r, fonts) {
+  const { helvBold } = fonts;
+  page.drawCircle({ x: cx, y: cy, size: r, borderColor: BLUE, borderWidth: 2.5 });
+  page.drawCircle({ x: cx, y: cy, size: r - 7, borderColor: BLUE, borderWidth: 0.8 });
+  diamond(page, cx, cy + r - 3.5, 5, BLUE);
+  diamond(page, cx, cy - r + 3.5, 5, BLUE);
+  const brand = 'SULAKSH';
+  const bs = r * 0.30;
+  page.drawText(brand, { x: cx - helvBold.widthOfTextAtSize(brand, bs) / 2, y: cy + 2, size: bs, font: helvBold, color: NAVY });
+  const own = 'OWNER';
+  const os = r * 0.26;
+  page.drawText(own, { x: cx - helvBold.widthOfTextAtSize(own, os) / 2, y: cy - os - 8, size: os, font: helvBold, color: BLUE });
 }
 
 function goldRule(page, x1, x2, y) {
@@ -181,6 +198,9 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr) {
   const short = vu.length > 44 ? vu.slice(0, 44) + '...' : vu;
   page.drawText(short, { x: W - fx - qs, y: fy - 49, size: 7, font: helv, color: MUTED });
 
+  // Owner muhar: centred between the issued-by block (left) and QR (right).
+  ownerSeal(page, W / 2, 100, 38, fonts);
+
   const foot = 'sulaksh.online  |  This is a system-generated verifiable certificate';
   page.drawText(foot, { x: center(foot, helv, 7.5), y: 40, size: 7.5, font: helv, color: MUTED });
 }
@@ -272,6 +292,8 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr) {
   const vu = String(verifyUrl);
   last.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   last.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
+  // Owner muhar opposite the QR: issued-by sits in the body above, seal here.
+  ownerSeal(last, PW - ML - 40, 58, 30, fonts);
 }
 
 // ---------------- Internship Offer Letter (portrait, minimum 2 pages) ----------------
@@ -414,6 +436,8 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr) {
   const vu = String(verifyUrl);
   page.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   page.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
+  // Owner muhar opposite the QR: acceptance signatures sit in the body above.
+  ownerSeal(page, PW - ML - 40, 58, 30, fonts);
 }
 
 async function generateCertificatePdf(record, verifyUrl) {
