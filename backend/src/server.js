@@ -15,6 +15,12 @@ const app = express();
 // Express discloses itself via X-Powered-By; disable it.
 app.disable('x-powered-by');
 
+// Staff console path — intentionally non-standard so automated sweeps for
+// /admin, /wp-admin, etc. find nothing. NOT a secret (public repo); real
+// protection is bcrypt + JWT + login rate limits. Kept off robots.txt and
+// unlinked from all public pages on purpose.
+const ADMIN_PANEL_PATH = '/manage-k7q2mx';
+
 // Railway terminates TLS and forwards the real client IP in X-Forwarded-For.
 // Without this, express-rate-limit sees the proxy's IP for every request, so
 // all per-IP limits (login brute-force, download, report) collapse into one
@@ -31,10 +37,13 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  // CSP: JSON API responses carry a locked-down policy. The admin panel is
+  // CSP: JSON API responses carry a locked-down policy. The staff console is
   // inline-script based, so it gets a scoped policy that still stops
   // clickjacking (frame-ancestors) and form-jacking.
-  const csp = req.path.startsWith('/admin')
+  // ADMIN_PANEL_PATH is intentionally non-standard so automated sweeps for
+  // /admin, /wp-admin, etc. find nothing. It is NOT a secret (it's in this
+  // public repo) — real protection is bcrypt + JWT + the login rate limits.
+  const csp = req.path.startsWith(ADMIN_PANEL_PATH)
     ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://cdn.sulaksh.online https://*.backblazeb2.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
     : "default-src 'none'; frame-ancestors 'none'; base-uri 'self'";
   res.setHeader('Content-Security-Policy', csp);
@@ -70,10 +79,11 @@ app.use((req, res, next) => {
 
 // ---- Rate limiting ----
 // Login: strict cap to make password brute-forcing impractical.
+// 5 failed attempts per IP per 15 minutes, plus a per-account lockout.
 // Counts failed attempts only; successful logins never consume budget.
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: parseInt(process.env.LOGIN_ATTEMPTS_LIMIT || '10', 10),
+  limit: parseInt(process.env.LOGIN_ATTEMPTS_LIMIT || '5', 10),
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   skipSuccessfulRequests: true,
@@ -146,7 +156,7 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/admin', adminRoutes);
 
 // ---- Admin panel static UI (separate from the public marketing site) ----
-app.use('/admin', express.static(path.join(__dirname, '..', 'public', 'admin')));
+app.use(ADMIN_PANEL_PATH, express.static(path.join(__dirname, '..', 'public', 'manage-k7q2mx')));
 
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
