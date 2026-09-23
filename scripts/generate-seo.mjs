@@ -414,7 +414,7 @@ function pageHTML(o) {
     '@type':'Article',
     headline: o.h1,
     description: o.desc,
-    author: { '@type':'Person', name:'Lakshmeshwar Pandey' },
+    author: { '@type': o.authorName ? 'Organization' : 'Person', name: o.authorName || 'Lakshmeshwar Pandey' },
     publisher: { '@type':'Organization', name:'Sulaksh', logo:{ '@type':'ImageObject', url:`${SITE}/assets/images/favicon.png`} },
     // datePublished omitted: no real first-published date per page in data (fake date is worse than none).
     // dateModified only when backed by the page's own material timestamps (see maxMatDate).
@@ -429,7 +429,7 @@ function pageHTML(o) {
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(o.title)}</title>
 <meta name="description" content="${esc(o.desc)}">
-<meta name="author" content="Lakshmeshwar Pandey">
+<meta name="author" content="${o.authorName || 'Lakshmeshwar Pandey'}">
 ${noIndexTag}
 <link rel="canonical" href="${SITE}/pyq/${canonicalFile}">
 <meta property="og:type" content="${o.file.startsWith('paper/') ? 'article' : 'website'}">
@@ -464,10 +464,10 @@ ${noIndexTag}
 <div class="wrap">
 <span class="badge">${esc(o.badge)} · Delhi University · Free</span>
 <h1>${esc(o.h1)}</h1>
-<p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>Lakshmeshwar Pandey</b> · Updated <time datetime="${displayDate}">${displayDate}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
- ${o.intro}
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
-<nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li></ul></nav>
+<p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>${o.reviewer || 'Lakshmeshwar Pandey'}</b> · Updated <time datetime="${displayDate}">${displayDate}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
+  ${o.intro}
+  ${o.hideActions ? '' : ` <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
+<nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li></ul></nav>`}
 <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.body}
 <div class="ad"><ins class="adsbygoogle" style="display:block;margin-top:20px" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
@@ -775,7 +775,7 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   // Honest dateModified from the page's own materials (opts.mats); explicit
   // opts.dateModified wins if a caller passes one. Otherwise omitted.
   const pageDateModified = (opts && opts.dateModified) || maxMatDate(opts && opts.mats) || undefined;
-  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex, dateModified: pageDateModified });
+  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex, dateModified: pageDateModified, reviewer: opts && opts.reviewer, hideActions: !!(opts && opts.hideActions), authorName: opts && opts.authorName });
   // Thin-audit log: noindexed placeholders are out of the sitemap; everything else stays indexed.
   if (shouldNoIndex) {
     noIndexFiles.add(file);
@@ -1479,7 +1479,7 @@ emit('index.html',
   'Complete DU PYQs, syllabus & study material - BA/BSc/BCom majors, minors, honours, GE, VAC, AEC, SEC. Free.',
   'Delhi University PYQs & Study Material - Complete Index',
   'Master Index',
-  '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p>',
+  '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p><div style="background:rgba(214,69,69,.06);border:1px solid rgba(214,69,69,.25);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:13px;line-height:1.6">© <b>Sulaksh — All rights reserved.</b> Papers here are free to view and save for personal study. Copying, re-uploading or redistributing these PDFs on other websites or apps without permission is not permitted and will be treated as a copyright violation.</div>',
   `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:0 0 18px"><label for="archSearch" style="font-size:14px;font-weight:800;display:block;margin-bottom:8px">🔍 Search the 23,000+ PYQ Archive</label><input id="archSearch" type="search" placeholder="Type paper name — e.g. data privacy, corporate accounting…" autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:var(--bg);color:var(--text);outline:none"><p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">💡 Tip: use this search for best results — type the exact paper name to see every matching PYQ across years. Browsing below is by course; searching finds the paper directly.</p><p id="archCount" style="font-size:12.5px;color:var(--muted);margin:8px 0 0"></p><div id="archResults"></div><button id="archMore" style="display:none;width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-weight:700;font-size:13.5px;cursor:pointer"></button></div>
    <script>
    (function(){
@@ -1554,7 +1554,7 @@ emit('index.html',
    <div class="rel"><a href="/pyq/where-to-find-du-pyqs.html">Where to Find DU PYQs</a><a href="/pyq/where-to-find-du-syllabus.html">Where to Find DU Syllabus</a><a href="/pyq/best-website-for-du-pyqs-study-material.html">Best Website for DU PYQs</a></div>
    <h2>More Ways In</h2>
    <p>Pick your programme from the <a href="/du.html">DU & College sections</a>, or go back <a href="/">Home</a>.</p>`,
-  null, null, { aboutBlock: hubAbout, total: dedupedHubs.length });
+   null, null, { aboutBlock: hubAbout, total: dedupedHubs.length, reviewer: 'Sulaksh Editorial Team', hideActions: true, authorName: 'Sulaksh Editorial Team' });
 
 // ===== silo pages — programme grouping to pass link equity =====
 const siloDefs = [
