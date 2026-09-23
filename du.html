@@ -463,7 +463,6 @@
       <button class="icon-btn" id="dlBtn" style="display:none;" title="Toggle download buttons">⬇️</button>
       <button class="icon-btn" id="delBtn" style="display:none;" title="Toggle delete for other admins">🗑️</button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
-      <button class="btn-primary" id="loginBtn">👤 Login</button>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
@@ -738,20 +737,6 @@
     <p>Contact: <a href="mailto:supportlumixo@gmail.com">supportlumixo@gmail.com</a></p>
   </div>
 </footer>
-
-<div class="modal-overlay" id="loginOverlay">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('loginOverlay')" aria-label="Close">×</button>
-    <h3>Admin Login</h3>
-    <input type="email" id="loginEmail" class="field" placeholder="Email" autocomplete="email">
-    <div class="pass-wrap">
-      <input type="password" id="loginPassword" class="field" placeholder="Password" autocomplete="current-password">
-      <button type="button" class="pass-toggle" id="passToggle" aria-label="Show password">👁</button>
-    </div>
-    <button class="btn-primary" id="loginSubmit">Login</button>
-    <div class="modal-msg" id="loginMsg"></div>
-  </div>
-</div>
 
 <div class="modal-overlay" id="uploadOverlay">
   <div class="modal-box">
@@ -8894,7 +8879,8 @@ const WAIT_PHRASES = [
   window.closeModal = closeModal;
 
   function updateAuthUI() {
-    // Gate admin controls: remove Upload/Delete from DOM for anon (not just CSS hide) — keep Login visible so anon can sign in
+    // Gate admin controls: remove Upload/Delete from DOM for anon (not just CSS hide).
+    // No public login UI — admin signs in via the private staff console.
     const _isAdmin = !!(state && state.isAdmin);
     if (!_isAdmin) {
       try {
@@ -8902,13 +8888,6 @@ const WAIT_PHRASES = [
         document.querySelectorAll('.mobile-menu .upload-btn').forEach(el=>el.remove());
       } catch(e){}
       document.body.classList.remove('is-admin');
-      const _lb = document.getElementById('loginBtn');
-      if (_lb) {
-        _lb.textContent = '👤 Login';
-        _lb.title = 'Admin login';
-        _lb.style.display = '';
-      }
-      // Keep Login for anon, so don't remove it — return after handling anon UI
       // (Upload/Delete already removed)
     } else {
       document.body.classList.add('is-admin');
@@ -8916,8 +8895,6 @@ const WAIT_PHRASES = [
     if (!_isAdmin) {
       return;
     }
-    const btn = document.getElementById('loginBtn');
-    btn.textContent = state.email ? '👤 ' + state.email.split('@')[0] : '👤 Login';
     document.body.classList.toggle('is-admin', state.isAdmin);
     const pw = document.getElementById('pwBtn');
     if (pw) pw.style.display = state.isAdmin ? '' : 'none';
@@ -9060,13 +9037,8 @@ const WAIT_PHRASES = [
     document.getElementById('mobileMenu').classList.toggle('open');
   });
 
-  // Login / logout
-  document.getElementById('loginBtn').addEventListener('click', () => {
-    if (!state.email) { setMsg(document.getElementById('loginMsg'), '', false); openModal('loginOverlay'); return; }
-    if (confirm('Log out of ' + state.email + '?')) logout();
-    setMsg(document.getElementById('loginMsg'), '', false);
-    openModal('loginOverlay');
-  });
+  // Public login removed — admin signs in via the private staff console.
+  // logout() is retained so a stored session can still be revoked programmatically.
   document.getElementById('maintBtn').addEventListener('click', toggleMaintenance);
   document.getElementById('dlBtn').addEventListener('click', toggleDownloads);
   document.getElementById('delBtn').addEventListener('click', toggleDeletes);
@@ -9074,49 +9046,6 @@ const WAIT_PHRASES = [
   if (pwBtn) pwBtn.addEventListener('click', changePasswordFlow);
   const secLogBtn = document.getElementById('secLogBtn');
   if (secLogBtn) secLogBtn.addEventListener('click', showSecurityLog);
-  document.getElementById('loginSubmit').addEventListener('click', doLogin);
-  document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
-  document.getElementById('passToggle').addEventListener('click', () => {
-    const input = document.getElementById('loginPassword');
-    const btn = document.getElementById('passToggle');
-    input.type = input.type === 'password' ? 'text' : 'password';
-    btn.textContent = input.type === 'password' ? '👁' : '🙈';
-    btn.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
-  });
-
-  async function doLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const msg = document.getElementById('loginMsg');
-    if (!email || !password) return setMsg(msg, 'Enter both email and password.', false);
-    try {
-      const res = await fetch(`${SULAKSH_API}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Login failed.');
-      // Session is established via the HttpOnly cookie — never store the token
-      // in JS/localStorage. `state.token` is just a truthy UI sentinel.
-      state.token = data.token ? '1' : null;
-      if (data.token) { try { localStorage.setItem('sulaksh-token', data.token); } catch (e) {} }
-      const me = await fetch(`${SULAKSH_API}/api/auth/me`)
-        .then((r) => (r.ok ? r.json() : {}))
-        .catch(() => ({}));
-      state.email = me.email || email;
-      state.role = me.role || null;
-      applyPermissions();
-      localStorage.setItem('sulaksh-email', state.email);
-      localStorage.removeItem('sulaksh-role');
-      updateAuthUI();
-      closeModal('loginOverlay');
-      // Reload to restore admin controls that were removed from DOM for anon
-      location.reload();
-    } catch (err) {
-      setMsg(msg, err.message, false);
-    }
-  }
 
   async function logout() {
     try { await fetch(`${SULAKSH_API}/api/auth/logout`, { method: 'POST' }); } catch (e) {}

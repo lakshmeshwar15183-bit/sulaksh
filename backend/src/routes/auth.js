@@ -9,7 +9,7 @@ const router = express.Router();
 
 const isProd = process.env.NODE_ENV === 'production';
 const IDLE_HOURS = parseInt(process.env.AUTH_IDLE_HOURS || '720', 10);
-const EMAIL_LOCK_LIMIT = parseInt(process.env.LOGIN_EMAIL_LOCK || '8', 10);
+const EMAIL_LOCK_LIMIT = parseInt(process.env.LOGIN_EMAIL_LOCK || '5', 10);
 
 // The session cookie is Partitioned (CHIPS): still HttpOnly so XSS can't read
 // it, but Safari/Firefox/Chrome retain it across refresh even when it is set

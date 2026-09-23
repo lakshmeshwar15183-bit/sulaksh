@@ -515,7 +515,6 @@
       <button class="icon-btn" id="dlBtn" style="display:none;" title="Download buttons on/off">⬇️</button>
       <button class="icon-btn" id="delBtn" style="display:none;" title="Toggle delete for other admins">🗑️</button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
-      <button class="btn-primary" id="loginBtn">👤 Login</button>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
@@ -755,20 +754,6 @@
     </div>
     <div class="search-results" id="searchResults"></div>
     <div class="search-hint">Press <b>Esc</b> to close</div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="loginOverlay">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('loginOverlay')" aria-label="Close">×</button>
-    <h3>Admin Login</h3>
-    <input type="email" id="loginEmail" class="field" placeholder="Email" autocomplete="email">
-    <div class="pass-wrap">
-      <input type="password" id="loginPassword" class="field" placeholder="Password" autocomplete="current-password">
-      <button type="button" class="pass-toggle" id="passToggle" aria-label="Show password">👁</button>
-    </div>
-    <button class="btn-primary" id="loginSubmit">Login</button>
-    <div class="modal-msg" id="loginMsg"></div>
   </div>
 </div>
 
@@ -1071,7 +1056,8 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   window.closeModal = closeModal;
 
   function updateAuthUI() {
-    // Gate admin controls: remove Upload/Delete from DOM for anon (not just CSS hide) — keep Login visible so anon can sign in
+    // Gate admin controls: remove Upload/Delete from DOM for anon (not just CSS hide).
+    // No public login UI — admin signs in via the private staff console.
     const _isAdmin = !!(state && state.isAdmin);
     if (!_isAdmin) {
       try {
@@ -1079,27 +1065,12 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
         document.querySelectorAll('.mobile-menu .upload-btn').forEach(el=>el.remove());
       } catch(e){}
       document.body.classList.remove('is-admin');
-      const _lb = document.getElementById('loginBtn');
-      if (_lb) {
-        _lb.textContent = '👤 Login';
-        _lb.title = 'Admin login';
-        _lb.style.display = '';
-      }
-      // Keep Login for anon, so don't remove it — return after handling anon UI
       // (Upload/Delete already removed)
     } else {
       document.body.classList.add('is-admin');
     }
     if (!_isAdmin) {
       return;
-    }
-    const btn = document.getElementById('loginBtn');
-    if (state.email) {
-      btn.textContent = '👤 ' + state.email.split('@')[0];
-      btn.title = 'Click to log out';
-    } else {
-      btn.textContent = '👤 Login';
-      btn.title = 'Admin login';
     }
     document.body.classList.toggle('is-admin', state.isAdmin);
     updateMaintUI();
@@ -1216,56 +1187,11 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     }
   }
 
-  // Login / logout
-  const loginBtn = document.getElementById('loginBtn');
-  loginBtn.addEventListener('click', () => {
-    if (state.email) { logout(); return; }
-    setMsg(document.getElementById('loginMsg'), '', false);
-    openModal('loginOverlay');
-  });
+  // Public login removed — admin signs in via the private staff console.
+  // logout() is retained so a stored session can still be revoked programmatically.
   document.getElementById('maintBtn').addEventListener('click', toggleMaintenance);
   document.getElementById('dlBtn').addEventListener('click', toggleDownloads);
   document.getElementById('delBtn').addEventListener('click', toggleDeletes);
-  document.getElementById('loginSubmit').addEventListener('click', doLogin);
-  document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
-  document.getElementById('passToggle').addEventListener('click', () => {
-    const input = document.getElementById('loginPassword');
-    const btn = document.getElementById('passToggle');
-    input.type = input.type === 'password' ? 'text' : 'password';
-    btn.textContent = input.type === 'password' ? '👁' : '🙈';
-    btn.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
-  });
-
-  async function doLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const msg = document.getElementById('loginMsg');
-    if (!email || !password) return setMsg(msg, 'Enter both email and password.', false);
-    try {
-      const res = await fetch(`${SULAKSH_API}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Login failed.');
-      state.email = email;
-      state.token = data.token;
-      if (data.token) { try { localStorage.setItem('sulaksh-token', data.token); } catch (e) {} }
-      state.isAdmin = (data.role === 'admin' || data.role === 'super');
-      localStorage.setItem('sulaksh-email', email);
-      // Real JWT is persisted to localStorage (see sulaksh-auth.js) so the
-      // session survives refreshes/back-navigation; the HttpOnly cookie is a
-      // same-credentials fallback the backend also accepts.
-      localStorage.setItem('sulaksh-role', data.role || 'super');
-      updateAuthUI();
-      closeModal('loginOverlay');
-      // Reload to restore admin controls that were removed from DOM for anon
-      location.reload();
-    } catch (err) {
-      setMsg(msg, err.message, false);
-    }
-  }
 
   async function logout() {
     const tok = state.token || localStorage.getItem('sulaksh-token');
