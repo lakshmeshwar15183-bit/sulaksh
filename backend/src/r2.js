@@ -63,6 +63,15 @@ async function uploadObject(key, buffer, contentType) {
 }
 
 /**
+ * Download an object into a Buffer (server-side only — never exposed via URL).
+ * Used for private assets like authority signature blocks.
+ */
+async function downloadObject(key) {
+  const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
+  const bytes = await res.Body.transformToByteArray();
+  return Buffer.from(bytes);
+}
+/**
  * Confirm an object exists in R2 (used after upload / before trusting a DB row).
  */
 async function objectExists(key) {
@@ -112,6 +121,7 @@ module.exports = {
   s3,
   BUCKET,
   uploadObject,
+  downloadObject,
   objectExists,
   deleteObject,
   getPresignedDownloadUrl,
