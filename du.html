@@ -1037,6 +1037,10 @@
     if (Object.keys(seen).length !== 1) return null;
     return hubHrefStatic(subject, files[0].track || 'General', files);
   }
+  // SUBJECT_HUBS values are bare filenames; static helpers return absolute
+  // paths. Normalize so every rendered href is site-absolute (a bare filename
+  // would resolve against /du.html and 404).
+  function absHub(h){ return !h ? null : (String(h).startsWith('/') ? h : '/pyq/' + h); }
   // Baked every 6h by generate-seo.mjs: {subject: aggregate-or-track hub file}.
   // Falls back to {} before the first bake (runtime detection still applies).
   let SUBJECT_HUBS = {"Economics":"economics-pyqs.html","English":"english-pyqs.html","Political Science":"political-science-pyqs.html","Geography":"geography-pyqs.html","Hindi":"hindi-pyqs.html","Urdu":"urdu-pyqs.html","Sanskrit":"sanskrit-pyqs.html","Mathematics":"mathematics-pyqs.html","History":"history-pyqs.html","Education":"education-pyqs.html","B.Sc.":"b-sc-pyqs.html","Datesheet Dec 2026":"datesheet-dec-2026-general-pyqs.html","BCom prg":"bcom-prg-general-pyqs.html","Philosophy":"philosophy-honours-pyqs.html","Computer Applications":"computer-applications-general-pyqs.html","B.Com (Hons)":"b-com-hons-honours-pyqs.html","B.Sc. Physical Sciences with Chemistry":"b-sc-physical-sciences-with-chemistry-honours-pyqs.html","B.Sc. Applied Physical Science with Analytical Methods in Chemistry & Biochemistry":"b-sc-applied-physical-science-with-analytical-methods-in-chemistry-and-biochemistry-honours-pyqs.html","B.Sc. Applied Life Sciences":"b-sc-applied-life-sciences-honours-pyqs.html","B.Sc. (Hons) Environmental Science":"b-sc-hons-environmental-science-honours-pyqs.html","B.Sc. (Hons) Home Science":"b-sc-hons-home-science-honours-pyqs.html","B.Sc. (Hons) Biological Sciences":"b-sc-hons-biological-sciences-honours-pyqs.html","B.Sc. (Hons) Computer Science":"b-sc-hons-computer-science-honours-pyqs.html","B.Sc. (Hons) Food Technology":"b-sc-hons-food-technology-honours-pyqs.html","B.Sc. (Hons) Statistics":"b-sc-hons-statistics-honours-pyqs.html","B.Sc. (Hons) Geology":"b-sc-hons-geology-honours-pyqs.html","B.Sc. (Hons) Botany":"b-sc-hons-botany-honours-pyqs.html","B.Sc. (Hons) Zoology":"b-sc-hons-zoology-honours-pyqs.html","B.Sc. (Hons) Physics":"b-sc-hons-physics-honours-pyqs.html","B.Sc. (Hons) Chemistry":"b-sc-hons-chemistry-honours-pyqs.html","Sociology":"sociology-honours-pyqs.html","BAprog":"baprog-general-pyqs.html"};
@@ -8774,7 +8778,7 @@ const WAIT_PHRASES = [
     document.getElementById('coreProgrammeGrid').innerHTML = CORE_PROGRAMMES.map((p) => {
       const progFiles = (coreMaterials || []).filter((m) => m.category && m.category.toUpperCase() === 'CORE' && (m.subject || '') === p.file);
       const n = progFiles.length;
-      const hub = SUBJECT_HUBS[p.file] || hubHrefStatic(p.file, 'General', progFiles);
+      const hub = absHub(SUBJECT_HUBS[p.file] || hubHrefStatic(p.file, 'General', progFiles));
       const open = `openCoreProgramme('${p.file.replace(/'/g, "\\'")}')`;
       const inner = `
           <div class="top">
@@ -8863,7 +8867,7 @@ const WAIT_PHRASES = [
       const meta = BSC_META[s] || { ico: '🔬', tag: 'BSc Hons' };
       const files = (coreMaterials || []).filter((m) => (m.category || '').toUpperCase() === 'CORE' && (m.subject || '') === s);
       const n = files.length;
-      const hub = SUBJECT_HUBS[s] || subjectHubStatic(s, files);
+      const hub = absHub(SUBJECT_HUBS[s] || subjectHubStatic(s, files));
       const open = `openBscSubject('${s.replace(/'/g, "\\'")}')`;
       const inner = `
           <div class="top">
@@ -9536,7 +9540,7 @@ const WAIT_PHRASES = [
       const n = files.length;
       // Baked SUBJECT_HUBS (aggregate hub for multi-track subjects, track hub
       // otherwise) keeps every tile a real link; runtime detection is fallback.
-      const hub = SUBJECT_HUBS[s] || subjectHubStatic(s, files);
+      const hub = absHub(SUBJECT_HUBS[s] || subjectHubStatic(s, files));
       const open = `openCoreSubject('${s.replace(/'/g, "\\'")}')`;
       const inner = `
           <div class="top">
