@@ -24,6 +24,10 @@ const TITLES = {
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
   'August', 'September', 'October', 'November', 'December'];
 
+// In-memory cache for private signature art: fetched from Backblaze once per
+// process, then reused. Restarts re-fetch (picks up replacements).
+const sigCache = new Map();
+
 function fmtDate(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
   if (!m) return String(iso || '');
@@ -90,6 +94,20 @@ async function loadSignature(pdf, issuedByName) {
   try {
     const spec = signatureFileFor(issuedByName);
     if (!spec) return null;
+    if (sigCache.has(spec.file)) {
+      const hit = sigCache.get(spec.file);
+      const img = await pdf.embedPng(hit);
+      return { img, w: img.width, h: img.height, stamped: spec.stamped };
+    }
+    // Private Backblaze copy first (never served over any public URL) …
+    try {
+      const { downloadObject } = require('../r2');
+      const buf = await downloadObject('private/signatures/' + spec.file);
+      sigCache.set(spec.file, buf);
+      const img = await pdf.embedPng(buf);
+      return { img, w: img.width, h: img.height, stamped: spec.stamped };
+    } catch (e) { /* fall through to local file (dev machines) */ }
+    // … then a local backend/assets/ copy (dev only — never committed).
     for (const cand of [spec.file, spec.file.replace(/\.png$/, '.jpg')]) {
       const p = path.join(__dirname, '..', '..', 'assets', cand);
       if (fs.existsSync(p)) {
