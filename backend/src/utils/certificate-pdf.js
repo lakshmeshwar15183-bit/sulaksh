@@ -135,22 +135,6 @@ function diamond(page, x, y, s, color) {
   page.drawRectangle({ x: x - s / 2, y: y - s / 2, width: s, height: s, rotate: degrees(45), color });
 }
 
-// Round blue owner muhar: double ring + SULAKSH / OWNER stacked centre.
-// Generic authority seal — never a personal name. r = outer radius.
-function ownerSeal(page, cx, cy, r, fonts) {
-  const { helvBold } = fonts;
-  page.drawCircle({ x: cx, y: cy, size: r, borderColor: BLUE, borderWidth: 2.5 });
-  page.drawCircle({ x: cx, y: cy, size: r - 7, borderColor: BLUE, borderWidth: 0.8 });
-  diamond(page, cx, cy + r - 3.5, 5, BLUE);
-  diamond(page, cx, cy - r + 3.5, 5, BLUE);
-  const brand = 'SULAKSH';
-  const bs = r * 0.30;
-  page.drawText(brand, { x: cx - helvBold.widthOfTextAtSize(brand, bs) / 2, y: cy + 2, size: bs, font: helvBold, color: NAVY });
-  const own = 'OWNER';
-  const os = r * 0.26;
-  page.drawText(own, { x: cx - helvBold.widthOfTextAtSize(own, os) / 2, y: cy - os - 8, size: os, font: helvBold, color: BLUE });
-}
-
 function goldRule(page, x1, x2, y) {
   page.drawLine({ start: { x: x1, y }, end: { x: x2, y }, thickness: 1.2, color: GOLD });
   diamond(page, (x1 + x2) / 2, y, 9, GOLD);
@@ -259,10 +243,6 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const short = vu.length > 44 ? vu.slice(0, 44) + '...' : vu;
   page.drawText(short, { x: W - fx - qs, y: fy - 49, size: 7, font: helv, color: MUTED });
 
-  // Owner muhar: centred between the issued-by block (left) and QR (right).
-  // Skipped when the authority block art already carries its own round seal.
-  if (!(sigFit && sigFit.stamped)) ownerSeal(page, W / 2, 100, 38, fonts);
-
   const foot = 'sulaksh.online  |  This is a system-generated verifiable certificate';
   page.drawText(foot, { x: center(foot, helv, 7.5), y: 40, size: 7.5, font: helv, color: MUTED });
 }
@@ -365,9 +345,6 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   last.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   last.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
-  // Owner muhar opposite the QR: issued-by sits in the body above, seal here.
-  // Skipped when the authority block art already carries its own round seal.
-  if (!(sigFit && sigFit.stamped)) ownerSeal(last, PW - ML - 40, 58, 30, fonts);
 }
 
 // ---------------- Internship Offer Letter (portrait, minimum 2 pages) ----------------
@@ -528,9 +505,6 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   page.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   page.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
-  // Owner muhar opposite the QR: acceptance signatures sit in the body above.
-  // Skipped when the authority block art already carries its own round seal.
-  if (!(sigFitJ && sigFitJ.stamped)) ownerSeal(page, PW - ML - 40, 58, 30, fonts);
 }
 
 async function generateCertificatePdf(record, verifyUrl) {
