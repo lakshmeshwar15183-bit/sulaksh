@@ -73,6 +73,39 @@ async function loadLogo(pdf) {
   return null;
 }
 
+// Authority signature blocks: white/transparent-background PNGs placed in
+// backend/assets/. Matched from the issued-by name; anything else (or a
+// missing file) falls back to the plain signature line. Black-background
+// images are NOT accepted here — they would print as a black box.
+function signatureFileFor(issuedByName) {
+  const n = String(issuedByName || '').toLowerCase();
+  if (n.includes('aryan')) return 'sign-aryan.png';
+  if (n.includes('lakshmeshwar') || n.includes('pandey')) return 'sign-founder.png';
+  return null;
+}
+
+async function loadSignature(pdf, issuedByName) {
+  try {
+    const f = signatureFileFor(issuedByName);
+    if (!f) return null;
+    for (const cand of [f, f.replace(/\.png$/, '.jpg')]) {
+      const p = path.join(__dirname, '..', '..', 'assets', cand);
+      if (fs.existsSync(p)) {
+        const img = cand.endsWith('.jpg') ? await pdf.embedJpg(fs.readFileSync(p)) : await pdf.embedPng(fs.readFileSync(p));
+        return { img, w: img.width, h: img.height };
+      }
+    }
+  } catch (e) { /* fall back to plain line */ }
+  return null;
+}
+
+// Fit a signature block into (maxW x maxH) without upscaling.
+function fitSig(sig, maxW, maxH) {
+  if (!sig || !sig.w || !sig.h) return null;
+  const s = Math.min(maxW / sig.w, maxH / sig.h, 1);
+  return { img: sig.img, w: sig.w * s, h: sig.h * s };
+}
+
 async function makeQr(pdf, url) {
   const buf = await QRCode.toBuffer(String(url), { type: 'png', width: 260, margin: 1 });
   return pdf.embedPng(buf);
@@ -104,7 +137,7 @@ function goldRule(page, x1, x2, y) {
 }
 
 // ---------------- Formal landscape certificate ----------------
-async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr) {
+async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const { helv, helvBold, helvOblique } = fonts;
   const page = pdf.addPage([841.89, 595.28]); // A4 landscape
   const W = page.getWidth();
@@ -180,16 +213,23 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr) {
   y -= 10;
 
   // Footer: signature (left) + QR (right). Printed name sits well below its
-  // line, leaving real space for a wet signature.
+  // line, leaving real space for a wet signature. When the issuer has a
+  // signature-block image, it is drawn above the line and replaces the
+  // printed name/title (the block already contains them).
   const fx = 80;
   const fy = 78;
+  const sigFit = fitSig(sig, 170, 110);
   page.drawLine({ start: { x: fx, y: fy + 34 }, end: { x: fx + 170, y: fy + 34 }, thickness: 1, color: MUTED });
-  const byName = record.issued_by_name || '';
-  page.drawText(byName, { x: fx, y: fy + 14, size: 12, font: helvBold, color: DARK });
-  const byTitle = record.issued_by_title || '';
-  if (byTitle) page.drawText(byTitle, { x: fx, y: fy + 0, size: 9.5, font: helv, color: MUTED });
-  const sig = spaced('Authorised Signatory');
-  page.drawText(sig, { x: fx, y: fy - 12, size: 7.5, font: helv, color: MUTED });
+  if (sigFit) {
+    page.drawImage(sigFit.img, { x: fx, y: fy + 42, width: sigFit.w, height: sigFit.h });
+  } else {
+    const byName = record.issued_by_name || '';
+    page.drawText(byName, { x: fx, y: fy + 14, size: 12, font: helvBold, color: DARK });
+    const byTitle = record.issued_by_title || '';
+    if (byTitle) page.drawText(byTitle, { x: fx, y: fy + 0, size: 9.5, font: helv, color: MUTED });
+  }
+  const sigLabel = spaced('Authorised Signatory');
+  page.drawText(sigLabel, { x: fx, y: fy - 12, size: 7.5, font: helv, color: MUTED });
 
   const qs = 92;
   page.drawImage(qr, { x: W - fx - qs, y: fy - 26, width: qs, height: qs });
@@ -207,7 +247,7 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr) {
 }
 
 // ---------------- Formal LOR letter (portrait) ----------------
-async function lorPages(pdf, record, verifyUrl, fonts, logo, qr) {
+async function lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const { helv, helvBold, helvOblique } = fonts;
   const PW = 595.28;
   const PH = 841.89;
@@ -276,12 +316,22 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr) {
   if (y < 280) y = newPage();
   y -= 6;
   page.drawText('With regards,', { x: ML, y: y - 12, size: 11.5, font: helv, color: DARK });
-  y -= 56;
+  // Reserve the signing gap first so a signature image can never touch body text.
+  const sigFit = fitSig(sig, 190, 120);
+  const gapAbove = sigFit ? sigFit.h + 60 : 56;
+  // Labels bottom out at y_final-49; the gap math already guarantees the image
+  // clears the paragraph above, so 205 is sufficient with or without an image.
+  if (y - gapAbove < 205) y = newPage();
+  y -= gapAbove;
   page.drawLine({ start: { x: ML, y }, end: { x: ML + 190, y }, thickness: 1, color: MUTED });
-  const byName = record.issued_by_name || '';
-  page.drawText(byName, { x: ML, y: y - 18, size: 13, font: helvBold, color: DARK });
-  const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Sulaksh';
-  page.drawText(byTitle, { x: ML, y: y - 33, size: 10.5, font: helv, color: MUTED });
+  if (sigFit) {
+    page.drawImage(sigFit.img, { x: ML, y: y + 8, width: sigFit.w, height: sigFit.h });
+  } else {
+    const byName = record.issued_by_name || '';
+    page.drawText(byName, { x: ML, y: y - 18, size: 13, font: helvBold, color: DARK });
+    const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Sulaksh';
+    page.drawText(byTitle, { x: ML, y: y - 33, size: 10.5, font: helv, color: MUTED });
+  }
   page.drawText('Authorised Signatory', { x: ML, y: y - 46, size: 8, font: helv, color: MUTED });
 
   // Verification footer on the last page
@@ -301,7 +351,7 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr) {
 // ---------------- Internship Offer Letter (portrait, minimum 2 pages) ----------------
 // Deliberately an offer/engagement letter, never an employment appointment.
 // Terms page always starts on a fresh page, so the document is >= 2 pages.
-async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr) {
+async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const { helv, helvBold } = fonts;
   const PW = 595.28;
   const PH = 841.89;
@@ -425,17 +475,26 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr) {
 
   head('Acceptance');
   para(`I, ${record.recipient_name || ''}, hereby accept the terms of this internship offer as set out above.`, 11.5, helv, 10);
-  // Generous signing space: printed names go BELOW the lines, never on them.
-  if (y < 320) y = freshPage();
-  y -= 24;
+  // Generous signing space, reserved BEFORE the lines: a signature image can
+  // never touch body text, and printed names go below the lines, never on them.
+  const sigFitJ = fitSig(sig, 200, 120);
+  const gapAboveJ = sigFitJ ? sigFitJ.h + 60 : 34;
+  // Labels bottom out at y_final-39; gap math guarantees image clearance, so
+  // 200 suffices — avoids stranding signatures alone on a third page.
+  if (y - gapAboveJ < 200) y = freshPage();
+  y -= gapAboveJ;
   page.drawLine({ start: { x: ML, y }, end: { x: ML + 200, y }, thickness: 1, color: MUTED });
   page.drawLine({ start: { x: PW - ML - 200, y }, end: { x: PW - ML, y }, thickness: 1, color: MUTED });
   y -= 18;
   page.drawText("Intern's Signature & Date", { x: ML, y: y - 10, size: 9.5, font: helv, color: MUTED });
-  const byName = record.issued_by_name || '';
-  page.drawText(byName, { x: PW - ML - 200, y: y - 10, size: 12, font: helvBold, color: DARK });
-  const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Sulaksh';
-  page.drawText(byTitle, { x: PW - ML - 200, y: y - 24, size: 9.5, font: helv, color: MUTED });
+  if (sigFitJ) {
+    page.drawImage(sigFitJ.img, { x: PW - ML - 200, y: y + 8, width: sigFitJ.w, height: sigFitJ.h });
+  } else {
+    const byName = record.issued_by_name || '';
+    page.drawText(byName, { x: PW - ML - 200, y: y - 10, size: 12, font: helvBold, color: DARK });
+    const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Sulaksh';
+    page.drawText(byTitle, { x: PW - ML - 200, y: y - 24, size: 9.5, font: helv, color: MUTED });
+  }
   page.drawText('Authorised Signatory', { x: PW - ML - 200, y: y - 36, size: 8, font: helv, color: MUTED });
 
   // Verification footer on the final page
@@ -460,13 +519,14 @@ async function generateCertificatePdf(record, verifyUrl) {
   };
   const logo = await loadLogo(pdf);
   const qr = await makeQr(pdf, verifyUrl);
+  const sig = await loadSignature(pdf, record.issued_by_name);
   const t = record.certificate_type || '';
   if (t === 'lor') {
-    await lorPages(pdf, record, verifyUrl, fonts, logo, qr);
+    await lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig);
   } else if (t === 'joining') {
-    await joiningPages(pdf, record, verifyUrl, fonts, logo, qr);
+    await joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig);
   } else {
-    await certificatePage(pdf, record, verifyUrl, fonts, logo, qr);
+    await certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig);
   }
   return Buffer.from(await pdf.save());
 }

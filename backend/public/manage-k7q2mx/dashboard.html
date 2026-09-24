@@ -193,9 +193,14 @@
           <input type="date" id="certIssue" required>
           <label>Description / details</label>
           <textarea id="certDesc" maxlength="2000" placeholder="optional"></textarea>
-          <label>Issued by (name) *</label>
-          <input type="text" id="certByName" required maxlength="120">
-          <label>Issued by (designation)</label>
+          <label>Issued by *</label>
+          <select id="certBySel">
+            <option value="LAKSHMESHWAR PANDEY|Founder, Sulaksh">Lakshmeshwar Pandey — Founder</option>
+            <option value="ARYAN RAJ|Managing Director, Sulaksh">Aryan Raj — Managing Director</option>
+            <option value="__other">Other (type below)</option>
+          </select>
+          <input type="text" id="certByName" required maxlength="120" placeholder="Name" style="margin-top:6px;">
+          <label>Designation</label>
           <input type="text" id="certByTitle" maxlength="120" placeholder="e.g. Founder, Sulaksh">
           <button type="submit" class="primary" id="certSubmitBtn">Generate Certificate + PDF</button>
           <div class="msg" id="certFormMsg"></div>
@@ -556,6 +561,15 @@
   };
   $('certType').addEventListener('change', syncJoiningFields);
   syncJoiningFields();
+  const syncIssuedBy = () => {
+    const v = $('certBySel').value;
+    if (v === '__other') { $('certByName').value = ''; $('certByTitle').value = ''; return; }
+    const [n, t] = v.split('|');
+    $('certByName').value = n || '';
+    $('certByTitle').value = t || '';
+  };
+  $('certBySel').addEventListener('change', syncIssuedBy);
+  syncIssuedBy();
   try { $('certIssue').value = new Date().toISOString().slice(0, 10); } catch (e) {}
   async function loadCerts() {
     const wrap = $('certWrap');
@@ -618,6 +632,7 @@
       msg.className = 'msg ok';
       $('certForm').reset();
       try { $('certIssue').value = new Date().toISOString().slice(0, 10); } catch (err) {}
+      syncIssuedBy();
       loadCerts();
     } catch (err) {
       msg.textContent = err.message; msg.className = 'msg err';
