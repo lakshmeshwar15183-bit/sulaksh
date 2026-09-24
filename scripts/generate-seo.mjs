@@ -384,6 +384,10 @@ function getFacetedParent(file) {
 }
 
 const CSS = `
+/* Collapse unfilled ad slots (review period serves no ads): reserves nothing,
+   interferes with nothing — filled slots render exactly as before. */
+ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important;min-height:0!important}
+.ad:has(>ins.adsbygoogle[data-ad-status="unfilled"]){display:none!important}
 :root{--navy:#0C2340;--blue:#1E5FFF;--bg:#F6F8FC;--card:#fff;--text:#1A2433;--muted:#5B6B80;--border:#E4E9F1}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
