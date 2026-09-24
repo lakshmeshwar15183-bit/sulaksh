@@ -1673,7 +1673,7 @@ for (const silo of siloDefs) {
 const TODAY = new Date().toISOString().slice(0, 10);
 const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !SITEMAP_EXCLUDE.has(f));
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-  + ['', 'index.html', 'du.html', 'guides.html', 'contact.html',
+  + ['', 'index.html', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
      'blog/index.html',
      'blog/du-exam-pattern-ugcf-explained.html',
      'blog/how-to-download-du-admit-card.html',
@@ -1682,7 +1682,7 @@ fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
 
-console.log('TOTAL SITEMAP URLs:', 9 + sitemapPages.length, `(excluded ${noIndexFiles.size} no-file placeholders, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
+console.log('TOTAL SITEMAP URLs:', 10 + sitemapPages.length, `(excluded ${noIndexFiles.size} no-file placeholders, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
 console.log('NoIndex placeholder files:', [...noIndexFiles].slice(0,10).join(', ') + (noIndexFiles.size>10?' ...':''));
 
 // ===== orphan pyq/paper cleanup — 2-consecutive-run safety =====
