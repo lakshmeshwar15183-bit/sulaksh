@@ -238,7 +238,7 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   // printed name/title (the block already contains them).
   const fx = 80;
   const fy = 78;
-  const sigFit = fitSig(sig, 170, 110);
+  const sigFit = fitSig(sig, 150, 95);
   page.drawLine({ start: { x: fx, y: fy + 34 }, end: { x: fx + 170, y: fy + 34 }, thickness: 1, color: MUTED });
   if (sigFit) {
     page.drawImage(sigFit.img, { x: fx, y: fy + 42, width: sigFit.w, height: sigFit.h });
@@ -338,7 +338,7 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   y -= 6;
   page.drawText('With regards,', { x: ML, y: y - 12, size: 11.5, font: helv, color: DARK });
   // Reserve the signing gap first so a signature image can never touch body text.
-  const sigFit = fitSig(sig, 190, 120);
+  const sigFit = fitSig(sig, 160, 95);
   const gapAbove = sigFit ? sigFit.h + 60 : 56;
   // Labels bottom out at y_final-49; the gap math already guarantees the image
   // clears the paragraph above, so 205 is sufficient with or without an image.
@@ -499,11 +499,11 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   para(`I, ${record.recipient_name || ''}, hereby accept the terms of this internship offer as set out above.`, 11.5, helv, 10);
   // Generous signing space, reserved BEFORE the lines: a signature image can
   // never touch body text, and printed names go below the lines, never on them.
-  const sigFitJ = fitSig(sig, 200, 120);
+  const sigFitJ = fitSig(sig, 170, 95);
   const gapAboveJ = sigFitJ ? sigFitJ.h + 60 : 34;
-  // Labels bottom out at y_final-39; gap math guarantees image clearance, so
-  // 200 suffices — avoids stranding signatures alone on a third page.
-  if (y - gapAboveJ < 200) y = freshPage();
+  // Labels bottom out at y_final-39 with the footer rule at 96, so 150 keeps
+  // ~16pt clearance while letting signatures stay on page 2 whenever they fit.
+  if (y - gapAboveJ < 150) y = freshPage();
   y -= gapAboveJ;
   page.drawLine({ start: { x: ML, y }, end: { x: ML + 200, y }, thickness: 1, color: MUTED });
   page.drawLine({ start: { x: PW - ML - 200, y }, end: { x: PW - ML, y }, thickness: 1, color: MUTED });
