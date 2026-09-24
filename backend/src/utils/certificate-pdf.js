@@ -179,16 +179,17 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr) {
   page.drawText(ref, { x: center(ref, helvBold, 10), y: y - 10, size: 10, font: helvBold, color: NAVY });
   y -= 10;
 
-  // Footer: signature (left) + QR (right)
+  // Footer: signature (left) + QR (right). Printed name sits well below its
+  // line, leaving real space for a wet signature.
   const fx = 80;
   const fy = 78;
-  page.drawLine({ start: { x: fx, y: fy + 26 }, end: { x: fx + 170, y: fy + 26 }, thickness: 1, color: MUTED });
+  page.drawLine({ start: { x: fx, y: fy + 34 }, end: { x: fx + 170, y: fy + 34 }, thickness: 1, color: MUTED });
   const byName = record.issued_by_name || '';
-  page.drawText(byName, { x: fx, y: fy + 10, size: 12, font: helvBold, color: DARK });
+  page.drawText(byName, { x: fx, y: fy + 14, size: 12, font: helvBold, color: DARK });
   const byTitle = record.issued_by_title || '';
-  if (byTitle) page.drawText(byTitle, { x: fx, y: fy - 4, size: 9.5, font: helv, color: MUTED });
+  if (byTitle) page.drawText(byTitle, { x: fx, y: fy + 0, size: 9.5, font: helv, color: MUTED });
   const sig = spaced('Authorised Signatory');
-  page.drawText(sig, { x: fx, y: fy - 17, size: 7.5, font: helv, color: MUTED });
+  page.drawText(sig, { x: fx, y: fy - 12, size: 7.5, font: helv, color: MUTED });
 
   const qs = 92;
   page.drawImage(qr, { x: W - fx - qs, y: fy - 26, width: qs, height: qs });
@@ -272,15 +273,16 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr) {
     y -= 6;
   }
 
-  if (y < 230) y = newPage();
+  if (y < 280) y = newPage();
   y -= 6;
   page.drawText('With regards,', { x: ML, y: y - 12, size: 11.5, font: helv, color: DARK });
-  y -= 44;
-  page.drawLine({ start: { x: ML, y: y + 26 }, end: { x: ML + 190, y: y + 26 }, thickness: 1, color: MUTED });
+  y -= 56;
+  page.drawLine({ start: { x: ML, y }, end: { x: ML + 190, y }, thickness: 1, color: MUTED });
   const byName = record.issued_by_name || '';
-  page.drawText(byName, { x: ML, y: y + 8, size: 13, font: helvBold, color: DARK });
+  page.drawText(byName, { x: ML, y: y - 18, size: 13, font: helvBold, color: DARK });
   const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Sulaksh';
-  page.drawText(byTitle, { x: ML, y: y - 7, size: 10.5, font: helv, color: MUTED });
+  page.drawText(byTitle, { x: ML, y: y - 33, size: 10.5, font: helv, color: MUTED });
+  page.drawText('Authorised Signatory', { x: ML, y: y - 46, size: 8, font: helv, color: MUTED });
 
   // Verification footer on the last page
   const last = pages[pages.length - 1];
@@ -308,6 +310,7 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr) {
 
   let page = pdf.addPage([PW, PH]);
   let y = PH - 60;
+  const startPages = pdf.getPageCount();
   const freshPage = () => {
     page = pdf.addPage([PW, PH]);
     return PH - 70;
@@ -387,10 +390,15 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr) {
   y -= 4;
 
   head('Compensation');
-  para('Compensation: This is an unpaid internship opportunity. No stipend or monetary compensation will be provided during the internship period.', 11.5, helv, 0);
+  para('Compensation: This is an unpaid internship opportunity. No stipend or monetary compensation will be provided during the internship period.', 11.5, helv, 6);
 
-  // ---- Page 2+ : terms always start on a fresh page (minimum-2-pages rule)
-  y = freshPage();
+  head('About the Organisation');
+  para('Sulaksh is an independent, student-led learning platform working to make quality education material freely accessible to every aspirant. Its open library of previous year question papers, syllabi, notes and exam guidance supports thousands of Delhi University students each year in preparing with structure and confidence.', 11.5, helv, 4);
+  para('Through its internship program, Sulaksh mentors students in real-world skills across content research, digital marketing, media and community engagement. Interns work directly with the core team on live projects and are evaluated on sincerity, consistency and the quality of their contribution.', 11.5, helv, 0);
+
+  // ---- Terms page: starts fresh only if page 1 held everything, so the
+  // document is always >= 2 pages but never wastes a near-empty middle page.
+  if (pdf.getPageCount() === startPages) y = freshPage();
   const cont = `(Ref : ${record.certificate_number || ''} - continued)`;
   page.drawText(cont, { x: PW - ML - helv.widthOfTextAtSize(cont, 8.5), y: y - 9, size: 8.5, font: helv, color: MUTED });
   y -= 28;
@@ -417,15 +425,18 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr) {
 
   head('Acceptance');
   para(`I, ${record.recipient_name || ''}, hereby accept the terms of this internship offer as set out above.`, 11.5, helv, 10);
-  if (y < 260) y = freshPage();
-  page.drawLine({ start: { x: ML, y: y - 2 }, end: { x: ML + 200, y: y - 2 }, thickness: 1, color: MUTED });
-  page.drawLine({ start: { x: PW - ML - 200, y: y - 2 }, end: { x: PW - ML, y: y - 2 }, thickness: 1, color: MUTED });
+  // Generous signing space: printed names go BELOW the lines, never on them.
+  if (y < 320) y = freshPage();
+  y -= 24;
+  page.drawLine({ start: { x: ML, y }, end: { x: ML + 200, y }, thickness: 1, color: MUTED });
+  page.drawLine({ start: { x: PW - ML - 200, y }, end: { x: PW - ML, y }, thickness: 1, color: MUTED });
   y -= 18;
   page.drawText("Intern's Signature & Date", { x: ML, y: y - 10, size: 9.5, font: helv, color: MUTED });
   const byName = record.issued_by_name || '';
-  page.drawText(byName, { x: PW - ML - 200, y: y + 8, size: 12, font: helvBold, color: DARK });
-  const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Authorised Signatory, Sulaksh';
-  page.drawText(byTitle, { x: PW - ML - 200, y: y - 8, size: 9.5, font: helv, color: MUTED });
+  page.drawText(byName, { x: PW - ML - 200, y: y - 10, size: 12, font: helvBold, color: DARK });
+  const byTitle = record.issued_by_title ? `${record.issued_by_title}, Sulaksh` : 'Sulaksh';
+  page.drawText(byTitle, { x: PW - ML - 200, y: y - 24, size: 9.5, font: helv, color: MUTED });
+  page.drawText('Authorised Signatory', { x: PW - ML - 200, y: y - 36, size: 8, font: helv, color: MUTED });
 
   // Verification footer on the final page
   page.drawLine({ start: { x: ML, y: 96 }, end: { x: PW - ML, y: 96 }, thickness: 0.6, color: GOLD_LIGHT });
