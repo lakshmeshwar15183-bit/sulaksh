@@ -77,22 +77,24 @@ async function loadLogo(pdf) {
 // backend/assets/. Matched from the issued-by name; anything else (or a
 // missing file) falls back to the plain signature line. Black-background
 // images are NOT accepted here — they would print as a black box.
+// stamped=true when the block art already contains its own round seal (then
+// the drawn OWNER muhar is skipped so seals never double up).
 function signatureFileFor(issuedByName) {
   const n = String(issuedByName || '').toLowerCase();
-  if (n.includes('aryan')) return 'sign-aryan.png';
-  if (n.includes('lakshmeshwar') || n.includes('pandey')) return 'sign-founder.png';
+  if (n.includes('aryan')) return { file: 'sign-aryan.png', stamped: false };
+  if (n.includes('lakshmeshwar') || n.includes('pandey')) return { file: 'sign-founder.png', stamped: true };
   return null;
 }
 
 async function loadSignature(pdf, issuedByName) {
   try {
-    const f = signatureFileFor(issuedByName);
-    if (!f) return null;
-    for (const cand of [f, f.replace(/\.png$/, '.jpg')]) {
+    const spec = signatureFileFor(issuedByName);
+    if (!spec) return null;
+    for (const cand of [spec.file, spec.file.replace(/\.png$/, '.jpg')]) {
       const p = path.join(__dirname, '..', '..', 'assets', cand);
       if (fs.existsSync(p)) {
         const img = cand.endsWith('.jpg') ? await pdf.embedJpg(fs.readFileSync(p)) : await pdf.embedPng(fs.readFileSync(p));
-        return { img, w: img.width, h: img.height };
+        return { img, w: img.width, h: img.height, stamped: spec.stamped };
       }
     }
   } catch (e) { /* fall back to plain line */ }
@@ -103,7 +105,7 @@ async function loadSignature(pdf, issuedByName) {
 function fitSig(sig, maxW, maxH) {
   if (!sig || !sig.w || !sig.h) return null;
   const s = Math.min(maxW / sig.w, maxH / sig.h, 1);
-  return { img: sig.img, w: sig.w * s, h: sig.h * s };
+  return { img: sig.img, w: sig.w * s, h: sig.h * s, stamped: !!sig.stamped };
 }
 
 async function makeQr(pdf, url) {
@@ -240,7 +242,8 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   page.drawText(short, { x: W - fx - qs, y: fy - 49, size: 7, font: helv, color: MUTED });
 
   // Owner muhar: centred between the issued-by block (left) and QR (right).
-  ownerSeal(page, W / 2, 100, 38, fonts);
+  // Skipped when the authority block art already carries its own round seal.
+  if (!(sigFit && sigFit.stamped)) ownerSeal(page, W / 2, 100, 38, fonts);
 
   const foot = 'sulaksh.online  |  This is a system-generated verifiable certificate';
   page.drawText(foot, { x: center(foot, helv, 7.5), y: 40, size: 7.5, font: helv, color: MUTED });
@@ -345,7 +348,8 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   last.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   last.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
   // Owner muhar opposite the QR: issued-by sits in the body above, seal here.
-  ownerSeal(last, PW - ML - 40, 58, 30, fonts);
+  // Skipped when the authority block art already carries its own round seal.
+  if (!(sigFit && sigFit.stamped)) ownerSeal(last, PW - ML - 40, 58, 30, fonts);
 }
 
 // ---------------- Internship Offer Letter (portrait, minimum 2 pages) ----------------
@@ -507,7 +511,8 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   page.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   page.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
   // Owner muhar opposite the QR: acceptance signatures sit in the body above.
-  ownerSeal(page, PW - ML - 40, 58, 30, fonts);
+  // Skipped when the authority block art already carries its own round seal.
+  if (!(sigFitJ && sigFitJ.stamped)) ownerSeal(page, PW - ML - 40, 58, 30, fonts);
 }
 
 async function generateCertificatePdf(record, verifyUrl) {
