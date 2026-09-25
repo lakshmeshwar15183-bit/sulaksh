@@ -1042,7 +1042,12 @@ for (const [key, semMap] of bySubjTrack) {
       if (!types.has(tt)) types.set(tt, 1);
       const y = m.year || '2025'; if (!byYr.has(y)) byYr.set(y, 1);
     }
-    for (const t of types.keys()) hubTypeFiles.set(`${baseSlug}${t}.html`, `${semName} ${t.toUpperCase()}`);
+    for (const t of types.keys()) {
+      // 'pyq' type pages canonicalize to the sem pyqs page and are never
+      // emitted — link the sem page itself instead of a 404.
+      if (t === 'pyq') continue;
+      hubTypeFiles.set(`${baseSlug}${t}.html`, `${semName} ${t.toUpperCase()}`);
+    }
     for (const y of byYr.keys()) hubYearFiles.set(`${baseSlug}${y}-pyqs.html`, `${semName} ${y}`);
   }
   // All-semester type pages (for hub nav)
@@ -1084,7 +1089,7 @@ for (const [key, semMap] of bySubjTrack) {
     }
     const TN = { pyq: 'PYQ', syllabus: 'Syllabus', imp: 'Important Questions', notes: 'Notes' };
     const semNavChips = [
-      ...[...types.keys()].map(t=>`<a href="/pyq/${baseSlug}${t}.html">${esc(semName)} ${esc(TN[t])}</a>`),
+      ...[...types.keys()].filter(t => t !== 'pyq').map(t=>`<a href="/pyq/${baseSlug}${t}.html">${esc(semName)} ${esc(TN[t])}</a>`),
       ...[...byYr.keys()].map(y=>`<a href="/pyq/${baseSlug}${y}-pyqs.html">${esc(semName)} ${esc(y)}</a>`)
     ].join('');
     const semNavHtml = semNavChips ? `<h3 style="font-size:14px;margin:14px 0 6px">Browse ${esc(semName)} by Type & Year</h3><div class="rel">${semNavChips}</div><p style="margin-top:8px"><a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">← Back to ${esc(subject)} ${esc(track)} hub</a></p>` : `<p style="margin-top:8px"><a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">← Back to ${esc(subject)} ${esc(track)} hub</a></p>`;
