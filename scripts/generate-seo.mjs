@@ -1427,7 +1427,49 @@ for (const secKey of Object.keys(allOverviews)) {
   }
 }
 
-// ===== info pages — classic search-intent guides =====
+// ===== 3b) SEC/VAC/AEC/GE category aggregates — one hub per common course ====
+// The du.html category tiles are JS-driven; these pages give each tile a real
+// crawlable target and every subject hub a parent. NEP only, like the tiles.
+{
+  const CAT_INTRO = {
+    SEC: 'Skill Enhancement Courses build practical, job-ready skills — Python, marketing, lab techniques, design — in compact 2-credit papers that score high for little syllabus.',
+    VAC: 'Value Addition Courses cover values, life-skills and wellness — yoga, ethics, happiness, digital empowerment — short 2-credit papers every DU student takes.',
+    AEC: 'Ability Enhancement Courses handle language and communication plus environmental science — the compulsory ability courses under UGCF/NEP.',
+    GE: 'Generic Elective Courses let you borrow a paper from another department — economics, constitution, statistics — and are among the highest-scoring papers.',
+  };
+  for (const [cat, label] of [['SEC', 'Skill Enhancement Courses'], ['VAC', 'Value Addition Courses'], ['AEC', 'Ability Enhancement Courses'], ['GE', 'Generic Elective Courses']]) {
+    const file = cat.toLowerCase() + '-pyqs.html';
+    if (pages.has(file)) { console.log(`[cat-hub] skip ${cat}: already emitted`); continue; }
+    const catMats = materials.filter(m => (m.category || '').toUpperCase() === cat && String(m.subject || '').trim());
+    const total = honestCount(catMats.length);
+    if (!total) continue;
+    // Subject links: only hubs that were actually emitted (material or placeholder).
+    const seenSubjects = new Map();
+    for (const m of catMats) {
+      const s = String(m.subject || '').trim();
+      if (!s || seenSubjects.has(safeSlug(s))) continue;
+      const cands = [cat.toLowerCase() + '-' + safeSlug(s) + '-study-material.html',
+        cat.toLowerCase() + '-' + slug(s) + '-study-material.html'];
+      const hit = cands.find(f => pages.has(f));
+      if (hit) seenSubjects.set(safeSlug(s), { subject: s, file: hit });
+    }
+    const subjLinks = [...seenSubjects.values()].sort((a, b) => a.subject.localeCompare(b.subject));
+    let catBlock = padCommonBlock(
+      `<h2>About ${esc(label)} — Delhi University</h2><p>${esc(CAT_INTRO[cat] || '')} This hub collects every ${esc(cat)} subject at DU with semester-wise syllabus, PYQs and notes. Pick your subject below — each page keeps the UGCF taught order so your revision maps one-to-one with the exam.</p>`,
+      label, cat, 'aggregate');
+    emit(file,
+      `${cat} ${label} PYQs, Syllabus & Notes – DU | Sulaksh`,
+      `All ${cat} (${label}) material for Delhi University — ${honestCount(total)} docs, semester-wise PYQs, syllabus & notes. Free.`,
+      `${cat} — ${label} & Study Material`,
+      'Delhi University · Common Courses',
+      `<p><strong>${displayLabel(total, true)}</strong>, all free.</p>`,
+      `<h2>Browse by Subject</h2><div class="rel">${subjLinks.map(c => `<a href="/pyq/${c.file}">${esc(c.subject)}</a>`).join('')}</div>` +
+      `<h2>Latest ${esc(cat)} documents</h2><ul class="plist">${catMats.slice(0, 12).map(listItem).join('')}</ul>`,
+      subjLinks.map(c => ({ file: c.file, label: c.subject })), null,
+      { aboutBlock: catBlock, total, subject: label, faqCategory: 'notes', mats: catMats });
+    if (pages.has(file)) HUBS.push({ file, label: `${label} (All)` });
+  }
+}
 // These were listed in the sitemap before the pages existed (404s). Emitted
 // through emit() so they land in pyq/ and auto-enter the sitemap.
 const topHubLinks = () => {
@@ -1852,11 +1894,24 @@ try {
       const hub = tileHub(s);
       const js = `openCoreSubject('${escS}')`;
       return `${cardTag(hub, js)}<div class="top"><span class="core-ico">${meta.ico}</span>${progTag?`<span class="core-type">${progTag}</span>`:''}<span class="core-badge">${n} file${n===1?'':'s'}</span></div><span class="core-name">${s}</span><span class="core-desc">Notes, PYQs, Question Banks &amp; More</span><span class="core-count" id="coreCount-${s}">${n} materials</span><span class="core-btn">Explore →</span>${cardClose(hub)}`;
-    }).join('') + `<button class="core-card core-prog" onclick="openCoreProgrammes()"><div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span></button>` + (() => {
+    }).join('') + (() => {
+      // Programme catch-all links to its silo hub (verified emitted) so the
+      // tile is followable even where the JS view can't run.
+      const progHub = pages.has('programme-pyqs.html') ? 'programme-pyqs.html' : null;
+      const js = `openCoreProgrammes()`;
+      return `${cardTag(progHub, js)}<div class="top"><span class="core-ico">📦</span><span class="core-badge">${progCount} file${progCount===1?'':'s'}</span></div><span class="core-name">BA / B.Com Programme</span><span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can&apos;t find the syllabus? Everything is here!</span><span class="core-count">${progCount} materials</span><span class="core-btn">Open →</span>${cardClose(progHub)}`;
+    })() + (() => {
       const hub = singleHub('BCom prg');
       const js = `openCoreProgramme('BCom prg')`;
       return `${cardTag(hub, js)}<div class="top"><span class="core-ico">💼</span><span class="core-badge">${bcomCount} file${bcomCount===1?'':'s'}</span></div><span class="core-name">B.Com Programme</span><span class="core-desc">सब कुछ मिलेगा — Everything is here</span><span class="core-count">${bcomCount} materials</span><span class="core-btn">Open →</span>${cardClose(hub)}`;
-    })() + `<button class="core-card" onclick="openCoreOthers()"><div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span></button>`;
+    })() + (() => {
+      // Others catch-all links straight to its hub while it holds one subject.
+      const oHubs = [];
+      for (const s of othersFiles) for (const f of (hubMapBake.get(s) || [])) if (!oHubs.includes(f)) oHubs.push(f);
+      const oHub = oHubs.length === 1 ? oHubs[0] : null;
+      const js = `openCoreOthers()`;
+      return `${cardTag(oHub, js)}<div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span>${cardClose(oHub)}`;
+    })();
     // Idempotent: normalize any already-baked grid back to empty, then bake fresh (prevents duplication on re-run)
     // Matches the grid's own closing tag via the section tail (nested card divs
     // are skipped by backtracking). Handles both marker and legacy layouts —
@@ -1895,7 +1950,7 @@ try {
   // Others + Philosophy cards are allowed to be 0 (new empty sections) — exclude them from the check.
   const check = (duHtml.match(/catCount-(SEC|VAC|AEC|GE)">0 files<\/span>/g) || []).length;
   // Tag-agnostic: single-hub subjects bake as <a>, the rest as <button>.
-  const duWithoutNew = duHtml.replace(/<(?:button|a)[^>]*onclick="openCoreOthers\(\)"[^>]*>[\s\S]*?<\/(?:button|a)>/g, '').replace(/<(?:button|a)[^>]*onclick="openCoreSubject\('Philosophy'\)[^>]*>[\s\S]*?<\/(?:button|a)>/g, '');
+  const duWithoutNew = duHtml.replace(/<(?:button|a)[^>]*onclick="openCoreOthers\(\)[^"]*"[^>]*>[\s\S]*?<\/(?:button|a)>/g, '').replace(/<(?:button|a)[^>]*onclick="openCoreSubject\('Philosophy'\)[^>]*>[\s\S]*?<\/(?:button|a)>/g, '');
   const checkCoreBadgeZero = (duWithoutNew.match(/core-badge">0 files<\/span>/g) || []).length;
   if (check || checkCoreBadgeZero) { console.error(`[du.html bake] ERROR: still ${check} catCount 0 and ${checkCoreBadgeZero} core-badge 0 remain — failing build to prevent thin regression`); process.exit(1); }
   else console.log('[du.html bake] OK — raw HTML now contains real numbers, JS remains as live fallback');
