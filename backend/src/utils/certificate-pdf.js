@@ -78,14 +78,14 @@ async function loadLogo(pdf) {
 }
 
 // Authority signature art: white/transparent-background PNGs in private
-// Backblaze storage (never served over any public URL). The founder art is
-// split: signature+name block plus the round seal as a separate file so each
-// prints at a legible size. Anything else (or a missing file) falls back to
-// the plain signature line. Black-background images are NOT accepted here.
+// Backblaze storage (never served over any public URL). Each issuer's full
+// block (signature + name + designation + seal if any) prints at the sign
+// spot, Aryan-style. Anything else (or a missing file) falls back to the
+// plain signature line. Black-background images are NOT accepted here.
 function signatureFileFor(issuedByName) {
   const n = String(issuedByName || '').toLowerCase();
   if (n.includes('aryan')) return { sig: 'sign-aryan.png', stamp: null };
-  if (n.includes('lakshmeshwar') || n.includes('pandey')) return { sig: 'sign-founder-sig.png', stamp: 'sign-founder-stamp.png' };
+  if (n.includes('lakshmeshwar') || n.includes('pandey')) return { sig: 'sign-founder-full.png', stamp: null };
   return null;
 }
 
@@ -242,7 +242,9 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   // printed name/title (the block already contains them).
   const fx = 80;
   const fy = 78;
-  const sigFit = fitSig(sig, 230, 130);
+  // Adaptive cap: the footer is fixed, but content length varies — size the
+  // signature art to whatever room the content leaves above the footer.
+  const sigFit = fitSig(sig, 230, Math.max(48, Math.min(130, y - 144)));
   page.drawLine({ start: { x: fx, y: fy + 34 }, end: { x: fx + 170, y: fy + 34 }, thickness: 1, color: MUTED });
   if (sigFit) {
     page.drawImage(sigFit.img, { x: fx, y: fy + 50, width: sigFit.w, height: sigFit.h });
@@ -262,7 +264,6 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   const short = vu.length > 44 ? vu.slice(0, 44) + '...' : vu;
   page.drawText(short, { x: W - fx - qs, y: fy - 49, size: 7, font: helv, color: MUTED });
-  drawStamp(page, sig, W / 2, 100);
 
   const foot = 'sulaksh.online  |  This is a system-generated verifiable certificate';
   page.drawText(foot, { x: center(foot, helv, 7.5), y: 40, size: 7.5, font: helv, color: MUTED });
@@ -366,7 +367,6 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   last.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   last.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
-  drawStamp(last, sig, PW - ML - 40, 58);
 }
 
 // ---------------- Internship Offer Letter (portrait, minimum 2 pages) ----------------
@@ -527,7 +527,6 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   page.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   page.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
-  drawStamp(page, sig, PW - ML - 40, 58);
 }
 
 async function generateCertificatePdf(record, verifyUrl) {
