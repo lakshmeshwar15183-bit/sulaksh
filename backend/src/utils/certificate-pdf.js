@@ -77,16 +77,41 @@ async function loadLogo(pdf) {
   return null;
 }
 
-// Authority signature blocks: white/transparent-background PNGs placed in
-// backend/assets/. Matched from the issued-by name; anything else (or a
-// missing file) falls back to the plain signature line. Black-background
-// images are NOT accepted here — they would print as a black box.
-// stamped=true when the block art already contains its own round seal (then
-// the drawn OWNER muhar is skipped so seals never double up).
+// Authority signature art: white/transparent-background PNGs in private
+// Backblaze storage (never served over any public URL). The founder art is
+// split: signature+name block plus the round seal as a separate file so each
+// prints at a legible size. Anything else (or a missing file) falls back to
+// the plain signature line. Black-background images are NOT accepted here.
 function signatureFileFor(issuedByName) {
   const n = String(issuedByName || '').toLowerCase();
-  if (n.includes('aryan')) return { file: 'sign-aryan.png', stamped: false };
-  if (n.includes('lakshmeshwar') || n.includes('pandey')) return { file: 'sign-founder.png', stamped: true };
+  if (n.includes('aryan')) return { sig: 'sign-aryan.png', stamp: null };
+  if (n.includes('lakshmeshwar') || n.includes('pandey')) return { sig: 'sign-founder-sig.png', stamp: 'sign-founder-stamp.png' };
+  return null;
+}
+
+async function loadArt(pdf, file) {
+  if (!file) return null;
+  if (sigCache.has(file)) {
+    const hit = sigCache.get(file);
+    const img = await pdf.embedPng(hit);
+    return { img, w: img.width, h: img.height };
+  }
+  // Private Backblaze copy first (never served over any public URL) …
+  try {
+    const { downloadObject } = require('../r2');
+    const buf = await downloadObject('private/signatures/' + file);
+    sigCache.set(file, buf);
+    const img = await pdf.embedPng(buf);
+    return { img, w: img.width, h: img.height };
+  } catch (e) { /* fall through to local file (dev machines) */ }
+  // … then a local backend/assets/ copy (dev only — never committed).
+  try {
+    const p = path.join(__dirname, '..', '..', 'assets', file);
+    if (fs.existsSync(p)) {
+      const img = await pdf.embedPng(fs.readFileSync(p));
+      return { img, w: img.width, h: img.height };
+    }
+  } catch (e) { /* fall back to plain line */ }
   return null;
 }
 
@@ -94,27 +119,12 @@ async function loadSignature(pdf, issuedByName) {
   try {
     const spec = signatureFileFor(issuedByName);
     if (!spec) return null;
-    if (sigCache.has(spec.file)) {
-      const hit = sigCache.get(spec.file);
-      const img = await pdf.embedPng(hit);
-      return { img, w: img.width, h: img.height, stamped: spec.stamped };
-    }
-    // Private Backblaze copy first (never served over any public URL) …
-    try {
-      const { downloadObject } = require('../r2');
-      const buf = await downloadObject('private/signatures/' + spec.file);
-      sigCache.set(spec.file, buf);
-      const img = await pdf.embedPng(buf);
-      return { img, w: img.width, h: img.height, stamped: spec.stamped };
-    } catch (e) { /* fall through to local file (dev machines) */ }
-    // … then a local backend/assets/ copy (dev only — never committed).
-    for (const cand of [spec.file, spec.file.replace(/\.png$/, '.jpg')]) {
-      const p = path.join(__dirname, '..', '..', 'assets', cand);
-      if (fs.existsSync(p)) {
-        const img = cand.endsWith('.jpg') ? await pdf.embedJpg(fs.readFileSync(p)) : await pdf.embedPng(fs.readFileSync(p));
-        return { img, w: img.width, h: img.height, stamped: spec.stamped };
-      }
-    }
+    // Signature art and seal load independently: a missing signature still
+    // leaves the plain line + printed name, and a missing seal just skips it.
+    const sig = await loadArt(pdf, spec.sig);
+    const stamp = await loadArt(pdf, spec.stamp);
+    if (!sig && !stamp) return null;
+    return { img: sig ? sig.img : null, w: sig ? sig.w : 0, h: sig ? sig.h : 0, stamp };
   } catch (e) { /* fall back to plain line */ }
   return null;
 }
@@ -123,7 +133,17 @@ async function loadSignature(pdf, issuedByName) {
 function fitSig(sig, maxW, maxH) {
   if (!sig || !sig.w || !sig.h) return null;
   const s = Math.min(maxW / sig.w, maxH / sig.h, 1);
-  return { img: sig.img, w: sig.w * s, h: sig.h * s, stamped: !!sig.stamped };
+  return { img: sig.img, w: sig.w * s, h: sig.h * s };
+}
+
+// Round authority seal in a ~64px box (founder only). Placed where the old
+// drawn muhar sat; everyone else gets nothing here.
+function drawStamp(page, sig, cx, cy) {
+  if (!sig || !sig.stamp || !sig.stamp.img) return;
+  const st = sig.stamp;
+  const s = Math.min(64 / st.w, 64 / st.h, 1);
+  const w = st.w * s, h = st.h * s;
+  page.drawImage(st.img, { x: cx - w / 2, y: cy - h / 2, width: w, height: h });
 }
 
 async function makeQr(pdf, url) {
@@ -222,10 +242,10 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   // printed name/title (the block already contains them).
   const fx = 80;
   const fy = 78;
-  const sigFit = fitSig(sig, 150, 95);
+  const sigFit = fitSig(sig, 230, 130);
   page.drawLine({ start: { x: fx, y: fy + 34 }, end: { x: fx + 170, y: fy + 34 }, thickness: 1, color: MUTED });
   if (sigFit) {
-    page.drawImage(sigFit.img, { x: fx, y: fy + 42, width: sigFit.w, height: sigFit.h });
+    page.drawImage(sigFit.img, { x: fx, y: fy + 50, width: sigFit.w, height: sigFit.h });
   } else {
     const byName = record.issued_by_name || '';
     page.drawText(byName, { x: fx, y: fy + 14, size: 12, font: helvBold, color: DARK });
@@ -242,6 +262,7 @@ async function certificatePage(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   const short = vu.length > 44 ? vu.slice(0, 44) + '...' : vu;
   page.drawText(short, { x: W - fx - qs, y: fy - 49, size: 7, font: helv, color: MUTED });
+  drawStamp(page, sig, W / 2, 100);
 
   const foot = 'sulaksh.online  |  This is a system-generated verifiable certificate';
   page.drawText(foot, { x: center(foot, helv, 7.5), y: 40, size: 7.5, font: helv, color: MUTED });
@@ -326,7 +347,7 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   y -= gapAbove;
   page.drawLine({ start: { x: ML, y }, end: { x: ML + 190, y }, thickness: 1, color: MUTED });
   if (sigFit) {
-    page.drawImage(sigFit.img, { x: ML, y: y + 8, width: sigFit.w, height: sigFit.h });
+    page.drawImage(sigFit.img, { x: ML, y: y + 16, width: sigFit.w, height: sigFit.h });
   } else {
     const byName = record.issued_by_name || '';
     page.drawText(byName, { x: ML, y: y - 18, size: 13, font: helvBold, color: DARK });
@@ -345,6 +366,7 @@ async function lorPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   last.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   last.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
+  drawStamp(last, sig, PW - ML - 40, 58);
 }
 
 // ---------------- Internship Offer Letter (portrait, minimum 2 pages) ----------------
@@ -487,7 +509,7 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   y -= 18;
   page.drawText("Intern's Signature & Date", { x: ML, y: y - 10, size: 9.5, font: helv, color: MUTED });
   if (sigFitJ) {
-    page.drawImage(sigFitJ.img, { x: PW - ML - 200, y: y + 8, width: sigFitJ.w, height: sigFitJ.h });
+    page.drawImage(sigFitJ.img, { x: PW - ML - 200, y: y + 16, width: sigFitJ.w, height: sigFitJ.h });
   } else {
     const byName = record.issued_by_name || '';
     page.drawText(byName, { x: PW - ML - 200, y: y - 10, size: 12, font: helvBold, color: DARK });
@@ -505,6 +527,7 @@ async function joiningPages(pdf, record, verifyUrl, fonts, logo, qr, sig) {
   const vu = String(verifyUrl);
   page.drawText(vu.length > 56 ? vu.slice(0, 56) + '...' : vu, { x: ML + qs + 12, y: 52, size: 8, font: helv, color: MUTED });
   page.drawText(`Ref : ${record.certificate_number || ''}   |   sulaksh.online`, { x: ML + qs + 12, y: 38, size: 8, font: helv, color: MUTED });
+  drawStamp(page, sig, PW - ML - 40, 58);
 }
 
 async function generateCertificatePdf(record, verifyUrl) {
