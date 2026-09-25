@@ -87,19 +87,34 @@ function show(cert, state){
     </dl>
     ${revoked ? '<p class="ref">This certificate was revoked by Sulaksh and is no longer valid.</p>' : ''}`;
 }
+async function fetchRetry(url, tries){
+  tries = tries || 3;
+  let lastErr = null;
+  for (let i = 0; i < tries; i++){
+    try { return await fetch(url); }
+    catch(e){ lastErr = e; await new Promise(r => setTimeout(r, 900)); }
+  }
+  throw lastErr;
+}
+function showOffline(id){
+  card.innerHTML = '<div class="status missing"><span class="dot"></span>Verification unavailable</div><p style="font-size:14px;color:var(--muted);margin-top:8px;">Could not reach the verification service — <u>tap here to retry</u>. On Brave/ad-block, allow this site first.</p>';
+  card.style.cursor = 'pointer';
+  card.onclick = () => { card.onclick = null; card.style.cursor = ''; verify(id); };
+}
 async function verify(number){
   const id = String(number || '').trim().toUpperCase();
   if (!id) { showMissing(''); return; }
   document.getElementById('q').value = id;
+  card.onclick = null; card.style.cursor = '';
   card.innerHTML = '<div class="spin"></div>';
   try {
-    const r = await fetch(API_BASE + '/api/certificates/verify/' + encodeURIComponent(id));
+    const r = await fetchRetry(API_BASE + '/api/certificates/verify/' + encodeURIComponent(id));
     if (r.status === 404) { showMissing(id); return; }
     const d = await r.json().catch(() => ({}));
     if (!r.ok || !d.certificate) { showMissing(id); return; }
     show(d.certificate, d.status);
   } catch (e) {
-    card.innerHTML = '<div class="status missing"><span class="dot"></span>Verification unavailable</div><p style="font-size:14px;color:var(--muted);margin-top:8px;">Could not reach the verification service. Please try again.</p>';
+    showOffline(id);
   }
 }
 document.getElementById('searchForm').addEventListener('submit', (e) => {

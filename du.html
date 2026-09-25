@@ -845,8 +845,13 @@
     <script src="assets/js/adgate.js?v=3" defer></script>
     <script src="assets/js/sulaksh-auth.js?v=4" defer></script>
     <script>
+  // Storage-blocked browsers (private mode, shields, in-app webviews) throw
+  // on raw localStorage access — guarded helpers keep the whole page alive.
+  function lsGet(k){ try { return window.lsGet(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { window.lsSet(k, v); } catch (e) {} }
+  function lsDel(k){ try { window.lsDel(k); } catch (e) {} }
   // ---------- Config ----------
-  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  const SULAKSH_API = lsGet('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
 
   // All Sulaksh API calls authenticate via the HttpOnly session cookie only.
   // The token is never exposed to JS (so XSS can't exfiltrate it), and any
@@ -1395,10 +1400,10 @@
   // mirrors what the server confirms via /api/auth/me — never client-side
   // email lists or localStorage tokens.
   const state = {
-    email: localStorage.getItem('sulaksh-email') || null,
-    token: localStorage.getItem('sulaksh-token') || null,
+    email: lsGet('sulaksh-email') || null,
+    token: lsGet('sulaksh-token') || null,
     role: null,
-    isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admin'||r==='super';})(),
+    isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super';})(),
     canMaintain: false,
   };
 
@@ -1416,14 +1421,14 @@
     if (!r || !r.ok) {
       // No valid session — stop showing a ghost logged-in name.
       state.email = null; state.role = null; state.isAdmin = false; state.canMaintain = false;
-      localStorage.removeItem('sulaksh-email');
+      lsDel('sulaksh-email');
       return;
     }
     const me = await r.json().catch(() => ({}));
     state.email = me.email || null;
     state.role = me.role || null;
     applyPermissions();
-    if (state.email) localStorage.setItem('sulaksh-email', state.email);
+    if (state.email) lsSet('sulaksh-email', state.email);
   }
 
   const dynamicSubjects = {};
@@ -9136,9 +9141,9 @@ const WAIT_PHRASES = [
   function setTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
     themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
-    localStorage.setItem('sulaksh-theme', t);
+    lsSet('sulaksh-theme', t);
   }
-  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  setTheme(lsGet('sulaksh-theme') || 'light');
   themeBtn.addEventListener('click', () => {
     setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   });
@@ -9162,9 +9167,9 @@ const WAIT_PHRASES = [
     try { await fetch(`${SULAKSH_API}/api/auth/logout`, { method: 'POST' }); } catch (e) {}
     state.email = null; state.token = null; state.role = null;
     state.isAdmin = false; state.canMaintain = false;
-    localStorage.removeItem('sulaksh-email');
-    localStorage.removeItem('sulaksh-token');
-    localStorage.removeItem('sulaksh-role');
+    lsDel('sulaksh-email');
+    lsDel('sulaksh-token');
+    lsDel('sulaksh-role');
     updateAuthUI();
     loadMaterials();
   }
@@ -9301,11 +9306,11 @@ const WAIT_PHRASES = [
   }
   function cacheSetLong(key, value) {
     // localStorage survives reloads/tab closes — longer fallback window.
-    try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), v: value })); } catch (e) {}
+    try { lsSet(key, JSON.stringify({ t: Date.now(), v: value })); } catch (e) {}
   }
   function cacheGetLong(key, ttlMs) {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = lsGet(key);
       if (!raw) return null;
       const row = JSON.parse(raw);
       if (Date.now() - row.t > ttlMs) return null;
@@ -9944,8 +9949,8 @@ const WAIT_PHRASES = [
   var banner=document.getElementById('cookieConsent');
   var acceptBtn=document.getElementById('cookieAccept');
   var declineBtn=document.getElementById('cookieDecline');
-  function getConsent(){try{return localStorage.getItem(KEY);}catch(e){return null;}}
-  function setConsent(v){try{localStorage.setItem(KEY,v);}catch(e){}}
+  function getConsent(){try{return lsGet(KEY);}catch(e){return null;}}
+  function setConsent(v){try{lsSet(KEY,v);}catch(e){}}
   function updateGtag(grant){
     try{
       if(typeof gtag==='function'){
