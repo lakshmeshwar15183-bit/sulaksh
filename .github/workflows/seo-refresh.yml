@@ -40,6 +40,15 @@ jobs:
           git reset --hard origin/gh-pages
           # sync ENTIRE tree from main except backend source folder
           git checkout main -- . ':!backend'
+          # propagate DELETIONS inside bot-owned paths (checkout + add can only
+          # add/modify — files deleted on main, e.g. orphan-pruned pages, would
+          # linger on gh-pages forever and trip the drift check)
+          for owned in pyq assets/data; do
+            comm -23 \
+              <(git ls-tree -r --name-only HEAD -- "$owned" | sort) \
+              <(git ls-tree -r --name-only origin/main -- "$owned" | sort) \
+              | xargs -r git rm -q --
+          done
           git add -A
           git diff --cached --quiet || git commit -m "full sync $(date -u '+%F %H:%M') UTC"
           git push origin gh-pages
