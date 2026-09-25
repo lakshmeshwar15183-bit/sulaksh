@@ -21,8 +21,9 @@
  */
 (function () {
   'use strict';
-  var API = localStorage.getItem('sulaksh-api') ||
-    'https://sulaksh-backend-production.up.railway.app';
+  var API = null;
+  try { API = localStorage.getItem('sulaksh-api'); } catch (e) { API = null; }
+  API = API || 'https://sulaksh-backend-production.up.railway.app';
   var TOKEN_KEY = 'sulaksh-token';
 
   function getToken() {

@@ -778,6 +778,11 @@
 <script src="assets/js/adgate.js?v=3" defer></script>
 <script src="/assets/js/sulaksh-auth.js?v=4" defer></script>
 <script>
+  // Storage-blocked browsers (private mode, shields, in-app webviews) throw
+  // on raw localStorage access — guarded helpers keep the whole page alive.
+  function lsGet(k){ try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { window.localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k){ try { window.localStorage.removeItem(k); } catch (e) {} }
   // Mobile menu
   const hamburger = document.getElementById('hamburger');
   const mobileMenu = document.getElementById('mobileMenu');
@@ -789,9 +794,9 @@
   function setTheme(t){
     root.setAttribute('data-theme', t);
     themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
-    localStorage.setItem('sulaksh-theme', t);
+    lsSet('sulaksh-theme', t);
   }
-  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  setTheme(lsGet('sulaksh-theme') || 'light');
   themeBtn.addEventListener('click', () => {
     setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   });
@@ -813,7 +818,7 @@
 
   // ---------- API config ----------
   // Change this to your deployed backend URL once Render is live.
-  const SULAKSH_API = localStorage.getItem('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
+  const SULAKSH_API = lsGet('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
 
   // Upload with timeout + retry on transient network AND server (5xx) errors.
   async function postUpload(url, options) {
@@ -842,9 +847,9 @@
   }
 
   const state = {
-    email: localStorage.getItem('sulaksh-email') || null,
-    token: localStorage.getItem('sulaksh-token') || null,
-isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admin'||r==='super';})(),
+    email: lsGet('sulaksh-email') || null,
+    token: lsGet('sulaksh-token') || null,
+isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super';})(),
   };
 
   function setMsg(el, text, ok) {
@@ -858,7 +863,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   // DU & College info modal — shown once before leaving for du.html
   function openDuInfo(event) {
     event.preventDefault();
-    if (localStorage.getItem('sulaksh-du-info-seen')) {
+    if (lsGet('sulaksh-du-info-seen')) {
       window.location.href = 'du.html';
       return false;
     }
@@ -869,7 +874,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     closeModal('duInfoOverlay');
   }
   function goDuCollege() {
-    localStorage.setItem('sulaksh-du-info-seen', '1');
+    lsSet('sulaksh-du-info-seen', '1');
     window.location.href = 'du.html';
   }
   document.addEventListener('keydown', (e) => {
@@ -904,7 +909,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   async function updateMaintUI() {
     const btn = document.getElementById('maintBtn');
     if (!btn) return;
-    const role = (window.SulakshAuth && window.SulakshAuth.st.role) || localStorage.getItem('sulaksh-role');
+    const role = (window.SulakshAuth && window.SulakshAuth.st.role) || lsGet('sulaksh-role');
     const can = role === 'super' || role === 'maintenance';
     btn.style.display = (state.token && can) ? '' : 'none';
     if (!can || !state.token) return;
@@ -1016,7 +1021,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   document.getElementById('delBtn').addEventListener('click', toggleDeletes);
 
   async function logout() {
-    const tok = state.token || localStorage.getItem('sulaksh-token');
+    const tok = state.token || lsGet('sulaksh-token');
     // Best-effort: revoke the server session so the logout is real, not just
     // client-side. Failure here must not block the local sign-out.
     if (tok) {
@@ -1028,9 +1033,9 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     state.email = null;
     state.token = null;
     state.isAdmin = false;
-    localStorage.removeItem('sulaksh-email');
-    localStorage.removeItem('sulaksh-token');
-    localStorage.removeItem('sulaksh-role');
+    lsDel('sulaksh-email');
+    lsDel('sulaksh-token');
+    lsDel('sulaksh-role');
     updateAuthUI();
     loadMaterials();
   }
@@ -1110,7 +1115,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   const HOME_FETCH_TIMEOUT_MS = 12000;
   function homeCacheGet() {
     try {
-      const raw = localStorage.getItem(HOME_MAT_CACHE_KEY);
+      const raw = lsGet(HOME_MAT_CACHE_KEY);
       if (!raw) return null;
       const row = JSON.parse(raw);
       if (Date.now() - row.t > 7 * 24 * 60 * 60 * 1000) return null;
@@ -1118,7 +1123,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     } catch (e) { return null; }
   }
   function homeCacheSet(v) {
-    try { localStorage.setItem(HOME_MAT_CACHE_KEY, JSON.stringify({ t: Date.now(), v: v })); } catch (e) {}
+    try { lsSet(HOME_MAT_CACHE_KEY, JSON.stringify({ t: Date.now(), v: v })); } catch (e) {}
   }
 
   async function fetchJsonRetry(url, tries = 3) {
@@ -1333,8 +1338,8 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   var banner=document.getElementById('cookieConsent');
   var acceptBtn=document.getElementById('cookieAccept');
   var declineBtn=document.getElementById('cookieDecline');
-  function getConsent(){try{return localStorage.getItem(KEY);}catch(e){return null;}}
-  function setConsent(v){try{localStorage.setItem(KEY,v);}catch(e){}}
+  function getConsent(){try{return lsGet(KEY);}catch(e){return null;}}
+  function setConsent(v){try{lsSet(KEY,v);}catch(e){}}
   function updateGtag(grant){
     try{
       if(typeof gtag==='function'){
