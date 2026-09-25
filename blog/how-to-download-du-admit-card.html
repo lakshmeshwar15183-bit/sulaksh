@@ -225,12 +225,14 @@
 
 <script>
   const themeBtn = document.getElementById('themeBtn');
+  function lsGet(k){ try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { window.localStorage.setItem(k, v); } catch (e) {} }
   function setTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
     themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
-    localStorage.setItem('sulaksh-theme', t);
+    lsSet('sulaksh-theme', t);
   }
-  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  setTheme(lsGet('sulaksh-theme') || 'light');
   themeBtn.addEventListener('click', () => {
     setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   });
