@@ -74,6 +74,28 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
    (function(){
       var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), more=document.getElementById('archMore'), t=null, lastEff='', lastTotal=0;
       var API='https://sulaksh-backend-production.up.railway.app';
+      // Warm up the API while the visitor reads/types (free-tier servers sleep;
+      // first cold request is the #1 cause of "snag" on someone else's phone).
+      fetch(API+'/api/health').catch(function(){});
+      // Retry with backoff: one failed fetch (sleeping server, train tunnel,
+      // Brave shields hiccup) must not end in a dead "snag".
+      function fetchRetry(url, tries){
+        tries=tries||3;
+        function attempt(n){
+          return fetch(url).catch(function(e){
+            if(n<=1) throw e;
+            return new Promise(function(res){ setTimeout(function(){ res(attempt(n-1)); }, 900); });
+          });
+        }
+        return attempt(tries);
+      }
+      // Failure card: tappable retry + the Brave/ad-block hint (second cause).
+      function snag(retryFn){
+        meta.innerHTML='Search hit a snag — <u>tap to retry</u>. Tip: Brave shields or ad-blockers sometimes block the archive; allow this site and retry.';
+        meta.style.cursor='pointer';
+        meta.onclick=function(){ meta.onclick=null; meta.style.cursor=''; retryFn(); };
+      }
+      function clearSnag(){ meta.onclick=null; meta.style.cursor=''; }
       // Honor the admin "Downloads enabled" toggle: hide every Save button when
       // downloads are off (View always stays). Defaults to visible until the
       // config check resolves, matching the rest of the site.
@@ -107,34 +129,37 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
        fetch(API+'/api/materials/'+encodeURIComponent(b.getAttribute('data-dl'))+'/download?disposition=inline')
          .then(function(r){return r.json();}).then(function(d){ if(d&&d.url) location.href=d.url; }).catch(function(){});
      });
-     input.addEventListener('input', function(){
-       clearTimeout(t);
-       var q=input.value.trim();
-        if(q.length<2){ box.innerHTML=''; meta.textContent=''; more.style.display='none'; return; }
-       meta.textContent='Searching…';
-        t=setTimeout(function(){
-          var raw=q.toLowerCase();
-          var eff=ALIAS[raw]||q;
-          fetch(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(eff)+'&limit=20')
-            .then(function(r){return r.json();}).then(function(d){
-              var arr=rankFirst((d&&d.materials)||[], eff.toLowerCase());
-              var total=(d&&typeof d.total==='number')?d.total:arr.length;
-              lastEff=eff; lastTotal=total;
-              if(total>arr.length){ more.style.display=''; more.textContent='Show '+(total-arr.length)+' more results'; }
-              else { more.style.display='none'; }
-              meta.textContent=arr.length?('Showing '+arr.length+' of '+total+' matches — open any paper to view or save it.'):'No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
-              box.innerHTML=arr.map(row).join(''); hideDl();
-            }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
-        }, 300);
+      function doSearch(q){
+        clearSnag();
+        var raw=q.toLowerCase();
+        var eff=ALIAS[raw]||q;
+        fetchRetry(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(eff)+'&limit=20')
+          .then(function(r){return r.json();}).then(function(d){
+            var arr=rankFirst((d&&d.materials)||[], eff.toLowerCase());
+            var total=(d&&typeof d.total==='number')?d.total:arr.length;
+            lastEff=eff; lastTotal=total;
+            if(total>arr.length){ more.style.display=''; more.textContent='Show '+(total-arr.length)+' more results'; }
+            else { more.style.display='none'; }
+            meta.textContent=arr.length?('Showing '+arr.length+' of '+total+' matches — open any paper to view or save it.'):'No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
+            box.innerHTML=arr.map(row).join(''); hideDl();
+          }).catch(function(){ snag(function(){ doSearch(q); }); });
+      }
+      input.addEventListener('input', function(){
+        clearTimeout(t);
+        var q=input.value.trim();
+         if(q.length<2){ box.innerHTML=''; meta.textContent=''; more.style.display='none'; return; }
+        clearSnag();
+        meta.textContent='Searching…';
+        t=setTimeout(function(){ doSearch(q); }, 300);
       });
       more.addEventListener('click', function(){
-        more.style.display='none'; meta.textContent='Loading all matches…';
-        fetch(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(lastEff)+'&limit=100')
+        more.style.display='none'; clearSnag(); meta.textContent='Loading all matches…';
+        fetchRetry(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(lastEff)+'&limit=100')
           .then(function(r){return r.json();}).then(function(d){
             var arr=rankFirst((d&&d.materials)||[], String(lastEff).toLowerCase());
             meta.textContent=arr.length?('Showing all '+arr.length+' matches — open any paper to view or save it.'):'No matches.';
             box.innerHTML=arr.map(row).join(''); hideDl();
-          }).catch(function(){ meta.textContent='Search hit a snag — try again.'; });
+          }).catch(function(){ snag(function(){ more.click(); }); });
       });
    })();
    </script>
