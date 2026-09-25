@@ -1950,7 +1950,7 @@ try {
   // Others + Philosophy cards are allowed to be 0 (new empty sections) — exclude them from the check.
   const check = (duHtml.match(/catCount-(SEC|VAC|AEC|GE)">0 files<\/span>/g) || []).length;
   // Tag-agnostic: single-hub subjects bake as <a>, the rest as <button>.
-  const duWithoutNew = duHtml.replace(/<(?:button|a)[^>]*onclick="openCoreOthers\(\)"[^>]*>[\s\S]*?<\/(?:button|a)>/g, '').replace(/<(?:button|a)[^>]*onclick="openCoreSubject\('Philosophy'\)[^>]*>[\s\S]*?<\/(?:button|a)>/g, '');
+  const duWithoutNew = duHtml.replace(/<(?:button|a)[^>]*onclick="openCoreOthers\(\)[^"]*"[^>]*>[\s\S]*?<\/(?:button|a)>/g, '').replace(/<(?:button|a)[^>]*onclick="openCoreSubject\('Philosophy'\)[^>]*>[\s\S]*?<\/(?:button|a)>/g, '');
   const checkCoreBadgeZero = (duWithoutNew.match(/core-badge">0 files<\/span>/g) || []).length;
   if (check || checkCoreBadgeZero) { console.error(`[du.html bake] ERROR: still ${check} catCount 0 and ${checkCoreBadgeZero} core-badge 0 remain — failing build to prevent thin regression`); process.exit(1); }
   else console.log('[du.html bake] OK — raw HTML now contains real numbers, JS remains as live fallback');
