@@ -759,6 +759,15 @@ const displayLabel = (n, hasGuide) => {
   if (num === 0) return 'Coming soon';
   return `${num} document${num === 1 ? '' : 's'}`;
 };
+// Sibling of displayLabel for templates that append their own noun phrase
+// ("— includes …", "- everything …"): returns a bare count so the noun is
+// never printed twice ("22 documents document(s)").
+const countLabel = (n, hasGuide) => {
+  const num = honestCount(n);
+  if (num === 0 && hasGuide) return 'Guide available';
+  if (num === 0) return 'Coming soon';
+  return `${num} document(s)`;
+};
 const badgeLabel = (n, hasGuide) => {
   const num = honestCount(n);
   if (num === 0 && hasGuide) return 'Guide available';
@@ -1056,7 +1065,7 @@ for (const [key, semMap] of bySubjTrack) {
     `All ${subject} ${track.toLowerCase()} material for Delhi University — ${honestCount(total)} docs, semester-wise PYQs, syllabus & notes. Free.`,
     `${subject} ${track} — Question Papers & Study Material`,
     'Delhi University · Core',
-    `<p><strong>${hubDisplay}</strong>${hubDisplay.includes('Guide')||hubDisplay.includes('Coming')?'':' documents'}, all free.</p>`,
+    `<p><strong>${hubDisplay}</strong>, all free.</p>`,
     [...semMap.entries()].map(([sn, arr]) =>
       `<h2>${sn}</h2><ul class="plist">${arr.slice(0, 12).map(listItem).join('')}</ul>`).join('') + hubNavHtml,
     [...bySubjTrack.keys()].filter(k => k !== key && k.split('||')[0] === subject)
@@ -1088,7 +1097,7 @@ for (const [key, semMap] of bySubjTrack) {
       `${displayLabel(arr.length, semHasGuide)} for ${subject} ${track.toLowerCase()} ${semName.toLowerCase()} — Delhi University. Free instant view.`,
       `${subject} ${track} — ${semName}`,
       'Delhi University · Free',
-      `<p><strong>${displayLabel(arr.length, semHasGuide)}</strong>${displayLabel(arr.length, semHasGuide).includes('Guide')||displayLabel(arr.length, semHasGuide).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for <strong>${semName}</strong>.</p>`,
+      `<p><strong>${countLabel(arr.length, semHasGuide)}</strong> — includes broad guide + PDFs for <strong>${semName}</strong>.</p>`,
       `<ul class="plist">${arr.map(listItem).join('')}</ul>` + semNavHtml,
       [...semMap.keys()].filter(s2 => s2 !== semName).map(s2 => {
         const n2 = (s2.match(/\d+/) || [''])[0];
@@ -1108,7 +1117,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${subject} ${track} ${semName} ${TN[t]} – DU Free | Sulaksh`,
         `${displayLabel(arr2.length, true)} — Delhi University, free.`,
         `${subject} ${track} ${semName} — ${TN[t]}`,
-        'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${TN[t]}.</p>`,
+        'Delhi University · Free', `<p><strong>${countLabel(arr2.length, true)}</strong> — includes broad guide + PDFs for ${TN[t]}.</p>`,
         `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountType, aboutBlock: typeBlock, subject, faqCategory: t, mats: arr2 });
     }
     for (const [y, arr2] of byYr) {
@@ -1119,7 +1128,7 @@ for (const [key, semMap] of bySubjTrack) {
         `${subject} ${track} ${semName} PYQs ${y} – Delhi University | Sulaksh`,
         `${arr2.length} papers from ${y} — DU UGCF/NEP. Free instant view.`,
         `${subject} ${track} — ${semName} ${y}`,
-        'Delhi University · Free', `<p><strong>${displayLabel(arr2.length, true)}</strong>${displayLabel(arr2.length, true).includes('Guide')||displayLabel(arr2.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs for ${y}.</p>`,
+        'Delhi University · Free', `<p><strong>${countLabel(arr2.length, true)}</strong> — includes broad guide + PDFs for ${y}.</p>`,
         `<ul class="plist">${arr2.map(listItem).join('')}</ul><p style="margin-top:10px"><a href="/pyq/${baseSlug}pyqs.html" style="color:var(--blue);font-size:13px">← Back to ${esc(semName)}</a> · <a href="/pyq/${ovFile(subject,track)}" style="color:var(--blue);font-size:13px">${esc(subject)} hub</a></p>`, null, null, { total: displayCountYr, aboutBlock: yrBlock, subject, faqCategory: 'pyq', mats: arr2 });
     }
   }
@@ -1139,7 +1148,7 @@ for (const [key, semMap] of bySubjTrack) {
       `All ${subject} ${track} ${TNA[t]} – Across Semesters | Sulaksh`,
       `${displayLabel(arr.length, true)} ${subject} ${track.toLowerCase()} ${TNA[t].toLowerCase()} documents across all semesters — DU. Free.`,
       `${subject} ${track} — All ${TNA[t]}`,
-      'Delhi University · Free', `<p><strong>${displayLabel(arr.length, true)}</strong>${displayLabel(arr.length, true).includes('Guide')||displayLabel(arr.length, true).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs across semesters.</p>`,
+      'Delhi University · Free', `<p><strong>${countLabel(arr.length, true)}</strong> — includes broad guide + PDFs across semesters.</p>`,
       `<ul class="plist">${arr.map(listItem).join('')}</ul>`, null, null, { total: displayCountAll, aboutBlock: allBlock, subject, faqCategory: t, mats: arr });
   }
 }
@@ -1175,7 +1184,7 @@ const SUBJECT_HUB = new Map(); // subject -> hub file (only successfully emitted
       `All ${aggLabel} material for Delhi University — ${honestCount(total)} docs, semester-wise PYQs, syllabus & notes across course types. Free.`,
       `${aggLabel} — Question Papers & Study Material`,
       'Delhi University · Core',
-      `<p><strong>${displayLabel(total, true)}</strong> documents, all free.</p>`,
+      `<p><strong>${displayLabel(total, true)}</strong>, all free.</p>`,
       `<h2>Browse by Course Type</h2><div class="rel">${trackLinks.map(c => `<a href="/pyq/${c.file}">${esc(c.label)}</a>`).join('')}</div>` +
       `<h2>Latest ${esc(aggLabel)} documents</h2><ul class="plist">${subjMats.slice(0, 12).map(listItem).join('')}</ul>`,
       trackLinks, null, { aboutBlock: aggBlock, total, subject: s, faqCategory: 'notes', mats: subjMats });
@@ -1235,7 +1244,7 @@ for (const [k, arr] of ncByType) {
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
     arr.length + ' ' + subject + ' ' + CAT_LABEL[cat] + ' ' + TYPE_LABEL[type].toLowerCase() + ' - Delhi University NEP/UGCF, free instant view.',
     subject + ' - ' + TYPE_LABEL[type] + ' (' + CAT_LABEL[cat] + ')',
-    CAT_LABEL[cat], `<p><strong>${displayLabel(arr.length, hasGuideNC)}</strong>${displayLabel(arr.length, hasGuideNC).includes('Guide')||displayLabel(arr.length, hasGuideNC).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs. Count increases when you upload.</p>`,
+    CAT_LABEL[cat], `<p><strong>${countLabel(arr.length, hasGuideNC)}</strong> — includes broad guide + PDFs. Count increases when you upload.</p>`,
     '<ul class="plist">' + arr.map(listItem).join('') + '</ul><p style="margin-top:10px"><a href="/pyq/' + cat.toLowerCase() + '-' + subjFileSlug + '-study-material.html" style="color:var(--blue);font-size:13px">← Back to ' + esc(subject) + ' hub</a></p>', null, null, finalOpts);
 }
 for (const [k, arr] of ncByYear) {
@@ -1258,7 +1267,7 @@ for (const [k, arr] of ncByYear) {
     subject + ' ' + CAT_LABEL[cat] + ' PYQs ' + y + ' - Delhi University | Sulaksh',
     arr.length + ' ' + subject + ' (' + CAT_LABEL[cat] + ') document(s) from ' + y + ' - Delhi University, free.',
     subject + ' - ' + y,
-    CAT_LABEL[cat], `<p><strong>${displayLabel(arr.length, hasGuideNC2)}</strong>${displayLabel(arr.length, hasGuideNC2).includes('Guide')||displayLabel(arr.length, hasGuideNC2).includes('Coming')?'':' document(s)'} — includes broad guide + PDFs.</p>`,
+    CAT_LABEL[cat], `<p><strong>${countLabel(arr.length, hasGuideNC2)}</strong> — includes broad guide + PDFs.</p>`,
     '<ul class="plist">' + arr.map(listItem).join('') + '</ul><p style="margin-top:10px"><a href="/pyq/' + cat.toLowerCase() + '-' + subjFileSlug2 + '-study-material.html" style="color:var(--blue);font-size:13px">← Back to ' + esc(subject) + ' hub</a></p>', null, null, finalOpts);
 }
 for (const [k, v] of ncCombined) {
@@ -1292,7 +1301,7 @@ for (const [k, v] of ncCombined) {
     `${honestCount(v.items.length)} ${v.subject} documents (' + v.label + ') - PYQs, syllabus & notes. Delhi University. Free.`,
     v.subject + ' - Complete Study Material (' + v.label + ')',
     v.label,
-    `<p><strong>${displayLabel(v.items.length, ncHasGuide)}</strong>${displayLabel(v.items.length, ncHasGuide).includes('Guide')||displayLabel(v.items.length, ncHasGuide).includes('Coming')?'':' documents'} - everything available for this course.</p>`,
+    `<p><strong>${countLabel(v.items.length, ncHasGuide)}</strong> - everything available for this course.</p>`,
     '<ul class="plist">' + v.items.map(listItem).join('') + '</ul>' + ncNavHtml, null, null, { aboutBlock: aboutNC, total: honestTotalNC, subject: v.subject, faqCategory: 'notes', mats: v.items });
 }
 // ===== Common placeholder pages — for GE/VAC/AEC/SEC where IMP/PYQ not yet uploaded =====
