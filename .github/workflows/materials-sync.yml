@@ -2,9 +2,9 @@ name: Materials snapshot sync
 
 on:
   schedule:
-    # Every 15 minutes — keeps the static snapshot fresh AND keeps the
-    # Railway backend from going idle (each run hits the live API).
-    - cron: '*/15 * * * *'
+    # Hourly — snapshot freshness only. Backend wakeups are covered by
+    # keep-alive.yml (every 10 min); outage safety by keep-previous logic below.
+    - cron: '7 * * * *'
   workflow_dispatch:
 
 permissions:
