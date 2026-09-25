@@ -1760,9 +1760,10 @@ const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !SITE
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + ['', 'index.html', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
      'blog/index.html',
-     'blog/du-exam-pattern-ugcf-explained.html',
-     'blog/how-to-download-du-admit-card.html',
-     'blog/how-to-score-9-cgpa-du-semester-exams.html']
+    'blog/du-exam-pattern-ugcf-explained.html',
+    'blog/how-to-download-du-admit-card.html',
+    'blog/how-to-score-9-cgpa-du-semester-exams.html',
+    'blog/du-odd-semester-exams-2026-guide.html']
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
