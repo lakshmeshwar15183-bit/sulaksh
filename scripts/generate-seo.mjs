@@ -1760,9 +1760,10 @@ const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !SITE
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + ['', 'index.html', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
      'blog/index.html',
-     'blog/du-exam-pattern-ugcf-explained.html',
-     'blog/how-to-download-du-admit-card.html',
-     'blog/how-to-score-9-cgpa-du-semester-exams.html']
+    'blog/du-exam-pattern-ugcf-explained.html',
+    'blog/how-to-download-du-admit-card.html',
+    'blog/how-to-score-9-cgpa-du-semester-exams.html',
+    'blog/du-odd-semester-exams-2026-guide.html']
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
@@ -2111,7 +2112,7 @@ try {
     const links = aggLink + hubs.map(h => `<a href="/pyq/${h.file}" style="background:var(--card);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none">${esc(s)} ${esc(h.track)}</a>`).join('');
     return `<div style="margin:0 0 12px"><div style="font-weight:800;font-size:14px;margin-bottom:6px">${esc(s)}</div><div style="display:flex;flex-wrap:wrap;gap:8px">${links}</div></div>`;
   }).join('');
-  const idxBlock = `<!-- STATIC-INDEX-START -->\n  <section class="du-sec" id="allSubjects" style="margin-top:8px">\n    <div class="du-sec-head">\n      <span class="num">§</span>\n      <div>\n        <h2>Browse all DU subjects</h2>\n        <span class="sub">Every subject hub — crawlable index</span>\n      </div>\n    </div>\n    <p style="font-size:13.5px;line-height:1.7;color:var(--muted);margin:0 0 14px;max-width:800px;">Full subject pages with semester-wise syllabus, PYQs and notes — no app needed, every link below opens a complete page.</p>\n    ${idxInner}\n  </section>\n  <!-- STATIC-INDEX-END -->`;
+  const idxBlock = `<!-- STATIC-INDEX-START -->\n  <details class="du-sec" id="allSubjects" style="margin-top:8px">\n    <summary style="cursor:pointer;list-style:none;">\n      <div class="du-sec-head">\n        <span class="num">§</span>\n        <div>\n          <h2>Subject index A–Z</h2>\n          <span class="sub">Can't find your subject above? Tap to open the full list</span>\n        </div>\n      </div>\n    </summary>\n    <p style="font-size:13.5px;line-height:1.7;color:var(--muted);margin:0 0 14px;max-width:800px;">Every subject page in one list — each link opens a complete page.</p>\n    ${idxInner}\n  </details>\n  <!-- STATIC-INDEX-END -->`;
   const idxRe = /<!-- STATIC-INDEX-START -->[\s\S]*?<!-- STATIC-INDEX-END -->/;
   if (idxRe.test(du2)) {
     du2 = du2.replace(idxRe, () => idxBlock);
