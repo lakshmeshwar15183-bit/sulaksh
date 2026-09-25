@@ -193,7 +193,7 @@
     color:var(--blue); font-weight:700; font-size:13.5px;
   }
   .core-card:hover .core-btn{color:var(--saffron);}
-  a.core-card, a.core-sem-pill{text-decoration:none;}
+  a.core-card, a.core-sem-pill, a.cat-tile{text-decoration:none;}
   .core-prog{
     background:linear-gradient(135deg, rgba(255,153,51,.08), rgba(19,61,110,.10));
     border:1.5px dashed var(--saffron);
@@ -532,30 +532,30 @@
     </div>
     <p style="font-size:14px; line-height:1.75; color:var(--muted); margin:0 0 14px; max-width:800px;">Common courses are the same for every DU programme. <b style="color:var(--text);">SEC</b> builds practical skills, <b style="color:var(--text);">VAC</b> covers values and life-skills, <b style="color:var(--text);">AEC</b> handles language and environment, and <b style="color:var(--text);">GE</b> lets you borrow a paper from another department — each is 2–4 credits and highly scoring because the syllabus is compact. Tap a tile to see its subjects, then the semester and file type.</p>
     <div class="du-cats" id="catPicker">
-    <button class="cat-tile sec" onclick="openCategory('SEC')">
+    <a class="cat-tile sec" href="/pyq/sec-pyqs.html" onclick="openCategory('SEC');return false;">
       <span class="cat-ico">📁</span>
       <span class="cat-name">SEC</span>
       <span class="cat-sub">Skill Enhancement Courses</span>
       <span class="cat-count" id="catCount-SEC">313 files</span>
-    </button>
-    <button class="cat-tile vac" onclick="openCategory('VAC')">
+    </a>
+    <a class="cat-tile vac" href="/pyq/vac-pyqs.html" onclick="openCategory('VAC');return false;">
       <span class="cat-ico">📁</span>
       <span class="cat-name">VAC</span>
       <span class="cat-sub">Value Addition Courses</span>
       <span class="cat-count" id="catCount-VAC">375 files</span>
-    </button>
-    <button class="cat-tile aec" onclick="openCategory('AEC')">
+    </a>
+    <a class="cat-tile aec" href="/pyq/aec-pyqs.html" onclick="openCategory('AEC');return false;">
       <span class="cat-ico">📁</span>
       <span class="cat-name">AEC</span>
       <span class="cat-sub">Ability Enhancement Courses</span>
       <span class="cat-count" id="catCount-AEC">207 files</span>
-    </button>
-    <button class="cat-tile ge" onclick="openCategory('GE')">
+    </a>
+    <a class="cat-tile ge" href="/pyq/ge-pyqs.html" onclick="openCategory('GE');return false;">
       <span class="cat-ico">📁</span>
       <span class="cat-name">GE</span>
       <span class="cat-sub">Generic Elective Courses</span>
       <span class="cat-count" id="catCount-GE">191 files</span>
-    </button>
+    </a>
   </div>
   </div>
   </div>
@@ -9528,6 +9528,23 @@ const WAIT_PHRASES = [
     const bcomCard = bcomHub
       ? `<a class="core-card" href="${bcomHub}" onclick="${bcomOpen};return false;">${bcomInner}</a>`
       : `<button class="core-card" onclick="${bcomOpen}">${bcomInner}</button>`;
+    // Others catch-all: link straight to its hub while it holds a single subject.
+    const oMats = (mats || []).filter((m) => m.category && m.category.toUpperCase() === 'CORE' && CORE_OTHERS_FILES.includes(m.subject || ''));
+    const oSubjects = [...new Set(oMats.map((m) => m.subject || ''))].filter(Boolean);
+    const oHub = (oSubjects.length === 1) ? subjectHubStatic(oSubjects[0], oMats) : null;
+    const oOpen = `openCoreOthers()`;
+    const oInner = `
+        <div class="top">
+          <span class="core-ico">${CORE_OTHERS_SECTION.ico}</span>
+          <span class="core-badge">${othersCount} file${othersCount === 1 ? '' : 's'}</span>
+        </div>
+        <span class="core-name">${CORE_OTHERS_SECTION.name}</span>
+        <span class="core-desc">${CORE_OTHERS_SECTION.desc}</span>
+        <span class="core-count">${othersCount} materials</span>
+        <span class="core-btn">Open →</span>`;
+    const othersCard = oHub
+      ? `<a class="core-card" href="${oHub}" onclick="${oOpen};return false;">${oInner}</a>`
+      : `<button class="core-card" onclick="${oOpen}">${oInner}</button>`;
     grid.innerHTML = CORE_SUBJECTS.map((s) => {
       const meta = CORE_META[s] || { ico: '📘', tag: 'Core' };
       const PROG_TAG = ({ 'English':'BA','History':'BA','Economics':'BA','Political Science':'BA','Hindi':'BA','Sanskrit':'BA','Geography':'BA','Philosophy':'BA','Mathematics':'BA/BSc','Sociology':'BA','B.Sc.':'BSc' })[s] || '';
@@ -9555,7 +9572,7 @@ const WAIT_PHRASES = [
         ? `<a class="core-card" href="${hub}" onclick="${open};return false;">${inner}</a>`
         : `<button class="core-card" onclick="${open}">${inner}</button>`;
     }).join('') + `
-      <button class="core-card core-prog" onclick="openCoreProgrammes()">
+      <a class="core-card core-prog" href="/pyq/programme-pyqs.html" onclick="openCoreProgrammes();return false;">
         <div class="top">
           <span class="core-ico">${CORE_PROGRAMME_SECTION.ico}</span>
           <span class="core-badge">${proCount} file${proCount === 1 ? '' : 's'}</span>
@@ -9564,18 +9581,9 @@ const WAIT_PHRASES = [
         <span class="core-desc">Syllabus अभी भी नहीं मिला? इसमें सब कुछ मिलेगा!<br>Still can't find the syllabus? Everything is here!</span>
         <span class="core-count">${proCount} materials</span>
         <span class="core-btn">Open →</span>
-      </button>
+      </a>
       ${bcomCard}
-      <button class="core-card" onclick="openCoreOthers()">
-        <div class="top">
-          <span class="core-ico">${CORE_OTHERS_SECTION.ico}</span>
-          <span class="core-badge">${othersCount} file${othersCount === 1 ? '' : 's'}</span>
-        </div>
-        <span class="core-name">${CORE_OTHERS_SECTION.name}</span>
-        <span class="core-desc">${CORE_OTHERS_SECTION.desc}</span>
-        <span class="core-count">${othersCount} materials</span>
-        <span class="core-btn">Open →</span>
-      </button>`;
+      ${othersCard}`;
   }
 
   function renderCategory(cat, mats) {
