@@ -1809,6 +1809,62 @@ try {
   console.error('[orphan] cleanup failed (non-fatal):', e);
 }
 
+// ===== orphan listing cleanup — pyq/*.html combos that no longer exist =====
+// Same disease as orphan papers, one level up: when materials are deleted,
+// their listing pages stop being emitted but the old HTML lingers, serving
+// dead file links. Two-consecutive-run safety + catastrophic-shrink guard
+// (an API incident must never wipe the tree).
+try {
+  const expectedTop = new Set([...pages.keys()].filter(f => !f.includes('/')));
+  const pendingPagesPath = path.resolve(process.cwd(), 'assets/data/pending-removals-pages.json');
+  let pendingPages = {};
+  try { pendingPages = JSON.parse(fs.readFileSync(pendingPagesPath, 'utf8')); } catch {}
+  const matsCount = (materials || []).length;
+  if (expectedTop.size < 2000 || matsCount < 1000) {
+    console.log(`[orphan-pages] SKIPPED — suspiciously small run (pages=${expectedTop.size}, mats=${matsCount}); refusing to delete`);
+  } else {
+    const topDir = path.join(OUT);
+    let existingTop = [];
+    try { existingTop = fs.readdirSync(topDir).filter(f => f.endsWith('.html')); } catch {}
+    let q = 0, del = 0, clr = 0;
+    const nowIso = new Date().toISOString();
+    for (const file of existingTop) {
+      if (expectedTop.has(file)) {
+        if (pendingPages[file]) { delete pendingPages[file]; clr++; }
+        continue;
+      }
+      if (!pendingPages[file]) {
+        pendingPages[file] = { firstSeen: nowIso, count: 1 };
+        q++;
+        console.log(`[orphan-pages] QUEUED for next run: pyq/${file}`);
+      } else {
+        pendingPages[file].count = (pendingPages[file].count || 1) + 1;
+        if (pendingPages[file].count >= 2) {
+          try {
+            fs.unlinkSync(path.join(topDir, file));
+            console.log(`[orphan-pages] DELETED (2nd consecutive missing): pyq/${file}`);
+            del++;
+            delete pendingPages[file];
+          } catch (e) {
+            console.error(`[orphan-pages] failed to delete pyq/${file}:`, e.message);
+          }
+        } else {
+          console.log(`[orphan-pages] still pending: pyq/${file}`);
+        }
+      }
+    }
+    for (const rel of Object.keys(pendingPages)) {
+      if (expectedTop.has(rel)) { delete pendingPages[rel]; clr++; }
+    }
+    fs.mkdirSync(path.dirname(pendingPagesPath), { recursive: true });
+    fs.writeFileSync(pendingPagesPath, JSON.stringify(pendingPages, null, 2));
+    console.log(`[orphan-pages] summary: ${q} newly queued, ${del} deleted, ${clr} reappeared/cleared, ${Object.keys(pendingPages).length} still pending`);
+    if (del > 0) console.log(`[orphan-pages] AUDIT: deleted files will be staged as deletions via 'git add -A' in workflow — verify in commit diff`);
+  }
+} catch (e) {
+  console.error('[orphan-pages] cleanup failed (non-fatal):', e);
+}
+
 // ===== bake du.html counts at build time — fix "0 files" thin in raw HTML =====
 // Keep JS fetch as live fallback, but raw HTML must already contain real numbers
 // so Google's crawler never indexes 0. Reads the 15-min snapshot if present,
