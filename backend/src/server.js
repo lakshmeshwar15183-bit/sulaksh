@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
@@ -29,6 +30,9 @@ const ADMIN_PANEL_PATH = '/manage-k7q2mx';
 app.set('trust proxy', 1);
 
 // ---- Core middleware ----
+// Gzip JSON/API responses (3MB catalog → ~500KB). Transparent to clients;
+// cuts metered egress ~80% with zero behaviour change.
+app.use(compression());
 app.use(express.json());
 
 // ---- Basic security headers + Content-Security-Policy ----
