@@ -11,3 +11,17 @@
 /pyq/vac-yoga-philosophy-practice-imp.html /pyq/vac-yoga-philosophy-and-practice-imp.html 301
 /pyq/vac-yoga-philosophy-practice-pyq.html /pyq/vac-yoga-philosophy-and-practice-pyq.html 301
 /pyq/vac-yoga-philosophy-practice-study-material.html /pyq/vac-yoga-philosophy-and-practice-study-material.html 301
+# Fix 13 dead URLs (404, removed from sitemap 2026-09-23) — 301 to closest live parent
+/pyq/paper/history-of-india-1550-to-1700-minor-pyq-2026-paper-2-ec3f0986.html /pyq/paper/history-of-india-1550-to-1700-minor-pyq-2024-paper-2-5c98e053.html 301
+/pyq/paper/history-of-india-1700-to-1857-minor-pyq-2025-paper-3-935d6514.html /pyq/paper/history-of-india-1700-to-1857-minor-pyq-2025-paper-2-83350e23.html 301
+/pyq/paper/history-of-india-1858-to-1947-minor-pyq-2026-paper-1-f13e8d5b.html /pyq/paper/history-of-india-1858-1947-minor-pyq-2025-paper-1-0d5a76e0.html 301
+/pyq/paper/history-of-india-1858-to-1947-minor-pyq-2026-paper-2-0d86a91e.html /pyq/paper/history-of-india-1858-1947-minor-pyq-2025-paper-2-a942938b.html 301
+/pyq/b-sc-hons-chemistry-honours-sem-4-2022-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-4-pyqs.html 301
+/pyq/b-sc-hons-chemistry-honours-sem-4-2024-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-4-pyqs.html 301
+/pyq/b-sc-hons-chemistry-honours-sem-6-2022-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-6-pyqs.html 301
+/pyq/b-sc-hons-chemistry-honours-sem-8-2022-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-8-pyqs.html 301
+/pyq/b-sc-hons-chemistry-honours-sem-8-notes.html /pyq/b-sc-hons-chemistry-honours-sem-8-pyqs.html 301
+/pyq/b-sc-hons-chemistry-honours-minor-sem-1-2023-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-1-pyqs.html 301
+/pyq/b-sc-hons-chemistry-honours-minor-sem-1-2024-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-1-pyqs.html 301
+/pyq/b-sc-hons-chemistry-honours-minor-sem-1-2025-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-1-pyqs.html 301
+/pyq/aec-course-c-physical-education-sports-and-yoga-study-material.html /pyq/ge-history-and-foundation-of-physical-education-study-material.html 301

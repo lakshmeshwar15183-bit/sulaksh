@@ -1776,6 +1776,22 @@ console.log('NoIndex placeholder files:', [...noIndexFiles].slice(0,10).join(', 
 // Safety: first time a file is missing, queue it in pending-removals.json.
 // Only delete on the NEXT run if still missing (~12h, given 6h schedule).
 // If it reappears, clear queue. Uses fs.unlinkSync + git add -A to stage deletions.
+// PROTECTED: 301 redirect stubs for 13 dead URLs (Sep 2026) must never be pruned.
+const REDIRECT_STUBS = new Set([
+  'paper/history-of-india-1550-to-1700-minor-pyq-2026-paper-2-ec3f0986.html',
+  'paper/history-of-india-1700-to-1857-minor-pyq-2025-paper-3-935d6514.html',
+  'paper/history-of-india-1858-to-1947-minor-pyq-2026-paper-1-f13e8d5b.html',
+  'paper/history-of-india-1858-to-1947-minor-pyq-2026-paper-2-0d86a91e.html',
+  'b-sc-hons-chemistry-honours-sem-4-2022-pyqs.html',
+  'b-sc-hons-chemistry-honours-sem-4-2024-pyqs.html',
+  'b-sc-hons-chemistry-honours-sem-6-2022-pyqs.html',
+  'b-sc-hons-chemistry-honours-sem-8-2022-pyqs.html',
+  'b-sc-hons-chemistry-honours-sem-8-notes.html',
+  'b-sc-hons-chemistry-honours-minor-sem-1-2023-pyqs.html',
+  'b-sc-hons-chemistry-honours-minor-sem-1-2024-pyqs.html',
+  'b-sc-hons-chemistry-honours-minor-sem-1-2025-pyqs.html',
+  'aec-course-c-physical-education-sports-and-yoga-study-material.html',
+]);
 try {
   const pendingPath = path.resolve(process.cwd(), 'assets/data/pending-removals.json');
   let pending = {};
@@ -1788,6 +1804,7 @@ try {
   let queued = 0, deleted = 0, cleared = 0;
   for (const file of existingFiles) {
     const rel = `paper/${file}`;
+    if (REDIRECT_STUBS.has(rel)) continue;
     if (!expectedPaperFiles.has(rel)) {
       if (!pending[rel]) {
         pending[rel] = { firstSeen: nowIso, lastSeen: nowIso, count: 1 };
@@ -1855,6 +1872,10 @@ try {
     let q = 0, del = 0, clr = 0;
     const nowIso = new Date().toISOString();
     for (const file of existingTop) {
+      if (REDIRECT_STUBS.has(file)) {
+        if (pendingPages[file]) delete pendingPages[file];
+        continue;
+      }
       if (expectedTop.has(file)) {
         if (pendingPages[file]) { delete pendingPages[file]; clr++; }
         continue;
