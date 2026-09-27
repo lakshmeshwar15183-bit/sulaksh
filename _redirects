@@ -1,4 +1,5 @@
-/one-day.html / 301
+# NOTE: GitHub Pages ignores this file; enforced via Cloudflare Rules (mirror any change in Cloudflare dashboard).
+# Removed stale /one-day.html rule 2026-09-28 (shadowed by real one-day.html which returns 200).
 /pyq/vac-culture-communication-imp.html /pyq/vac-culture-and-communication-imp.html 301
 /pyq/vac-culture-communication-pyq.html /pyq/vac-culture-and-communication-pyq.html 301
 /pyq/vac-culture-communication-study-material.html /pyq/vac-culture-and-communication-study-material.html 301
