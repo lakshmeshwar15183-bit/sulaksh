@@ -825,7 +825,10 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
     return;
   }
   // Faceted filter URLs: semester/year/type variants — keep as in-page filter but de-index
-  let isFaceted = isFacetedFile(file);
+  // Faceted = hub/filter pages only. Paper pages (paper/...) each host a unique
+  // document and stay self-canonical: their slugs contain -sem- from titles,
+  // which previously misfired 2,000+ canonicals to never-emitted ghost URLs.
+  let isFaceted = isFacetedFile(file) && !file.startsWith('paper/');
   let facetedParent = null;
   if (isFaceted) {
     facetedParent = getFacetedParent(file);
@@ -927,7 +930,34 @@ function paperSolvedExample(subj, sem, hash, title) {
   <p style="font-size:12px;color:var(--muted);margin:0"><strong>Why this works for ${esc(subj)} ${esc(sem)}:</strong> Examiners check definition + evidence + conclusion. One diagram/table per answer is the fastest 3-mark gain. PYQ mapping for ${esc(subj)} shows Unit 2/3 repeats ~50% — this outline is built for that.</p></div>`;
 }
 // ===== 1) PER-PAPER — enriched with 500w+ summary + weightage + FAQs =====
-function paperSummary(m) {
+// Per-paper fingerprint: 3 factual sentences unique to this document (session,
+// collection position, file size). Lifts unique-token count from ~10 to ~50+
+// using only real per-paper data — no invented specifics.
+function paperFingerprint(m, sibCount) {
+  const subj = m.subject || m.category || 'Delhi University';
+  const sem = m.semester ? `Semester ${m.semester}` : 'this semester';
+  const track = (m.track && m.track !== 'General') ? ` ${m.track}` : '';
+  const t = String(m.title || '');
+  const session = /MAY-JUNE|MAY\/JUNE/i.test(t) ? 'May–June (even-semester)'
+    : /NOV-DEC|NOV\/DEC/i.test(t) ? 'Nov–Dec (odd-semester)'
+    : (m.year ? `the ${m.year} session` : 'its session');
+  const tn = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus'
+    : (m.material_category === 'pyqs' || m.is_pyq) ? 'PYQ' : 'notes';
+  const sizeBit = (m.file_size && Number(m.file_size) > 0)
+    ? ` This PDF is ${(Number(m.file_size) / 1048576).toFixed(1)} MB.` : '';
+  const noun = tn === 'PYQ' ? 'PYQ documents' : tn === 'syllabus' ? 'syllabus documents' : 'notes documents';
+  const single = tn === 'PYQ' ? 'PYQ document' : tn === 'syllabus' ? 'syllabus document' : 'notes document';
+  const useBit = tn === 'PYQ'
+    ? 'compare it with the others in the same folder to spot repeating questions.'
+    : tn === 'syllabus'
+      ? 'use it to check DSC order and unit sequence against your exam form.'
+      : 'use them alongside the syllabus Units to plan one page per unit.';
+  const coll = sibCount > 1
+    ? ` It is one of ${sibCount} ${subj} ${sem} ${noun} on Sulaksh — ${useBit}`
+    : ` It is currently the only ${subj} ${sem} ${single} on Sulaksh — if your paper differs, check the syllabus tab for the correct DSC order.`;
+  return `<p><strong>About this file:</strong> ${esc(subj)}${esc(track)} · ${esc(sem)} · ${esc(session)}.${sizeBit}${coll}</p>`;
+}
+function paperSummary(m, sibCount) {
   const subj = m.subject || m.category || 'Delhi University';
   const sem = m.semester ? `Semester ${m.semester}` : 'your semester';
   const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'Syllabus'
@@ -944,6 +974,7 @@ function paperSummary(m) {
     <p>This is the <strong>${esc(m.title)}</strong> — a ${esc(subj)} ${sem} previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
     <p style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px"><strong>What you get after opening:</strong> Scanned question paper PDF as per DU exam for this paper. <strong>Source/provenance:</strong> Official DU examination paper — verify paper code and semester from your college handout before relying on it. <em>Sulaksh is an independent student platform and is not affiliated with or endorsed by the University of Delhi.</em></p>
     <p><strong>How to use it:</strong> Solve timed (3 hours), then mark each question against the syllabus Units 1-4. That 10-minute mapping tells you where to revise. Keep one page per unit with “core idea + one example or diagram + one PYQ reference” — this mirrors how DU frames questions.</p>
+    ${paperFingerprint(m, sibCount)}
     <p>Official: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} ${esc(sem)} handout.</p>`;
   } else if (isSyl) {
     return `
@@ -953,6 +984,7 @@ function paperSummary(m) {
     <p><strong>What to do with this syllabus:</strong> Copy the DSC titles in DU's order, then make one page per unit with heading, 4-5 bullets and one diagram or table. That order is how PYQs are set and how verified notes here are structured, so your rough pages will map one-to-one with what gets asked. Tick each learning outcome after you finish a unit — if you can explain every outcome in two lines, you are exam-ready.</p>
     <p><strong>Common mistake:</strong> Students read 200-page PDFs linearly. Instead, time-box each unit to two days, then immediately solve one PYQ from that unit (use the PYQ tab for ${esc(subj)} ${esc(sem)} on Sulaksh). That retrieval step doubles retention vs re-reading.</p>
     <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this syllabus — ${esc(subj)} ${esc(sem)}:</strong> Copy the Unit titles in order, make one page per unit, and mark which Unit each past question came from using the 10-minute PYQ mapping technique. Verify the final unit list and paper code from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
+    ${paperFingerprint(m, sibCount)}
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} syllabus handout.</p>`;
   } else {
     return `
@@ -962,6 +994,7 @@ function paperSummary(m) {
     <p><strong>What is inside:</strong> Each unit has definition, 3-4 key points, one labelled diagram or data table where relevant, and a “PYQ pointer” box that tells you which past year this unit was asked in. That pointer is why these notes work for last-day revision — you see both the concept and its exam frequency together.</p>
     <p><strong>Limitations & next step:</strong> These notes are a bridge — the official, verified semester-wise notes PDF for ${esc(subj)} ${esc(sem)} will be uploaded shortly and will auto-appear above. Until then, use these unit-wise notes with the syllabus and one standard textbook per paper for full coverage.</p>
     <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this note — ${esc(subj)} ${esc(sem)}:</strong> Time-box each Unit to two days, revise with the 10-minute PYQ mapping technique described above — mark which Unit each past question came from to see where to focus next. Use senior notes only to cross-check your one-pagers, not as replacement. Verify from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
+    ${paperFingerprint(m, sibCount)}
     <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} handout.</p>`;
   }
 }
@@ -984,6 +1017,25 @@ function paperFaqs(m) {
     [`How should I revise these notes?`, `One page per unit, with one diagram/table. That is how exams are marked.`],
   ];
 }
+// Sibling counts per subject+semester+type (for paper fingerprints) and
+// dup-set detection: titles like "X Set 1 (2)" are re-scans of the same paper.
+// A dup is noindexed only when its primary (same subject+semester+category,
+// base title) exists — otherwise the dup stays indexed (a page beats no page).
+const sibTypeOf = x => (x.material_category === 'syllabus' || x.is_syllabus) ? 's'
+  : (x.material_category === 'pyqs' || x.is_pyq) ? 'p'
+  : (x.material_category === 'important-questions' || x.is_imp) ? 'i' : 'n';
+const sibCounts = new Map();
+for (const x of materials) {
+  const k = `${x.subject}||${x.semester}||${sibTypeOf(x)}`;
+  sibCounts.set(k, (sibCounts.get(k) || 0) + 1);
+}
+const dupBaseOf = t => String(t || '').replace(/\s\([2-9]\)(?=\s|$)/, '');
+const primaryKeys = new Set(materials.map(x => `${x.subject}||${x.semester}||${x.material_category || ''}||${x.title}`));
+const isDupSetOf = m => {
+  const base = dupBaseOf(m.title);
+  if (base === m.title) return false;
+  return primaryKeys.has(`${m.subject}||${m.semester}||${m.material_category || ''}||${base}`);
+};
 for (const m of materials) {
   const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'SYLLABUS'
     : (m.material_category === 'pyqs' || m.is_pyq) ? 'PYQ'
@@ -1001,7 +1053,7 @@ for (const m of materials) {
   const prev = idx>0 ? sameSubjSorted[idx-1] : null;
   const next = idx>=0 && idx<sameSubjSorted.length-1 ? sameSubjSorted[idx+1] : null;
   const prevNextHtml = (prev || next) ? `<div style="display:flex;justify-content:space-between;gap:10px;margin:14px 0;font-size:13px">${prev?`<a href="/pyq/paper/${slug(prev.title)}-${prev.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">← ${esc(prev.title.slice(0,40))}</a>`:'<span></span>'}${next?`<a href="/pyq/paper/${slug(next.title)}-${next.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">${esc(next.title.slice(0,40))} →</a>`:'<span></span>'}</div>` : '';
-  const summary = paperSummary(m) + prevNextHtml;
+  const summary = paperSummary(m, sibCounts.get(`${m.subject}||${m.semester}||${sibTypeOf(m)}`) || 1) + prevNextHtml;
   const faqs = paperFaqs(m);
   // Always via viewer (inline on phone, never download)
   const docHrefPaper = `/view.html?v=${VIEW_VERSION}&id=${m.id}`;
@@ -1032,6 +1084,7 @@ for (const m of materials) {
     // About stays generic (now semester-agnostic after subjects-content fix) so no mismatch; intro is short so no duplicate
   }
   const emitOpts = aboutBlockForPaper ? { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, aboutBlock: aboutBlockForPaper, mats: [m] } : { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, mats: [m] };
+  if (isDupSetOf(m)) emitOpts.noindex = true;
   // Embedded viewer below the text: the document itself is part of the initial
   // HTML (unique per page), not a JS-only "Loading document…" shell.
   const viewerHtml = paperViewer(m);
