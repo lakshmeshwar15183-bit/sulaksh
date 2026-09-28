@@ -143,6 +143,38 @@ function getDefaultFaqs(opts) {
     ['Is this official Delhi University material?', 'The syllabi and question papers themselves come from DU\'s own published examinations and UGCF/NEP curriculum documents. Sulaksh itself is an independent, student-run platform — not an official University of Delhi website or service. Always verify the final paper code and semester against your college handout.']
   ];
 }
+// Per-subject authoritative-source examples for the 15m answer template.
+// Previously a single hardcoded "Upanishad/Devore/Rangarajan" triple was shown
+// for EVERY subject (wrong for English, Commerce, Sciences, languages...).
+// This lookup returns a short, subject-appropriate example instead.
+function getCitationExample(subject, cat) {
+  const lower = String(subject || '').toLowerCase();
+  const catU = String(cat || '').toUpperCase();
+  if (lower.includes('english')) return 'Chaucer / Shakespeare / Morrison';
+  if (lower.includes('history')) return 'Romila Thapar / Bipan Chandra / Upinder Singh';
+  if (lower.includes('political')) return 'Rawls / Ambedkar / a Supreme Court case';
+  if ((lower.includes('economics') || lower.includes('economy')) && !lower.includes('b.com') && !lower.includes('commerce')) return 'Mankiw / Abel–Bernanke / Rangarajan report';
+  if (lower.includes('commerce') || lower.includes('b.com') || lower.includes('accounting') || lower.includes('finance') || lower.includes('marketing') || lower.includes('management') || lower.includes('business')) return 'Accounting Standards / Contract Act provisions / GST provisions';
+  if (lower.includes('mathematics') || lower.includes('maths')) return 'standard derivations + formulae';
+  if (lower.includes('statistics')) return 'Gupta–Kapoor / Devore + formulae';
+  if (lower.includes('physics')) return 'H.C. Verma concepts + derivations + labelled diagrams';
+  if (lower.includes('chemistry')) return 'NCERT mechanisms + labelled diagrams';
+  if (lower.includes('botany') || lower.includes('zoology') || lower.includes('biological') || lower.includes('life science') || lower.includes('food technology') || lower.includes('environmental science')) return 'NCERT diagrams + practical observations';
+  if (lower.includes('computer') || lower.includes('informatics') || lower.includes('data science')) return 'standard algorithms + outputs';
+  if (lower.includes('sanskrit')) return 'Upanishads / Kalidasa / Panini';
+  if (lower.includes('hindi')) return 'prescribed Hindi sahitya texts + vyakaran';
+  if (lower.includes('urdu') || lower.includes('persian') || lower.includes('arabic')) return 'prescribed texts + grammar';
+  if (lower.includes('sociology')) return 'Giddens / Haralambos + field examples';
+  if (lower.includes('philosophy')) return 'primary texts + standard commentaries';
+  if (lower.includes('psychology') || lower.includes('education') || lower.includes('geography') || lower.includes('philosophy')) return 'syllabus List of Readings + one standard textbook';
+  if (catU === 'SEC') return 'practical file outputs + syllabus readings';
+  if (catU === 'VAC') return 'VAC readings + practical file';
+  if (catU === 'GE') return 'GE syllabus List of Readings';
+  if (catU === 'AEC') return 'AEC syllabus readings';
+  if (catU.startsWith('CORE')) return 'syllabus List of Readings + one standard textbook';
+  if (catU === 'SILO') return 'syllabus List of Readings + one standard textbook';
+  return 'syllabus List of Readings + one standard textbook';
+}
 // pad any overview/detailed block that is <500w to guarantee >600 total page wc
 // FIX: differentiated per-subject study tip (not generic boilerplate) + avoid exact repeat
 function padCommonBlock(block, subject, cat, extraKey) {
@@ -177,11 +209,20 @@ function padCommonBlock(block, subject, cat, extraKey) {
   } else if (isVAC) {
     tip = `For ${escS} (VAC, 2 credits, 1-0-1), keep a steps sheet per Unit: e.g., Digital Empowerment — DigiLocker/BHIM/e-Kranti steps, e-Kranti outreach log; Yoga — Surya Namaskar steps in order, 7-step eye / 4-step neck relaxation. The 15-week practical outreach/file carries the second credit — note names, dates and one takeaway per activity.`;
   } else if (isGE) {
-    tip = `For ${escS} (GE, 4 credits 3L+1T), note the common-pool structure: even-semester GE-6 Indian Economy (ECON030, 5 Units ~9h: historical overview, growth, comparative, poverty/inequality/gender, agriculture/trade) is policy-and-evidence driven with Rangarajan/Balakrishnan readings — prepare one table per Unit (period + policy + data source).`;
+    // Only Indian Economy gets the ECON030-specific tip; every other GE subject
+    // gets a generic common-pool tip (previously ALL GE pages showed Indian Economy).
+    if (lower.includes('indian economy') || lower.includes('indian-economy')) {
+      tip = `For ${escS} (GE, 4 credits 3L+1T), note the common-pool structure: even-semester GE-6 Indian Economy (ECON030, 5 Units ~9h: historical overview, growth, comparative, poverty/inequality/gender, agriculture/trade) is policy-and-evidence driven with Rangarajan/Balakrishnan readings — prepare one table per Unit (period + policy + data source).`;
+    } else {
+      tip = `For ${escS} (GE, 4 credits 3L+1T), note the common-pool structure: check whether your GE runs in the even or odd semester, then prepare one table per Unit (concept + example + data source). GE papers reward one labelled table/diagram per answer.`;
+    }
   } else {
     tip = `For ${escS}, copy the Unit titles in order, then make one page per Unit with heading, 4–5 bullets and one diagram or table — structure mirrors DU's marking rubric (definition + explanation + example + concluding line) and compresses 200 pages into 20 revision pages.`;
   }
-  const key = String(extraKey || '').slice(0,4) || String(subject).slice(0,3);
+  // Label key: previously `String(extraKey).slice(0,4)` produced garbled fragments
+  // like "Hono" (Honours), "Majo" (Major), "Gene" (General), "stud"/"syll"/"2025".
+  // Headings now use the full category only — no truncated fragments, no fake hashes.
+  const key = String(extraKey || '');
   // World-class expansion to 1000+ words: add weightage table + solved example, unique per subject+cat+key (hash), only if block doesn't already have one (avoid duplicate on semester pages)
   const hasTable = String(block||'').includes('<table');
   const hubWeightage = hasTable ? '' : (() => {
@@ -208,10 +249,12 @@ function padCommonBlock(block, subject, cat, extraKey) {
     }
   })();
   const hubExample = hasTable ? '' : (() => {
-    const short = String(subject).slice(0,22);
-    const titleHash = String(key+subject).slice(0,6);
-    return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0"><h3 style="font-size:14px;margin:0 0 6px">How toppers use this — ${escS} (${esc(cat)} ${esc(key)})</h3>
-    <p style="font-size:13px;margin:0 0 6px"><strong>15m template for ${esc(short)}:</strong> 1) Define in 2 lines + one authoritative source (e.g., Upanishad/Devore/Rangarajan for ${escS}); 2) 3 points — concept + example + data/diagram; 3) One limitation or alternative view; 4) Concluding “so what?” with ${esc(cat)} paper code pattern (e.g., DSC/GE/SEC ${esc(titleHash)}). <em>22 min per answer.</em></p>
+    // Full subject name (no 22-char truncation) + per-subject citation example
+    // (no hardcoded Upanishad/Devore/Rangarajan triple) + real category label
+    // (no "Hono"/"HonoEn"-style sliced fragments).
+    const cite = getCitationExample(subject, cat);
+    return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0"><h3 style="font-size:14px;margin:0 0 6px">How toppers use this — ${escS} (${esc(cat)})</h3>
+    <p style="font-size:13px;margin:0 0 6px"><strong>15m template for ${escS}:</strong> 1) Define in 2 lines + one authoritative source (e.g., ${esc(cite)} for ${escS}); 2) 3 points — concept + example + data/diagram; 3) One limitation or alternative view; 4) Concluding “so what?” with ${esc(cat)} paper code pattern (verify from your college handout). <em>22 min per answer.</em></p>
     <p style="font-size:12px;color:var(--muted);margin:0">PYQ mapping for ${escS} shows Unit 2/3 repeats ~50% — toppers spend 60% time there. One verified table/diagram per answer is the fastest 3-mark gain.</p></div>`;
   })();
   const extra = `
