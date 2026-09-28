@@ -761,9 +761,9 @@
     <script>
   // Storage-blocked browsers (private mode, shields, in-app webviews) throw
   // on raw localStorage access — guarded helpers keep the whole page alive.
-  function lsGet(k){ try { return window.lsGet(k); } catch (e) { return null; } }
-  function lsSet(k, v){ try { window.lsSet(k, v); } catch (e) {} }
-  function lsDel(k){ try { window.lsDel(k); } catch (e) {} }
+  function lsGet(k){ try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { window.localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k){ try { window.localStorage.removeItem(k); } catch (e) {} }
   // ---------- Config ----------
   const SULAKSH_API = lsGet('sulaksh-api') || 'https://sulaksh-backend-production.up.railway.app';
 
