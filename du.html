@@ -8537,7 +8537,10 @@ const WAIT_PHRASES = [
     };
     const catLine = catTips[matCat] || `${catLabel} for ${subject} Sem ${semNum}: check Learning Objectives — examiners lift questions verbatim.`;
     const semLine = `Semester ${semNum} is ${Number(semNum)<=2 ? 'foundation' : Number(semNum)<=4 ? 'core progression' : 'specialisation'} under UGCF — papers are 4 credits; answer in taught order (Unit 1→4) with concluding line.`;
-    return `<b>${catLabel} — ${subject} Semester ${semNum}</b>: ${catLine} ${semLine} ${tip} <em style="color:var(--muted)">Verify paper code/units from your college handout — this bridge updates when the official PDF is uploaded.</em>`;
+    const llbNote = (subject === 'LLB (Hons)')
+      ? `📑 <b>Full syllabus PDF is in Semester 1 → Syllabus</b> — the official DU course-structure PDF covering all semesters is filed there; visit Sem 1 Syllabus to view/download it. `
+      : '';
+    return llbNote + `<b>${catLabel} — ${subject} Semester ${semNum}</b>: ${catLine} ${semLine} ${tip} <em style="color:var(--muted)">Verify paper code/units from your college handout — this bridge updates when the official PDF is uploaded.</em>`;
   }
 
   function renderCoreCategoryView(subject, sem, matCat) {
