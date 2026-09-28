@@ -1992,8 +1992,8 @@ try {
   const progFiles = ['BCom prg','BAprog'];
   let progCount = 0;
   for (const pf of progFiles) progCount += duFiltered.filter(m => String(m.category||'').toUpperCase()==='CORE' && String(m.subject||'')===pf).length;
-  // Also Others catch-all (Computer Applications & more)
-  const othersFiles = ['Computer Applications'];
+  // Also Others catch-all (Computer Applications, LLB (Hons) & more)
+  const othersFiles = ['Computer Applications', 'LLB (Hons)'];
   let othersCount = 0;
   for (const pf of othersFiles) othersCount += duFiltered.filter(m => String(m.category||'').toUpperCase()==='CORE' && String(m.subject||'')===pf).length;
   // Also direct B.Com Programme card
@@ -2061,7 +2061,7 @@ try {
       for (const s of othersFiles) for (const f of (hubMapBake.get(s) || [])) if (!oHubs.includes(f)) oHubs.push(f);
       const oHub = oHubs.length === 1 ? oHubs[0] : null;
       const js = `openCoreOthers()`;
-      return `${cardTag(oHub, js)}<div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span>${cardClose(oHub)}`;
+      return `${cardTag(oHub, js)}<div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications, LLB (Hons) &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span>${cardClose(oHub)}`;
     })();
     // Idempotent: normalize any already-baked grid back to empty, then bake fresh (prevents duplication on re-run)
     // Matches the grid's own closing tag via the section tail (nested card divs
