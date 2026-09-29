@@ -1860,7 +1860,17 @@ fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset
     'blog/du-exam-pattern-ugcf-explained.html',
     'blog/how-to-download-du-admit-card.html',
     'blog/how-to-score-9-cgpa-du-semester-exams.html',
-    'blog/du-odd-semester-exams-2026-guide.html']
+    'blog/du-odd-semester-exams-2026-guide.html',
+    'blog/vac-financial-literacy-score-full.html',
+    'blog/sec-social-media-marketing-practical-file.html',
+    'blog/aec-environmental-science-dont-fail.html',
+    'blog/ge-which-one-to-pick-scoring-guide.html',
+    'blog/internal-marks-file-system-25-marks.html',
+    'blog/du-sol-30-day-study-plan.html',
+    'blog/du-er-backlog-rules-repeat.html',
+    'blog/du-sgpa-cgpa-calculate-marks.html',
+    'blog/du-admit-card-problems-fix.html',
+    'blog/du-last-15-day-pyq-sprint.html']
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
