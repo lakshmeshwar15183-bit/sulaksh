@@ -1834,6 +1834,7 @@ const siloDefs = [
   { file:'ba-pyqs.html', label:'BA', test: h=> /b\.a|history|political|english|sociology|hindi/i.test(h.label) && !/b\.com|b\.sc/i.test(h.label), title:'BA PYQs, Syllabus & Notes — DU | Sulaksh', h1:'BA — PYQs & Study Material', desc:'All BA (Hons/Programme) PYQs, syllabus & notes — DU UGCF, free.' },
   { file:'bsc-pyqs.html', label:'BSc', test: h=> /b\.sc/i.test(h.label), title:'BSc PYQs, Syllabus & Notes — DU | Sulaksh', h1:'BSc — PYQs & Study Material', desc:'All BSc (Hons) PYQs, syllabus & notes — DU UGCF, free.' },
   { file:'programme-pyqs.html', label:'Programme', test: h=> /programme|prog/i.test(h.label), title:'Programme PYQs — BA/BCom Programme DU | Sulaksh', h1:'Programme — BA/BCom PYQs', desc:'BA/BCom Programme PYQs, syllabus & notes — DU UGCF, free.' },
+  { file:'others-pyqs.html', label:'Others', test: h=> /computer applications|\bllb\b/i.test(h.label), title:'Others — Computer Applications & LLB (Hons) PYQs | Sulaksh', h1:'Others — Misc Subjects PYQs', desc:'Computer Applications and LLB (Hons) PYQs, syllabus & notes — DU UGCF, free.' },
 ];
 for (const silo of siloDefs) {
   const picks = HUBS.filter(silo.test);
@@ -2109,10 +2110,11 @@ try {
       const js = `openCoreProgramme('BCom prg')`;
       return `${cardTag(hub, js)}<div class="top"><span class="core-ico">💼</span><span class="core-badge">${bcomCount} file${bcomCount===1?'':'s'}</span></div><span class="core-name">B.Com Programme</span><span class="core-desc">सब कुछ मिलेगा — Everything is here</span><span class="core-count">${bcomCount} materials</span><span class="core-btn">Open →</span>${cardClose(hub)}`;
     })() + (() => {
-      // Others catch-all links straight to its hub while it holds one subject.
+      // Others catch-all links to its aggregate hub, so the tile stays a real
+      // link (crawlable, ad-preview clickable) no matter how many subjects it holds.
       const oHubs = [];
       for (const s of othersFiles) for (const f of (hubMapBake.get(s) || [])) if (!oHubs.includes(f)) oHubs.push(f);
-      const oHub = oHubs.length === 1 ? oHubs[0] : null;
+      const oHub = pages.has('others-pyqs.html') ? 'others-pyqs.html' : (oHubs.length === 1 ? oHubs[0] : null);
       const js = `openCoreOthers()`;
       return `${cardTag(oHub, js)}<div class="top"><span class="core-ico">📁</span><span class="core-badge">${othersCount} file${othersCount===1?'':'s'}</span></div><span class="core-name">Others</span><span class="core-desc">More subjects — Computer Applications, LLB (Hons) &amp; more</span><span class="core-count">${othersCount} materials</span><span class="core-btn">Open →</span>${cardClose(oHub)}`;
     })();
