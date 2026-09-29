@@ -1310,8 +1310,12 @@
     try { r = await _apiFetch(`${SULAKSH_API}/api/auth/me`, { credentials: 'include' }); } catch (e) { return; }
     if (!r || !r.ok) {
       // No valid session — stop showing a ghost logged-in name.
+      // Also drop the staff role flag: otherwise a dead/expired staff login
+      // keeps resurrecting the admin view ("0 materials") on every load
+      // instead of the visitor view ("Guide available").
       state.email = null; state.role = null; state.isAdmin = false; state.canMaintain = false;
       lsDel('sulaksh-email');
+      lsDel('sulaksh-role');
       return;
     }
     const me = await r.json().catch(() => ({}));
