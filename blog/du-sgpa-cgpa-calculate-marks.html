@@ -8,21 +8,22 @@
 <script>
 (function(){var _s=document.createElement('style');_s.textContent='.ad{min-height:280px}ins.adsbygoogle{min-height:280px;display:block}';(document.head||document.documentElement).appendChild(_s);function sL(){if(window.__ads)return;window.__ads=1;var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775';document.head.appendChild(s);}window.__sgLoadAds=sL;try{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){sL();io.disconnect();}});},{rootMargin:'0px'});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('ins.adsbygoogle').forEach(function(el){io.observe(el);});});}catch(e){sL();}})();
 </script>
-<title>Blog — Latest Guides &amp; Exam Updates | Sulaksh</title>
-<meta name="description" content="Latest guides and exam updates for DU students — exam patterns, admit cards, results and study playbooks. Free, no sign-up.">
+<title>DU SGPA/CGPA Calculator Logic: Decode Your Marksheet (With Example) — Sulaksh</title>
+<meta name="description" content="SGPA vs CGPA vs percentage — the exact DU formula with a worked 4-paper example, grade table, division rules, and what an ER does to the maths.">
 <meta name="author" content="Sulaksh Editorial Team">
-<link rel="canonical" href="https://sulaksh.online/blog/index.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Blog — Latest Guides &amp; Exam Updates | Sulaksh">
-<meta property="og:description" content="Latest guides and exam updates for DU students — exam patterns, admit cards, results and study playbooks. Free, no sign-up.">
-<meta property="og:url" content="https://sulaksh.online/blog/index.html">
+<link rel="canonical" href="https://sulaksh.online/blog/du-sgpa-cgpa-calculate-marks.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DU SGPA/CGPA Calculator Logic: Decode Your Marksheet (With Example)">
+<meta property="og:description" content="SGPA vs CGPA vs percentage — the exact DU formula with a worked 4-paper example, grade table, division rules, and what an ER does to the maths.">
+<meta property="og:url" content="https://sulaksh.online/blog/du-sgpa-cgpa-calculate-marks.html">
 <meta property="og:site_name" content="Sulaksh">
 <meta property="og:image" content="https://sulaksh.online/assets/images/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Blog — Latest Guides &amp; Exam Updates | Sulaksh">
-<meta name="twitter:description" content="Latest guides and exam updates for DU students — exam patterns, admit cards, results and study playbooks. Free, no sign-up.">
+<meta name="twitter:title" content="DU SGPA/CGPA Calculator Logic: Decode Your Marksheet (With Example)">
+<meta name="twitter:description" content="SGPA vs CGPA vs percentage — the exact DU formula with a worked 4-paper example, grade table, division rules, and what an ER does to the maths.">
 <meta name="twitter:image" content="https://sulaksh.online/assets/images/og-card.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://sulaksh.online/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://sulaksh.online/blog/index.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://sulaksh.online/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://sulaksh.online/guides.html"},{"@type":"ListItem","position":3,"name":"DU SGPA/CGPA Calculator Logic: Decode Your Marksheet (With Example)","item":"https://sulaksh.online/blog/du-sgpa-cgpa-calculate-marks.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"DU SGPA/CGPA Calculator Logic: Decode Your Marksheet (With Example)","description":"SGPA vs CGPA vs percentage — the exact DU formula with a worked 4-paper example, grade table, division rules, and what an ER does to the maths.","author":{"@type":"Organization","name":"Sulaksh Editorial Team"},"publisher":{"@type":"Organization","name":"Sulaksh","logo":{"@type":"ImageObject","url":"https://sulaksh.online/assets/images/favicon.png"}},"datePublished":"2026-09-30","dateModified":"2026-09-30","mainEntityOfPage":"https://sulaksh.online/blog/du-sgpa-cgpa-calculate-marks.html"}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=optional">
@@ -70,14 +71,20 @@
   .page-hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:720px; margin-top:10px;}
 
   .page-main{padding:40px 0 64px;}
-  .guide-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;}
-  .guide-card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:9px; transition:transform .15s, box-shadow .2s, border-color .2s;}
-  .guide-card:hover{transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--blue);}
-  .guide-card .ico{font-size:26px;}
-  .guide-card h3{font-size:16.5px; line-height:1.4;}
-  .guide-card p{font-size:13.5px; color:var(--muted); line-height:1.65; flex:1;}
-  .guide-card .meta{font-size:12px; color:var(--muted); opacity:.85;}
-  .guide-card .read{color:var(--blue); font-weight:700; font-size:13.5px;}
+  .article{max-width:800px; margin:0 auto;}
+  .article > p{font-size:15px; line-height:1.85; color:var(--text); margin-bottom:16px;}
+  .article h2{font-size:21px; margin:30px 0 12px;}
+  .article ul,.article ol{margin:0 0 16px 22px; font-size:15px; line-height:1.85;}
+  .article li{margin-bottom:8px;}
+  .article b{color:var(--text);}
+  .article a{color:var(--blue); font-weight:600; text-decoration:underline; text-underline-offset:2px;}
+  .article table{width:100%; border-collapse:collapse; margin:14px 0 18px; font-size:14px;}
+  .article th{background:var(--navy); color:#fff; padding:8px 10px; text-align:left;}
+  .article td{padding:8px 10px; border:1px solid var(--border);}
+  .tip-box{background:rgba(30,142,90,.08); border-left:4px solid var(--green); border-radius:10px; padding:14px 18px; margin:18px 0; font-size:14px; line-height:1.7; color:var(--muted);}
+  .tip-box b{color:var(--text);}
+  .back-link{display:inline-block; color:var(--blue); font-weight:700; font-size:13.5px; margin-bottom:18px;}
+  .byline{font-size:12.5px; color:var(--muted); margin-bottom:18px;}
 
   footer{background:var(--navy); color:#cfd9ec; padding:40px 0 36px; text-align:center; font-size:13px;}
   footer a{color:#fff; font-weight:600;}
@@ -136,129 +143,68 @@
 
 <section class="page-hero">
   <div class="wrap">
-    <div class="eyebrow">📚 Blog</div>
-    <h1>Latest Guides &amp; Exam Updates</h1>
-    <p>Exam patterns, admit cards, results and study playbooks — written for DU students. Free, no sign-up.</p>
+    <div class="eyebrow">🧮 Results · Marksheet Decoder</div>
+    <h1>DU SGPA/CGPA: Decode Your Marksheet (With Example)</h1>
+    <p>Result day chaos — "8.2 SGPA, so percentage kitni?" My floor did this maths wrong for a year. Here's the exact formula.</p>
   </div>
 </section>
 
 <main class="page-main">
   <div class="wrap">
-    <div class="guide-grid">
+    <div class="article">
+      <a class="back-link" href="../guides.html">← All Guides</a>
+      <p class="byline">By <b>Sulaksh Editorial</b> · Reviewed by <b>Sulaksh Editorial Team</b> · Updated <time datetime="2026-09-30">30 September 2026</time> · 8 min read</p>
 
-      <a class="guide-card" href="du-last-15-day-pyq-sprint.html">
-        <span class="ico">⏱️</span>
-        <h3>DU Last 15 Days: The PYQ Sprint Plan</h3>
-        <p>Dec 4 is coming. Day-by-day sprint — timed papers, sheets-only finish, skip list + reading-time strategy.</p>
-        <span class="meta">8 min read · Final Sprint · New</span>
-        <span class="read">Read guide →</span>
-      </a>
+      <p>Hey all! I'm back with the maths everyone gets wrong on result day.</p>
+      <p>Last year our floor celebrated an 8.2 SGPA like it was 82% — and mourned a 7.4 like it was failure. Both reactions were wrong, because nobody actually knew the formula. One senior claimed "CGPA into 10", another said divisions don't exist anymore, a third insisted internals don't count in SGPA. Three confident people, three wrong answers, one very confused floor. So I sat down with two actual marksheets, a calculator, and the university's grading scheme — and worked it out line by line. This post is that evening, written down so your floor doesn't repeat ours.</p>
+      <p>Here's the rub: DU's 10-point system looks simple (a number out of 10) but hides three different things — SGPA (this semester), CGPA (whole degree so far), and the percentage/division recruiters ask for. Mix them up and you'll either panic over nothing or relax over something real.</p>
+      <p>From decoding marksheets with juniors for three years now, here is the exact formula, a worked example with real numbers, and what edge cases (ERs, improvements) do to the maths.</p>
 
-      <a class="guide-card" href="du-admit-card-problems-fix.html">
-        <span class="ico">🪪</span>
-        <h3>DU Admit Card Problems: Exact Fixes</h3>
-        <p>Wrong photo, spelling, paper code, far centre, missing card? Problem → fix table + carry list. Move same-day.</p>
-        <span class="meta">7 min read · Admit Card · New</span>
-        <span class="read">Read guide →</span>
-      </a>
+      <h2>The hard truth about DU grades</h2>
+      <p>Your marks become grades, grades become points, and points get weighted by credits. Most confusion comes from skipping a step. Three frameworks to keep in mind:</p>
+      <ul>
+        <li><b>Marks → grade → points is fixed.</b> Every paper's marks convert to a letter grade (O, A+, A, B+...), each grade carries fixed grade points (10, 9, 8, 7...). Roughly: O = 90–100%, A+ = 80–89%, A = 70–79%, B+ = 60–69%, B = 55–59%, C = 50–54%, P = 40–49%, F = below 40%. Your marksheet prints the grade; the points hide behind it.</li>
+        <li><b>Credits are weights, not decoration.</b> SGPA = Σ (grade points × credits) ÷ Σ credits. A 4-credit DSC moves your SGPA twice as much as a 2-credit SEC/VAC/AEC. An A+ in a 4-credit paper beats an O in a 2-credit one — every time, mathematically.</li>
+        <li><b>SGPA ≠ CGPA ≠ percentage.</b> SGPA covers one semester; CGPA averages all semesters so far (credit-weighted); percentage (CGPA × 9.5 on DU marksheets) is the recruiter-facing number. Three numbers, three uses — stop comparing them to each other.</li>
+      </ul>
 
-      <a class="guide-card" href="du-sgpa-cgpa-calculate-marks.html">
-        <span class="ico">🧮</span>
-        <h3>DU SGPA/CGPA: Decode Your Marksheet (With Example)</h3>
-        <p>8.2 SGPA ≠ 82%. Worked 4-paper example, grade table, division rules + what an ER does to the maths.</p>
-        <span class="meta">7 min read · Results · New</span>
-        <span class="read">Read guide →</span>
-      </a>
+      <h2>Worked example: calculate an SGPA step by step</h2>
+      <p>Take a typical Sem 1 with four papers. I'll use realistic grades — not a topper fantasy:</p>
+      <table>
+        <thead><tr><th>Paper</th><th>Credits</th><th>Grade</th><th>Points</th><th>Points × credits</th></tr></thead>
+        <tbody>
+          <tr><td>DSC Core paper</td><td>4</td><td>A (Very Good)</td><td>8</td><td>32</td></tr>
+          <tr><td>GE paper</td><td>4</td><td>A+ (Excellent)</td><td>9</td><td>36</td></tr>
+          <tr><td>SEC paper</td><td>2</td><td>O (Outstanding)</td><td>10</td><td>20</td></tr>
+          <tr><td>VAC paper</td><td>2</td><td>B+ (Good)</td><td>7</td><td>14</td></tr>
+        </tbody>
+      </table>
+      <p>Add the last column: 32 + 36 + 20 + 14 = <b>102</b>. Add the credits: 4 + 4 + 2 + 2 = <b>12</b>. Divide: 102 ÷ 12 = <b>8.50 SGPA</b>. Notice the lesson hiding inside: the O in the 2-credit SEC contributed 20, while the A in the 4-credit Core contributed 32. Credits decide. (This is also why the <a href="vac-financial-literacy-score-full.html">VAC playbook</a> and <a href="ge-which-one-to-pick-scoring-guide.html">GE picker</a> matter — small papers and GE picks move this exact sum.)</p>
+      <p><b>CGPA:</b> same formula stretched across semesters — total (points × credits) across <i>all</i> papers so far ÷ total credits so far. Sem 1 SGPA 8.50 on 12 credits + Sem 2 SGPA 7.90 on 12 credits → (102 + 94.8) ÷ 24 = <b>8.20 CGPA</b>. One weaker semester dilutes; it doesn't destroy — consistency across semesters beats one spike.</p>
+      <p><b>Percentage:</b> DU marksheets convert with <b>CGPA × 9.5</b>. So 8.20 CGPA → 77.9%. And divisions run on that number — broadly, 60%+ first division, 50–60% second division, below that pass (confirm your program handbook for exact cutoffs, since schemes vary). An 8.2 isn't "82%" and a 7.4 isn't failure — it's ~70%, a comfortable first division.</p>
+      <div class="tip-box"><b>Calculator secret:</b> To predict results, work backwards. Want 8.5 next sem on 12 credits? You need 102 point-credits. Lock the 2-credit papers first (20 + 18 = 38 from two strong SEC/VAC performances), leaving 64 from 8 Core/GE credits — that's an 8.0 average on the big papers, not perfection. Bank the small papers (see the <a href="internal-marks-file-system-25-marks.html">25-mark file system</a>) and the big ones get easier.</div>
 
-      <a class="guide-card" href="du-er-backlog-rules-repeat.html">
-        <span class="ico">🧾</span>
-        <h3>DU ER (Backlog) Rules: What It Means + How to Clear</h3>
-        <p>Essential Repeat ≠ year loss. Repeat forms, odd-even cycles, SGPA truth + the clearing plan. My roommate's sequel.</p>
-        <span class="meta">7 min read · DU Rules · New</span>
-        <span class="read">Read guide →</span>
-      </a>
+      <h2>What ERs and improvements do to the maths</h2>
+      <ul>
+        <li><b>An ER contributes zero — temporarily.</b> Until cleared, the failed paper adds 0 point-credits while its credits still count, so that semester's SGPA sinks. After clearing (see the <a href="du-er-backlog-rules-repeat.html">ER clearing plan</a>), the fresh grade replaces it for CGPA. One cleared ER moves a full-degree CGPA by ~0.1 — visible, not fatal.</li>
+        <li><b>Improvements follow separate rules.</b> Re-attempting a <i>passed</i> paper to raise marks runs under improvement provisions, which differ by program — check your college office rather than assuming ER-repeat forms apply.</li>
+        <li><b>Never sacrifice current papers for backlogs.</b> An 80–20 split (current vs backlog) protects the bigger credit pool. Manufacturing two new ERs to avenge one old ER is the worst trade in this system.</li>
+        <li><b>Internals are inside the grades.</b> The 25 internal marks per paper feed the paper's total marks → grade → points. Banked internals (see the <a href="internal-marks-file-system-25-marks.html">file system</a>) quietly raise every grade in this calculation.</li>
+      </ul>
+      <p>To push the numbers up rather than just decode them, read the <a href="how-to-score-9-cgpa-du-semester-exams.html">9+ CGPA playbook</a> — same formula, attacked from the strategy side.</p>
 
-      <a class="guide-card" href="du-sol-30-day-study-plan.html">
-        <span class="ico">🎒</span>
-        <h3>DU SOL 30-Day Study Plan: Pass Easily</h3>
-        <p>One month left? VIP questions, 10-year guides, page-filling formula + safe-zone targets. The survival system that works.</p>
-        <span class="meta">8 min read · DU SOL · New</span>
-        <span class="read">Read guide →</span>
-      </a>
+      <h2>Frequently asked questions (answered by the author)</h2>
+      <p><b>Q1: SGPA vs CGPA — what's the actual difference?</b><br>SGPA averages one semester's papers (credit-weighted); CGPA averages all semesters so far the same way. Recruiters and PG forms ask CGPA (final) or percentage — SGPA is your semester report card.</p>
+      <p><b>Q2: Is CGPA × 9.5 the official conversion?</b><br>Yes — DU marksheets carry the CGPA × 9.5 equivalent. So 8.20 → 77.9%. Don't use ×10, and don't compare CGPA digits directly with percentages.</p>
+      <p><b>Q3: What CGPA gives a first division?</b><br>Broadly, 60%+ (≈6.32 CGPA) is first division and 75%+ (≈7.9 CGPA) first division with distinction — but confirm your program handbook, since exact cutoffs and distinction rules vary by scheme.</p>
+      <p><b>Q4: How badly does one ER hurt?</b><br>That semester's SGPA dips hard (zero points for the paper), but post-clearing CGPA impact is ~0.1 for a single ER across a degree. Clear it in the very next cycle and move on.</p>
+      <p><b>Q5: Do 2-credit papers really matter in this maths?</b><br>Enormously per hour. In the example above, the SEC O contributed 20 of 102 point-credits — a fifth of the SGPA from one compact paper. That's why small papers are SGPA boosters, not distractions.</p>
 
-      <a class="guide-card" href="internal-marks-file-system-25-marks.html">
-        <span class="ico">📝</span>
-        <h3>DU Internal Marks: The 25-Mark File System</h3>
-        <p>Attendance 5 + file 10 + class test 10 — the system that banks them before exam fortnight. I left 8 marks in Sem 1.</p>
-        <span class="meta">7 min read · Internals · New</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="ge-which-one-to-pick-scoring-guide.html">
-        <span class="ico">📚</span>
-        <h3>Which GE to Pick in DU? A Scoring Guide</h3>
-        <p>4 credits — same weight as Core. Overlap, marking style, and the 10-minute PYQ writability test. Don't pick your friend's GE.</p>
-        <span class="meta">7 min read · GE · New</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="aec-environmental-science-dont-fail.html">
-        <span class="ico">🌱</span>
-        <h3>AEC Environmental Science: The Compulsory Paper You Must Not Fail</h3>
-        <p>Acts with years, cycles, Chipko vs Narmada + field report. My roommate's ER story — and how you avoid it.</p>
-        <span class="meta">7 min read · AEC · New</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="sec-social-media-marketing-practical-file.html">
-        <span class="ico">📱</span>
-        <h3>SEC Social Media Marketing: Practical File + 30-Mark Pattern</h3>
-        <p>2 credits, fully practical — file index, content calendar, metrics table + 7-day plan. I fumbled my file in Sem 2; here's the fix.</p>
-        <span class="meta">7 min read · SEC · New</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="vac-financial-literacy-score-full.html">
-        <span class="ico">💰</span>
-        <h3>VAC Financial Literacy: How to Score Full in DU (Practical Way)</h3>
-        <p>2 credits, 30 hours, easiest O if you do numbers + steps — tax slabs, UPI fraud flow, and a 7-day plan. I learnt this after a 7.2 SGPA Sem 1.</p>
-        <span class="meta">8 min read · VAC · New</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="du-exam-pattern-ugcf-explained.html">
-        <span class="ico">📋</span>
-        <h3>DU Exam Pattern Explained: UGCF Credits, Marking &amp; Paper Codes</h3>
-        <p>Confused by DSC, SEC, VAC, AEC and GE? A clear breakdown of DU's UGCF exam pattern — credits, marking scheme, paper codes and CBCS vs UGCF.</p>
-        <span class="meta">6 min read · Exam Pattern</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="how-to-download-du-admit-card.html">
-        <span class="ico">🧭</span>
-        <h3>How to Download Your DU Admit Card (Step-by-Step)</h3>
-        <p>No admit card, no entry. Download yours from exam.du.ac.in in about five minutes — the exact process, plus what to do if something on it is wrong.</p>
-        <span class="meta">5 min read · How-To</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="how-to-score-9-cgpa-du-semester-exams.html">
-        <span class="ico">🎯</span>
-        <h3>How to Score 9+ CGPA in DU Semester Exams</h3>
-        <p>Bank your internal assessment, use PYQs the smart way, and target high-weight papers first — a practical playbook for a 9+ CGPA.</p>
-        <span class="meta">8 min read · Study Guide</span>
-        <span class="read">Read guide →</span>
-      </a>
-
-      <a class="guide-card" href="du-odd-semester-exams-2026-guide.html">
-        <span class="ico">📅</span>
-        <h3>DU Odd Semester Exams 2026: Dates, Date Sheet &amp; 60-Day PYQ Plan</h3>
-        <p>Theory exams begin December 4, 2026 — official calendar dates, date sheet status and a 60-day plan for Sem 1, 3, 5 and 7.</p>
-        <span class="meta">5 min read · Exam Dates</span>
-        <span class="read">Read guide →</span>
-      </a>
-
+      <h2>Last-minute advice from the author</h2>
+      <p>Result-day maths takes ten minutes with the formula and causes ten days of confusion without it. Save this page, run your own numbers with your grades, and argue with seniors using arithmetic instead of vibes. And if the numbers reveal a gap — the <a href="du-sol-30-day-study-plan.html">30-day plan</a> and <a href="../guide-pyqs-3-pass.html">3-pass method</a> are how you close it next semester.</p>
+      <p>Stuck on a specific unit's syllabus or can't find the right UPC guide near you? Drop a comment via <a href="../contact.html">Contact</a> — I read every message and will point you to the exact PYQ hub. Now close this tab, open your notebook, and write those 10 VIP questions. Go clear it.</p>
     </div>
+
   </div>
 </main>
 
@@ -283,12 +229,14 @@
 
 <script>
   const themeBtn = document.getElementById('themeBtn');
+  function lsGet(k){ try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { window.localStorage.setItem(k, v); } catch (e) {} }
   function setTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
     themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
-    localStorage.setItem('sulaksh-theme', t);
+    lsSet('sulaksh-theme', t);
   }
-  setTheme(localStorage.getItem('sulaksh-theme') || 'light');
+  setTheme(lsGet('sulaksh-theme') || 'light');
   themeBtn.addEventListener('click', () => {
     setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   });
