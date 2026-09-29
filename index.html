@@ -838,8 +838,13 @@ isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super'
   }
   function goDuCollege() {
     lsSet('sulaksh-du-info-seen', '1');
+    // Close BEFORE navigating: otherwise Back restores this page from bfcache
+    // with the overlay still open and the popup "reappears".
+    closeModal('duInfoOverlay');
     window.location.href = 'du.html';
   }
+  // Belt-and-braces: never show a stale open modal restored via back/forward cache.
+  window.addEventListener('pageshow', (e) => { if (e.persisted) closeModal('duInfoOverlay'); });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeDuInfo();
   });
