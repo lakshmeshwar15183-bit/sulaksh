@@ -1870,7 +1870,12 @@ fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset
     'blog/du-er-backlog-rules-repeat.html',
     'blog/du-sgpa-cgpa-calculate-marks.html',
     'blog/du-admit-card-problems-fix.html',
-    'blog/du-last-15-day-pyq-sprint.html']
+    'blog/du-last-15-day-pyq-sprint.html',
+    'blog/du-answer-writing-masterclass.html',
+    'blog/du-attendance-skip-truth.html',
+    'blog/du-marked-absent-result-fix.html',
+    'blog/polsc-sem1-exam-guide.html',
+    'blog/sem1-prep-leaves-survival-timetable.html']
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
