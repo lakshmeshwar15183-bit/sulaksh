@@ -154,10 +154,11 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
       });
       more.addEventListener('click', function(){
         more.style.display='none'; clearSnag(); meta.textContent='Loading all matches…';
-        fetchRetry(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(lastEff)+'&limit=100')
+        fetchRetry(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(lastEff)+'&limit=1000')
           .then(function(r){return r.json();}).then(function(d){
             var arr=rankFirst((d&&d.materials)||[], String(lastEff).toLowerCase());
-            meta.textContent=arr.length?('Showing all '+arr.length+' matches — open any paper to view or save it.'):'No matches.';
+            var totalAll=(d&&typeof d.total==='number')?d.total:arr.length;
+            meta.textContent=arr.length?('Showing '+arr.length+' of '+totalAll+' matches — open any paper to view or save it.'):'No matches.';
             box.innerHTML=arr.map(row).join(''); hideDl();
           }).catch(function(){ snag(function(){ more.click(); }); });
       });
