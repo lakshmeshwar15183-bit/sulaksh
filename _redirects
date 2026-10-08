@@ -26,3 +26,14 @@
 /pyq/b-sc-hons-chemistry-honours-minor-sem-1-2024-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-1-pyqs.html 301
 /pyq/b-sc-hons-chemistry-honours-minor-sem-1-2025-pyqs.html /pyq/b-sc-hons-chemistry-honours-sem-1-pyqs.html 301
 /pyq/aec-course-c-physical-education-sports-and-yoga-study-material.html /pyq/ge-history-and-foundation-of-physical-education-study-material.html 301
+# Fix 10 GSC 404s (Oct 2026) — stale /pyq/paper/*-pyqs.html pattern the generator never emits + old BA-programme slug — 301 to closest live page
+/pyq/paper/introduction-to-geophysics-pyq-2024-pyqs.html /pyq/paper/introduction-to-geophysics-pyq-2024-sem-6-e656aed4.html 301
+/pyq/paper/physics-of-materials-pyq-2025-pyqs.html /pyq/paper/physics-of-materials-pyq-2025-sem-5-e8c6b692.html 301
+/pyq/paper/solid-state-physics-pyq-2026-pyqs.html /pyq/paper/solid-state-physics-pyq-may-june-2026-sem-4-6b4f78e3.html 301
+/pyq/paper/computer-graphics-pyq-2026-pyqs.html /pyq/paper/computer-graphics-pyq-2025-sem-8-6d661024.html 301
+/pyq/paper/b-sc-hons-computer-science-pyqs.html /pyq/b-sc-hons-computer-science-honours-pyqs.html 301
+/pyq/paper/social-and-behaviour-change-communication-pyq-2025-pyqs.html /pyq/paper/social-and-behaviour-change-communication-pyq-2025-sem-7-d218bbfc.html 301
+/pyq/paper/b-sc-hons-environmental-science-pyqs.html /pyq/b-sc-hons-environmental-science-honours-pyqs.html 301
+/pyq/paper/b-sc-hons-physics-pyqs.html /pyq/b-sc-hons-physics-honours-pyqs.html 301
+/pyq/du-ba-programme-sem-1-pyqs.html /pyq/baprog-general-sem-1-pyqs.html 301
+/pyq/paper/b-sc-hons-home-science-pyqs.html /pyq/b-sc-hons-home-science-honours-pyqs.html 301

@@ -368,6 +368,27 @@ function cleanTitle(raw) {
   t = t.replace(/ge\s*-\s*ge/gi, 'GE');
   return t;
 }
+// GSC fix (Oct 2026): thin/garbage paper titles cause "Crawled - currently not
+// indexed". These are OCR failures (Hindi transliteration garbage, single-char
+// titles like "1", bare codes like "BCOM 7") with no search value. Such papers
+// stay live + viewable but are noindexed + excluded from sitemap until retitled.
+function isThinPaperTitle(raw) {
+  const t = String(raw || '').trim();
+  if (!t) return true;
+  if (t.length < 12) return true;
+  // OCR garbage: runs of single-letter hyphen tokens (a-e-r-a-r-i-g-e etc.)
+  if (/(\b[a-z][\s-]){4,}/i.test(t)) return true;
+  if (/\bag[\s\-:]+at[\s\-:]+va\b|\baferarige\b|\baa[\s\-:]+faasf\b|\bardg[\s\-:]+biter\b|\bstara[\s\-:]+feat\b|\bra[\s\-:]+fa[^a-z]+area[^a-z]+det\b|\b2[\s\-:]+urs[\s\-:]+hea\b/i.test(t)) return true;
+  // Bare codes with no meaningful words at all: "1", "---" etc.
+  // NOTE: single-word subjects like "Climatology PYQ NOV-DEC-2025" are VALID
+  // (1 strong word) — do NOT flag them. Only flag zero-word titles here;
+  // known bare codes (BCOM 7, MME PYQ, Hindi Bhasha, Unit I-V) are handled
+  // by the regex below.
+  const alphaWords = t.replace(/[^a-zA-Z ]/g, ' ').split(/\s+/).filter(w => w.length >= 4);
+  if (alphaWords.length === 0) return true;
+  if (/^(mme\s+(pyq|lecture)|b\.?com\s+(hons\s+)?\d+|bcom\s+\d+|hindi\s+(bhasha|upnayas)|unit\s+(i[-v]*|1-5)(\s+v)?|pyqs?\s+sem\s+1|ast-\s*syllabus)$/i.test(t)) return true;
+  return false;
+}
 const TRACK = { 'Honours': 'Honours', 'As Major': 'Major', 'As Minor': 'Minor' };
 const TYPE_LABEL = { pyq: 'Previous Year Question Papers', syllabus: 'Syllabus PDF', notes: 'Notes & Study Material', 'imp-questions': 'Important Questions', imp: 'Important Questions' };
 const typeOf = m => m.material_category === 'syllabus' || m.is_syllabus ? 'syllabus'
@@ -1085,6 +1106,7 @@ for (const m of materials) {
   }
   const emitOpts = aboutBlockForPaper ? { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, aboutBlock: aboutBlockForPaper, mats: [m] } : { subject: m.subject || m.category, faqCategory: t.toLowerCase(), total: 1, mats: [m] };
   if (isDupSetOf(m)) emitOpts.noindex = true;
+  if (isThinPaperTitle(m.title)) emitOpts.noindex = true;
   // Embedded viewer below the text: the document itself is part of the initial
   // HTML (unique per page), not a JS-only "Loading document…" shell.
   const viewerHtml = paperViewer(m);
@@ -1852,10 +1874,13 @@ for (const silo of siloDefs) {
 }
 
 // ===== sitemap — exclude noindexed thin pages + canonicalized duplicates =====
+// GSC fix (Oct 2026): '' already emits https://sulaksh.online/ so 'index.html'
+// is a duplicate canonical (caused "Alternative page with proper canonical").
 const TODAY = new Date().toISOString().slice(0, 10);
-const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !SITEMAP_EXCLUDE.has(f));
-fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-  + ['', 'index.html', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
+// NOTE: SITEMAP_EXCLUDE was snapshotted before faceted canonicals were added,
+// so filter on live CANONICAL_OVERRIDES (373 faceted + 12 hardcoded) instead.
+const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !CANONICAL_OVERRIDES.has(f));
+const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
      'blog/index.html',
     'blog/du-exam-pattern-ugcf-explained.html',
     'blog/how-to-download-du-admit-card.html',
@@ -1875,12 +1900,19 @@ fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset
     'blog/du-attendance-skip-truth.html',
     'blog/du-marked-absent-result-fix.html',
     'blog/polsc-sem1-exam-guide.html',
-    'blog/sem1-prep-leaves-survival-timetable.html']
+    'blog/sem1-prep-leaves-survival-timetable.html',
+    'blog/du-north-campus-crowd-truth.html',
+    'blog/du-south-campus-crowd-truth.html',
+    'blog/du-off-campus-truth.html',
+    'blog/du-north-vs-south-vs-off-campus.html',
+    'blog/why-sulaksh-for-du-pyqs.html'];
+fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+  + sitemapCore
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
     .map(u => '  <url><loc>' + SITE + '/' + u + '</loc><lastmod>' + TODAY + '</lastmod></url>').join('\n')
   + '\n</urlset>\n');
 
-console.log('TOTAL SITEMAP URLs:', 10 + sitemapPages.length, `(excluded ${noIndexFiles.size} no-file placeholders, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
+console.log('TOTAL SITEMAP URLs:', sitemapCore.length + sitemapPages.length, `(excluded ${noIndexFiles.size} no-file placeholders, ${SITEMAP_EXCLUDE.size} canonicalized duplicates)`);
 console.log('NoIndex placeholder files:', [...noIndexFiles].slice(0,10).join(', ') + (noIndexFiles.size>10?' ...':''));
 
 // ===== orphan pyq/paper cleanup — 2-consecutive-run safety =====
