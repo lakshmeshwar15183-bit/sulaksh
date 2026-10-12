@@ -99,49 +99,14 @@ const getSubjectPara = (subject) => {
   return null;
 };
 function getDefaultFaqs(opts) {
+  // AdSense review fix #1: no mass-generated FAQs.
+  // The same 3 Q&As repeated on thousands of pages ("Which units repeat
+  // most? ... 50%", "may be added later") is boilerplate.
+  // Return empty — emit()/pageHTML hide the FAQ section when empty.
+  // Only explicitly-passed per-page faqs (hand-written) are rendered.
   const raw = opts && (opts.faqCategory || opts.category || opts.type || opts.materialCategory || opts.subjectType || '');
-  const cat = String(raw).toLowerCase();
-  // Syllabus — official verification
-  if (cat.includes('syllabus')) {
-    return [
-      ['Is this the official DU syllabus?', 'This page shows the syllabus as listed in the official UGCF/NEP PDF for this subject. The syllabus Units 1-4, credits and readings are taken from the DU Academic Affairs PDF. Always verify the paper code and unit list with your college handout for your exact batch, as minor updates can vary by college.'],
-      ['DU SOL vs Regular — same syllabus?', 'Yes — DU SOL follows the same UGCF syllabus as regular colleges for this subject. The Units, credits and readings are identical; only exam timing may differ.'],
-      ['How much of this syllabus is actually asked?', 'Units 2-3 together often carry 55-60% of marks. The List of Readings at the end is where short-note questions come from — tick each learning outcome after you finish a Unit.']
-    ];
-  }
-  if (cat.includes('pyq') || cat === 'pyqs') {
-    return [
-      ['How is this PYQ marked at DU?', 'Typically 75 marks written + 25 internal or 90+10 depending on college. Shorts are 10 marks, longs are 15. Steps, working notes and one labelled diagram or correct quote/data point per answer usually cross 7/10.'],
-      ['Which units repeat most in this subject?', 'Middle units (2-3) — theory plus application — repeat about 50% of the time in 2023-2025 PYQs. Map each past question to Units 1-4; the 10-minute PYQ-mapping exercise tells you where to spend the next two days.'],
-      ['Is this the latest UGCF/NEP pattern?', 'Yes — papers from 2023-2026 follow the current UGCF/NEP framework. Pre-2022 papers have different DSC codes and should not be mixed for pattern.']
-    ];
-  }
-  if (cat.includes('notes')) {
-    return [
-      ['Do these notes cover the whole syllabus?', 'They cover Units 1-4 in DU’s taught order with headings, sub-points and one example or table per Unit — the format that maps directly to the marking scheme. Pair with 2-3 PYQs and one standard textbook per paper for full coverage.'],
-      ['How should I revise these notes in the last week?', 'One page per Unit — 4-5 bullets + one diagram/table + one PYQ pointer where this Unit was asked. Time-box 2 days per Unit. Verified notes on Sulaksh are formatted exactly that way.'],
-      ['Are these enough without the textbook?', 'Use the notes for structure and the textbook for depth. The notes compress 200 pages into 20 revision pages; the textbook gives the full quote or derivation when you need it.']
-    ];
-  }
-  if (cat.includes('book')) {
-    return [
-      ['Which books are prescribed for this subject?', 'The “List of Readings” / “Suggested Readings” at the end of the official DU syllabus PDF is the authoritative list. Examiners lift short-note questions verbatim from those books.'],
-      ['Do I need to buy every book?', 'No — one standard book per paper is enough. The syllabus readings overlap; the Units tell you which chapter to read. The verified notes map each Unit to its core reading.'],
-      ['Where are the readings inside the notes?', 'Each Unit in the notes cites the source chapter (e.g., Benson for Chaucer, Abel/Bernanke for Economics). Check the PYQ pointer box to see which reading was actually asked.']
-    ];
-  }
-  if (cat.includes('imp')) {
-    return [
-      ['Is this the exact IMP for my semester?', 'This is a broad, researched important-questions list based on the UGCF Units 1-4. The verified, exact IMP Q&A PDF will be uploaded shortly and will auto-appear above with an IMP Q tag.'],
-      ['How were these IMP questions chosen?', 'By mapping the last 3 years’ PYQs to Units 1-4 and picking the high-weight Units. Middle Units usually carry more marks — that’s why they have more questions here.'],
-      ['Should I only study IMP?', 'Use IMP for priority, but still skim all Units. IMP covers repetition; the syllabus Units ensure you don’t miss a surprise Unit 1 or Unit 4 question.']
-    ];
-  }
-  // Generic fallback — should rarely be used (only for index/guides/silo)
-  return [
-    ['Is this free?', 'Yes — every document on Sulaksh is completely free to view, no sign-up required.'],
-    ['Is this official Delhi University material?', 'The syllabi and question papers themselves come from DU\'s own published examinations and UGCF/NEP curriculum documents. Sulaksh itself is an independent, student-run platform — not an official University of Delhi website or service. Always verify the final paper code and semester against your college handout.']
-  ];
+  void raw;
+  return [];
 }
 // Per-subject authoritative-source examples for the 15m answer template.
 // Previously a single hardcoded "Upanishad/Devore/Rangarajan" triple was shown
@@ -175,94 +140,14 @@ function getCitationExample(subject, cat) {
   if (catU === 'SILO') return 'syllabus List of Readings + one standard textbook';
   return 'syllabus List of Readings + one standard textbook';
 }
-// pad any overview/detailed block that is <500w to guarantee >600 total page wc
-// FIX: differentiated per-subject study tip (not generic boilerplate) + avoid exact repeat
+// AdSense review fix #1: NO mass-generated padding.
+// Previously this injected the same Unit 1-4 marks table, "~50% repeat"
+// stat, "toppers" example, "Study tip" and "may be added later"
+// paragraph on thousands of pages — the exact "Low value content" signal.
+// Now returns the block unchanged. Paper/listing pages stay as title + PDF
+// + short factual fingerprint only.
 function padCommonBlock(block, subject, cat, extraKey) {
-  if (!block) return block;
-  const escS = esc(subject);
-  const lower = String(subject||'').toLowerCase();
-  const isBCom = lower.includes('b.com') || lower.includes('commerce');
-  const isHistory = lower.includes('history');
-  const isPolsci = lower.includes('political');
-  const isEco = lower.includes('economics');
-  const isEnglish = lower.includes('english');
-  const isBSc = lower.includes('b.sc') || lower.includes('bsc') || lower.includes('mathematics') || lower.includes('physics') || lower.includes('chemistry') || lower.includes('botany') || lower.includes('zoology');
-  const isSEC = String(cat).toUpperCase()==='SEC';
-  const isVAC = String(cat).toUpperCase()==='VAC';
-  const isGE = String(cat).toUpperCase()==='GE';
-  // Per-subject differentiated tip — pulls in unit names, paper codes, exam pattern specifics already available per subject
-  let tip = '';
-  if (isPolsci) {
-    tip = `For ${escS}, build a debate table per Unit: left column <em>concept</em> (e.g., liberty, justice, sovereignty for Sem 3 Political Theory Concepts & Debates; or state/planning/GST and Green Revolution–movement link for DSC-20 Sem 8), right column <em>critique + Indian example</em> (one Supreme Court case or election data, one Rawls/Nozick quote). That thesis + counter-thesis + case format is exactly how verified notes here are structured and how examiners award 7+/10.`;
-  } else if (isHistory) {
-    tip = `For ${escS}, keep a period sheet per Unit (Ancient: epigraphy vs literary sources; Sultanate/Mughal: Mansabdari-Jagirdari evolution from Akbar to Aurangzeb, Rajput alliances 1550–1700; Modern: 1857, Bhakti, Marathas/Sikhs) and a map sheet for Unit 4 — locate 4 sites and add one-line historiographical note per site. That source + chronology + concluding line is checked before length.`;
-  } else if (isEco) {
-    tip = `For ${escS}, maintain a formula sheet per Unit (Units 1–2 descriptive stats & probability, Unit 3 random variables, Unit 4 special distributions Uniform/Binomial/Poisson/Normal, Unit 5 sampling/covariance) and a diagram sheet (IS-LM, AD-AS, indifference curves). Show formula, substitution, units and two-decimal rounding — steps carry half the marks, one labelled diagram often rescues 8/10.`;
-  } else if (isEnglish) {
-    tip = `For ${escS}, make a text sheet per Unit: three lines — <em>what is said / how it is said / one exact quote</em> (e.g., Chaucer General Prologue, Donne Valediction, Whitman O Captain!, Morrison Beloved Units 1–3). Passage-based Qs require 1–2 quoted lines and form awareness (sonnet vs free verse) in the first three lines of your answer.`;
-  } else if (isBCom) {
-    tip = `For ${escS}, keep a working-notes sheet per Unit: Sem 1–4 Accounting/Business Maths (journal/ledger, 10m shorts), Sem 2 Cost/Laws (Contract Act Section 2(j) + case), Sem 3 Numericals (Process vs Marginal Costing), Sem 4 Cases (GST input credit, audit). Always show steps — correct working fetches 8/12 even if final figure is off; for theory use definition + provision + example.`;
-  } else if (isBSc) {
-    tip = `For ${escS}, keep a diagram sheet per Unit (e.g., B.Sc. Hons Chemistry: atomic orbitals, reaction mechanisms; Physics: thermodynamics cycle; Botany: phycology/bryophyte life cycles; Zoology: non-chordate diagrams) with three labels each, plus a practical sheet (steps, observations, one viva Q per experiment). One correct labelled diagram often equals 10 marks.`;
-  } else if (isSEC) {
-    tip = `For ${escS} (SEC, 2 credits, typically 0-0-2 practical), focus is file + viva: keep Unit-wise screenshots of outputs (e.g., Flutter builds, Python DataFrame/Pandas, Django GET/POST flow) and one working demo per Unit. Examiners check live debugging and formula views, not just definitions.`;
-  } else if (isVAC) {
-    tip = `For ${escS} (VAC, 2 credits, 1-0-1), keep a steps sheet per Unit: e.g., Digital Empowerment — DigiLocker/BHIM/e-Kranti steps, e-Kranti outreach log; Yoga — Surya Namaskar steps in order, 7-step eye / 4-step neck relaxation. The 15-week practical outreach/file carries the second credit — note names, dates and one takeaway per activity.`;
-  } else if (isGE) {
-    // Only Indian Economy gets the ECON030-specific tip; every other GE subject
-    // gets a generic common-pool tip (previously ALL GE pages showed Indian Economy).
-    if (lower.includes('indian economy') || lower.includes('indian-economy')) {
-      tip = `For ${escS} (GE, 4 credits 3L+1T), note the common-pool structure: even-semester GE-6 Indian Economy (ECON030, 5 Units ~9h: historical overview, growth, comparative, poverty/inequality/gender, agriculture/trade) is policy-and-evidence driven with Rangarajan/Balakrishnan readings — prepare one table per Unit (period + policy + data source).`;
-    } else {
-      tip = `For ${escS} (GE, 4 credits 3L+1T), note the common-pool structure: check whether your GE runs in the even or odd semester, then prepare one table per Unit (concept + example + data source). GE papers reward one labelled table/diagram per answer.`;
-    }
-  } else {
-    tip = `For ${escS}, copy the Unit titles in order, then make one page per Unit with heading, 4–5 bullets and one diagram or table — structure mirrors DU's marking rubric (definition + explanation + example + concluding line) and compresses 200 pages into 20 revision pages.`;
-  }
-  // Label key: previously `String(extraKey).slice(0,4)` produced garbled fragments
-  // like "Hono" (Honours), "Majo" (Major), "Gene" (General), "stud"/"syll"/"2025".
-  // Headings now use the full category only — no truncated fragments, no fake hashes.
-  const key = String(extraKey || '');
-  // World-class expansion to 1000+ words: add weightage table + solved example, unique per subject+cat+key (hash), only if block doesn't already have one (avoid duplicate on semester pages)
-  const hasTable = String(block||'').includes('<table');
-  const hubWeightage = hasTable ? '' : (() => {
-    const h = String(subject+cat+key).charCodeAt(0) % 3;
-    const u1=15, u2=18+h, u3=17-h, u4=12+(h%2), tot=u1+u2+u3+u4;
-    if (isBCom) {
-      return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">What gets asked — ${escS}</th></tr></thead><tbody>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Foundations / Business maths</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">10m short + working note</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Applied theory / Laws</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m case + provision</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Contemporary / Costing</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Numerical — steps 8/12</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — Synthesis / GST</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">Essay + data table</td></tr></tbody></table>`;
-    } else if (isBSc) {
-      return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">Focus — ${escS}</th></tr></thead><tbody>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Theory / Derivation</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m derivation + diagram</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Mechanisms</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">10m mechanism</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Applications</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Diagram-heavy 10m</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — Practical / Shorts</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">Short notes + viva</td></tr></tbody></table>`;
-    } else {
-      return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">Focus — ${escS}</th></tr></thead><tbody>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Foundations</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">Definition + 10m short</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Applied theory</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m debate + example</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Contemporary</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Case / quote 10m</td></tr>
-      <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — Synthesis</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">Essay 15m + conclusion</td></tr></tbody></table>`;
-    }
-  })();
-  const hubExample = hasTable ? '' : (() => {
-    // Full subject name (no 22-char truncation) + per-subject citation example
-    // (no hardcoded Upanishad/Devore/Rangarajan triple) + real category label
-    // (no "Hono"/"HonoEn"-style sliced fragments).
-    const cite = getCitationExample(subject, cat);
-    return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0"><h3 style="font-size:14px;margin:0 0 6px">How toppers use this — ${escS} (${esc(cat)})</h3>
-    <p style="font-size:13px;margin:0 0 6px"><strong>15m template for ${escS}:</strong> 1) Define in 2 lines + one authoritative source (e.g., ${esc(cite)} for ${escS}); 2) 3 points — concept + example + data/diagram; 3) One limitation or alternative view; 4) Concluding “so what?” with ${esc(cat)} paper code pattern (verify from your college handout). <em>22 min per answer.</em></p>
-    <p style="font-size:12px;color:var(--muted);margin:0">PYQ mapping for ${escS} shows Unit 2/3 repeats ~50% — toppers spend 60% time there. One verified table/diagram per answer is the fastest 3-mark gain.</p></div>`;
-  })();
-  const extra = `
-    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip — ${escS} (${cat}):</strong> ${tip} Use the 10-minute PYQ-mapping exercise — mark which Unit each past question came from to see where to focus next. Verify final unit list and paper code from your college handout — the broad outline above is a bridge until the exact PDF is uploaded.</div>
-    ${hubWeightage}
-    ${hubExample}
-    <p><strong>What to do next for ${escS}:</strong> Open the syllabus Units 1–4 above, keep the ${cat} PYQs shown on this page alongside, and mark which Unit each past question belongs to. That 10-minute exercise tells you which units repeat most and where to spend the next two days. The exact, verified IMP Q&A PDF for ${escS} will be uploaded shortly and will auto-appear above with an <em>IMP Q</em> tag — until then, this broad UGCF guide keeps you on track and will be replaced by the official file.</p>`;
-  return block + extra;
+  return block;
 }
 const getImpQuestionsBlock = (slugKey) => {
   const data = impQuestions[slugKey];
@@ -280,7 +165,7 @@ const getImpQuestionsBlock = (slugKey) => {
     if (u.includes('unit 4')) return 'Hint: Viva/project focused — headings + file + 2 viva Qs. Practical weight 25% — file + viva prep.';
     return 'Hint: Point + example + concluding line. One diagram/table per answer.';
   };
-  let html = `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin:14px 0"><h3 style="margin:0 0 8px;font-size:15px">Important Questions — ${esc(data.name)} (Broad list — verify from college)</h3><p style="color:var(--muted);font-size:13px;margin:0 0 10px">These are broad, researched important questions based on the UGCF syllabus Units. Exact paper questions may vary — verify from your college syllabus and previous year papers. Precise PDF will be uploaded shortly and will auto-appear above.</p>`;
+  let html = `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin:14px 0"><h3 style="margin:0 0 8px;font-size:15px">Important Questions — ${esc(data.name)} (Broad list — verify from college)</h3><p style="color:var(--muted);font-size:13px;margin:0 0 10px">These are broad, researched important questions based on the UGCF syllabus Units. Exact paper questions may vary — verify from your college syllabus and previous year papers.</p>`;
   for (const unit of Object.keys(byUnit).sort()) {
     html += `<h4 style="margin:10px 0 6px;font-size:13px;color:var(--navy)">${esc(unit)}</h4><ul style="margin:0 0 8px 18px;font-size:13px">`;
     for (const q of byUnit[unit]) {
@@ -289,7 +174,7 @@ const getImpQuestionsBlock = (slugKey) => {
     }
     html += `</ul>`;
   }
-  html += `<p style="font-size:12px;color:var(--muted);margin-top:8px"><em>Note:</em> This is a broad researched list to help you start. The verified, exact IMP Q&A PDF for ${esc(data.name)} will be uploaded shortly — once admin uploads, it will automatically show above with an <em>IMP Q</em> tag. Verify from your college's official syllabus PDF.</p></div>`;
+  html += `<p style="font-size:12px;color:var(--muted);margin-top:8px"><em>Note:</em> This is a broad researched list to help you start. Verify from your college's official syllabus PDF.</p></div>`;
   return html;
 };
 // Bump this when you edit view.html so the cached page is bypassed (the "?v="
@@ -400,8 +285,20 @@ const res = await fetch(`${API}/api/materials?exam=${encodeURIComponent('DU & Co
 // large second exam (PYQ Archive) would crowd DU & College rows out of generation.
 const { materials } = await res.json();
 // Normalize titles before generating slugs — fixes VAC VAC / GE GE / truncated marks
+// Fix #5: manual overrides for 5 OCR-garbled auto-extracted titles (Oct 2026 audit).
+// Source PDFs are fine — only the extracted title string was garbage. These also
+// need retitling in the backend admin when convenient (same IDs).
+const TITLE_OVERRIDES = new Map([
+  ['bb272bd8-609b-4bfa-9d70-7bff911e0cae', 'Women\u2019s Writing PYQ MAY-JUNE-2026 - Sem 6'],
+  ['b157a572-ce6b-4d18-9321-70f73f67562a', 'Readings on Indian Diversities and Literary Movements PYQ NOV-DEC-2024 - Sem 1'],
+  ['f471a100-5b5e-4b4a-b7e5-e4d84b54386b', 'Post Colonial Literatures PYQ MAY-JUNE-2026 - Sem 6'],
+  ['9718bef1-28e3-49d6-ae91-188480ccdaa4', 'Indian Writing in English PYQ MAY-JUNE-2026 - Sem 4'],
+  ['4b310707-23bd-4067-b8a2-521fa57d94d4', 'Skills for Dissertation Writing in Sanskrit PYQ MAY-JUNE-2026 - Sem 6'],
+]);
 for (const m of materials) {
   if (m.title) m.title = cleanTitle(m.title);
+  const ov = m.id && TITLE_OVERRIDES.get(m.id);
+  if (ov) { console.log(`[title-override] ${m.id} -> ${ov}`); m.title = ov; }
 }
 // TASK3 FIX: single source of truth for document counts — all pages pull from same materials array
 const totalDocs = materials.length;
@@ -478,6 +375,7 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none}
 
 function pageHTML(o) {
   const faqH = (o.faqs || []).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
+  const faqSection = faqH ? `<div class="faq" id="faqs"><h2>FAQs</h2>${faqH}</div>` : '';
   const noIndexTag = o.noindex ? '<meta name="robots" content="noindex, follow">' : '';
   // NOTE: no FAQPage structured markup here on purpose — the same Q&A repeated
   // on thousands of pages looks manipulative. Visible FAQ text (faqH) stays as normal content.
@@ -536,7 +434,7 @@ ${noIndexTag}
 <link rel="icon" type="image/png" href="/assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775" crossorigin="anonymous"></script>
+<!-- Fix #3: no AdSense on auto-generated PYQ/paper/listing pages during review -->
 <script type="application/ld+json">${JSON.stringify(bcLd)}</script>
 <script type="application/ld+json">${JSON.stringify(articleLd)}</script>
 <style>${CSS}</style></head>
@@ -553,14 +451,12 @@ ${noIndexTag}
 <h1>${esc(o.h1)}</h1>
 <p style="font-size:12.5px;color:var(--muted);margin:4px 0 8px">By <b>Sulaksh Editorial</b> · Reviewed by <b>${o.reviewer || 'Lakshmeshwar Pandey'}</b> · Updated <time datetime="${displayDate}">${displayDate}</time> · <a href="/about.html" style="color:var(--blue);text-decoration:none">About</a> · <a href="/contact.html" style="color:var(--blue)">Contact</a></p>
   ${o.intro}
-  ${o.hideActions ? '' : ` <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button><a href="#toc" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--text)">📑 Contents</a></div>
-<nav id="toc" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:12px 0"><strong style="font-size:13px">On this page</strong><ul style="margin:6px 0 0 18px;font-size:13px;line-height:1.7"><li><a href="#what-this-paper-covers" style="color:var(--blue)">What this paper covers</a></li><li><a href="#about-this-collection" style="color:var(--blue)">About this collection</a></li><li><a href="#faqs" style="color:var(--blue)">FAQs</a></li></ul></nav>`}
-<div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+  ${o.hideActions ? '' : ` <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px"><button onclick="window.print()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🖨 Print / Save PDF</button><button onclick="sharePage()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer">🔗 Share</button></div>`}
+<!-- Fix #3: ad slots removed from generated pages during review -->
 ${o.body}
-<div class="ad"><ins class="adsbygoogle" style="display:block;margin-top:20px" data-ad-client="ca-pub-9918653445662775" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 ${o.relHtml}
 ${o.aboutBlock || ""}
-<div class="faq" id="faqs"><h2>FAQs</h2>${o.faqH}</div>
+${faqSection}
 </div>
 <footer><b>SULAKSH</b> — Learn. Prepare. Achieve.<br>Free study material for every DU aspirant · <a href="/">Home</a> · <a href="/du.html">DU &amp; College</a> · <a href="/pyq/index.html">All PYQs</a></footer>
 <script>
@@ -604,7 +500,6 @@ function loadViewer(btn){
     box.replaceChildren(f);
   }catch(e){}
 }
-(adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 <!-- Default Statcounter code for https://sulaksh.online -->
 <script type="text/javascript">
@@ -644,7 +539,7 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p><strong>Exam pattern:</strong> Most papers are 90 marks theory + 10 internal, or 75+25 depending on college. Questions are typically 10 marks (short) and 15 marks (long), with at least one passage-based question where quoting 1-2 lines matters. Because the syllabus lists specific chapters, not just book names — e.g., Whitman’s “O Captain!” or Morrison’s <em>Beloved</em> Units 1-3 — students who revise by the Unit division score faster.</p>
     <p><strong>Marking scheme:</strong> Examiners reward three things: accurate textual reference, a clear thesis in the first 3 lines, and awareness of form (sonnet vs dramatic monologue vs free verse). A one-page-per-text sheet with “what’s said / how it’s said / one quote” maps directly to the marking rubric and has helped thousands of DU students.</p>
     <p><strong>How to use PYQs here:</strong> Open Sem 1’s syllabus tab, then the 10 PYQs for that sem side-by-side. You will notice many concepts repeat — e.g., Chaucer’s General Prologue, Donne’s Valediction, or Post-colonial theory questions. Solve 3 past papers per semester under timed conditions; that alone covers time management and question style.</p>
-    <p>Pair these papers with the semester notes and the official DU syllabus. Recent years (2023-2025) follow the latest UGCF pattern and carry the most weight. Verify final unit details from your college PDF — this overview will be replaced once the official file is uploaded.</p>
+    <p>Pair these papers with the semester notes and the official DU syllabus. Recent years (2023-2025) follow the latest UGCF pattern and carry the most weight. Verify final unit details from your college PDF.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   } else if (isHistory) {
     block = `
@@ -653,7 +548,7 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p><strong>Exam pattern:</strong> Typically 75 marks written + 25 internal. Expect one map-based question (10 marks, locate and explain 4 sites), two 15-mark essays (historiography + debate), and three 10-mark shorts. The trick is sources: DU asks “Reconstruct with epigraphy” or “Use archaeological vs literary sources” — answers without source discussion rarely cross 6/10.</p>
     <p><strong>Marking:</strong> Historiography name-drops help, but over-quoting without chronology hurts. Examiners check: clear period bracket, one primary source per answer, and a concluding “why this debate still matters” line.</p>
     <p><strong>How to use PYQs:</strong> Before reading, run the 3-pass method — first pass mark repeated units (e.g., Mauryan state, Bhakti movement, 1857), second pass write timed answers, third pass make a one-page timeline per unit. That compresses 300 pages into 20 revision pages.</p>
-    <p>Check the Learning Objectives and Suggested Readings on your syllabus — examiners lift questions verbatim from there. Verified PDFs here vanish when the official file is uploaded; always cross-check with your college.</p>
+    <p>Check the Learning Objectives and Suggested Readings on your syllabus — examiners lift questions verbatim from there. Always cross-check with your college.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   } else if (isPolsci) {
     block = `
@@ -680,7 +575,7 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p><strong>Exam pattern:</strong> Typically 75+25 (theory + internal) or 90+10. Sems 1-4 are calculation heavy (Financial Accounting, Cost Accounting, Business Maths) — 50% marks are step-based numericals. Sems 5-6 shift to theory+case (Financial Management, Auditing, GST). Each paper has Section A (compulsory) and Section B (attempt 4/6).</p>
     <p><strong>Marking:</strong> In numericals, always show working notes — even a wrong final answer with correct steps gets 8/12. In theory, use format: definition + provision + example (e.g., Section 2(j) of Contract Act + case). A neat format beats long paragraphs.</p>
     <p><strong>How to use PYQs:</strong> For each semester, solve Sem 1-4 numericals daily (one question = 15 min) and revise theory on alternate days. Last 3 PYQs reveal the repeat — e.g., Process Costing, Marginal vs Absorption, GST input credit. Verified notes here keep one page per unit with solved PYQ pointers.</p>
-    <p>Recent documents (2024-2026) follow the latest UGCF. Verify paper codes with your college before exam — this page will auto-update when the official PDF is uploaded.</p>
+    <p>Recent documents (2024-2026) follow the latest UGCF. Verify paper codes with your college before exam.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   } else if (isBSc) {
     block = `
@@ -688,7 +583,7 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p>${esc(s)} ${esc(track)} at DU (UGCF) combines theory, practicals and labs. This collection with <strong>${total} documents</strong> across ${semCount} semester(s) separates DSC theory, practical files and PYQs semester-wise so your lab journal and theory notes stay aligned.</p>
     <p><strong>Exam pattern:</strong> 75 marks theory + 25 internal, plus 25-50 marks practical per paper. Theory asks one derivation/diagram (15 marks), two mechanisms or life-cycle diagrams (10 each), and shorts. Practical viva checks lab steps, not just results.</p>
     <p><strong>Marking:</strong> Labelled diagrams with equations (e.g., thermodynamics cycle, cell structure, organic mechanism) carry disproportionate weight. One correct diagram with 3 labels often equals 10 marks.</p>
-    <p><strong>How to use PYQs:</strong> Before lab, skim the corresponding theory PYQ — DU often asks the same experiment’s principle in theory. Keep a formula/diagram sheet per unit; verified notes here are built that way and vanish when the official PDF is live.</p>
+    <p><strong>How to use PYQs:</strong> Before lab, skim the corresponding theory PYQ — DU often asks the same experiment’s principle in theory. Keep a formula/diagram sheet per unit; verified notes here are built that way.</p>
     <p>All documents are UGCF/NEP, free. Confirm your lab batch’s syllabus from your department.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   } else {
@@ -697,7 +592,7 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <h2>About This Collection — ${esc(s)} ${esc(track)}</h2>
     <p>${esc(s)} ${esc(track)} at Delhi University under NEP/UGCF ( ${cat} stream) focuses on conceptual clarity with semester-wise progression. This collection holds <strong>${total} documents</strong> across ${semCount} semester(s), grouping syllabus, notes and PYQs so you study in DU’s taught order.</p>
     <p><strong>Exam pattern:</strong> Most papers are 75+25 or 90+10, with a mix of 10-mark shorts and 15-mark essays. Reading the “Course Objectives” on the syllabus tells you exactly what the examiner will ask — DU lifts questions verbatim from there.</p>
-    <p><strong>How to use PYQs:</strong> Don’t just collect PDFs. For each semester, open the syllabus Units 1-4, then the 3 most recent PYQs, and mark which Unit each question came from. That 10-minute exercise tells you where to spend the next two days. Verified notes here follow one-page-per-unit with PYQ pointers.</p>
+    <p><strong>How to use PYQs:</strong> Don’t just collect PDFs. For each semester, open the syllabus Units 1-4, then the 3 most recent PYQs, and mark which Unit each question came from.  Verified notes here follow one-page-per-unit with PYQ pointers.</p>
     <p>Recent years (2023-2026) match the current UGCF pattern most closely. Please verify the final unit list from your college PDF — this reference overview will be replaced when the official file is uploaded.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   }
@@ -721,19 +616,19 @@ function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
     units = `<li><strong>Unit 1:</strong> Primary texts — e.g., Chaucer, Donne, Shakespeare (form-aware reading)</li><li><strong>Unit 2:</strong> Literary history & close reading — passage-based analysis</li><li><strong>Unit 3:</strong> Theory — e.g., Post-colonial, Feminist, Cultural studies</li><li><strong>Unit 4:</strong> Essay & long answers — thesis + textual reference</li>`;
     exam = `Most English papers are 90 theory + 10 internal or 75+25. Questions are 10 marks (short) and 15 marks (long), with passage-based questions where 1-2 quoted lines matter.`;
     marking = `Examiners reward accurate textual reference, a clear thesis in first 3 lines, and awareness of form. One-page-per-text sheet with “what's said / how it's said / one quote” maps to rubric.`;
-    howto = `Open syllabus Units 1-4 alongside the 3 most recent PYQs and mark which Unit each question came from. If this ${typeLabel ? typeLabel.toLowerCase() : 'section'} is empty or shows only one PDF, the broad outline above is your interim guide — the precise semester IMP will auto-appear when admin uploads.`;
+    howto = `Open syllabus Units 1-4 alongside the 3 most recent PYQs and mark which Unit each question came from. If this ${typeLabel ? typeLabel.toLowerCase() : 'section'} is empty or shows only one PDF, the broad outline above is your interim guide — the precise semester IMP may be added later.`;
   } else if (isHistory) {
     intro = `History ${esc(t)} at DU for ${esc(semName)} spans Ancient to Contemporary. This <strong>${esc(context)}</strong> page with <strong>${total} document(s)</strong> groups syllabus and PYQs chronologically.`;
     units = `<li><strong>Unit 1:</strong> Sources & historiography — epigraphy, archaeology, literary</li><li><strong>Unit 2:</strong> Polity & economy — e.g., Mauryan state, Sultanate, 1857</li><li><strong>Unit 3:</strong> Society & culture — Bhakti, gender, caste</li><li><strong>Unit 4:</strong> Map & long essays — locate 4 sites + historiographical debate</li>`;
     exam = `Typically 75 written + 25 internal. Map-based (10 marks), two 15-mark essays, three 10-mark shorts. Answers without source discussion rarely cross 6/10.`;
     marking = `Chronology, one primary source per answer, and concluding “why this debate matters” line are checked.`;
-    howto = `Run 3-pass: mark repeated units, write timed answers, make one-page timeline per unit. If IMP for this ${typeLabel ? typeLabel.toLowerCase() : 'semester'} is missing, use the outline above until verified PDF auto-appears.`;
+    howto = `Run 3-pass: mark repeated units, write timed answers, make one-page timeline per unit. If IMP for this ${typeLabel ? typeLabel.toLowerCase() : 'semester'} is missing, use the outline above as needed.`;
   } else if (isPolsci) {
     intro = `Political Science ${esc(t)} at DU for ${esc(semName)} blends theory and Indian institutions. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> orders concept and application together.`;
     units = `<li><strong>Unit 1:</strong> Theory — liberty, justice, democracy, Rawls/Nozick</li><li><strong>Unit 2:</strong> Indian constitution — federalism, rights, institutions</li><li><strong>Unit 3:</strong> Comparative & global politics — case studies</li><li><strong>Unit 4:</strong> Long answers — thesis + counter-thesis + Indian example</li>`;
     exam = `90/100 marks with choices “Answer 4 out of 6”. Theory asks comparison, India papers ask application with recent examples.`;
     marking = `Thesis + counter-thesis + one Supreme Court case or election data fetch full marks.`;
-    howto = `Keep Unit 1 and Unit 4 open together — DU pairs liberty with democracy. Make a one-page debate table per unit. Broad outline here until IMP auto-appears.`;
+    howto = `Keep Unit 1 and Unit 4 open together — DU pairs liberty with democracy. Make a one-page debate table per unit. Broad outline here as needed.`;
   } else if (isEco) {
     intro = `Economics ${esc(t)} at DU for ${esc(semName)} is mathematical and diagram-driven. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> separates quantitative core first.`;
     units = `<li><strong>Unit 1:</strong> Micro/Macro foundations — consumer equilibrium, IS-LM</li><li><strong>Unit 2:</strong> Numericals — elasticity, national income, multiplier</li><li><strong>Unit 3:</strong> Theory & diagrams — AD-AS, Phillips curve</li><li><strong>Unit 4:</strong> Data & policy — GDP/GNP, reforms</li>`;
@@ -745,7 +640,7 @@ function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
     units = `<li><strong>Unit 1:</strong> Accounting/Business Maths — journal, ledger, ratios</li><li><strong>Unit 2:</strong> Laws & theory — Contract Act, provisions</li><li><strong>Unit 3:</strong> Numericals — Process Costing, Marginal vs Absorption</li><li><strong>Unit 4:</strong> Cases — GST input credit, audit, management</li>`;
     exam = `Typically 75+25 or 90+10. Sems 1-4 are 50% step-based numericals. Section A compulsory, Section B attempt 4/6.`;
     marking = `Show working notes — even wrong final answer with correct steps gets 8/12. In theory, use definition + provision + example.`;
-    howto = `Solve one numerical daily (15 min) and revise theory alternate days. Last 3 PYQs reveal repeats. Broad outline here until IMP auto-appears.`;
+    howto = `Solve one numerical daily (15 min) and revise theory alternate days. Last 3 PYQs reveal repeats. Broad outline here as needed.`;
   } else if (isBSc) {
     intro = `${esc(s)} ${esc(t)} at DU for ${esc(semName)} combines theory, practicals and labs. This <strong>${esc(context)}</strong> with <strong>${total} document(s)</strong> keeps lab and theory aligned.`;
     units = `<li><strong>Unit 1:</strong> Theory & derivation — e.g., thermodynamics, cell structure</li><li><strong>Unit 2:</strong> Mechanisms/diagrams — organic, genetics, circuits</li><li><strong>Unit 3:</strong> Practical & viva — lab steps and observations</li><li><strong>Unit 4:</strong> Short notes & applications — one diagram per answer</li>`;
@@ -787,18 +682,16 @@ function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
     return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0"><h3 style="font-size:14px;margin:0 0 6px">Solved example — Q1 outline (pattern from this paper)</h3>
     <p style="font-size:13px;margin:0 0 6px"><strong>Representative Q (15m, Unit 2/3):</strong> “${esc(short)} — discuss with reference to Unit 2/3 concepts and one example/diagram. Critically examine.”</p>
     <p style="font-size:13px;margin:0 0 6px"><strong>Outline that fetches 13/15:</strong> 1) Define in 2 lines + one authoritative quote/case/formula for ${esc(s)}; 2) 3 points — point + example/diagram + data; 3) Counter-point (one limitation / alternative view); 4) Concluding line “so what?” linking to exam. <em>Timebox 22 min.</em></p>
-    <p style="font-size:12px;color:var(--muted);margin:0"><strong>Why this works for ${esc(s)} ${esc(semName)}:</strong> Examiners check definition + evidence + conclusion. One diagram/table per answer is the fastest 3-mark gain. PYQ mapping for ${esc(s)} shows Unit 2/3 repeats ~50% — this outline is built for that.</p></div>`;
+    <p style="font-size:12px;color:var(--muted);margin:0"><strong>Why this works for ${esc(s)} ${esc(semName)}:</strong> Examiners check definition + evidence + conclusion. One diagram/table per answer is the fastest 3-mark gain. PYQ mapping for ${esc(s)} varies by year — this outline is built for that.</p></div>`;
   })();
+  // AdSense fix #1: minimal honest block — no generic marks table,
+  // no placeholder solved example, no "~50% repeat", no upload-shortly.
+  // Title + factual intro + subject-specific unit list + official links only.
   return `
     <h2>About ${esc(title)} — Delhi University</h2>
-    <p>${intro} This page helps you see the taught order and exam pattern together.</p>
-    <p><strong>What you will study (broad UGCF outline — verify from your college):</strong></p>
+    <p>${intro}</p>
+    <p><strong>Units (verify from your college syllabus handout):</strong></p>
     <ul style="margin:8px 0 8px 18px">${units}</ul>
-    ${weightageTable}
-    <p><strong>Exam pattern & marking:</strong> ${exam} ${marking}</p>
-    ${solvedExample}
-    <p><strong>How to prepare & what is missing:</strong> ${howto} Right now the IMP questions / detailed notes PDF for this ${typeLabel ? typeLabel.toLowerCase() : 'section'} may not be uploaded yet — the list below shows what is currently available. Once your college or the admin uploads the official IMP Q&A PDF, it will automatically appear above with an <em>IMP Q</em> tag.</p>
-    <div style="background:rgba(30,95,255,.06);border-left:3px solid #1E5FFF;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Please verify:</strong> Paper codes and unit lists can vary slightly by college and batch. Confirm from your college's official syllabus PDF and department notice. This overview is a broad UGCF guide — the precise, verified semester-wise IMP will be uploaded shortly and will replace this placeholder reference.</div>
     <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(s)} syllabus handout.</p>`;
 }
 const honestCount = n => Math.max(0, Number(n) || 0);
@@ -870,7 +763,11 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   // Material-backed pages (opts.mats non-empty) always stay indexed.
   let shouldNoIndex = !!(opts && opts.noindex);
   const fallbackFaqs = getDefaultFaqs(opts);
-  const faqH = (faqs && faqs.length ? faqs : fallbackFaqs).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
+  // AdSense fix #1: drop any mass-generated FAQ containing boilerplate signals.
+  // Explicit hand-written FAQs without these phrases still render.
+  const boilerRe = /uploaded shortly|auto-appear|when admin uploads|repeats? (~|about )?50%|typical marks \(62 total\)|unit 2\/3 repeats/i;
+  const rawFaqs = (faqs && faqs.length ? faqs : fallbackFaqs) || [];
+  const cleanFaqs = rawFaqs.filter(([q, a]) => !boilerRe.test(String(q + ' ' + a)));
   const relHtml = (relItems && relItems.length)
     ? '<h2>Related Papers</h2><div class="rel">' + relItems.map(r => `<a href="${SITE}/pyq/${r.file}">${esc(r.label)}</a>`).join('') + '</div>' : '';
   const aboutBlock = (() => {
@@ -890,7 +787,7 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   // Honest dateModified from the page's own materials (opts.mats); explicit
   // opts.dateModified wins if a caller passes one. Otherwise omitted.
   const pageDateModified = (opts && opts.dateModified) || maxMatDate(opts && opts.mats) || undefined;
-  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqH, file, aboutBlock, noindex: shouldNoIndex, dateModified: pageDateModified, reviewer: opts && opts.reviewer, hideActions: !!(opts && opts.hideActions), authorName: opts && opts.authorName });
+  let html = pageHTML({ title, desc, h1, badge, intro, body, relHtml, faqs: cleanFaqs, file, aboutBlock, noindex: shouldNoIndex, dateModified: pageDateModified, reviewer: opts && opts.reviewer, hideActions: !!(opts && opts.hideActions), authorName: opts && opts.authorName });
   // Thin-audit log: noindexed placeholders are out of the sitemap; everything else stays indexed.
   if (shouldNoIndex) {
     noIndexFiles.add(file);
@@ -917,38 +814,12 @@ const listItem = m => {
 };
 
 function paperWeightageTable(subj, sem, hash) {
-  const lower = String(subj||'').toLowerCase();
-  const isBCom = lower.includes('b.com') || lower.includes('commerce');
-  const isBSc = lower.includes('b.sc') || lower.includes('bsc') || lower.includes('mathematics');
-  const h = hash ? hash.charCodeAt(0) % 3 : 0;
-  // vary marks slightly per hash to keep unique
-  const u1 = 15, u2 = 18 + h, u3 = 17 - h, u4 = 12 + (h%2), tot = u1+u2+u3+u4;
-  if (isBCom) {
-    return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">What gets asked</th></tr></thead><tbody>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Accounting basics / Business maths</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">Journal/ledger, 10m shorts</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Laws / Cost</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m case + working notes</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Costing / Finance</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Numerical, steps fetch 8/12</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — GST / Auditing</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">10m theory + provision</td></tr></tbody></table>`;
-  } else if (isBSc) {
-    return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">Question type</th></tr></thead><tbody>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Theory / Derivation</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m derivation + diagram</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Mechanisms</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">10m mechanism / circuit</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Applications</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Diagram-heavy 10m</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — Practical / Shorts</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">Short notes + viva</td></tr></tbody></table>`;
-  } else {
-    return `<table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:13px"><thead><tr style="background:var(--navy);color:#fff"><th style="padding:6px 8px;text-align:left">Unit</th><th style="padding:6px 8px;text-align:center">Typical marks (${tot} total)</th><th style="padding:6px 8px;text-align:left">Focus</th></tr></thead><tbody>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 1 — Foundations</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u1}</td><td style="padding:6px 8px;border:1px solid var(--border)">Definition + 10m short</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 2 — Applied theory</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u2}</td><td style="padding:6px 8px;border:1px solid var(--border)">15m debate + example</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 3 — Contemporary</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u3}</td><td style="padding:6px 8px;border:1px solid var(--border)">Case / quote 10m</td></tr>
-    <tr><td style="padding:6px 8px;border:1px solid var(--border)">Unit 4 — Synthesis</td><td style="padding:6px 8px;border:1px solid var(--border);text-align:center">${u4}</td><td style="padding:6px 8px;border:1px solid var(--border)">Essay 15m + conclusion</td></tr></tbody></table>`;
-  }
+  // AdSense fix #1: removed — generic Unit 1-4 marks table was boilerplate.
+  return '';
 }
 function paperSolvedExample(subj, sem, hash, title) {
-  const short = String(title||'').slice(0,38);
-  return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0"><h3 style="font-size:14px;margin:0 0 6px">Solved example — Q1 outline (pattern from this paper)</h3>
-  <p style="font-size:13px;margin:0 0 6px"><strong>Representative Q (15m, Unit 2/3):</strong> “${esc(short)} — discuss with reference to Unit 2/3 concepts and one example/diagram. Critically examine.”</p>
-  <p style="font-size:13px;margin:0 0 6px"><strong>Outline that fetches 13/15:</strong> 1) Define in 2 lines + one authoritative quote/case/formula for ${esc(subj)}; 2) 3 points — point + example/diagram + data; 3) Counter-point (one limitation / alternative view); 4) Concluding line “so what?” linking to exam. <em>Timebox 22 min.</em></p>
-  <p style="font-size:12px;color:var(--muted);margin:0"><strong>Why this works for ${esc(subj)} ${esc(sem)}:</strong> Examiners check definition + evidence + conclusion. One diagram/table per answer is the fastest 3-mark gain. PYQ mapping for ${esc(subj)} shows Unit 2/3 repeats ~50% — this outline is built for that.</p></div>`;
+  // AdSense fix #1: removed — placeholder "solved example" + "~50% repeat" was boilerplate.
+  return '';
 }
 // ===== 1) PER-PAPER — enriched with 500w+ summary + weightage + FAQs =====
 // Per-paper fingerprint: 3 factual sentences unique to this document (session,
@@ -979,6 +850,9 @@ function paperFingerprint(m, sibCount) {
   return `<p><strong>About this file:</strong> ${esc(subj)}${esc(track)} · ${esc(sem)} · ${esc(session)}.${sizeBit}${coll}</p>`;
 }
 function paperSummary(m, sibCount) {
+  // AdSense fix #1: title + PDF + short factual note only.
+  // No generic exam-pattern claims, no "How to use / 10-minute mapping",
+  // no "bridge until exact PDF / may be added later".
   const subj = m.subject || m.category || 'Delhi University';
   const sem = m.semester ? `Semester ${m.semester}` : 'your semester';
   const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'Syllabus'
@@ -986,57 +860,30 @@ function paperSummary(m, sibCount) {
     : (m.material_category === 'important-questions' || m.is_imp) ? 'Important Questions' : 'Notes';
   const isPyq = t === 'PYQ';
   const isSyl = t === 'SYLLABUS';
-  // unique hash per paper to vary tip to avoid duplicate blocks
-  const hash = String(m.id || '').slice(0,4);
-  const semNum = m.semester || '';
   if (isPyq) {
     return `
     <h2>What this paper covers</h2>
-    <p>This is the <strong>${esc(m.title)}</strong> — a ${esc(subj)} ${sem} previous year question paper under DU's UGCF/NEP framework. It follows the exact pattern your exam will use: section-wise choices, 10-mark shorts and 15-mark long answers, with internal choice like “Answer any 4 out of 6”.</p>
-    <p style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px"><strong>What you get after opening:</strong> Scanned question paper PDF as per DU exam for this paper. <strong>Source/provenance:</strong> Official DU examination paper — verify paper code and semester from your college handout before relying on it. <em>Sulaksh is an independent student platform and is not affiliated with or endorsed by the University of Delhi.</em></p>
-    <p><strong>How to use it:</strong> Solve timed (3 hours), then mark each question against the syllabus Units 1-4. That 10-minute mapping tells you where to revise. Keep one page per unit with “core idea + one example or diagram + one PYQ reference” — this mirrors how DU frames questions.</p>
+    <p>This is the <strong>${esc(m.title)}</strong> — a ${esc(subj)} ${sem} previous year question paper.</p>
+    <p style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px"><strong>Source:</strong> DU examination paper — verify paper code and semester from your college handout before relying on it. <em>Sulaksh is an independent student platform and is not affiliated with or endorsed by the University of Delhi.</em></p>
     ${paperFingerprint(m, sibCount)}
     <p>Official: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} ${esc(sem)} handout.</p>`;
   } else if (isSyl) {
     return `
     <h2>Syllabus at a glance — ${esc(subj)} ${esc(sem)}</h2>
-    <p>This is the syllabus for <strong>${esc(m.title)}</strong> — ${esc(subj)} ${esc(sem)} (UGCF 2022). It lists the DSC titles, units, credits, course objectives, learning outcomes and suggested readings that DU officially prescribes for this semester. Under NEP, each DSC is typically 4 credits with a 75 marks theory + 25 internal split, or 90+10 in some colleges, spread across four units. The paper code and title here (often DSC-${esc(semNum) || 'X'}) map one-to-one to your examination form.</p>
-    <p><strong>How it is examined:</strong> The syllabus Learning Objectives become questions verbatim. Weightage is spread across Units 1-4; typically Unit 2-3 carry the most marks. The “List of Readings” at the end is not optional — examiners pick short-note questions directly from those books. For ${esc(subj)}, Unit 1 usually tests foundations, Units 2-3 test application and cases, and Unit 4 tests essay-type synthesis.</p>
-    <p><strong>What to do with this syllabus:</strong> Copy the DSC titles in DU's order, then make one page per unit with heading, 4-5 bullets and one diagram or table. That order is how PYQs are set and how verified notes here are structured, so your rough pages will map one-to-one with what gets asked. Tick each learning outcome after you finish a unit — if you can explain every outcome in two lines, you are exam-ready.</p>
-    <p><strong>Common mistake:</strong> Students read 200-page PDFs linearly. Instead, time-box each unit to two days, then immediately solve one PYQ from that unit (use the PYQ tab for ${esc(subj)} ${esc(sem)} on Sulaksh). That retrieval step doubles retention vs re-reading.</p>
-    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this syllabus — ${esc(subj)} ${esc(sem)}:</strong> Copy the Unit titles in order, make one page per unit, and mark which Unit each past question came from using the 10-minute PYQ mapping technique. Verify the final unit list and paper code from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
+    <p>This is the syllabus for <strong>${esc(m.title)}</strong> — ${esc(subj)} ${esc(sem)} (UGCF 2022).</p>
     ${paperFingerprint(m, sibCount)}
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} syllabus handout.</p>`;
   } else {
     return `
     <h2>About these notes — ${esc(subj)} ${esc(sem)}</h2>
-    <p>These are study notes for <strong>${esc(m.title)}</strong> — ${esc(subj)} ${esc(sem)} (UGCF 2022). They are organised unit-wise, in DU's taught order, with headings, sub-points and one example or table per unit — the format that maps directly to DU's marking scheme. Unlike random senior PDFs, these notes mirror the syllabus Units 1-4 so each note page maps to one exam question.</p>
-    <p><strong>How to revise:</strong> Read once without notes, then make a one-page outline per unit — left side core idea, right side one PYQ pointer where this unit appeared (check the PYQ tab for ${esc(subj)} ${esc(sem)}). That mirrors how DU frames questions and how toppers compress 200 pages into 20 revision pages. For numerical papers (${esc(subj)}), keep a separate formula sheet and solve one PYQ numerical daily; for theory, write one 15-mark answer weekly and get it checked for structure.</p>
-    <p><strong>What is inside:</strong> Each unit has definition, 3-4 key points, one labelled diagram or data table where relevant, and a “PYQ pointer” box that tells you which past year this unit was asked in. That pointer is why these notes work for last-day revision — you see both the concept and its exam frequency together.</p>
-    <p><strong>Limitations & next step:</strong> These notes are a bridge — the official, verified semester-wise notes PDF for ${esc(subj)} ${esc(sem)} will be uploaded shortly and will auto-appear above. Until then, use these unit-wise notes with the syllabus and one standard textbook per paper for full coverage.</p>
-    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this note — ${esc(subj)} ${esc(sem)}:</strong> Time-box each Unit to two days, revise with the 10-minute PYQ mapping technique described above — mark which Unit each past question came from to see where to focus next. Use senior notes only to cross-check your one-pagers, not as replacement. Verify from your college handout — the broad outline above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
+    <p>Study notes for <strong>${esc(m.title)}</strong> — ${esc(subj)} ${esc(sem)} (UGCF 2022), organised in DU's taught order.</p>
     ${paperFingerprint(m, sibCount)}
     <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(subj)} handout.</p>`;
   }
 }
 function paperFaqs(m) {
-  const subj = m.subject || m.category || 'this subject';
-  const t = (m.material_category === 'syllabus' || m.is_syllabus) ? 'syllabus' : (m.material_category === 'pyqs' || m.is_pyq) ? 'pyq' : 'notes';
-  if (t === 'pyq') return [
-    [`How is the ${subj} exam marked?`, `Typically 75 marks written + 25 internal. Shorts are 10 marks, longs are 15. Steps, diagrams and one correct quote or data point per answer cross 7/10.`],
-    [`Which units repeat the most in ${subj}?`, `Middle units (2-3) — application/theory — repeat 50% of the time in 2023-2025 PYQs. Mark them first before revising Unit 1.`],
-    [`Is this the latest pattern?`, `Yes — this is UGCF/NEP (2022 onwards). Pre-2022 papers have different DSC codes and should not be used for pattern.`],
-    [`Where is the syllabus for this paper?`, `Open the Syllabus tab for ${subj} Semester ${m.semester || ''} on Sulaksh — it sits alongside the PYQs in the same semester folder.`],
-  ];
-  if (t === 'syllabus') return [
-    [`Is this the official DU syllabus?`, `This page shows the syllabus as listed in the official UGCF PDF. Always cross-check the paper code with your college's handout for your batch.`],
-    [`How much of the syllabus is asked in the exam?`, `Units 2-3 together often cover 60% of questions. The List of Readings is where short notes come from.`],
-    [`DU SOL vs Regular — same syllabus?`, `Yes — DU SOL follows the same UGCF syllabus as regular colleges. The PDF content is identical.`],
-  ];
-  return [
-    [`Are these notes enough?`, `They cover the syllabus units in order. Pair with PYQs and one standard book per paper for full coverage.`],
-    [`How should I revise these notes?`, `One page per unit, with one diagram/table. That is how exams are marked.`],
-  ];
+  // AdSense fix #1: no generic FAQs on paper pages (same 4 Qs on 5000 pages).
+  return [];
 }
 // Sibling counts per subject+semester+type (for paper fingerprints) and
 // dup-set detection: titles like "X Set 1 (2)" are re-scans of the same paper.
@@ -1066,14 +913,16 @@ for (const m of materials) {
   const yr = m.year ? ` (${m.year})` : '';
   const file = `paper/${slug(m.title)}-${m.id.slice(0, 8)}.html`;
   // related: 12 per subject (was 6) to reduce orphan depth and pass link equity
+  // Fix #5: word-boundary truncation so labels never cut mid-word ("Seme", "Bachelor of A").
+  const smartCut = (s, n) => { const t = String(s || ''); if (t.length <= n) return t; const c = t.slice(0, n); const sp = c.lastIndexOf(' '); return (sp > n * 0.6 ? c.slice(0, sp) : c) + '…'; };
   const related = materials.filter(x => x.subject && x.subject === m.subject && x.id !== m.id).slice(0, 12)
-    .map(x => ({ label: x.title.slice(0, 55), file: `paper/${slug(x.title)}-${x.id.slice(0, 8)}.html` }));
+    .map(x => ({ label: smartCut(x.title, 55), file: `paper/${slug(x.title)}-${x.id.slice(0, 8)}.html` }));
   // prev/next within same subject sorted by title for crawl depth
   const sameSubjSorted = materials.filter(x=>x.subject===m.subject).sort((a,b)=>String(a.title).localeCompare(String(b.title)));
   const idx = sameSubjSorted.findIndex(x=>x.id===m.id);
   const prev = idx>0 ? sameSubjSorted[idx-1] : null;
   const next = idx>=0 && idx<sameSubjSorted.length-1 ? sameSubjSorted[idx+1] : null;
-  const prevNextHtml = (prev || next) ? `<div style="display:flex;justify-content:space-between;gap:10px;margin:14px 0;font-size:13px">${prev?`<a href="/pyq/paper/${slug(prev.title)}-${prev.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">← ${esc(prev.title.slice(0,40))}</a>`:'<span></span>'}${next?`<a href="/pyq/paper/${slug(next.title)}-${next.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">${esc(next.title.slice(0,40))} →</a>`:'<span></span>'}</div>` : '';
+  const prevNextHtml = (prev || next) ? `<div style="display:flex;justify-content:space-between;gap:10px;margin:14px 0;font-size:13px">${prev?`<a href="/pyq/paper/${slug(prev.title)}-${prev.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">← ${esc(smartCut(prev.title, 40))}</a>`:'<span></span>'}${next?`<a href="/pyq/paper/${slug(next.title)}-${next.id.slice(0,8)}.html" style="color:var(--blue);font-weight:600">${esc(smartCut(next.title, 40))} →</a>`:'<span></span>'}</div>` : '';
   const summary = paperSummary(m, sibCounts.get(`${m.subject}||${m.semester}||${sibTypeOf(m)}`) || 1) + prevNextHtml;
   const faqs = paperFaqs(m);
   // Always via viewer (inline on phone, never download)
@@ -1465,7 +1314,7 @@ for (const [k, v] of ncCombined) {
       `<p><strong>${displayCount}</strong> document(s) — broad guide below. Official PDF will appear here and count will increase when you upload.</p>`,
       body,
       null,
-      [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. The verified IMP PDF will be uploaded shortly and will auto-appear.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
+      [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. Check your college handout for the final version.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
       // Placeholder: no real file yet → noindex + out of sitemap until upload (page stays live).
       { total: displayCount, aboutBlock: useCustom, subject: v.subject, faqCategory: t, noindex: true }
     );
@@ -1620,7 +1469,7 @@ emit('where-to-find-du-pyqs.html',
     <p>Many DU exam questions repeat concepts from previous years. Solving even three past papers per subject gives you the exact question style, marking scheme and time pressure of the real exam. The technique that works is <em>PYQ mapping</em>: for each syllabus Unit 1-4, mark which past questions came from it. After three papers, you will know which units repeat most (usually Units 2-3) and where to spend the next two days. That compresses 200 pages into 20 revision pages.</p>
    <h2>How to verify you have the right PYQ</h2>
    <p>Before you solve, check three things on the paper: (1) paper code matches your syllabus handout, (2) year says 2023-2026 for current UGCF pattern, (3) semester tag matches your exam form. If any of those mismatch, open the syllabus tab for your subject on Sulaksh — it sits alongside the PYQs in the same semester folder and shows the correct DSC order.</p>
-   <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college syllabus handout. All PYQs on Sulaksh are free to view; the exact verified PDF will auto-appear when admin uploads.</p>
+   <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college syllabus handout. All PYQs on Sulaksh are free to view; all PYQs on Sulaksh are free to view.</p>
     <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Make one page per unit with heading, 4-5 bullets and one diagram or table. Time-box each unit to two days, solve one PYQ numerical daily or write one 15-mark answer weekly, and cross-check with syllabus Units 1-4. Verify from your college handout — the broad guide above is a bridge until the exact PDF is uploaded.</div>`,
   null,
   [['Are these really free?', 'Yes. Every paper on Sulaksh is free to view, no sign-up.'],
@@ -1642,7 +1491,7 @@ emit('where-to-find-du-syllabus.html',
    <p>Don’t read it linearly. Copy the four unit titles in order, make one page per unit with heading, 4-5 bullets and one diagram or table, then immediately solve one PYQ from that unit. The “Learning Objectives” and “List of Readings” sections are where examiners lift short-note questions verbatim — if you can explain each learning outcome in two lines, you are exam-ready. Tick each outcome after you finish a unit.</p>
    <h2>DU SOL vs Regular — same syllabus?</h2>
    <p>Yes — DU SOL follows the same UGCF syllabus as regular colleges for GE/VAC/SEC/AEC and core papers. The PDF content is identical; only the exam timing may differ. If you are SOL, use the same semester folders on Sulaksh and verify your paper code with the SOL handout.</p>
-   <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. Verify the final unit list and paper code from your college — the broad overview here is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</p>
+   <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. Verify the final unit list and paper code from your college — verify details from your college handout.</p>
     <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Copy the Unit titles in order, make one page per unit, and run the 10-minute PYQ mapping technique — mark which Unit each past question came from to see where to focus next. Time-box each Unit to two days. Verify from your college handout.</div>`,
   null,
   [['Is this the new NEP syllabus?', 'Yes — material follows the current UGCF/NEP structure used across DU colleges.'],
@@ -1656,7 +1505,7 @@ emit('best-website-for-du-pyqs-study-material.html',
   '<p>An honest comparison of every option DU students use for past papers and notes. This guide ranks each source by organisation, permanence and cost, and shows why a semester-wise library saves you hours before exams.</p>',
   `<h2>Your Options, Ranked</h2>
    <ul class="plist">
-     <li><span class="pt"><a href="/pyq/index.html">Sulaksh</a> — 1000+ organised papers, semester & course-wise, instant view</span><span class="ty">FREE</span> — permanent URLs, correct UGCF/NEP paper codes, and each paper pairs with its syllabus and notes. Count updates when admin uploads.</li>
+     <li><span class="pt"><a href="/pyq/index.html">Sulaksh</a> — 1000+ organised papers, semester & course-wise, instant view</span><span class="ty">FREE</span> — permanent URLs, correct UGCF/NEP paper codes, and each paper pairs with its syllabus and notes. Count updates when available.</li>
      <li><span class="pt">Telegram groups — fast but unorganised, files expire</span><span class="ty">MESSY</span> — good for a single senior PDF last minute, but folders mix pre-2022 papers with current UGCF and links die after one semester.</li>
      <li><span class="pt">Google Drive folders — dead links after one semester</span><span class="ty">UNRELIABLE</span> — often mislabelled Semester 2 as Semester 4, no verification of paper codes, and no syllabus pairing.</li>
      <li><span class="pt">Paid coaching PDFs — expensive for the same content</span><span class="ty">PAID</span> — you pay for what DU already publishes free; many are just re-uploaded PYQs with a watermark.</li>
@@ -1665,7 +1514,7 @@ emit('best-website-for-du-pyqs-study-material.html',
    <p>Organisation by course and semester, correct year labels (2023-2026 for current UGCF), permanent URLs, no paywall halfway through, and a syllabus paired with each PYQ so you know which Unit each question came from. That is exactly how <a href="/pyq/index.html">the Sulaksh library</a> is built — start with your course:</p>
    <div class="rel">${topHubLinks()}</div>
    <h2>How Sulaksh Keeps It Honest</h2>
-   <p>Every listing shows a <em>PYQ</em>, <em>SYLLABUS</em>, <em>IMP Q</em> or <em>NOTES</em> tag, the exact semester, and the paper code. If a PDF for your subject and semester is not yet uploaded, you still see a broad UGCF guide with Units 1-4, exam pattern and a Study tip — that guide counts as 1 document and the count increases when the official PDF is uploaded. The verified PDF will auto-appear above with an <em>IMP Q</em> tag and will replace the placeholder reference. That means no more “0 document(s)” and no dead end.</p>
+   <p>Every listing shows a <em>PYQ</em>, <em>SYLLABUS</em>, <em>IMP Q</em> or <em>NOTES</em> tag, the exact semester, and the paper code. If a PDF for your subject and semester is not yet uploaded, you still see a broad UGCF guide with Units 1-4, exam pattern and a Study tip — that guide counts as 1 document and the count increases when the official PDF is uploaded. The verified PDF may appear above with an <em>IMP Q</em> tag and will replace the placeholder reference. That means no more “0 document(s)” and no dead end.</p>
    <h2>How to pick in 30 seconds</h2>
    <p>Open your programme from <a href="/du.html">DU & College</a>, pick your semester, then open the syllabus Units 1-4 alongside the PYQ for that semester. If you can map each past question to a Unit in 10 minutes, you have the right source. If you can’t, the source is mixing old patterns. Sulaksh’s one-page-per-unit notes are formatted exactly for that mapping, with a PYQ pointer per unit.</p>
    <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. Verify the final unit list and paper code from your college.</p>
@@ -1712,8 +1561,8 @@ const hubAbout = `<h2>About This PYQ Library — Delhi University (UGCF/NEP)</h2
 <p>This master index brings together every Delhi University previous year question paper, syllabus and study material on Sulaksh — BA (Hons) and (Programme), BSc (Hons), BCom (Hons) and (Programme), plus GE, VAC, AEC and SEC courses under UGCF/NEP 2022. Each subject hub is organised semester-wise (Sem 1 to Sem 8) with syllabus, PYQs and notes in the taught order, so you see the reading sequence DU actually uses. All ${totalDocsLabel} documents are free to view instantly, no sign-up.</p>
 <p><strong>How to use this index:</strong> Start with your programme — e.g., <em>B.Com (Hons)</em>, <em>Political Science Honours</em>, <em>English Honours</em> — then pick your semester. Each semester page shows the DSC order, and the PYQ mapping technique (mark which Unit each past question came from) tells you which units repeat most. Most students need only three past papers per subject to cover the pattern.</p>
 <p><strong>Why PYQs matter:</strong> DU examiners often reuse concepts. The exam pattern (75+25 or 90+10, with 10-mark shorts and 15-mark longs) and marking rubric (definition + example + concluding line, one diagram or quote per answer) repeat every year. Solving PYQs under timed conditions is the single most effective revision.</p>
-<div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this index:</strong> Open your semester’s syllabus page first, copy the Unit titles in order, make one page per unit, then solve the PYQs shown on the same page. That one-page-per-unit method mirrors DU’s marking scheme and helps toppers compress 200 pages into 20 revision pages. Verify the final unit list and paper code from your college handout — the broad overview here is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
-<p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. The exact, verified PDFs auto-appear when admin uploads.</p>`;
+<div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this index:</strong> Open your semester’s syllabus page first, copy the Unit titles in order, make one page per unit, then solve the PYQs shown on the same page. A one-page-per-unit method mirrors DU’s marking scheme and helps toppers compress 200 pages into 20 revision pages. Verify the final unit list and paper code from your college handout — verify details from your college handout.</div>
+<p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. Check your college handout for final versions.</p>`;
 // Featured archive files on the master index: real PYQs with View/Save so the
 // page shows files, not just a 360+ button wall. Live-fetched (PYQ Archive
 // exam); if the fetch fails the section is omitted and the page still builds.
@@ -1865,10 +1714,10 @@ for (const silo of siloDefs) {
   // Dynamic count: totalDocs from same source as hubAbout + homepage heroDocs (single source of truth)
   const flatLinks = (HUBS.length + pages.size).toLocaleString();
   let aboutSilo = `<h2>About ${silo.label} — Delhi University (UGCF/NEP)</h2><p>This ${silo.label} silo groups <strong>${picks.length} collections</strong> for ${esc(silo.label)} under UGCF/NEP — Honours, Programme, Major/Minor where applicable. Each hub is semester-wise with syllabus + PYQ + notes in taught order, mirroring how DU teaches. All ${totalDocsLabel} documents are free to view instantly, no sign-up. The ${silo.label} silo exists to pass link equity between related subjects and to give crawlers a shallow hub (depth 2) instead of chasing ${flatLinks} flat links.</p>
-  <p><strong>How to use this silo:</strong> Pick your subject from the chips below (e.g., BCom (Hons), BA English, BSc Chemistry), then choose your semester. Each semester page shows DSC order, and PYQ mapping (which Unit each past question came from) tells you which units repeat most. For ${esc(silo.label)}, middle Units usually carry 55-60% weight — start there.</p>
+  <p><strong>How to use this silo:</strong> Pick your subject from the chips below (e.g., BCom (Hons), BA English, BSc Chemistry), then choose your semester. Each semester page shows DSC order, and PYQ mapping (which Unit each past question came from) tells you which units repeat most. For ${esc(silo.label)}, weightage varies by paper — start there.</p>
   <p><strong>Exam pattern for ${esc(silo.label)}:</strong> Typically 75 marks theory + 25 internal or 90+10, with 10-mark shorts and 15-mark longs, internal choice “Answer any 4 of 6”. Marking checks definition + example + concluding line, one diagram or quote per answer. Use one-page-per-unit notes with a PYQ pointer per Unit — that is how toppers compress 200 pages into 20.</p>
   <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip — ${esc(silo.label)}:</strong> Open your semester, copy Units 1-4, make one page per Unit with heading, 4-5 bullets and one diagram or table. Time-box each Unit to two days, then PYQ-map. Verify the final unit list and paper code from your college handout — the broad overview above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
-  <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. The verified PDF will auto-appear when admin uploads.</p>`;
+  <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. Check your college handout for the final version.</p>`;
   aboutSilo = padCommonBlock(aboutSilo, silo.label, 'SILO', silo.file);
   emit(silo.file, silo.title, silo.desc, silo.h1, 'Delhi University · Silo', `<p><strong>${picks.length} collections</strong> for ${esc(silo.label)} — all free.</p>`, `<div class="rel">${chips}</div>`, HUBS.slice(0,6).map(h=>({file:h.file, label:h.label})), null, { aboutBlock: aboutSilo, total: picks.length });
 }

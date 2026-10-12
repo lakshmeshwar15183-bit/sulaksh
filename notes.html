@@ -8,9 +8,7 @@
 <meta name="robots" content="noindex, follow">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied','functionality_storage':'granted','security_storage':'granted'});</script>
 
-<script>
-(function(){var _s=document.createElement('style');_s.textContent='.ad{min-height:280px}ins.adsbygoogle{min-height:280px;display:block}';(document.head||document.documentElement).appendChild(_s);function sL(){if(window.__ads)return;window.__ads=1;var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9918653445662775';document.head.appendChild(s);}window.__sgLoadAds=sL;try{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){sL();io.disconnect();}});},{rootMargin:'0px'});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('ins.adsbygoogle').forEach(function(el){io.observe(el);});});}catch(e){sL();}})();
-</script>
+<!-- AdSense disabled on this listing/policy page during review (Fix #3) -->
 <title>DU Study Notes — Course & Semester Wise | Sulaksh</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -409,7 +407,7 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   }
 
   function renderList(list, items) {
-    if (!items.length) { list.innerHTML = '<div class="mat-empty" style="text-align:left;line-height:1.6"><p><strong>1</strong> document — broad guide below. Official PDF will appear here and count will increase when you upload.</p> Broad UGCF notes outline for your subject — verify from college handout. The verified PDF will auto-appear when admin uploads.' + (state.isAdmin ? ' Use the Upload button above to add one.' : '') + '</div>'; return; }
+    if (!items.length) { list.innerHTML = '<div class="mat-empty" style="text-align:left;line-height:1.6"><p>No documents found for this filter.</p><p>Try a different subject or semester, or verify the paper code from your college handout.</p></div>'; return; }
     list.innerHTML = items.map(matItem).join('');
   }
 
