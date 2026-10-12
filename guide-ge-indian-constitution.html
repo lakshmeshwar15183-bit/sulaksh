@@ -123,10 +123,19 @@
   }
   function hide(){ if(banner) banner.classList.remove('show'); setTimeout(function(){ if(banner) banner.style.display='none';},250); }
   function show(){ if(!banner) return; banner.style.display='flex'; requestAnimationFrame(function(){ banner.classList.add('show'); }); }
+  // Fix #4: yield to a Google-certified CMP (Funding Choices via AdSense
+  // Privacy & messaging) once its tag is installed site-wide. The certified
+  // tool then owns consent; this banner hides so users never see two prompts.
+  function certifiedCmpPresent(){ try{ return (typeof window.__tcfapi==='function') || !!document.querySelector('script[src*="fundingchoicesmessages"]'); }catch(e){ return false; } }
+  function standDownForCmp(){ try{ hide(); }catch(e){} }
+  window.__sulakshHideCustomBanner = standDownForCmp;
+  var cmpChecks = 0;
+  var cmpTimer = setInterval(function(){ cmpChecks++; if(certifiedCmpPresent()){ standDownForCmp(); clearInterval(cmpTimer); } else if(cmpChecks>10){ clearInterval(cmpTimer); } }, 500);
   var c=getConsent();
-  if(c==='accepted'){ updateGtag(true); }
+  if(certifiedCmpPresent()){ standDownForCmp(); }
+  else if(c==='accepted'){ updateGtag(true); }
   else if(c==='declined'){ updateGtag(false); }
-  else { setTimeout(show, 700); }
+  else { setTimeout(function(){ if(!certifiedCmpPresent()) show(); }, 700); }
   if(acceptBtn) acceptBtn.addEventListener('click', function(){ setConsent('accepted'); updateGtag(true); hide(); try{if(window.__sgLoadAds) window.__sgLoadAds();}catch(e){} });
   if(declineBtn) declineBtn.addEventListener('click', function(){ setConsent('declined'); updateGtag(false); hide(); });
 })();
