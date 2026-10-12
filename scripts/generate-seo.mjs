@@ -1784,6 +1784,13 @@ const REDIRECT_STUBS = new Set([
   'b-sc-hons-chemistry-honours-minor-sem-1-2024-pyqs.html',
   'b-sc-hons-chemistry-honours-minor-sem-1-2025-pyqs.html',
   'aec-course-c-physical-education-sports-and-yoga-study-material.html',
+  // Fix #5 (Oct 2026): 5 OCR-garbled paper URLs retitled — old slugs kept as
+  // noindex redirect stubs so indexed/cached links land on the clean pages.
+  'paper/women-s-writing-dscy-bachelor-of-a-pyq-may-june-2026-sem-6-bb272bd8.html',
+  'paper/readings-on-indian-diversites-and-literary-movements-pyq-nov-dec-2024-sem-1-b157a572.html',
+  'paper/post-colonial-literatures-ni-our-anc-of-the-course-b-a-english-honours-dsc-se-pyq-may-june-2026-sem-6-f471a100.html',
+  'paper/indian-writing-in-english-course-bachelor-of-arts-honours-course-english-seme-pyq-may-june-2026-sem-4-9718bef1.html',
+  'paper/skills-for-dissertation-writing-in-sanskrit-dse-name-ofthe-course-bachelor-of-pyq-may-june-2026-sem-6-4b310707.html',
 ]);
 try {
   const pendingPath = path.resolve(process.cwd(), 'assets/data/pending-removals.json');
