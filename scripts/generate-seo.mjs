@@ -761,9 +761,7 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   // ("PDF coming soon" guides) are noindexed + excluded from the sitemap until a
   // real upload lands. Callers pass opts.noindex for these. Pages are never deleted.
   // Material-backed pages (opts.mats non-empty) always stay indexed.
-  // All auto-generated pages stay noindex to keep the indexed site focused on
-  // original, high-value content (guides, blog, home, core info pages).
-  let shouldNoIndex = true;
+  let shouldNoIndex = !!(opts && opts.noindex);
   const fallbackFaqs = getDefaultFaqs(opts);
   // AdSense fix #1: drop any mass-generated FAQ containing boilerplate signals.
   // Explicit hand-written FAQs without these phrases still render.
@@ -1732,7 +1730,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 // so filter on live CANONICAL_OVERRIDES (373 faceted + 12 hardcoded) instead.
 const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !CANONICAL_OVERRIDES.has(f));
 const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
-     'about.html', 'privacy-policy.html', 'terms.html', 'disclaimer.html', 'advertise.html', 'ug-course-structure.html', 'imp.html', 'notes.html', 'syllabus.html', 'pyq.html',
+     'blog/index.html',
     'blog/du-exam-pattern-ugcf-explained.html',
     'blog/how-to-download-du-admit-card.html',
     'blog/how-to-score-9-cgpa-du-semester-exams.html',
@@ -1757,9 +1755,6 @@ const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.ht
     'blog/du-off-campus-truth.html',
     'blog/du-north-vs-south-vs-off-campus.html',
     'blog/why-sulaksh-for-du-pyqs.html'];
-// Include hand-written guide pages (high-value, indexable content).
-const guideFiles = fs.readdirSync(process.cwd()).filter(f => /^guide.*\.html$/.test(f));
-sitemapCore.push(...guideFiles);
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + sitemapCore
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
