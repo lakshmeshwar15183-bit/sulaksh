@@ -761,7 +761,9 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
   // ("PDF coming soon" guides) are noindexed + excluded from the sitemap until a
   // real upload lands. Callers pass opts.noindex for these. Pages are never deleted.
   // Material-backed pages (opts.mats non-empty) always stay indexed.
-  let shouldNoIndex = !!(opts && opts.noindex);
+  // All auto-generated pages stay noindex to keep the indexed site focused on
+  // original, high-value content (guides, blog, home, core info pages).
+  let shouldNoIndex = true;
   const fallbackFaqs = getDefaultFaqs(opts);
   // AdSense fix #1: drop any mass-generated FAQ containing boilerplate signals.
   // Explicit hand-written FAQs without these phrases still render.
