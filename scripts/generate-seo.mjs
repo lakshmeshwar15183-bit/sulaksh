@@ -672,7 +672,7 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p>${esc(s)} ${esc(track)} at Delhi University under NEP/UGCF ( ${cat} stream) focuses on conceptual clarity with semester-wise progression. This collection holds <strong>${total} documents</strong> across ${semCount} semester(s), grouping syllabus, notes and PYQs so you study in DU’s taught order.</p>
     <p><strong>Exam pattern:</strong> Most papers are 75+25 or 90+10, with a mix of 10-mark shorts and 15-mark essays. Reading the “Course Objectives” on the syllabus tells you exactly what the examiner will ask — DU lifts questions verbatim from there.</p>
     <p><strong>How to use PYQs:</strong> Don’t just collect PDFs. For each semester, open the syllabus Units 1-4, then the 3 most recent PYQs, and mark which Unit each question came from.  Verified notes here follow one-page-per-unit with PYQ pointers.</p>
-    <p>Recent years (2023-2026) match the current UGCF pattern most closely. Please verify the final unit list from your college PDF — this reference overview will be replaced when the official file is uploaded.</p>
+    <p>Recent years (2023-2026) match the current UGCF pattern most closely. Please verify the final unit list from your college PDF or department handout for your batch.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   }
   const guide = getStudyGuide(s);
@@ -697,7 +697,7 @@ function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
     units = `<li><strong>Unit 1:</strong> Primary texts — e.g., Chaucer, Donne, Shakespeare (form-aware reading)</li><li><strong>Unit 2:</strong> Literary history & close reading — passage-based analysis</li><li><strong>Unit 3:</strong> Theory — e.g., Post-colonial, Feminist, Cultural studies</li><li><strong>Unit 4:</strong> Essay & long answers — thesis + textual reference</li>`;
     exam = `Most English papers are 90 theory + 10 internal or 75+25. Questions are 10 marks (short) and 15 marks (long), with passage-based questions where 1-2 quoted lines matter.`;
     marking = `Examiners reward accurate textual reference, a clear thesis in first 3 lines, and awareness of form. One-page-per-text sheet with “what's said / how it's said / one quote” maps to rubric.`;
-    howto = `Open syllabus Units 1-4 alongside the 3 most recent PYQs and mark which Unit each question came from. If this ${typeLabel ? typeLabel.toLowerCase() : 'section'} is empty or shows only one PDF, the broad outline above is your interim guide — the precise semester IMP may be added later.`;
+    howto = `Open syllabus Units 1-4 alongside the 3 most recent PYQs and mark which Unit each question came from. If this ${typeLabel ? typeLabel.toLowerCase() : 'section'} is empty or shows only one PDF, the broad outline above is your study guide — verify the final list from your college.`;
   } else if (isHistory) {
     intro = `History ${esc(t)} at DU for ${esc(semName)} spans Ancient to Contemporary. This <strong>${esc(context)}</strong> page with <strong>${total} document(s)</strong> groups syllabus and PYQs chronologically.`;
     units = `<li><strong>Unit 1:</strong> Sources & historiography — epigraphy, archaeology, literary</li><li><strong>Unit 2:</strong> Polity & economy — e.g., Mauryan state, Sultanate, 1857</li><li><strong>Unit 3:</strong> Society & culture — Bhakti, gender, caste</li><li><strong>Unit 4:</strong> Map & long essays — locate 4 sites + historiographical debate</li>`;
@@ -794,7 +794,7 @@ function maxMatDate(mats) {
 const displayLabel = (n, hasGuide) => {
   const num = honestCount(n);
   if (num === 0 && hasGuide) return 'Guide available';
-  if (num === 0) return 'Coming soon';
+  if (num === 0) return 'Overview';
   return `${num} document${num === 1 ? '' : 's'}`;
 };
 // Sibling of displayLabel for templates that append their own noun phrase
@@ -803,13 +803,13 @@ const displayLabel = (n, hasGuide) => {
 const countLabel = (n, hasGuide) => {
   const num = honestCount(n);
   if (num === 0 && hasGuide) return 'Guide available';
-  if (num === 0) return 'Coming soon';
+  if (num === 0) return 'Overview';
   return `${num} document(s)`;
 };
 const badgeLabel = (n, hasGuide) => {
   const num = honestCount(n);
   if (num === 0 && hasGuide) return 'Guide available';
-  if (num === 0) return 'Coming soon';
+  if (num === 0) return 'Overview';
   return `${num} file${num === 1 ? '' : 's'}`;
 };
 function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
@@ -1299,7 +1299,7 @@ for (const [k, arr] of ncByType) {
     subject + ' ' + TYPE_LABEL[type] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
     arr.length + ' ' + subject + ' ' + CAT_LABEL[cat] + ' ' + TYPE_LABEL[type].toLowerCase() + ' - Delhi University NEP/UGCF, free instant view.',
     subject + ' - ' + TYPE_LABEL[type] + ' (' + CAT_LABEL[cat] + ')',
-    CAT_LABEL[cat], `<p><strong>${countLabel(arr.length, hasGuideNC)}</strong> — includes broad guide + PDFs. Count increases when you upload.</p>`,
+    CAT_LABEL[cat], `<p><strong>${countLabel(arr.length, hasGuideNC)}</strong> — includes broad guide + PDFs.</p>`,
     '<ul class="plist">' + arr.map(listItem).join('') + '</ul><p style="margin-top:10px"><a href="/pyq/' + cat.toLowerCase() + '-' + subjFileSlug + '-study-material.html" style="color:var(--blue);font-size:13px">← Back to ' + esc(subject) + ' hub</a></p>', null, null, finalOpts);
 }
 for (const [k, arr] of ncByYear) {
@@ -1385,19 +1385,19 @@ for (const [k, v] of ncCombined) {
     const subjectParaPH = getSubjectPara(v.subject) || '';
     let body;
     if (v.cat === 'SEC' && t === 'imp' && secDetailed[secKey]) {
-      body = (subjectParaPH ? subjectParaPH : '') + '<p style="color:var(--muted);margin-top:12px">The detailed guide above covers Units 1-4, exam pattern and preparation. When the precise IMP Q&A PDF is uploaded, it will appear above with an <em>IMP Q</em> tag.</p>';
+      body = (subjectParaPH ? subjectParaPH : '') + '<p style="color:var(--muted);margin-top:12px">The detailed guide above covers Units 1-4, exam pattern and preparation.</p>';
     } else {
-      body = impBlock ? impBlock + (subjectParaPH ? subjectParaPH : '') + '<p style="color:var(--muted);margin-top:12px">Explore the detailed syllabus guide below — it covers Units 1-4, exam pattern and PYQ pointers. When the official PDF is uploaded, it will appear above with an <em>IMP Q</em> tag.</p>' : (subjectParaPH ? subjectParaPH : '<p style="color:var(--muted)">Explore the broad syllabus and preparation guide below — it covers Units 1-4, exam pattern and strategy for this course.</p>') + '<p style="color:var(--muted);margin-top:8px">When the admin uploads the precise IMP Q&A PDF, it will automatically show above with an <em>IMP Q</em> tag.</p>';
+      body = impBlock ? impBlock + (subjectParaPH ? subjectParaPH : '') + '<p style="color:var(--muted);margin-top:12px">Explore the detailed syllabus guide below — it covers Units 1-4, exam pattern and PYQ pointers.</p>' : (subjectParaPH ? subjectParaPH : '<p style="color:var(--muted)">Explore the broad syllabus and preparation guide below — it covers Units 1-4, exam pattern and strategy for this course.</p>');
     }
     emit(file,
       v.subject + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[v.cat] + ' | Free | Sulaksh',
-      'Broad overview of ' + v.subject + ' (' + CAT_LABEL[v.cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon. Verify from your college.',
+      'Broad overview of ' + v.subject + ' (' + CAT_LABEL[v.cat] + ') — syllabus outline, exam pattern and prep. Verify from your college.',
       v.subject + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[v.cat] + ')',
       CAT_LABEL[v.cat],
-      `<p><strong>${displayCount}</strong> document(s) — broad guide below. Official PDF will appear here and count will increase when you upload.</p>`,
+      `<p><strong>${displayCount}</strong> document(s) — broad guide below.</p>`,
       body,
       null,
-      [['Is this the exact IMP?', 'Not yet — this page shows a broad researched list. Check your college handout for the final version.'], ['Should I wait?', 'Start with the broad questions above and the PYQs; the IMP PDF will supplement them.']],
+      [['Is this the exact IMP?', 'No — this page shows a broad researched list compiled from the syllabus and past pattern. Check your college handout for the final version.'], ['What if my college IMP list differs?', 'Start with the broad questions above and the PYQs — together they cover the paper pattern and the repeating questions; your college list stays the final word.']],
       // Placeholder: no real file yet → noindex + out of sitemap until upload (page stays live).
       { total: displayCount, aboutBlock: useCustom, subject: v.subject, faqCategory: t, noindex: true }
     );
@@ -1434,23 +1434,23 @@ for (const secKey of Object.keys(allOverviews)) {
     let body;
     const hasDetailed = (cat === 'SEC' && secDetailed[secKey]) || (cat === 'VAC' && vacDetailed[secKey]) || (cat === 'GE' && geDetailed[secKey]) || (cat === 'AEC' && aecDetailed[secKey]);
     if (hasDetailed && t === 'imp') {
-      body = (subjectParaPH2 ? subjectParaPH2 : '') + '<p style="color:var(--muted);margin-top:12px">The detailed guide above covers Units 1-4 and exam pattern. When the precise IMP Q&A PDF is uploaded, it will appear above.</p>';
+      body = (subjectParaPH2 ? subjectParaPH2 : '') + '<p style="color:var(--muted);margin-top:12px">The detailed guide above covers Units 1-4 and exam pattern.</p>';
     } else {
       impBlock = t === 'imp' ? getImpQuestionsBlock(secKey) : '';
-      body = impBlock ? impBlock + (subjectParaPH2 ? subjectParaPH2 : '') + '<p style="color:var(--muted);margin-top:12px">Explore the broad list and syllabus guide below. When the precise IMP Q&A PDF is uploaded, it will appear above.</p>' : (subjectParaPH2 ? subjectParaPH2 : '<p style="color:var(--muted)">Explore the broad syllabus and preparation guide below — it covers Units 1-4, exam pattern and strategy for this course.</p>') + '<p style="color:var(--muted);margin-top:8px">When the precise IMP Q&A PDF is uploaded, it will appear above.</p>';
+      body = impBlock ? impBlock + (subjectParaPH2 ? subjectParaPH2 : '') + '<p style="color:var(--muted);margin-top:12px">Explore the broad list and syllabus guide below.</p>' : (subjectParaPH2 ? subjectParaPH2 : '<p style="color:var(--muted)">Explore the broad syllabus and preparation guide below — it covers Units 1-4, exam pattern and strategy for this course.</p>');
     }
     const displayCount = 1;
     // add back-link to hub so placeholder has navigation and hub gets incoming count via placeholder's link? Actually hub needs link to placeholder, not vice versa, but add both
     const bodyWithNav = body + `<p style="margin-top:10px"><a href="/pyq/${hubFile}" style="color:var(--blue);font-size:13px">← Back to ${esc(name)} hub</a></p>`;
     emit(file,
       name + ' ' + TYPE_LABEL[t] + ' - DU ' + CAT_LABEL[cat] + ' | Free | Sulaksh',
-      'Broad overview of ' + name + ' (' + CAT_LABEL[cat] + ') — syllabus outline, exam pattern and prep. IMP PDF will be uploaded soon.',
+      'Broad overview of ' + name + ' (' + CAT_LABEL[cat] + ') — syllabus outline, exam pattern and prep.',
       name + ' - ' + TYPE_LABEL[t] + ' (' + CAT_LABEL[cat] + ')',
       CAT_LABEL[cat],
-      `<p><strong>${displayCount}</strong> document(s) — broad guide below. Official PDF will appear here and count will increase when you upload.</p>`,
+      `<p><strong>${displayCount}</strong> document(s) — broad guide below.</p>`,
       bodyWithNav,
       null,
-      [['Is this the exact IMP?', 'Not yet — broad researched list. Verified PDF coming soon.']],
+      [['Is this the exact IMP?', 'No — it is a broad researched list compiled from the syllabus and past pattern. Check your college handout for the final version.']],
       // Placeholder: no real file yet → noindex + out of sitemap until upload (page stays live).
       { total: displayCount, aboutBlock: custom, subject: name, faqCategory: t, noindex: true }
     );
@@ -1552,8 +1552,8 @@ emit('where-to-find-du-pyqs.html',
     <p>Many DU exam questions repeat concepts from previous years. Solving even three past papers per subject gives you the exact question style, marking scheme and time pressure of the real exam. The technique that works is <em>PYQ mapping</em>: for each syllabus Unit 1-4, mark which past questions came from it. After three papers, you will know which units repeat most (usually Units 2-3) and where to spend the next two days. That compresses 200 pages into 20 revision pages.</p>
    <h2>How to verify you have the right PYQ</h2>
    <p>Before you solve, check three things on the paper: (1) paper code matches your syllabus handout, (2) year says 2023-2026 for current UGCF pattern, (3) semester tag matches your exam form. If any of those mismatch, open the syllabus tab for your subject on Sulaksh — it sits alongside the PYQs in the same semester folder and shows the correct DSC order.</p>
-   <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college syllabus handout. All PYQs on Sulaksh are free to view; all PYQs on Sulaksh are free to view.</p>
-    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Make one page per unit with heading, 4-5 bullets and one diagram or table. Time-box each unit to two days, solve one PYQ numerical daily or write one 15-mark answer weekly, and cross-check with syllabus Units 1-4. Verify from your college handout — the broad guide above is a bridge until the exact PDF is uploaded.</div>`,
+   <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college syllabus handout. All PYQs on Sulaksh are free to view.</p>
+    <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip:</strong> Make one page per unit with heading, 4-5 bullets and one diagram or table. Time-box each unit to two days, solve one PYQ numerical daily or write one 15-mark answer weekly, and cross-check with syllabus Units 1-4. Verify from your college handout.</div>`,
   null,
   [['Are these really free?', 'Yes. Every paper on Sulaksh is free to view, no sign-up.'],
    ['Do you have my semester?', 'Papers are organised semester-wise from Sem 1 to Sem 8 for Honours, Programme and GE/VAC/AEC/SEC courses.'],
@@ -1597,7 +1597,7 @@ emit('best-website-for-du-pyqs-study-material.html',
    <p>Organisation by course and semester, correct year labels (2023-2026 for current UGCF), permanent URLs, no paywall halfway through, and a syllabus paired with each PYQ so you know which Unit each question came from. That is exactly how <a href="/pyq/index.html">the Sulaksh library</a> is built — start with your course:</p>
    <div class="rel">${topHubLinks()}</div>
    <h2>How Sulaksh Keeps It Honest</h2>
-   <p>Every listing shows a <em>PYQ</em>, <em>SYLLABUS</em>, <em>IMP Q</em> or <em>NOTES</em> tag, the exact semester, and the paper code. If a PDF for your subject and semester is not yet uploaded, you still see a broad UGCF guide with Units 1-4, exam pattern and a Study tip — that guide counts as 1 document and the count increases when the official PDF is uploaded. The verified PDF may appear above with an <em>IMP Q</em> tag and will replace the placeholder reference. That means no more “0 document(s)” and no dead end.</p>
+   <p>Every listing shows a <em>PYQ</em>, <em>SYLLABUS</em>, <em>IMP Q</em> or <em>NOTES</em> tag, the exact semester, and the paper code. Where the exact PDF for a subject is not hosted on the site, the page carries a broad UGCF guide with Units 1-4, exam pattern and a Study tip, tagged like any other listing. That means no more “0 document(s)” and no dead end.</p>
    <h2>How to pick in 30 seconds</h2>
    <p>Open your programme from <a href="/du.html">DU & College</a>, pick your semester, then open the syllabus Units 1-4 alongside the PYQ for that semester. If you can map each past question to a Unit in 10 minutes, you have the right source. If you can’t, the source is mixing old patterns. Sulaksh’s one-page-per-unit notes are formatted exactly for that mapping, with a PYQ pointer per unit.</p>
    <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. Verify the final unit list and paper code from your college.</p>
@@ -1799,8 +1799,8 @@ for (const silo of siloDefs) {
   let aboutSilo = `<h2>About ${silo.label} — Delhi University (UGCF/NEP)</h2><p>This ${silo.label} silo groups <strong>${picks.length} collections</strong> for ${esc(silo.label)} under UGCF/NEP — Honours, Programme, Major/Minor where applicable. Each hub is semester-wise with syllabus + PYQ + notes in taught order, mirroring how DU teaches. All ${totalDocsLabel} documents are free to view instantly, no sign-up. The ${silo.label} silo exists to pass link equity between related subjects and to give crawlers a shallow hub (depth 2) instead of chasing ${flatLinks} flat links.</p>
   <p><strong>How to use this silo:</strong> Pick your subject from the chips below (e.g., BCom (Hons), BA English, BSc Chemistry), then choose your semester. Each semester page shows DSC order, and PYQ mapping (which Unit each past question came from) tells you which units repeat most. For ${esc(silo.label)}, weightage varies by paper — start there.</p>
   <p><strong>Exam pattern for ${esc(silo.label)}:</strong> Typically 75 marks theory + 25 internal or 90+10, with 10-mark shorts and 15-mark longs, internal choice “Answer any 4 of 6”. Marking checks definition + example + concluding line, one diagram or quote per answer. Use one-page-per-unit notes with a PYQ pointer per Unit — that is how toppers compress 200 pages into 20.</p>
-  <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip — ${esc(silo.label)}:</strong> Open your semester, copy Units 1-4, make one page per Unit with heading, 4-5 bullets and one diagram or table. Time-box each Unit to two days, then PYQ-map. Verify the final unit list and paper code from your college handout — the broad overview above is a bridge until the exact PDF is uploaded and will be replaced by the verified semester-wise PDF.</div>
-  <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout. Check your college handout for the final version.</p>`;
+  <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip — ${esc(silo.label)}:</strong> Open your semester, copy Units 1-4, make one page per Unit with heading, 4-5 bullets and one diagram or table. Time-box each Unit to two days, then PYQ-map. Verify the final unit list and paper code from your college handout.</div>
+  <p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college handout.</p>`;
   aboutSilo = padCommonBlock(aboutSilo, silo.label, 'SILO', silo.file);
   emit(silo.file, silo.title, silo.desc, silo.h1, 'Delhi University · Silo', `<p><strong>${picks.length} collections</strong> for ${esc(silo.label)} — all free.</p>`, `<div class="rel">${chips}</div>`, HUBS.slice(0,6).map(h=>({file:h.file, label:h.label})), null, { aboutBlock: aboutSilo, total: picks.length });
 }
