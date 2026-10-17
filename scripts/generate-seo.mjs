@@ -1778,6 +1778,8 @@ const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.ht
     'blog/du-off-campus-truth.html',
     'blog/du-north-vs-south-vs-off-campus.html',
     'blog/why-sulaksh-for-du-pyqs.html'];
+const guideFiles = fs.readdirSync(process.cwd()).filter(f => /^guide.*\\.html$/.test(f));
+sitemapCore.push(...guideFiles);
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + sitemapCore
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
