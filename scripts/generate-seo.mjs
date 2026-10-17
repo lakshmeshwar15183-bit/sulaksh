@@ -615,6 +615,8 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p>Recent years (2023-2026) match the current UGCF pattern most closely. Please verify the final unit list from your college PDF — this reference overview will be replaced when the official file is uploaded.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   }
+  const guide = getStudyGuide(s);
+  if (guide) block = block + guide;
   return block;
 }
 function coreSemesterBlock(subject, track, semName, typeLabel, year, total) {
