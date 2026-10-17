@@ -98,6 +98,25 @@ const getSubjectPara = (subject) => {
   }
   return null;
 };
+function getStudyGuide(subject) {
+  if (!subject) return null;
+  const slug = safeSlug(subject);
+  const entry = subjectsContent[slug] || subjectsContent[slug.toLowerCase()];
+  if (entry && entry.studyGuide) return entry.studyGuide;
+  const lowerSubj = String(subject).toLowerCase();
+  const stripped = lowerSubj.split(' - ')[0].split(' — ')[0].split('(')[0].trim();
+  const strippedSlug = safeSlug(stripped);
+  const strippedEntry = subjectsContent[strippedSlug] || subjectsContent[strippedSlug.toLowerCase()];
+  if (strippedEntry && strippedEntry.studyGuide) return strippedEntry.studyGuide;
+  for (const [k, v] of Object.entries(subjectsContent)) {
+    if (!v || !v.studyGuide) continue;
+    const nameLower = String(v.name || '').toLowerCase();
+    if (lowerSubj.includes(nameLower) || nameLower.includes(lowerSubj)) {
+      return v.studyGuide;
+    }
+  }
+  return null;
+}
 function getDefaultFaqs(opts) {
   // AdSense review fix #1: no mass-generated FAQs.
   // The same 3 Q&As repeated on thousands of pages ("Which units repeat
@@ -774,7 +793,8 @@ function emit(file, title, desc, h1, badge, intro, body, relItems, faqs, opts) {
     if (opts && opts.aboutBlock) return opts.aboutBlock;
     if (opts && opts.subject) {
       const para = getSubjectPara(opts.subject);
-      if (para) return `<h2>About ${esc(opts.subject)} — Delhi University</h2>${para}<p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(opts.subject)} handout. Verify paper codes and units for your batch.</p>`;
+      const guide = getStudyGuide(opts.subject);
+      if (para) return `<h2>About ${esc(opts.subject)} — Delhi University</h2>${para}${guide ? guide : ''}<p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(opts.subject)} handout. Verify paper codes and units for your batch.</p>`;
       // Fallback for subjects not in subjects-content.json (e.g., Hindi misc or minor papers) — still subject-specific, not generic boilerplate
       return `<h2>About ${esc(opts.subject)} — Delhi University</h2><p>${esc(opts.subject)} at Delhi University under UGCF/NEP is organised semester-wise — syllabus, previous year question papers and notes in the taught order. This collection groups all available material for ${esc(opts.subject)} so you see the reading sequence DU actually uses. For exam preparation, copy the Unit titles from the official syllabus, make one page per Unit with a diagram or table, and map past questions to Units 1-4 to see where to focus next. Verify final paper codes and units from your college handout.</p><p>Official sources: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a> · your college's ${esc(opts.subject)} handout.</p>`;
     }
