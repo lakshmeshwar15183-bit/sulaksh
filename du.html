@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied','functionality_storage':'granted','security_storage':'granted'});</script>
 
-
+<!-- AdSense disabled on this listing/policy page during review (Fix #3) -->
 <title>DU &amp; College — Sulaksh</title>
 <link rel="canonical" href="https://sulaksh.online/du.html">
 <meta name="author" content="Lakshmeshwar Pandey">
@@ -9125,15 +9125,9 @@ const WAIT_PHRASES = [
         apiGet('/api/materials?exam=' + encodeURIComponent('DU & College')),
         apiGet('/api/subjects?exam=' + encodeURIComponent('DU & College')),
       ]);
-      if (d && Array.isArray(d.materials)) {
-        // Merge live rows with the static snapshot instead of replacing it:
-        // the live API is capped at 200 rows, so replacing would drop SEC/VAC/AEC/GE
-        // subjects and show "0 files". Merging keeps every subject visible.
-        const existing = (data && Array.isArray(data.materials)) ? data.materials : [];
-        const byId = new Map(existing.map((m) => [m.id, m]));
-        d.materials.forEach((m) => { if (m && m.id) byId.set(m.id, m); });
-        data = { materials: Array.from(byId.values()) };
-        subjectDBLocal = (sd && sd.subjects) || subjectDBLocal;
+      if (d) {
+        data = d;
+        subjectDBLocal = (sd && sd.subjects) || [];
         cacheSet(DU_MAT_CACHE_KEY, data.materials || []);
         cacheSet(DU_SUBJECT_CACHE_KEY, subjectDBLocal);
         cacheSetLong(DU_MAT_CACHE_KEY, data.materials || []);
@@ -9652,7 +9646,7 @@ const WAIT_PHRASES = [
   <script src="assets/js/download-flag.js?v=1" defer></script>
   <script src="assets/js/delete-flag.js?v=1" defer></script>
 
-
+<!-- Cookie Consent - GDPR / AdSense -->
 <style>
 .cookie-consent{position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;display:none;justify-content:center;pointer-events:none;}
 .cookie-consent.show{display:flex;pointer-events:auto;}
