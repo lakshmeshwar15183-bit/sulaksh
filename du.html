@@ -2297,6 +2297,30 @@
     return d;
   }
 
+  // The deployed backend build does not always return the enrichment fields
+  // (semester / material_category / track / flags) that the category views
+  // need. Merge live rows with the same-origin snapshot by id so files stay
+  // visible, and derive the two critical fields from the title for new rows.
+  const CORE_ROMAN_SEM = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8 };
+  function deriveCoreFields(m) {
+    if (m.semester == null || m.semester === '') {
+      const src = String(m.title || '') + ' ' + String(m.file_name || '');
+      const sm = /(?:^|[^A-Za-z])sem(?:ester)?[^A-Za-z0-9]{0,4}([ivx]{1,4}|[1-8])\b/i.exec(src);
+      if (sm) {
+        const raw = sm[1].toLowerCase();
+        m.semester = CORE_ROMAN_SEM[raw] ? String(CORE_ROMAN_SEM[raw]) : String(parseInt(raw, 10));
+      }
+    }
+    if (m.material_category == null || m.material_category === '') {
+      const t = (String(m.title || '') + ' ' + String(m.file_name || '')).toLowerCase();
+      if (/syllabus/.test(t)) m.material_category = 'syllabus';
+      else if (/pyq|question ?paper|previous year/.test(t)) m.material_category = 'pyqs';
+      else if (/important/.test(t)) m.material_category = 'important-questions';
+      else m.material_category = 'notes';
+    }
+    return m;
+  }
+
   function showDuErrorBanner() {
     let banner = document.getElementById('duLoadError');
     if (banner) return;
@@ -2341,8 +2365,19 @@
         apiGet('/api/subjects?exam=' + encodeURIComponent('DU & College')),
       ]);
       if (d) {
-        data = d;
-        subjectDBLocal = (sd && sd.subjects) || [];
+        // Merge live rows with the snapshot by id: the live payload is fresher
+        // but the deployed backend build may omit semester/material_category/
+        // track, which would otherwise make every category view show "0 files".
+        const liveRows = Array.isArray(d.materials) ? d.materials : [];
+        const snapRows = (data && Array.isArray(data.materials)) ? data.materials : [];
+        const byId = new Map(snapRows.map((m) => [m.id, m]));
+        const merged = liveRows.map((m) => {
+          const base = byId.get(m.id);
+          return deriveCoreFields(base ? Object.assign({}, base, m) : m);
+        });
+        if (merged.length) data = Object.assign({}, d, { materials: merged });
+        else if (!snapRows.length) data = d; // live empty + no snapshot — keep old behavior
+        subjectDBLocal = (sd && sd.subjects) || subjectDBLocal;
         cacheSet(DU_MAT_CACHE_KEY, data.materials || []);
         cacheSet(DU_SUBJECT_CACHE_KEY, subjectDBLocal);
         cacheSetLong(DU_MAT_CACHE_KEY, data.materials || []);
