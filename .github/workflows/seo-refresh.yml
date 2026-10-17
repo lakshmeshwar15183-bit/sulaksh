@@ -38,12 +38,14 @@ jobs:
           git fetch origin gh-pages
           git checkout gh-pages
           git reset --hard origin/gh-pages
-          # sync ENTIRE tree from main except backend source folder
-          git checkout main -- . ':!backend'
+          # sync ENTIRE tree from main except backend source folder and the
+          # assets/data snapshot (owned by materials-sync — main's build-time
+          # copy must never clobber the fresher gh-pages snapshot)
+          git checkout main -- . ':!backend' ':!assets/data'
           # propagate DELETIONS inside bot-owned paths (checkout + add can only
           # add/modify — files deleted on main, e.g. orphan-pruned pages, would
           # linger on gh-pages forever and trip the drift check)
-          for owned in pyq assets/data; do
+          for owned in pyq; do
             comm -23 \
               <(git ls-tree -r --name-only HEAD -- "$owned" | sort) \
               <(git ls-tree -r --name-only origin/main -- "$owned" | sort) \

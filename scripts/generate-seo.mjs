@@ -299,10 +299,70 @@ const typeOf = m => m.material_category === 'syllabus' || m.is_syllabus ? 'sylla
   : m.material_category === 'pyqs' || m.is_pyq ? 'pyq'
   : m.material_category === 'important-questions' || m.is_imp ? 'imp-questions' : 'notes';
 
+// Resilience (Oct 2026): a stale backend deploy can return RAW rows — no
+// track/semester/material_category/is_* — which misclassifies every page
+// (badges, type hubs, semester/year facets). Re-enrich by id from the
+// committed snapshot, then derive from the title as a last resort. Live
+// values always win; ids, titles and file names are never modified.
+const ROMAN_SEM = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8 };
+function deriveCategory(m) {
+  const t = `${m.title || ''} ${m.file_name || ''}`.toLowerCase();
+  if (/datesheet|date sheet|exam schedule/.test(t)) return 'datesheet';
+  if (/\bpyq|previous year|question paper|question bank|\bqb\b|solved paper|past paper|model paper|examination|(nov|may)[\s\-_/]*(dec|june)[^a-z0-9]{0,3}\d{4}/.test(t)) return 'pyqs';
+  if (/important/.test(t)) return 'important-questions';
+  if (/syllabus/.test(t)) return 'syllabus';
+  return 'notes';
+}
+function deriveSemester(m) {
+  const src = `${m.title || ''} ${m.file_name || ''}`;
+  const mm = src.match(/(?:^|[^A-Za-z])sem(?:ester)?[^A-Za-z0-9]{0,4}([ivxl]{1,4}|[1-8])\b/i);
+  if (!mm) return null;
+  const raw = mm[1].toLowerCase();
+  for (const cand of [raw, raw.endsWith('l') ? raw.slice(0, -1) : '', raw.replace(/l/g, 'i')]) {
+    if (!cand) continue;
+    if (ROMAN_SEM[cand]) return String(ROMAN_SEM[cand]);
+    const n = parseInt(cand, 10);
+    if (n >= 1 && n <= 8) return String(n);
+  }
+  return null;
+}
+function enrichMaterials(rows) {
+  let byId = new Map();
+  try {
+    const parsed = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'assets/data/materials.json'), 'utf8'));
+    const arr = Array.isArray(parsed) ? parsed : (parsed.materials || []);
+    byId = new Map(arr.filter((s) => s && s.id).map((s) => [s.id, s]));
+  } catch (e) {
+    console.log('[enrich] snapshot merge skipped:', e.message);
+  }
+  const FIELDS = ['track', 'semester', 'material_category', 'is_pyq', 'is_syllabus', 'is_imp', 'cdnUrl', 'category'];
+  let merged = 0, derivedCat = 0, derivedSem = 0;
+  for (const m of rows) {
+    const base = byId.get(m.id);
+    if (base) {
+      for (const k of FIELDS) {
+        if ((m[k] === undefined || m[k] === null) && base[k] !== undefined && base[k] !== null) { m[k] = base[k]; merged++; }
+      }
+    }
+    if (m.material_category === undefined || m.material_category === null) { m.material_category = deriveCategory(m); derivedCat++; }
+    if (m.semester === undefined || m.semester === null) {
+      const s = deriveSemester(m);
+      if (s) { m.semester = s; derivedSem++; }
+    }
+    if (m.is_pyq === undefined || m.is_pyq === null) m.is_pyq = m.material_category === 'pyqs' ? 1 : 0;
+    if (m.is_syllabus === undefined || m.is_syllabus === null) m.is_syllabus = m.material_category === 'syllabus' ? 1 : 0;
+    if (m.is_imp === undefined || m.is_imp === null) m.is_imp = m.material_category === 'important-questions' ? 1 : 0;
+  }
+  console.log(`[enrich] ${rows.length} rows: merged ${merged} field(s) from snapshot; derived category for ${derivedCat}, semester for ${derivedSem}`);
+}
+
 const res = await fetch(`${API}/api/materials?exam=${encodeURIComponent('DU & College')}`);
 // NOTE: exam-scoped on purpose. The unfiltered listing is capped server-side and a
 // large second exam (PYQ Archive) would crowd DU & College rows out of generation.
 const { materials } = await res.json();
+// Resilience: re-enrich raw/stale rows BEFORE any classification below
+// (badges, type hubs, semester/year facets all read these fields).
+enrichMaterials(materials);
 // Normalize titles before generating slugs — fixes VAC VAC / GE GE / truncated marks
 // Fix #5: manual overrides for 5 OCR-garbled auto-extracted titles (Oct 2026 audit).
 // Source PDFs are fine — only the extracted title string was garbage. These also
