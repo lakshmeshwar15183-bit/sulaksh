@@ -1732,7 +1732,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 // so filter on live CANONICAL_OVERRIDES (373 faceted + 12 hardcoded) instead.
 const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !CANONICAL_OVERRIDES.has(f));
 const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
-     'blog/index.html',
+     'about.html', 'privacy-policy.html', 'terms.html', 'disclaimer.html', 'advertise.html', 'ug-course-structure.html', 'imp.html', 'notes.html', 'syllabus.html', 'pyq.html',
     'blog/du-exam-pattern-ugcf-explained.html',
     'blog/how-to-download-du-admit-card.html',
     'blog/how-to-score-9-cgpa-du-semester-exams.html',
@@ -1757,6 +1757,9 @@ const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.ht
     'blog/du-off-campus-truth.html',
     'blog/du-north-vs-south-vs-off-campus.html',
     'blog/why-sulaksh-for-du-pyqs.html'];
+// Include hand-written guide pages (high-value, indexable content).
+const guideFiles = fs.readdirSync(process.cwd()).filter(f => /^guide.*\.html$/.test(f));
+sitemapCore.push(...guideFiles);
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + sitemapCore
     .concat(sitemapPages.map(f => f === 'index.html' ? 'pyq/index.html' : 'pyq/' + f))
