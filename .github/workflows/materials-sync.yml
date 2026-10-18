@@ -22,8 +22,8 @@ jobs:
         with:
           node-version: 22
 
-      - name: Fetch generator script from main
-        run: git fetch origin main && git checkout origin/main -- scripts/generate-materials.mjs
+      - name: Fetch generator scripts from main
+        run: git fetch origin main && git checkout origin/main -- scripts/generate-materials.mjs scripts/lib/title-cleanup.mjs
 
       - name: Regenerate snapshot (keeps previous on backend outage)
         env:

@@ -11,13 +11,15 @@
 //   - keep the previous subjects.json instead of failing the whole run
 //   - re-enrich fetched rows by id from the previous snapshot
 //   - derive semester/material_category from the title for unknown rows
-// Only grouping metadata is filled in — ids, titles and file names are
-// never touched.
+// Only grouping metadata is filled in — ids, file names and CDN keys are
+// never touched. Display titles are normalized for OCR artifacts (see
+// scripts/lib/title-cleanup.mjs) because they drive page slugs and headings.
 //
 // On failure it exits 0 WITHOUT overwriting the previous snapshot, so a
 // transient backend outage never wipes the last-known-good data.
 import fs from 'fs';
 import path from 'path';
+import { cleanTitle, TITLE_OVERRIDES } from './lib/title-cleanup.mjs';
 
 const API = process.env.SULAKSH_API || 'https://sulaksh-backend-production.up.railway.app';
 const OUT_DIR = 'assets/data';
@@ -104,6 +106,20 @@ async function main() {
     if (m.is_imp === undefined || m.is_imp === null) m.is_imp = m.material_category === 'important-questions' ? 1 : 0;
   }
   console.log(`Enriched ${mats.materials.length} rows (merged ${merged} fields from previous snapshot; derived category for ${derivedCat}, semester for ${derivedSem})`);
+
+  // Display-title normalization (OCR glyph artifacts, duplicate category
+  // tokens, known word errors). file_name / CDN keys are never modified.
+  let retitled = 0;
+  for (const m of mats.materials) {
+    if (m.title) {
+      const cleaned = cleanTitle(m.title);
+      if (cleaned !== m.title) retitled++;
+      m.title = cleaned;
+    }
+    const ov = m.id && TITLE_OVERRIDES.get(m.id);
+    if (ov) m.title = ov;
+  }
+  if (retitled) console.log(`Normalized ${retitled} display titles`);
 
   // The static snapshot is what `view.html` uses to open a document directly
   // from the CDN, with no backend call. If the backend omits `cdnUrl` (e.g. a
