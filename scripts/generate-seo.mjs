@@ -2,6 +2,7 @@
 // SEO Generator v4 FINAL — site-branded pages
 import fs from 'node:fs';
 import path from 'node:path';
+import { cleanTitle, TITLE_OVERRIDES } from './lib/title-cleanup.mjs';
 
 const API = process.env.SULAKSH_API || 'https://sulaksh-backend-production.up.railway.app';
 const SITE = 'https://sulaksh.online';
@@ -229,49 +230,8 @@ function paperViewer(m) {
   }
   return `<h2 id="view-document">View document</h2><div class="docviewer" data-url="${u}"><button type="button" onclick="loadViewer(this)" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer">📖 View the PDF on this page</button><p style="font-size:13px;margin:8px 0 0">Prefer the full viewer? <a href="/view.html?v=${VIEW_VERSION}&amp;id=${m.id}" target="_blank" rel="noopener" style="color:var(--blue)">Open in viewer ↗</a></p><noscript><p><a href="${u}" target="_blank" rel="noopener" style="color:var(--blue)">Open this document (PDF)</a></p></noscript></div>`;
 }
-// Fix #2: deduplicate malformed titles like "VAC | VAC", "GE | GE", "SEC | SEC", "AEC | AEC" and truncated "90 ma"
-function cleanTitle(raw) {
-  let t = String(raw || '').trim();
-  // Fix truncated "90 ma" / "30 ma" / "30 mark" -> "90 marks"
-  t = t.replace(/\b(\d+)\s+marks?\b/gi, (m, n) => `${n} marks`); // normalize mark/marks
-  t = t.replace(/\b(\d+)\s+ma\b/gi, '$1 marks');
-  t = t.replace(/\b(\d+)\s+mar\b/gi, '$1 marks');
-  // Deduplicate category tokens separated by | or - : "VAC | VAC", "VAC - VAC", " - VAC | VAC"
-  let prev;
-  do {
-    prev = t;
-    t = t.replace(/\bVAC\s*[\|\-]\s*VAC\b/gi, 'VAC');
-    t = t.replace(/\bGE\s*[\|\-]\s*GE\b/gi, 'GE');
-    t = t.replace(/\bSEC\s*[\|\-]\s*SEC\b/gi, 'SEC');
-    t = t.replace(/\bAEC\s*[\|\-]\s*AEC\b/gi, 'AEC');
-    t = t.replace(/ - VAC\s*\|\s*VAC/gi, ' - VAC');
-    t = t.replace(/ - GE\s*\|\s*GE/gi, ' - GE');
-    t = t.replace(/ - SEC\s*\|\s*SEC/gi, ' - SEC');
-    t = t.replace(/ - AEC\s*\|\s*AEC/gi, ' - AEC');
-  } while (t !== prev);
-  // Handle "GE | GE – 2" -> "GE – 2"
-  t = t.replace(/\bGE\s*\|\s*GE(\s*–)/gi, 'GE$1');
-  t = t.replace(/\bVAC\s*\|\s*VAC(\s*–)/gi, 'VAC$1');
-  t = t.replace(/\bSEC\s*\|\s*SEC(\s*–)/gi, 'SEC$1');
-  t = t.replace(/\bAEC\s*\|\s*AEC(\s*–)/gi, 'AEC$1');
-  // Generic dedupe: split by '|' and remove consecutive case-insensitive duplicates
-  const parts = t.split('|').map(p => p.trim());
-  const deduped = [];
-  for (const p of parts) {
-    const last = deduped[deduped.length - 1];
-    if (last && last.toLowerCase() === p.toLowerCase()) continue;
-    if (last && p.toLowerCase().startsWith(last.toLowerCase().split(' ')[0]) && last.toLowerCase().split(' ')[0].length >= 2 && ['vac','ge','sec','aec'].includes(last.toLowerCase().split(' ')[0])) {
-      if (p.length > last.length) deduped[deduped.length - 1] = p;
-      continue;
-    }
-    deduped.push(p);
-  }
-  t = deduped.join(' | ');
-  t = t.replace(/\s{2,}/g, ' ').replace(/\s*\|\s*\|\s*/g, ' | ').trim();
-  t = t.replace(/vac\s*-\s*vac/gi, 'VAC');
-  t = t.replace(/ge\s*-\s*ge/gi, 'GE');
-  return t;
-}
+// Fix #2: title dedupe / OCR-artifact rules now live in
+// scripts/lib/title-cleanup.mjs (shared with the snapshot generator).
 // GSC fix (Oct 2026): thin/garbage paper titles cause "Crawled - currently not
 // indexed". These are OCR failures (Hindi transliteration garbage, single-char
 // titles like "1", bare codes like "BCOM 7") with no search value. Such papers
@@ -363,17 +323,8 @@ const { materials } = await res.json();
 // Resilience: re-enrich raw/stale rows BEFORE any classification below
 // (badges, type hubs, semester/year facets all read these fields).
 enrichMaterials(materials);
-// Normalize titles before generating slugs — fixes VAC VAC / GE GE / truncated marks
-// Fix #5: manual overrides for 5 OCR-garbled auto-extracted titles (Oct 2026 audit).
-// Source PDFs are fine — only the extracted title string was garbage. These also
-// need retitling in the backend admin when convenient (same IDs).
-const TITLE_OVERRIDES = new Map([
-  ['bb272bd8-609b-4bfa-9d70-7bff911e0cae', 'Women\u2019s Writing PYQ MAY-JUNE-2026 - Sem 6'],
-  ['b157a572-ce6b-4d18-9321-70f73f67562a', 'Readings on Indian Diversities and Literary Movements PYQ NOV-DEC-2024 - Sem 1'],
-  ['f471a100-5b5e-4b4a-b7e5-e4d84b54386b', 'Post Colonial Literatures PYQ MAY-JUNE-2026 - Sem 6'],
-  ['9718bef1-28e3-49d6-ae91-188480ccdaa4', 'Indian Writing in English PYQ MAY-JUNE-2026 - Sem 4'],
-  ['4b310707-23bd-4067-b8a2-521fa57d94d4', 'Skills for Dissertation Writing in Sanskrit PYQ MAY-JUNE-2026 - Sem 6'],
-]);
+// Normalize titles before generating slugs — fixes VAC VAC / GE GE / truncated
+// marks plus OCR glyph artifacts; manual repairs live in title-cleanup.mjs.
 for (const m of materials) {
   if (m.title) m.title = cleanTitle(m.title);
   const ov = m.id && TITLE_OVERRIDES.get(m.id);
