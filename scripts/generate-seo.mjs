@@ -1185,7 +1185,7 @@ const SUBJECT_HUB = new Map(); // subject -> hub file (only successfully emitted
     }
     trackLinks.sort((a, b) => a.label.localeCompare(b.label));
     const firstTrack = (tracksBySubject.get(s) || ['General']).sort()[0];
-    let aggBlock = uniqueAboutBlock(s === 'B.Sc.' ? 'B.Sc. programmes' : s, firstTrack, total, trackLinks.length);
+    let aggBlock = uniqueAboutBlock(s === 'B.Sc.' ? 'B.Sc. programmes' : s, '', total, trackLinks.length);
     aggBlock = padCommonBlock(aggBlock, s, 'CORE-subject', s + '-aggregate');
     emit(file,
       `${aggLabel} PYQs, Syllabus & Notes – DU | Sulaksh`,
@@ -1765,7 +1765,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 // NOTE: SITEMAP_EXCLUDE was snapshotted before faceted canonicals were added,
 // so filter on live CANONICAL_OVERRIDES (373 faceted + 12 hardcoded) instead.
 const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !CANONICAL_OVERRIDES.has(f));
-const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.html', 'about.html',
+const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.html', 'about.html', 'privacy-policy.html', 'terms.html', 'disclaimer.html',
      'blog/index.html',
     'blog/du-exam-pattern-ugcf-explained.html',
     'blog/how-to-download-du-admit-card.html',
@@ -2137,6 +2137,13 @@ try {
   if (featRe.test(idxHtml)) {
     idxHtml = idxHtml.replace(featRe, `<span class="featured-badge">🔥 Most Popular • ${duLabel}</span>`);
     console.log(`[index.html bake] featuredBadge ${duLabel} (DU & College ${duCount})`);
+  }
+  // Build stamp: keep the homepage "Updated:" date fresh (date-only: at most one change per day)
+  const buildStamp = new Date().toISOString().slice(0, 10);
+  const buildRe = /(?:Build|Updated): [0-9]{4}-[0-9]{2}-[0-9]{2}(?: [0-9]{2}:[0-9]{2} UTC)?/;
+  if (buildRe.test(idxHtml)) {
+    idxHtml = idxHtml.replace(buildRe, `Updated: ${buildStamp}`);
+    console.log(`[index.html bake] build stamp -> ${buildStamp}`);
   }
   fs.writeFileSync(idxPath, idxHtml);
   console.log(`[index.html bake] one-day section removed — no RRB/SSC/one-day bake (file deleted per owner request)`);
