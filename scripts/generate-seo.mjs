@@ -617,13 +617,15 @@ function uniqueAboutBlock(subject, track, total, semCount) {
     <p>All documents are UGCF/NEP, free. Confirm your lab batch’s syllabus from your department.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   } else {
-    // Generic but varied for other BA subjects / Programme / GE/VAC/SEC/AEC
+    // Generic but varied for other BA subjects / Programme / GE/VAC/SEC/AEC.
+    // Kept deliberately compact: these pages are numerous, so long paragraphs
+    // repeated verbatim read as boilerplate. The subject name keeps each
+    // instance distinct, and the subject-specific study guide (if any) follows.
     block = `
     <h2>About This Collection — ${esc(s)} ${esc(track)}</h2>
     <p>${esc(s)} ${esc(track)} at Delhi University under NEP/UGCF ( ${cat} stream) focuses on conceptual clarity with semester-wise progression. This collection holds <strong>${total} documents</strong> across ${semCount} semester(s), grouping syllabus, notes and PYQs so you study in DU’s taught order.</p>
-    <p><strong>Exam pattern:</strong> Most papers are 75+25 or 90+10, with a mix of 10-mark shorts and 15-mark essays. Reading the “Course Objectives” on the syllabus tells you exactly what the examiner will ask — DU lifts questions verbatim from there.</p>
-    <p><strong>How to use PYQs:</strong> Don’t just collect PDFs. For each semester, open the syllabus Units 1-4, then the 3 most recent PYQs, and mark which Unit each question came from.  Verified notes here follow one-page-per-unit with PYQ pointers.</p>
-    <p>Recent years (2023-2026) match the current UGCF pattern most closely. Please verify the final unit list from your college PDF or department handout for your batch.</p>
+    <p><strong>Exam pattern:</strong> ${esc(s)} papers under UGCF usually follow a 75+25 or 90+10 split, mixing 10-mark shorts with 15-mark essays. Question themes repeat across years — start from the most recent papers listed above and work backwards.</p>
+    <p>Recent years (2023-2026) match the current UGCF pattern most closely — verify the final unit list from your college PDF or department handout for your batch.</p>
     <p>Official links: <a href="https://www.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">University of Delhi</a> · <a href="http://exam.du.ac.in" target="_blank" rel="noopener" style="color:var(--blue); text-decoration: underline; text-underline-offset: 2px;">DU Exam Portal</a></p>`;
   }
   const guide = getStudyGuide(s);
@@ -1763,7 +1765,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 // NOTE: SITEMAP_EXCLUDE was snapshotted before faceted canonicals were added,
 // so filter on live CANONICAL_OVERRIDES (373 faceted + 12 hardcoded) instead.
 const sitemapPages = [...pages.keys()].filter(f => !noIndexFiles.has(f) && !CANONICAL_OVERRIDES.has(f));
-const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.html',
+const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.html', 'about.html',
      'blog/index.html',
     'blog/du-exam-pattern-ugcf-explained.html',
     'blog/how-to-download-du-admit-card.html',
@@ -1789,7 +1791,7 @@ const sitemapCore = ['', 'du.html', 'datesheet.html', 'guides.html', 'contact.ht
     'blog/du-off-campus-truth.html',
     'blog/du-north-vs-south-vs-off-campus.html',
     'blog/why-sulaksh-for-du-pyqs.html'];
-const guideFiles = fs.readdirSync(process.cwd()).filter(f => /^guide.*\.html$/.test(f));
+const guideFiles = fs.readdirSync(process.cwd()).filter(f => /^guide-.*\.html$/.test(f)); // "guide-*" only — guides.html is already listed in core above
 sitemapCore.push(...guideFiles);
 fs.writeFileSync('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
   + sitemapCore
