@@ -11,6 +11,26 @@ on:
         description: 'Number of parallel shards (1-6)'
         required: false
         default: '4'
+      keys_file:
+        description: 'Optional repo-relative keys file for retries (blank = full archive)'
+        required: false
+        default: ''
+      dpi:
+        description: 'OCR render DPI (150 default, 120 faster)'
+        required: false
+        default: '150'
+      max_pages:
+        description: 'Pages to inspect (2 default, 1 faster)'
+        required: false
+        default: '2'
+      rotations:
+        description: 'Rotations to try (4 default, 1 faster)'
+        required: false
+        default: '4'
+      max_dim:
+        description: 'Cap OCR image long edge in pixels (2600 default)'
+        required: false
+        default: '2600'
 
 permissions:
   contents: write
@@ -44,10 +64,19 @@ jobs:
 
       - name: OCR shard ${{ matrix.shard }}
         run: |
+          EXTRA=""
+          if [ -n "${{ inputs.keys_file }}" ]; then
+            EXTRA="--keys-file ${{ inputs.keys_file }}"
+          fi
           python3 scripts/rebuild-archive-index.py \
             --workers 4 \
             --shard-index ${{ matrix.shard }} \
             --shard-count 4 \
+            --dpi ${{ inputs.dpi }} \
+            --max-pages ${{ inputs.max_pages }} \
+            --rotations ${{ inputs.rotations }} \
+            --max-dim ${{ inputs.max_dim }} \
+            $EXTRA \
             --out /tmp/archive-ocr-${{ matrix.shard }}.jsonl
 
       - name: Upload shard results
@@ -89,9 +118,14 @@ jobs:
 
       - name: Merge with recovered snapshot rows
         run: |
+          BASE=""
+          if [ -f assets/data/pyq-archive-index.json ]; then
+            BASE="--base-index assets/data/pyq-archive-index.json"
+          fi
           python3 scripts/rebuild-archive-index.py \
             --merge \
-            --out /tmp/archive-ocr-results.jsonl
+            --out /tmp/archive-ocr-results.jsonl \
+            $BASE
 
       - name: Show coverage
         run: |

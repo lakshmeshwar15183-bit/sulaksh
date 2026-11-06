@@ -258,11 +258,15 @@ def get_text_layer(doc, max_pages=2):
     return '\n'.join(chunks)
 
 
-def ocr_page(page, dpi=150):
+def ocr_page(page, dpi=150, rotations=4, max_dim=2600):
     pix = page.get_pixmap(dpi=dpi)
     img = Image.frombytes('RGB', [pix.width, pix.height], pix.samples)
+    # Huge scanned pages can make Tesseract crawl; cap the long edge.
+    if max_dim and max(img.size) > max_dim:
+        scale = max_dim / max(img.size)
+        img = img.resize((max(1, int(img.width * scale)), max(1, int(img.height * scale))))
     best_text, best_score = '', -1
-    for rot in (0, 90, 180, 270):
+    for rot in (0, 90, 180, 270)[:max(1, rotations)]:
         im = img.rotate(-rot, expand=True) if rot else img
         try:
             txt = pytesseract.image_to_string(im, config='--psm 6')
@@ -276,16 +280,16 @@ def ocr_page(page, dpi=150):
     return best_text
 
 
-def extract_pdf_text(buf: bytes, dpi=150):
+def extract_pdf_text(buf: bytes, dpi=150, max_pages=2, rotations=4, max_dim=2600):
     doc = fitz.open(stream=buf, filetype='pdf')
     try:
-        text = get_text_layer(doc, max_pages=2)
+        text = get_text_layer(doc, max_pages=max_pages)
         if label_score(text) >= 2:
             return text, 'text'
         all_text = [text]
         best = text
-        for i in range(min(2, doc.page_count)):
-            t = ocr_page(doc[i], dpi=dpi)
+        for i in range(min(max_pages, doc.page_count)):
+            t = ocr_page(doc[i], dpi=dpi, rotations=rotations, max_dim=max_dim)
             all_text.append(t)
             if label_score(t) > label_score(best):
                 best = t
@@ -296,7 +300,7 @@ def extract_pdf_text(buf: bytes, dpi=150):
         doc.close()
 
 
-def process_one(key, dpi=150, retries=3):
+def process_one(key, dpi=150, retries=3, max_pages=2, rotations=4, max_dim=2600):
     if not key.startswith('materials/pyq-archive/pyq/'):
         return {'k': key, 'error': 'unexpected key', 'source': 'skip'}
     last_err = ''
@@ -311,7 +315,7 @@ def process_one(key, dpi=150, retries=3):
                 last_err = 'not a PDF'
                 time.sleep(1 + attempt * 2)
                 continue
-            text, source = extract_pdf_text(r.content, dpi=dpi)
+            text, source = extract_pdf_text(r.content, dpi=dpi, max_pages=max_pages, rotations=rotations, max_dim=max_dim)
             rec = parse_metadata(text, key)
             rec['source'] = source
             return rec
@@ -370,8 +374,18 @@ def sample_keys(keys, n):
     return out
 
 
-def merge_index(keys, recovered, ocr_path: Path, out_path: Path):
+def merge_index(keys, recovered, ocr_path: Path, out_path: Path, base_path: Path = None):
     by_key = {}
+    if base_path and base_path.exists():
+        try:
+            base_rows = json.loads(base_path.read_text())
+            for rec in base_rows:
+                if rec.get('k'):
+                    by_key[rec['k']] = {k: rec.get(k, '') for k in ('k', 't', 's', 'c', 'm', 'y')}
+            print(f'base index: {len(by_key)} rows from {base_path}', flush=True)
+        except Exception as e:
+            print(f'base index skipped ({e})', flush=True)
+    recovered_keys = {m.get('k') for m in recovered if m.get('k')}
     for m in recovered:
         key = m.get('k')
         if not key:
@@ -401,8 +415,8 @@ def merge_index(keys, recovered, ocr_path: Path, out_path: Path):
                     rec = json.loads(line)
                 except Exception:
                     continue
-                if rec.get('k') and not rec.get('error'):
-                    by_key.setdefault(rec['k'], {k: rec.get(k, '') for k in ('k', 't', 's', 'c', 'm', 'y')})
+                if rec.get('k') and not rec.get('error') and rec['k'] not in recovered_keys:
+                    by_key[rec['k']] = {k: rec.get(k, '') for k in ('k', 't', 's', 'c', 'm', 'y')}
     rows = []
     missing = []
     for key in keys:
@@ -427,18 +441,30 @@ def main():
     ap.add_argument('--limit', type=int, default=0)
     ap.add_argument('--shard-index', type=int, default=0)
     ap.add_argument('--shard-count', type=int, default=1)
+    ap.add_argument('--keys-file', type=Path,
+                    help='Optional file of specific B2 keys to process (retries)')
     ap.add_argument('--dpi', type=int, default=150)
+    ap.add_argument('--max-pages', type=int, default=2,
+                    help='PDF pages to inspect/OCR (1 is faster)')
+    ap.add_argument('--rotations', type=int, default=4,
+                    help='Rotations to try when OCR finds no header (1 is faster)')
+    ap.add_argument('--max-dim', type=int, default=2600,
+                    help='Cap OCR image long edge in pixels (0 disables)')
     ap.add_argument('--out', type=Path, default=DEFAULT_OUT)
     ap.add_argument('--index', type=Path, default=DEFAULT_INDEX)
+    ap.add_argument('--base-index', type=Path,
+                    help='Existing index to build on (preserves rows not reprocessed)')
     ap.add_argument('--merge', action='store_true')
     args = ap.parse_args()
 
     keys = load_keys()
+    if args.keys_file:
+        keys = [line.strip() for line in args.keys_file.read_text().splitlines() if line.strip()]
     recovered = load_recovered()
     recovered_keys = {m.get('k') for m in recovered if m.get('k')}
 
     if args.merge:
-        merge_index(keys, recovered, args.out, args.index)
+        merge_index(keys, recovered, args.out, args.index, args.base_index)
         return
 
     todo = [k for k in keys if k not in recovered_keys]
@@ -458,7 +484,7 @@ def main():
     lock = threading.Lock()
 
     def worker(key):
-        rec = process_one(key, dpi=args.dpi)
+        rec = process_one(key, dpi=args.dpi, max_pages=args.max_pages, rotations=args.rotations, max_dim=args.max_dim)
         with lock:
             mode = 'a' if args.out.exists() else 'w'
             with args.out.open(mode, encoding='utf-8') as f:

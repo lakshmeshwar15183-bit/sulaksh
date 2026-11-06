@@ -1,0 +1,125 @@
+name: Build PYQ archive index (fast pass)
+
+# Faster, lighter OCR pass used when the full-quality pass is too slow.
+# 8 shards x 5 workers, first page only, 120 DPI, 2 rotations.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-archive-index-fast
+  cancel-in-progress: false
+
+jobs:
+  ocr:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr
+
+      - name: Install Python dependencies
+        run: pip install --no-cache-dir PyMuPDF pytesseract requests pillow
+
+      - name: OCR shard ${{ matrix.shard }}
+        run: |
+          python3 scripts/rebuild-archive-index.py \
+            --workers 5 \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 8 \
+            --dpi 120 \
+            --max-pages 1 \
+            --rotations 2 \
+            --max-dim 2200 \
+            --out /tmp/archive-ocr-${{ matrix.shard }}.jsonl
+
+      - name: Upload shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive-ocr-${{ matrix.shard }}
+          path: /tmp/archive-ocr-${{ matrix.shard }}.jsonl
+          if-no-files-found: warn
+          retention-days: 7
+
+  merge:
+    needs: ocr
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install --no-cache-dir PyMuPDF pytesseract requests pillow
+
+      - name: Download shard results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: archive-ocr-*
+          path: /tmp/archive-ocr
+          merge-multiple: true
+
+      - name: Combine shards
+        run: |
+          ls -lh /tmp/archive-ocr
+          cat /tmp/archive-ocr/*.jsonl > /tmp/archive-ocr-results.jsonl
+          wc -l /tmp/archive-ocr-results.jsonl
+
+      - name: Merge with recovered snapshot rows
+        run: |
+          python3 scripts/rebuild-archive-index.py \
+            --merge \
+            --out /tmp/archive-ocr-results.jsonl
+
+      - name: Show coverage
+        run: |
+          python3 - <<'PY'
+          import json
+          rows = json.load(open('assets/data/pyq-archive-index.json'))
+          keys = [l.strip() for l in open('scripts/archive-data/keys.txt') if l.strip()]
+          have = {r['k'] for r in rows}
+          missing = [k for k in keys if k not in have]
+          print('index rows:', len(rows))
+          print('archive keys:', len(keys))
+          print('coverage:', f'{len(rows)/len(keys)*100:.2f}%')
+          print('missing:', len(missing))
+          open('/tmp/archive-missing-keys.txt', 'w').write('\n'.join(missing) + ('\n' if missing else ''))
+          PY
+
+      - name: Upload final index and missing keys
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyq-archive-index-fast
+          path: |
+            assets/data/pyq-archive-index.json
+            /tmp/archive-missing-keys.txt
+          retention-days: 30
+
+      - name: Publish fast index branch
+        if: success()
+        run: |
+          git config user.name "sulaksh-archive-bot"
+          git config user.email "bot@sulaksh.online"
+          git checkout -B archive-index-fast
+          git add assets/data/pyq-archive-index.json
+          git commit -m "Fast archive search index ($(date -u '+%F %H:%M') UTC)"
+          git push -f origin HEAD:archive-index-fast
