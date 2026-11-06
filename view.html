@@ -89,7 +89,7 @@ async function findSource(){
   try {
     const first = String(id || '').toLowerCase()[0] || '';
     const shard = /^[0-9a-f]$/.test(first) ? first : 'x';
-    const full = await fetch(`${location.origin}/assets/data/material-shards/${shard}.json`, { cache: 'force-cache' });
+    const full = await fetch(`${location.origin}/assets/data/material-shards/${shard}.json?v=20261107`, { cache: 'force-cache' });
     if (full.ok){
       const rows = await full.json();
       const row = Array.isArray(rows) ? rows.find((x) => x[0] === id) : null;
