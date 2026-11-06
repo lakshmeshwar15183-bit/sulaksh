@@ -21,6 +21,9 @@ jobs:
           node-version: 22
 
       - name: Generate SEO pages from live catalog
+        # The generator falls back to assets/data/materials.json when the API is
+        # offline; keep the deploy step reachable even if generation still fails.
+        continue-on-error: true
         env:
           SULAKSH_API: https://sulaksh-backend-production.up.railway.app
         run: node scripts/generate-seo.mjs

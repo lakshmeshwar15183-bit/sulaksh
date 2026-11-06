@@ -316,10 +316,23 @@ function enrichMaterials(rows) {
   console.log(`[enrich] ${rows.length} rows: merged ${merged} field(s) from snapshot; derived category for ${derivedCat}, semester for ${derivedSem}`);
 }
 
-const res = await fetch(`${API}/api/materials?exam=${encodeURIComponent('DU & College')}`);
 // NOTE: exam-scoped on purpose. The unfiltered listing is capped server-side and a
 // large second exam (PYQ Archive) would crowd DU & College rows out of generation.
-const { materials } = await res.json();
+// If the API is asleep/offline, fall back to the snapshot already committed for
+// the static site so SEO generation and deployment still succeed.
+let materials;
+try {
+  const res = await fetch(`${API}/api/materials?exam=${encodeURIComponent('DU & College')}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  materials = data.materials;
+  if (!Array.isArray(materials) || !materials.length) throw new Error('empty API catalog');
+  console.log(`[catalog] API returned ${materials.length} rows`);
+} catch (e) {
+  const snap = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'assets/data/materials.json'), 'utf8'));
+  materials = Array.isArray(snap) ? snap : (snap.materials || []);
+  console.log(`[catalog] API unavailable (${e.message}); using local snapshot: ${materials.length} rows`);
+}
 // Resilience: re-enrich raw/stale rows BEFORE any classification below
 // (badges, type hubs, semester/year facets all read these fields).
 enrichMaterials(materials);
@@ -334,7 +347,14 @@ for (const m of materials) {
 const totalDocs = materials.length;
 const totalDocsLabel = totalDocs.toLocaleString() + '+'; // e.g., 3,151+
 const totalDocsPlain = totalDocs.toLocaleString();
-console.log(`[counts] totalDocs=${totalDocs} (${totalDocsLabel}) — used for homepage heroDocs and PYQ master index`);
+// The PYQ master index also covers OCR-only archive rows that are not in the
+// materials API snapshot, so use the full static index count when available.
+let archiveDocsLabel = '27,000+';
+try {
+  const arch = JSON.parse(fs.readFileSync('assets/data/pyq-archive-index.json', 'utf8'));
+  if (Array.isArray(arch) && arch.length) archiveDocsLabel = arch.length.toLocaleString('en-US');
+} catch (e) {}
+console.log(`[counts] totalDocs=${totalDocs} (${totalDocsLabel}) archive=${archiveDocsLabel} — used for homepage heroDocs and PYQ master index`);
 
 // material.id -> its static SEO page, so every listing can deep-link to it.
 const idToFile = new Map(materials.map(m => [m.id, `paper/${slug(m.title)}-${m.id.slice(0, 8)}.html`]));
@@ -1594,7 +1614,7 @@ function chipLabel(h) {
 const hubChips = dedupedHubs.slice().sort((a, b) => a.label.localeCompare(b.label))
   .map(h => `<a href="/pyq/${h.file}">${esc(chipLabel(h))}</a>`).join('');
 const hubAbout = `<h2>About This PYQ Library — Delhi University (UGCF/NEP)</h2>
-<p>This master index brings together every Delhi University previous year question paper, syllabus and study material on Sulaksh — BA (Hons) and (Programme), BSc (Hons), BCom (Hons) and (Programme), plus GE, VAC, AEC and SEC courses under UGCF/NEP 2022. Each subject hub is organised semester-wise (Sem 1 to Sem 8) with syllabus, PYQs and notes in the taught order, so you see the reading sequence DU actually uses. All ${totalDocsLabel} documents are free to view instantly, no sign-up.</p>
+<p>This master index brings together every Delhi University previous year question paper, syllabus and study material on Sulaksh — BA (Hons) and (Programme), BSc (Hons), BCom (Hons) and (Programme), plus GE, VAC, AEC and SEC courses under UGCF/NEP 2022. Each subject hub is organised semester-wise (Sem 1 to Sem 8) with syllabus, PYQs and notes in the taught order, so you see the reading sequence DU actually uses. All ${archiveDocsLabel} archive papers are free to view instantly, no sign-up.</p>
 <p><strong>How to use this index:</strong> Start with your programme — e.g., <em>B.Com (Hons)</em>, <em>Political Science Honours</em>, <em>English Honours</em> — then pick your semester. Each semester page shows the DSC order, and the PYQ mapping technique (mark which Unit each past question came from) tells you which units repeat most. Most students need only three past papers per subject to cover the pattern.</p>
 <p><strong>Why PYQs matter:</strong> DU examiners often reuse concepts. The exam pattern (75+25 or 90+10, with 10-mark shorts and 15-mark longs) and marking rubric (definition + example + concluding line, one diagram or quote per answer) repeat every year. Solving PYQs under timed conditions is the single most effective revision.</p>
 <div style="background:rgba(20,108,67,.06);border-left:3px solid #0C2340;padding:10px 12px;border-radius:8px;margin:14px 0"><strong>Study tip for this index:</strong> Open your semester’s syllabus page first, copy the Unit titles in order, make one page per unit, then solve the PYQs shown on the same page. A one-page-per-unit method mirrors DU’s marking scheme and helps toppers compress 200 pages into 20 revision pages. Verify the final unit list and paper code from your college handout — verify details from your college handout.</div>
@@ -1632,56 +1652,91 @@ emit('index.html',
   'Delhi University PYQs & Study Material - Complete Index',
   'Master Index',
   '<p>Browse every Delhi University previous year question paper, syllabus and study material on Sulaksh. All free.</p><div style="background:rgba(214,69,69,.06);border:1px solid rgba(214,69,69,.25);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:13px;line-height:1.6">© <b>Sulaksh — All rights reserved.</b> Papers here are free to view and save for personal study. Copying, re-uploading or redistributing these PDFs on other websites or apps without permission is not permitted and will be treated as a copyright violation.</div>',
-  `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:0 0 18px"><label for="archSearch" style="font-size:14px;font-weight:800;display:block;margin-bottom:8px">🔍 Search the 23,000+ PYQ Archive</label><input id="archSearch" type="search" placeholder="Type paper name — e.g. data privacy, corporate accounting…" autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:var(--bg);color:var(--text);outline:none"><p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">💡 Tip: use this search for best results — type the exact paper name to see every matching PYQ across years. Browsing below is by course; searching finds the paper directly.</p><p id="archCount" style="font-size:12.5px;color:var(--muted);margin:8px 0 0"></p><div id="archResults"></div><button id="archMore" style="display:none;width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-weight:700;font-size:13.5px;cursor:pointer"></button></div>
+  `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:0 0 18px"><label for="archSearch" style="font-size:14px;font-weight:800;display:block;margin-bottom:8px">🔍 Search the 27,000+ PYQ Archive</label><input id="archSearch" type="search" placeholder="Type paper name — e.g. data privacy, corporate accounting…" autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:var(--bg);color:var(--text);outline:none"><p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">💡 Tip: use this search for best results — type the exact paper name to see every matching PYQ across years. Browsing below is by course; searching finds the paper directly.</p><p id="archCount" style="font-size:12.5px;color:var(--muted);margin:8px 0 0"></p><div id="archResults"></div><button id="archMore" style="display:none;width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-weight:700;font-size:13.5px;cursor:pointer"></button></div>
    <script>
    (function(){
-      var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), more=document.getElementById('archMore'), t=null, lastMatches=[], shown=0, index=null, indexPromise=null;
-      // Search the static snapshot the rest of the site already uses. It is
-      // regenerated on every materials sync and keeps search working even when
-      // the API is cold, rate-limited or offline.
-      var INDEX_URL='/assets/data/materials.json';
+      var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), more=document.getElementById('archMore'), t=null, lastMatches=[], shown=0, index=null, indexPromise=null, catalog=null, catalogPromise=null, searchSeq=0;
+      // The full 27,824-paper index is built once from the database export and
+      // served as a static file. Matching happens in the browser, so search
+      // never depends on the Railway API and costs nothing to run.
+      var INDEX_URL='/assets/data/pyq-archive-index.json?v=20261107';
+      var CDN='https://cdn.sulaksh.online/file/';
       function loadIndex(){
         if(index) return Promise.resolve(index);
         if(!indexPromise){
-          indexPromise=fetch(INDEX_URL).then(function(r){
+          indexPromise=fetch(INDEX_URL,{cache:'force-cache'}).then(function(r){
             if(!r.ok) throw new Error('HTTP '+r.status);
             return r.json();
-          }).then(function(d){
-            var rows=(d&&d.materials)||[];
+          }).then(function(rows){
+            if(!Array.isArray(rows)||!rows.length) throw new Error('Empty archive index');
             index=rows.map(function(m){
-              var hay=(String(m.title||'')+' '+String(m.subject||'')+' '+(m.semester?('sem '+m.semester):'')+' '+(m.year||'')).toLowerCase();
-              return {m:m,hay:hay};
+              var title=String(m.t||m.title||'').trim();
+              var subject=String(m.s||m.subject||'').trim();
+              var course=String(m.c||m.course||'').trim();
+              var sem=String(m.m||m.semester||'').trim();
+              var year=String(m.y||m.year||'').trim();
+              var key=String(m.k||m.key||'');
+              var hay=(title+' '+subject+' '+course+(sem?(' sem '+sem):'')+' '+year).toLowerCase();
+              return {k:key,t:title||'Untitled PYQ',s:subject,c:course,m:sem,y:year,hay:hay};
             });
             return index;
           }).catch(function(e){ indexPromise=null; throw e; });
         }
         return indexPromise;
       }
+      // Featured rows are baked into the HTML with an id but no CDN link. Pull
+      // materials.json only when one of their Save buttons is used.
+      function loadCatalog(){
+        if(catalog) return Promise.resolve(catalog);
+        if(!catalogPromise){
+          catalogPromise=fetch('/assets/data/materials.json',{cache:'force-cache'}).then(function(r){
+            if(!r.ok) throw new Error('HTTP '+r.status);
+            return r.json();
+          }).then(function(d){
+            catalog=(d&&d.materials)||[];
+            return catalog;
+          }).catch(function(e){ catalogPromise=null; throw e; });
+        }
+        return catalogPromise;
+      }
       // Acronym/shorthand expansion: 2-letter queries otherwise match substrings
       // like "ml" inside "html". Exact acronym hits search the full paper name.
       var ALIAS={ml:'machine learning', ai:'artificial intelligence', dbms:'database management systems', os:'operating systems', cn:'computer networks', hr:'human resource management', it:'information technology', stats:'statistics', maths:'mathematics', mathematics:'mathematics', eco:'economics', econ:'economics', polsci:'political science', soci:'sociology', phil:'philosophy', sans:'sanskrit', chem:'chemistry', phy:'physics', bio:'biology', zoo:'zoology', bot:'botany', acc:'accounting', fin:'finance', mkt:'marketing', mgmt:'management', cs:'computer science'};
       function terms(q){
         var s=ALIAS[q.toLowerCase().trim()]||q;
-        return s.toLowerCase().split(/\\s+/).filter(Boolean);
+        return s.toLowerCase().trim().split(' ').filter(Boolean);
       }
       function matches(entry, ts){
         for(var i=0;i<ts.length;i++){ if(entry.hay.indexOf(ts[i])<0) return false; }
         return true;
       }
       function rankFirst(arr, q0){
-        // Whole-word hits first, title-starts-with second, substring last.
+        // Exact title, title prefix, title word, subject hits, then the rest.
         function score(entry){
-          var t=' '+String(entry.m.title||'').toLowerCase()+' ';
-          if(t.indexOf(' '+q0+' ')>=0) return 0;
-          if(String(entry.m.title||'').toLowerCase().indexOf(q0)===0) return 1;
-          return 2;
+          var title=entry.t.toLowerCase(), subject=entry.s.toLowerCase();
+          if(title===q0) return 0;
+          if(title.indexOf(q0)===0) return 1;
+          if((' '+title+' ').indexOf(' '+q0+' ')>=0) return 2;
+          if(subject===q0) return 3;
+          if(subject.indexOf(q0)===0) return 4;
+          if((' '+subject+' ').indexOf(' '+q0+' ')>=0) return 5;
+          return 6;
         }
-        return arr.slice().sort(function(a,b){return score(a)-score(b);});
+        return arr.slice().sort(function(a,b){
+          return (score(a)-score(b)) || (Number(b.y||0)-Number(a.y||0)) || a.t.localeCompare(b.t);
+        });
       }
       function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-      function cdnForSave(u){
+      function cdnFor(k, disp){
+        var path=String(k||'').split('/').filter(Boolean).map(encodeURIComponent).join('/');
+        return CDN+path+'?disposition='+(disp||'inline');
+      }
+      function attachmentUrl(u){
+        u=String(u||'');
         if(!u) return '';
-        if(/[?&]disposition=/.test(u)) return u.replace(/([?&])disposition=[^&]*/,'$1disposition=attachment');
+        if(u.indexOf('disposition=')>=0){
+          return u.replace('disposition=inline','disposition=attachment').replace('disposition=view','disposition=attachment');
+        }
         return u+(u.indexOf('?')<0?'?':'&')+'disposition=attachment';
       }
       // Failure card: tappable retry. No ad-blocker blame — the index is local.
@@ -1692,32 +1747,31 @@ emit('index.html',
       }
       function clearSnag(){ meta.onclick=null; meta.style.cursor=''; }
       var DL_ON=true;
-      function hideDl(){ if(DL_ON) return; var els=document.querySelectorAll('#archResults [data-dl], #featList [data-dl]'); for(var i=0;i<els.length;i++){ els[i].style.display='none'; } }
       function row(m){
-        var bits=[m.subject, m.semester?('Sem '+m.semester):'', m.year||''].filter(Boolean).join(' · ');
+        var bits=[m.s,m.c,m.m?('Sem '+m.m):'',m.y||''].filter(Boolean).join(' · ');
         return '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13.5px">'
-          + '<div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">'+esc(m.title)+'</div>'
+          + '<div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">'+esc(m.t)+'</div>'
           + '<div style="font-size:12px;color:var(--muted)">'+esc(bits)+'</div></div>'
-           + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id='+encodeURIComponent(m.id)+'" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
-           + (DL_ON?'<button data-dl="'+esc(m.id)+'" data-cdn="'+esc(cdnForSave(m.cdnUrl))+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button>':'') + '</div></div>';
+          + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="'+esc(cdnFor(m.k,'inline'))+'" target="_blank" rel="noopener" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
+          + (DL_ON?'<a href="'+esc(cdnFor(m.k,'attachment'))+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">Save</a>':'')
+          + '</div></div>';
       }
       document.addEventListener('click', function(e){
-        var b=e.target.closest('#archResults [data-dl], #featList [data-dl]'); if(!b) return;
+        var b=e.target.closest('#featList [data-dl]'); if(!b) return;
         var cdn=b.getAttribute('data-cdn');
         if(cdn){ location.href=cdn; return; }
         // Featured rows are baked into the HTML before the index loads; look the
-        // file up in the snapshot so their Save button works without the API.
+        // file up in the catalog so their Save button works without the API.
         var id=b.getAttribute('data-dl');
-        loadIndex().then(function(){
+        loadCatalog().then(function(){
           var hit=null;
-          for(var i=0;i<index.length;i++){ if(index[i].m.id===id){ hit=index[i].m; break; } }
-          if(hit&&hit.cdnUrl){ location.href=cdnForSave(hit.cdnUrl); }
+          for(var i=0;i<catalog.length;i++){ if(catalog[i].id===id){ hit=catalog[i]; break; } }
+          if(hit&&hit.cdnUrl){ location.href=attachmentUrl(hit.cdnUrl); }
           else { meta.textContent='This file is not available for download right now.'; }
         }).catch(function(){ meta.textContent='Could not load the archive index. Please refresh and try again.'; });
       });
       function renderResults(){
-        box.innerHTML=lastMatches.slice(0,shown).map(function(entry){ return row(entry.m); }).join('');
-        hideDl();
+        box.innerHTML=lastMatches.slice(0,shown).map(function(m){ return row(m); }).join('');
         if(!lastMatches.length){
           meta.textContent='No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
           more.style.display='none';
@@ -1735,19 +1789,21 @@ emit('index.html',
         clearSnag();
         var ts=terms(q);
         if(!ts.length) return;
-        meta.textContent=index?'Searching…':'Loading archive…';
+        var seq=++searchSeq;
+        meta.textContent=index?'Searching…':'Loading the 27,824-paper archive (one-time download)…';
         loadIndex().then(function(){
+          if(seq!==searchSeq) return;
           var found=[];
           for(var i=0;i<index.length;i++){ if(matches(index[i],ts)) found.push(index[i]); }
           lastMatches=rankFirst(found, ts.join(' '));
           shown=Math.min(20,lastMatches.length);
           renderResults();
-        }).catch(function(){ snag(function(){ doSearch(q); }); });
+        }).catch(function(){ if(seq===searchSeq) snag(function(){ doSearch(q); }); });
       }
       input.addEventListener('input', function(){
         clearTimeout(t);
         var q=input.value.trim();
-        if(q.length<2){ box.innerHTML=''; meta.textContent=''; more.style.display='none'; lastMatches=[]; shown=0; return; }
+        if(q.length<2){ searchSeq++; box.innerHTML=''; meta.textContent=''; more.style.display='none'; lastMatches=[]; shown=0; return; }
         clearSnag();
         meta.textContent='Searching…';
         t=setTimeout(function(){ doSearch(q); }, 250);
@@ -1762,7 +1818,7 @@ emit('index.html',
     <h2>Featured PYQs from the Archive</h2>
     <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Hand-picked popular papers — open any to view or save it.</p>
     <div id="featList">${featRows}</div>
-    <p style="font-size:13.5px;margin:10px 0 0"><b>…and 23,000+ more in the archive</b> — <a href="#archSearch" style="color:var(--blue);font-weight:700">type a paper name in the search ↑</a>.</p>
+    <p style="font-size:13.5px;margin:10px 0 0"><b>…and 27,000+ more in the archive</b> — <a href="#archSearch" style="color:var(--blue);font-weight:700">type a paper name in the search ↑</a>.</p>
     <details style="margin-top:14px"><summary style="font-size:13.5px;font-weight:700;color:var(--blue);cursor:pointer">Browse all ${dedupedHubs.length} collections A–Z</summary><div class="rel" style="margin-top:10px">${hubChips}</div></details>
    <h2>Silo Pages — Browse by Programme</h2>
    <div class="rel"><a href="/pyq/bcom-pyqs.html">BCom PYQs</a><a href="/pyq/ba-pyqs.html">BA PYQs</a><a href="/pyq/bsc-pyqs.html">BSc PYQs</a><a href="/pyq/programme-pyqs.html">Programme PYQs</a></div>
