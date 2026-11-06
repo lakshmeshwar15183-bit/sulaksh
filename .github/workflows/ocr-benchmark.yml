@@ -1,0 +1,40 @@
+name: OCR benchmark
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr
+      - name: Install Python dependencies
+        run: pip install --no-cache-dir PyMuPDF pytesseract requests pillow
+      - name: Benchmark five archive PDFs
+        run: |
+          python3 - <<'PY'
+          import importlib.util, json, time, requests
+          spec = importlib.util.spec_from_file_location('rebuild', 'scripts/rebuild-archive-index.py')
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          keys = [l.strip() for l in open('scripts/archive-data/keys.txt') if l.strip()]
+          # spread across folders/sizes
+          picks = keys[0:2] + keys[6000:6001] + keys[12000:12001] + keys[18000:18001]
+          for k in picks:
+              t = time.time()
+              r = requests.get(mod.CDN + k, timeout=90, headers={'User-Agent': mod.UA})
+              dl = time.time() - t
+              t = time.time()
+              text, src = mod.extract_pdf_text(r.content, dpi=120, max_pages=1, rotations=2, max_dim=2200)
+              ocr = time.time() - t
+              rec = mod.parse_metadata(text, k)
+              print(f'{len(r.content)/1024:.0f}KB dl={dl:.2f}s ocr={ocr:.2f}s src={src} title={rec["t"][:70]}')
+          PY
