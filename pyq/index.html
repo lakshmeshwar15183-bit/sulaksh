@@ -72,94 +72,127 @@ footer b{color:#fff}footer a{color:#fff;font-weight:700;text-decoration:none;dis
 <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:0 0 18px"><label for="archSearch" style="font-size:14px;font-weight:800;display:block;margin-bottom:8px">🔍 Search the 23,000+ PYQ Archive</label><input id="archSearch" type="search" placeholder="Type paper name — e.g. data privacy, corporate accounting…" autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:var(--bg);color:var(--text);outline:none"><p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">💡 Tip: use this search for best results — type the exact paper name to see every matching PYQ across years. Browsing below is by course; searching finds the paper directly.</p><p id="archCount" style="font-size:12.5px;color:var(--muted);margin:8px 0 0"></p><div id="archResults"></div><button id="archMore" style="display:none;width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-weight:700;font-size:13.5px;cursor:pointer"></button></div>
    <script>
    (function(){
-      var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), more=document.getElementById('archMore'), t=null, lastEff='', lastTotal=0;
-      var API='https://sulaksh-backend-production.up.railway.app';
-      // Warm up the API while the visitor reads/types (free-tier servers sleep;
-      // first cold request is the #1 cause of "snag" on someone else's phone).
-      fetch(API+'/api/health').catch(function(){});
-      // Retry with backoff: one failed fetch (sleeping server, train tunnel,
-      // Brave shields hiccup) must not end in a dead "snag".
-      function fetchRetry(url, tries){
-        tries=tries||3;
-        function attempt(n){
-          return fetch(url).catch(function(e){
-            if(n<=1) throw e;
-            return new Promise(function(res){ setTimeout(function(){ res(attempt(n-1)); }, 900); });
-          });
+      var input=document.getElementById('archSearch'), box=document.getElementById('archResults'), meta=document.getElementById('archCount'), more=document.getElementById('archMore'), t=null, lastMatches=[], shown=0, index=null, indexPromise=null;
+      // Search the static snapshot the rest of the site already uses. It is
+      // regenerated on every materials sync and keeps search working even when
+      // the API is cold, rate-limited or offline.
+      var INDEX_URL='/assets/data/materials.json';
+      function loadIndex(){
+        if(index) return Promise.resolve(index);
+        if(!indexPromise){
+          indexPromise=fetch(INDEX_URL).then(function(r){
+            if(!r.ok) throw new Error('HTTP '+r.status);
+            return r.json();
+          }).then(function(d){
+            var rows=(d&&d.materials)||[];
+            index=rows.map(function(m){
+              var hay=(String(m.title||'')+' '+String(m.subject||'')+' '+(m.semester?('sem '+m.semester):'')+' '+(m.year||'')).toLowerCase();
+              return {m:m,hay:hay};
+            });
+            return index;
+          }).catch(function(e){ indexPromise=null; throw e; });
         }
-        return attempt(tries);
+        return indexPromise;
       }
-      // Failure card: tappable retry + the Brave/ad-block hint (second cause).
-      function snag(retryFn){
-        meta.innerHTML='Search hit a snag — <u>tap to retry</u>. Tip: Brave shields or ad-blockers sometimes block the archive; allow this site and retry.';
-        meta.style.cursor='pointer';
-        meta.onclick=function(){ meta.onclick=null; meta.style.cursor=''; retryFn(); };
-      }
-      function clearSnag(){ meta.onclick=null; meta.style.cursor=''; }
-      // Honor the admin "Downloads enabled" toggle: hide every Save button when
-      // downloads are off (View always stays). Defaults to visible until the
-      // config check resolves, matching the rest of the site.
-      var DL_ON=true;
-      function hideDl(){ if(DL_ON) return; var els=document.querySelectorAll('#archResults [data-dl], #featList [data-dl]'); for(var i=0;i<els.length;i++){ els[i].style.display='none'; } }
-      fetch(API+'/api/config').then(function(r){return r.json();}).then(function(c){ if(c&&c.downloads_enabled===false){ DL_ON=false; hideDl(); } }).catch(function(){});
       // Acronym/shorthand expansion: 2-letter queries otherwise match substrings
       // like "ml" inside "html". Exact acronym hits search the full paper name.
       var ALIAS={ml:'machine learning', ai:'artificial intelligence', dbms:'database management systems', os:'operating systems', cn:'computer networks', hr:'human resource management', it:'information technology', stats:'statistics', maths:'mathematics', mathematics:'mathematics', eco:'economics', econ:'economics', polsci:'political science', soci:'sociology', phil:'philosophy', sans:'sanskrit', chem:'chemistry', phy:'physics', bio:'biology', zoo:'zoology', bot:'botany', acc:'accounting', fin:'finance', mkt:'marketing', mgmt:'management', cs:'computer science'};
+      function terms(q){
+        var s=ALIAS[q.toLowerCase().trim()]||q;
+        return s.toLowerCase().split(/\s+/).filter(Boolean);
+      }
+      function matches(entry, ts){
+        for(var i=0;i<ts.length;i++){ if(entry.hay.indexOf(ts[i])<0) return false; }
+        return true;
+      }
       function rankFirst(arr, q0){
         // Whole-word hits first, title-starts-with second, substring last.
-        function score(m){
-          var t=' '+String(m.title||'').toLowerCase()+' ';
+        function score(entry){
+          var t=' '+String(entry.m.title||'').toLowerCase()+' ';
           if(t.indexOf(' '+q0+' ')>=0) return 0;
-          if(String(m.title||'').toLowerCase().indexOf(q0)===0) return 1;
+          if(String(entry.m.title||'').toLowerCase().indexOf(q0)===0) return 1;
           return 2;
         }
         return arr.slice().sort(function(a,b){return score(a)-score(b);});
       }
-     function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-     function row(m){
-       var bits=[m.subject, m.semester?('Sem '+m.semester):'', m.year||''].filter(Boolean).join(' · ');
-       return '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13.5px">'
-         + '<div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">'+esc(m.title)+'</div>'
-         + '<div style="font-size:12px;color:var(--muted)">'+esc(bits)+'</div></div>'
-          + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id='+encodeURIComponent(m.id)+'" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
-          + (DL_ON?'<button data-dl="'+esc(m.id)+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button>':'') + '</div></div>';
+      function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+      function cdnForSave(u){
+        if(!u) return '';
+        if(/[?&]disposition=/.test(u)) return u.replace(/([?&])disposition=[^&]*/,'$1disposition=attachment');
+        return u+(u.indexOf('?')<0?'?':'&')+'disposition=attachment';
+      }
+      // Failure card: tappable retry. No ad-blocker blame — the index is local.
+      function snag(retryFn){
+        meta.innerHTML='Search hit a snag — <u>tap to retry</u>.';
+        meta.style.cursor='pointer';
+        meta.onclick=function(){ meta.onclick=null; meta.style.cursor=''; retryFn(); };
+      }
+      function clearSnag(){ meta.onclick=null; meta.style.cursor=''; }
+      var DL_ON=true;
+      function hideDl(){ if(DL_ON) return; var els=document.querySelectorAll('#archResults [data-dl], #featList [data-dl]'); for(var i=0;i<els.length;i++){ els[i].style.display='none'; } }
+      function row(m){
+        var bits=[m.subject, m.semester?('Sem '+m.semester):'', m.year||''].filter(Boolean).join(' · ');
+        return '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13.5px">'
+          + '<div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">'+esc(m.title)+'</div>'
+          + '<div style="font-size:12px;color:var(--muted)">'+esc(bits)+'</div></div>'
+           + '<div style="display:flex;gap:6px;flex-shrink:0"><a href="/view.html?v=4&id='+encodeURIComponent(m.id)+'" style="background:var(--navy);color:#fff;border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px">View</a>'
+           + (DL_ON?'<button data-dl="'+esc(m.id)+'" data-cdn="'+esc(cdnForSave(m.cdnUrl))+'" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 13px;font-weight:700;font-size:12.5px;cursor:pointer">Save</button>':'') + '</div></div>';
       }
       document.addEventListener('click', function(e){
         var b=e.target.closest('#archResults [data-dl], #featList [data-dl]'); if(!b) return;
-       fetch(API+'/api/materials/'+encodeURIComponent(b.getAttribute('data-dl'))+'/download?disposition=inline')
-         .then(function(r){return r.json();}).then(function(d){ if(d&&d.url) location.href=d.url; }).catch(function(){});
-     });
+        var cdn=b.getAttribute('data-cdn');
+        if(cdn){ location.href=cdn; return; }
+        // Featured rows are baked into the HTML before the index loads; look the
+        // file up in the snapshot so their Save button works without the API.
+        var id=b.getAttribute('data-dl');
+        loadIndex().then(function(){
+          var hit=null;
+          for(var i=0;i<index.length;i++){ if(index[i].m.id===id){ hit=index[i].m; break; } }
+          if(hit&&hit.cdnUrl){ location.href=cdnForSave(hit.cdnUrl); }
+          else { meta.textContent='This file is not available for download right now.'; }
+        }).catch(function(){ meta.textContent='Could not load the archive index. Please refresh and try again.'; });
+      });
+      function renderResults(){
+        box.innerHTML=lastMatches.slice(0,shown).map(function(entry){ return row(entry.m); }).join('');
+        hideDl();
+        if(!lastMatches.length){
+          meta.textContent='No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
+          more.style.display='none';
+          return;
+        }
+        meta.textContent='Showing '+shown+' of '+lastMatches.length+' matches — open any paper to view or save it.';
+        if(lastMatches.length>shown){
+          more.style.display='';
+          more.textContent='Show '+(lastMatches.length-shown)+' more results';
+        } else {
+          more.style.display='none';
+        }
+      }
       function doSearch(q){
         clearSnag();
-        var raw=q.toLowerCase();
-        var eff=ALIAS[raw]||q;
-        fetchRetry(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(eff)+'&limit=20')
-          .then(function(r){return r.json();}).then(function(d){
-            var arr=rankFirst((d&&d.materials)||[], eff.toLowerCase());
-            var total=(d&&typeof d.total==='number')?d.total:arr.length;
-            lastEff=eff; lastTotal=total;
-            if(total>arr.length){ more.style.display=''; more.textContent='Show '+(total-arr.length)+' more results'; }
-            else { more.style.display='none'; }
-            meta.textContent=arr.length?('Showing '+arr.length+' of '+total+' matches — open any paper to view or save it.'):'No matches. Try fewer words, e.g. "privacy" instead of "data privacy".';
-            box.innerHTML=arr.map(row).join(''); hideDl();
-          }).catch(function(){ snag(function(){ doSearch(q); }); });
+        var ts=terms(q);
+        if(!ts.length) return;
+        meta.textContent=index?'Searching…':'Loading archive…';
+        loadIndex().then(function(){
+          var found=[];
+          for(var i=0;i<index.length;i++){ if(matches(index[i],ts)) found.push(index[i]); }
+          lastMatches=rankFirst(found, ts.join(' '));
+          shown=Math.min(20,lastMatches.length);
+          renderResults();
+        }).catch(function(){ snag(function(){ doSearch(q); }); });
       }
       input.addEventListener('input', function(){
         clearTimeout(t);
         var q=input.value.trim();
-        if(q.length<2){ box.innerHTML=''; meta.textContent=''; more.style.display='none'; return; }
+        if(q.length<2){ box.innerHTML=''; meta.textContent=''; more.style.display='none'; lastMatches=[]; shown=0; return; }
         clearSnag();
         meta.textContent='Searching…';
-        t=setTimeout(function(){ doSearch(q); }, 300);
+        t=setTimeout(function(){ doSearch(q); }, 250);
       });
       more.addEventListener('click', function(){
-        more.style.display='none'; clearSnag(); meta.textContent='Loading all matches…';
-        fetchRetry(API+'/api/materials?exam='+encodeURIComponent('PYQ Archive')+'&q='+encodeURIComponent(lastEff)+'&limit=100')
-          .then(function(r){return r.json();}).then(function(d){
-            var arr=rankFirst((d&&d.materials)||[], String(lastEff).toLowerCase());
-            meta.textContent=arr.length?('Showing all '+arr.length+' matches — open any paper to view or save it.'):'No matches.';
-            box.innerHTML=arr.map(row).join(''); hideDl();
-          }).catch(function(){ snag(function(){ more.click(); }); });
+        if(!lastMatches.length) return;
+        shown=Math.min(shown+50,lastMatches.length);
+        renderResults();
       });
    })();
    </script>
