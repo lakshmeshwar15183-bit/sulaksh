@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Probe CDN download speed
         run: |
-          for i in 1 2 3; do
-            curl -sS -o /dev/null -w "%{http_code} %{size_download} bytes %{time_total}s\n" \
-              --max-time 30 \
-              "https://cdn.sulaksh.online/file/materials/pyq-archive/pyq/2023/05cbf06a-f805-40c8-ac9d-37d62f0dd9e2.pdf?disposition=inline&cb=$RANDOM"
+          for i in 1 2; do
+            curl -sS -o /dev/null -w "%{http_code} %{size_download} bytes %{time_total}s %{speed_download} B/s\n" \
+              --max-time 45 \
+              "https://cdn.sulaksh.online/file/materials/pyq-archive/pyq/undated/f0c196ec-85e5-4286-87b3-b9e1d43a0dee.pdf?disposition=inline&cb=$RANDOM"
           done
