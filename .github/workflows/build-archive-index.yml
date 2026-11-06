@@ -1,0 +1,158 @@
+name: Build PYQ archive index
+
+# One-time / on-demand rebuild of the 23,814-row static search index.
+# Runs the OCR work in parallel shards on GitHub-hosted runners, then merges
+# the shard output and publishes the resulting JSON on an archive-index-build
+# branch. No Railway backend is used.
+on:
+  workflow_dispatch:
+    inputs:
+      shards:
+        description: 'Number of parallel shards (1-6)'
+        required: false
+        default: '4'
+      keys_file:
+        description: 'Optional repo-relative keys file for retries (blank = full archive)'
+        required: false
+        default: ''
+      dpi:
+        description: 'OCR render DPI (150 default, 120 faster)'
+        required: false
+        default: '150'
+      max_pages:
+        description: 'Pages to inspect (2 default, 1 faster)'
+        required: false
+        default: '2'
+      rotations:
+        description: 'Rotations to try (4 default, 1 faster)'
+        required: false
+        default: '4'
+      max_dim:
+        description: 'Cap OCR image long edge in pixels (2600 default)'
+        required: false
+        default: '2600'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-archive-index
+  cancel-in-progress: false
+
+jobs:
+  ocr:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr
+
+      - name: Install Python dependencies
+        run: pip install --no-cache-dir PyMuPDF pytesseract requests pillow
+
+      - name: OCR shard ${{ matrix.shard }}
+        run: |
+          EXTRA=""
+          if [ -n "${{ inputs.keys_file }}" ]; then
+            EXTRA="--keys-file ${{ inputs.keys_file }}"
+          fi
+          python3 scripts/rebuild-archive-index.py \
+            --workers 4 \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 4 \
+            --dpi ${{ inputs.dpi }} \
+            --max-pages ${{ inputs.max_pages }} \
+            --rotations ${{ inputs.rotations }} \
+            --max-dim ${{ inputs.max_dim }} \
+            $EXTRA \
+            --out /tmp/archive-ocr-${{ matrix.shard }}.jsonl
+
+      - name: Upload shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive-ocr-${{ matrix.shard }}
+          path: /tmp/archive-ocr-${{ matrix.shard }}.jsonl
+          if-no-files-found: warn
+          retention-days: 7
+
+  merge:
+    needs: ocr
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install --no-cache-dir PyMuPDF pytesseract requests pillow
+
+      - name: Download shard results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: archive-ocr-*
+          path: /tmp/archive-ocr
+          merge-multiple: true
+
+      - name: Combine shards
+        run: |
+          ls -lh /tmp/archive-ocr
+          cat /tmp/archive-ocr/*.jsonl > /tmp/archive-ocr-results.jsonl
+          wc -l /tmp/archive-ocr-results.jsonl
+
+      - name: Merge with recovered snapshot rows
+        run: |
+          BASE=""
+          if [ -f assets/data/pyq-archive-index.json ]; then
+            BASE="--base-index assets/data/pyq-archive-index.json"
+          fi
+          python3 scripts/rebuild-archive-index.py \
+            --merge \
+            --out /tmp/archive-ocr-results.jsonl \
+            $BASE
+
+      - name: Show coverage
+        run: |
+          python3 - <<'PY'
+          import json
+          rows = json.load(open('assets/data/pyq-archive-index.json'))
+          keys = [l.strip() for l in open('scripts/archive-data/keys.txt') if l.strip()]
+          print('index rows:', len(rows))
+          print('archive keys:', len(keys))
+          print('coverage:', f'{len(rows)/len(keys)*100:.1f}%')
+          for r in rows[:5]:
+              print(r)
+          PY
+
+      - name: Upload final index
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyq-archive-index
+          path: assets/data/pyq-archive-index.json
+          retention-days: 30
+
+      - name: Publish index branch
+        if: success()
+        run: |
+          git config user.name "sulaksh-archive-bot"
+          git config user.email "bot@sulaksh.online"
+          git checkout -B archive-index-build
+          git add assets/data/pyq-archive-index.json
+          git commit -m "Rebuild PYQ archive search index ($(date -u '+%F %H:%M') UTC)"
+          git push -f origin HEAD:archive-index-build

@@ -1,0 +1,49 @@
+name: OCR benchmark
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr
+      - name: Install Python dependencies
+        run: pip install --no-cache-dir PyMuPDF pytesseract requests pillow
+      - name: Benchmark shard slice with per-file timing
+        run: |
+          python3 -u - <<'PY'
+          import importlib.util, json, time, requests, fitz
+          spec = importlib.util.spec_from_file_location('rebuild', 'scripts/rebuild-archive-index.py')
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          keys = [l.strip() for l in open('scripts/archive-data/keys.txt') if l.strip()]
+          recovered = {m.get('k') for m in json.load(open('scripts/archive-data/recovered.json')) if m.get('k')}
+          todo = [k for k in keys if k not in recovered]
+          picks = todo[0::8][:100]
+          for n, k in enumerate(picks, 1):
+              t = time.time()
+              r = requests.get(mod.CDN + k, timeout=90, headers={'User-Agent': mod.UA})
+              dl = time.time() - t
+              try:
+                  doc = fitz.open(stream=r.content, filetype='pdf')
+                  pages = doc.page_count
+                  rect = doc[0].rect
+                  dims = f'{rect.width:.0f}x{rect.height:.0f}'
+                  doc.close()
+              except Exception as e:
+                  pages, dims = -1, str(e)[:40]
+              t = time.time()
+              text, src = mod.extract_pdf_text(r.content, dpi=120, max_pages=1, rotations=2, max_dim=2200)
+              ocr = time.time() - t
+              rec = mod.parse_metadata(text, k)
+              print(f'{n:02d} {len(r.content)/1024:.0f}KB pages={pages} page={dims} dl={dl:.2f}s ocr={ocr:.2f}s src={src} title={rec["t"][:55]}', flush=True)
+          PY
