@@ -259,7 +259,14 @@ def get_text_layer(doc, max_pages=2):
 
 
 def ocr_page(page, dpi=150, rotations=4, max_dim=2600):
-    pix = page.get_pixmap(dpi=dpi)
+    # Cap the render matrix BEFORE rasterizing; a few archive PDFs have huge
+    # page boxes and get_pixmap(dpi=...) can otherwise allocate/take minutes.
+    zoom = dpi / 72.0
+    rect = page.rect
+    long_edge = max(rect.width, rect.height)
+    if max_dim and long_edge > 0 and long_edge * zoom > max_dim:
+        zoom = max_dim / long_edge
+    pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom))
     img = Image.frombytes('RGB', [pix.width, pix.height], pix.samples)
     # Huge scanned pages can make Tesseract crawl; cap the long edge.
     if max_dim and max(img.size) > max_dim:
