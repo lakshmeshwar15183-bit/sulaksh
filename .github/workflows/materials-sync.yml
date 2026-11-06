@@ -23,7 +23,7 @@ jobs:
           node-version: 22
 
       - name: Fetch generator scripts from main
-        run: git fetch origin main && git checkout origin/main -- scripts/generate-materials.mjs scripts/lib/title-cleanup.mjs assets/data/pyq-archive-index.json
+        run: git fetch origin main && git checkout origin/main -- scripts/generate-materials.mjs scripts/lib/title-cleanup.mjs assets/data/pyq-archive-index.json assets/data/material-shards
 
       - name: Regenerate snapshot (keeps previous on backend outage)
         env:
@@ -34,7 +34,7 @@ jobs:
         run: |
           git config user.name "sulaksh-bot"
           git config user.email "bot@sulaksh.online"
-          git add -f assets/data/materials.json assets/data/subjects.json assets/data/pyq-archive-index.json
+          git add -f assets/data/materials.json assets/data/subjects.json assets/data/pyq-archive-index.json assets/data/material-shards
           git diff --cached --quiet || git commit -m "materials snapshot $(date -u '+%F %H:%M') UTC"
           for i in 1 2 3 4 5; do
             git fetch origin gh-pages
