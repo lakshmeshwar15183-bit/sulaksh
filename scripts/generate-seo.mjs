@@ -1659,16 +1659,28 @@ emit('index.html',
       // The full 27,824-paper index is built once from the database export and
       // served as a static file. Matching happens in the browser, so search
       // never depends on the Railway API and costs nothing to run.
-      var INDEX_URL='/assets/data/pyq-archive-index.json?v=20261107';
+      // Three mirrors: if one host is unreachable, the next one is used.
+      var INDEX_URLS=[
+        '/assets/data/pyq-archive-index.json?v=20261107',
+        'https://raw.githubusercontent.com/lakshmeshwar15183-bit/sulaksh/gh-pages/assets/data/pyq-archive-index.json',
+        'https://cdn.jsdelivr.net/gh/lakshmeshwar15183-bit/sulaksh@gh-pages/assets/data/pyq-archive-index.json'
+      ];
       var CDN='https://cdn.sulaksh.online/file/';
+      function fetchIndexRows(i){
+        i=i||0;
+        if(i>=INDEX_URLS.length) return Promise.reject(new Error('All index mirrors failed'));
+        return fetch(INDEX_URLS[i],{cache:'force-cache'}).then(function(r){
+          if(!r.ok) throw new Error('HTTP '+r.status);
+          return r.json();
+        }).then(function(rows){
+          if(!Array.isArray(rows)||!rows.length) throw new Error('Empty archive index');
+          return rows;
+        }).catch(function(){ return fetchIndexRows(i+1); });
+      }
       function loadIndex(){
         if(index) return Promise.resolve(index);
         if(!indexPromise){
-          indexPromise=fetch(INDEX_URL,{cache:'force-cache'}).then(function(r){
-            if(!r.ok) throw new Error('HTTP '+r.status);
-            return r.json();
-          }).then(function(rows){
-            if(!Array.isArray(rows)||!rows.length) throw new Error('Empty archive index');
+          indexPromise=fetchIndexRows().then(function(rows){
             index=rows.map(function(m){
               var title=String(m.t||m.title||'').trim();
               var subject=String(m.s||m.subject||'').trim();
@@ -1684,6 +1696,8 @@ emit('index.html',
         }
         return indexPromise;
       }
+      // Warm the cache as soon as the searcher focuses the box.
+      input.addEventListener('focus',function(){ loadIndex().catch(function(){}); },{once:true});
       // Featured rows are baked into the HTML with an id but no CDN link. Pull
       // materials.json only when one of their Save buttons is used.
       function loadCatalog(){
