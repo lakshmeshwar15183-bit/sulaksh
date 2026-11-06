@@ -17,5 +17,8 @@ data/
 # OS
 .DS_Store
 
+# One-off archive export artifacts (rebuild locally from the API)
+scripts/archive-data/api-export.json
+
 # Netlify
 .netlify/
