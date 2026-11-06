@@ -7,10 +7,10 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe uncached large CDN file
+      - uses: actions/checkout@v4
+      - name: Probe 40 parallel CDN requests
         run: |
-          for i in 1 2 3; do
-            curl -sS -o /dev/null -w "%{http_code} %{size_download} bytes %{time_total}s %{speed_download} B/s\n" \
-              --max-time 60 \
-              "https://cdn.sulaksh.online/file/materials/pyq-archive/pyq/undated/02579c07-3dd7-42a9-a065-bbb6158d3e64.pdf?disposition=inline&cb=$RANDOM-$i"
-          done
+          head -40 scripts/archive-data/keys.txt > /tmp/probe-keys.txt
+          cat /tmp/probe-keys.txt | xargs -P 40 -I{} sh -c \
+            'curl -sS -o /dev/null -w "%{http_code} %{time_total}\n" --max-time 60 "https://cdn.sulaksh.online/file/{}?disposition=inline&cb=$RANDOM"' > /tmp/par.txt
+          awk '{c[$1]++; t+=$2; if($2>m)m=$2} END {for (s in c) print "status",s,"count",c[s]; print "avg sec",t/NR,"max sec",m}' /tmp/par.txt
