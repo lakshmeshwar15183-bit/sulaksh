@@ -94,7 +94,9 @@ async function handleRequest(request, env) {
   const allowedOrigins = (env.CORS_ORIGINS || '')
     .split(',').map((o) => o.trim()).filter(Boolean);
   const origin = request.headers.get('origin');
-  if (origin && allowedOrigins.length && !allowedOrigins.includes(origin)) {
+  // Same-origin requests (e.g. the admin panel served from this Worker) are
+  // always allowed; the CORS list only gates cross-origin callers.
+  if (origin && origin !== url.origin && allowedOrigins.length && !allowedOrigins.includes(origin)) {
     return json({ error: 'Origin not allowed.' }, 403);
   }
 
@@ -129,6 +131,27 @@ async function dispatch(request, env, method, path, url) {
   }
   if (method === 'GET' && path === '/api/maintenance-status') {
     return json({ enabled: (await getSetting(env, 'maintenance_mode')) === '1' });
+  }
+  // Public flags used by the site's download-button visibility script.
+  if (method === 'GET' && path === '/api/config') {
+    return json({
+      downloads_enabled: (await getSetting(env, 'downloads_enabled')) !== '0',
+      deletes_enabled: (await getSetting(env, 'deletes_enabled')) !== '0',
+    });
+  }
+
+  // ---- /api/certificates ----
+  // Certificate PDFs are not part of the free-tier migration. Keep a safe,
+  // empty surface so the admin panel loads and public verification cleanly
+  // reports "not found" instead of erroring.
+  if (path.startsWith('/api/certificates')) {
+    if (method === 'GET' && /^\/api\/certificates\/verify\//.test(path)) {
+      return json({ status: 'not_found' }, 404);
+    }
+    if (method === 'GET' && path === '/api/certificates') {
+      return json({ certificates: [] });
+    }
+    return json({ error: 'Certificate management is not available on this deployment.' }, 501);
   }
 
   // ---- /api/auth ----
@@ -405,6 +428,35 @@ async function routeAdmin(request, env, method, path, url) {
       await setSetting(env, 'maintenance_mode', enabled ? '1' : '0');
       return json({ enabled });
     }
+  }
+
+  // ---- download / delete button flags ----
+  if (path === '/api/admin/downloads') {
+    if (method === 'GET') return json({ enabled: (await getSetting(env, 'downloads_enabled')) !== '0' });
+    if (method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      const enabled = !!(body && (body.enabled === true || body.enabled === 'true' || body.enabled === 1 || body.enabled === '1'));
+      await setSetting(env, 'downloads_enabled', enabled ? '1' : '0');
+      return json({ enabled });
+    }
+  }
+  if (path === '/api/admin/deletes') {
+    if ((admin.role || 'super') !== 'super') return json({ error: 'Super admin only.' }, 403);
+    if (method === 'GET') return json({ enabled: (await getSetting(env, 'deletes_enabled')) !== '0' });
+    if (method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      const enabled = !!(body && (body.enabled === true || body.enabled === 'true' || body.enabled === 1 || body.enabled === '1'));
+      await setSetting(env, 'deletes_enabled', enabled ? '1' : '0');
+      return json({ enabled });
+    }
+  }
+
+  // ---- reports (empty but valid shapes; report tables are not migrated) ----
+  if (path === '/api/admin/reports' && method === 'GET') {
+    return json({ counts: { open: 0 }, reports: [] });
+  }
+  if (/^\/api\/admin\/reports\/[^/]+$/.test(path) && method === 'PATCH') {
+    return json({ ok: true });
   }
 
   // ---- materials ----

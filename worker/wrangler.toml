@@ -22,7 +22,12 @@ API_RATE_LIMIT = "300"
 PRESIGNED_URL_EXPIRY_SECONDS = "300"
 # Comma-separated list of allowed browser origins for state-changing requests.
 CORS_ORIGINS = "https://sulaksh.online,https://www.sulaksh.online"
-# PUBLIC_CDN_BASE (optional) — if set, downloads return the CDN link instead of presigned.
+# Public CDN in front of Backblaze; downloads return this instead of presigned URLs.
+PUBLIC_CDN_BASE = "https://cdn.sulaksh.online"
+
+# Admin panel is served by this same Worker so cookies stay same-origin.
+[assets]
+directory = "./public"
 
 [[d1_databases]]
 binding = "DB"
