@@ -6,7 +6,7 @@ on:
 jobs:
   bench:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,7 +28,7 @@ jobs:
           keys = [l.strip() for l in open('scripts/archive-data/keys.txt') if l.strip()]
           recovered = {m.get('k') for m in json.load(open('scripts/archive-data/recovered.json')) if m.get('k')}
           todo = [k for k in keys if k not in recovered]
-          picks = todo[0::8][-20:]
+          picks = todo[0::8][:100]
           for n, k in enumerate(picks, 1):
               t = time.time()
               r = requests.get(mod.CDN + k, timeout=90, headers={'User-Agent': mod.UA})
