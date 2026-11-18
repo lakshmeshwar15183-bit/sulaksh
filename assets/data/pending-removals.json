@@ -1,1 +1,692 @@
-{}
+{
+  "paper/16th-and-17th-century-english-drama-pyq-d0867b62.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/basic-calculus-notes-6a76df5e.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-mathematics-832-jan-832-pyq-2025-5a844c52.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-organisation-and-management-7503a-7503a-pyq-2025-2c64a620.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-organisation-and-management-885-885-pyq-2025-92f7e201.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-research-methodology-3657-3657-pyq-2025-debd6c14.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-research-methodology-3692-3692-pyq-2025-4989b183.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-statistics-3683-3683-pyq-2025-ea3c562d.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-statistics-3862-3862-pyq-2025-42c67fd4.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/business-statistics-872-872-pyq-2025-028457d1.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/calculus-pyq-2020-pdf-9b94d3c2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/calculus-pyq-2021-pdf-529866a2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/calculus-pyq-2022-pdf-23e19eea.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/calculus-pyq-2023-pdf-58410ede.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/company-law-3844-3844-pyq-2025-336d5eac.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/company-law-3864-3864-pyq-2025-c21c8441.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/company-law-7603-7603-pyq-2025-0cb189d0.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/company-laws-3702-3702-pyq-2025-c3ccb164.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/computer-applications-in-business-510a-510a-pyq-2025-5497dd7f.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/corporate-accounting-3666-3666-pyq-2025-b0cca529.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/corporate-accounting-3861-3861-pyq-2025-f8b43322.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/corporate-accounting-7601-7601-pyq-2025-de1e63e6.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/corporate-governance-3653-3653-pyq-2025-6f61eb12.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/corporate-governance-3684-3684-pyq-2025-aba2ecce.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/cost-accounting-3686-3686-pyq-2025-b76f0e8d.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/cost-accounting-3863-3863-pyq-2025-8bf7040d.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/cost-accounting-506-506-pyq-2025-f39fe110.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/entrepreneurship-and-new-venture-planning-3652-3652-pyq-2025-216e3450.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/entrepreneurship-and-new-venture-planning-3841-3841-pyq-2025-3abe4676.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/family-business-management-6066-6066-pyq-2025-978851db.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/financial-accounting-851-851-pyq-2025-9bbc4f03.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/financial-management-835-835-pyq-2025-02209016.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/financial-management-835-jan-835-pyq-2025-ded15096.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/financial-management-874-874-pyq-2025-90282697.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/financial-markets-and-institutions-846-846-pyq-2025-63e9140c.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/goods-and-services-tax-and-customs-law-3685-3685-pyq-2025-a9d16f40.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-1-1c7ae6ea.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-10-eec0522f.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-2-f5dcfd66.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-3-dcac6139.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-4-63939373.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-5-ddd16f68.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-6-80de4c3f.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-7-b5c13d73.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-8-658618e7.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-9-ce448bd4.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-hindi-bhasha-sampreshan-notes-7b4f0512.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-a-note-hindi-test-1-6e8401de.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-bhasha-sampreshan-aur-sanchar-pyq-2017-64742cc9.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-bhasha-sampreshan-aur-sanchar-pyq-2022-9fa36923.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-bhasha-sampreshan-aur-sanchar-pyq-2023-paper-1-19d191ea.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/hindi-bhasha-sampreshan-aur-sanchar-pyq-2023-paper-2-1bfd506d.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/human-resource-management-3703-3703-pyq-2025-4d853b99.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/human-resource-management-3846-3846-pyq-2025-20646b38.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/human-resource-management-3866-3866-pyq-2025-aa9a0c96.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/human-resource-management-5009-5009-pyq-2025-44ec85b5.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/income-tax-law-and-practice-5019-5019-pyq-2025-22c749fa.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/income-tax-law-and-practice-831-831-pyq-2025-fd3bfd43.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/income-tax-law-and-practice-871-871-pyq-2025-d9e017b5.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/international-business-3695-3695-pyq-2025-c23e1a55.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/international-business-521-521-pyq-2025-58baab5f.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/international-finance-838-838-pyq-2025-52492066.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/introductory-macroeconomics-1-foundation-of-aggregate-income-determination-pyq-317d58d1.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/investment-management-3697-3697-pyq-2025-9ccd46f2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/investment-management-3868-3868-pyq-2025-ba5607f9.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/management-accounting-4963-4963-pyq-2025-2ba2a662.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/management-accounting-834-834-pyq-2025-088e0013.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/management-accounting-875-875-pyq-2025-bd780a89.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/management-principles-and-applications-849-849-pyq-2025-457a70fe.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-compiled-pyqs-2011-18-part-1-73a975ef.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-compiled-pyqs-2011-18-part-2-cf354c02.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-compiled-pyqs-2011-18-part-3-3d5a2c6f.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-complete-notes-part-1-a63773a4.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-complete-notes-part-2-f93d1bac.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-complete-notes-part-3-bfade665.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-complete-notes-part-4-a403eb35.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-1-cb4be6e5.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-2-275949e6.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-3-4d4688be.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-4-fd0b9a24.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-5-b46678e2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-6-a38bd05c.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-7-47fbf68e.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-extra-notes-part-8-e8a73acb.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-1-d81f31f7.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-2-part-1-b9f95355.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-2-part-2-3319e44d.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-1-f6215f57.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-2-2c0f0136.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-3-fbf7c53a.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-4-8f8359c5.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-5-1b7ae235.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-6-d47116b2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-7-890d8c9e.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-notes-unit-3-part-8-2285f58b.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2011-fc720f01.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2012-26bf0a69.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2016-6febc8e5.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2019-6c8bfba4.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2020-set-a-75c688d1.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2020-set-b-7d4fe9f1.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2021-e432ebaa.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2022-f3e2f7ef.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2023-paper-1-c9e76c7c.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-pyq-2023-paper-2-b1f84489.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-shiv-das-compiled-pyqs-part-1-1ea2c80c.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-shiv-das-compiled-pyqs-part-2-5289a3cf.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-shiv-das-compiled-pyqs-part-3-3c8bfcd4.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/micro-dsc1-shiv-das-compiled-pyqs-part-4-64996f13.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-1-ef04985f.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-10-7bd15699.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-11-85ef3a9b.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-13-80172594.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-2-220c3508.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-3-9b2c57f1.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-6-988f1a4a.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-8-9c841725.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-lecture-9-e6f299df.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2011-aef5a6a2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2012-b60ef271.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2015-7e057d1a.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2016-bf61cca2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2017-e46a66b6.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2018-6fe411b7.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2019-de634a94.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2020-30612ba2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2023-8ea8b6c3.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-pyq-2024-a5b3a8bd.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/mme-question-paper-p-2-pyq-1602c057.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/principles-of-marketing-836-836-pyq-2025-09229754.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/principles-of-marketing-836-jan-836-pyq-2025-4f3c8fe0.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/principles-of-marketing-876-876-pyq-2025-1a7a9ff3.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/stats-2023-pyq-solution-0d2d804c.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/stats-pyq-2021-obe-13cf83a6.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/stats-pyq-2022-paper-2-8b40ba49.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/stats-pyq-2022-sme-1-b54aa1b2.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/stats-pyq-2023-ba6e11e5.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  },
+  "paper/stats-pyq-2024-41080ab7.html": {
+    "firstSeen": "2026-11-18T14:40:54.948Z",
+    "lastSeen": "2026-11-18T14:40:54.948Z",
+    "count": 1
+  }
+}
