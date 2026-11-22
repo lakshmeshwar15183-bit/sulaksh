@@ -105,6 +105,13 @@ async function main() {
   ]);
   if (!mats || !Array.isArray(mats.materials)) throw new Error('materials payload unexpected');
 
+  // Never replace a healthy snapshot with an empty or suspiciously small one
+  // (transient API/filter bug). Keep the last-known-good catalog instead.
+  const prevCount = (prev || []).length;
+  if (!mats.materials.length || (prevCount > 1000 && mats.materials.length < Math.floor(prevCount * 0.8))) {
+    throw new Error(`refusing to overwrite snapshot: fetched ${mats.materials.length} rows, previous ${prevCount}`);
+  }
+
   // Re-enrich raw rows from the previous snapshot (matched by id), then derive
   // the fields the site groups by from the title where still missing.
   const byId = new Map(((prev || [])).filter((s) => s && s.id).map((s) => [s.id, s]));
