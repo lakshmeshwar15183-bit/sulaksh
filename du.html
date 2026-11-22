@@ -2297,6 +2297,29 @@
     return d;
   }
 
+  // The API caps an unpaginated listing at 5,000 rows. DU & College has more
+  // than that, so older uploads (including the Programme syllabus PDFs) were
+  // silently cut off as newer materials arrived. Page through the full list.
+  async function apiGetAll(path) {
+    const sep = path.includes('?') ? '&' : '?';
+    const all = [];
+    let page = 1;
+    let total = null;
+    while (page <= 30) {
+      const d = await apiGet(path + sep + 'limit=1000&page=' + page);
+      if (!d || !Array.isArray(d.materials)) {
+        if (page === 1) return d;
+        break;
+      }
+      all.push(...d.materials);
+      if (typeof d.total === 'number') total = d.total;
+      if (d.materials.length < 1000) break;
+      if (total !== null && all.length >= total) break;
+      page++;
+    }
+    return { materials: all, total: total === null ? all.length : total };
+  }
+
   // The deployed backend build does not always return the enrichment fields
   // (semester / material_category / track / flags) that the category views
   // need. Merge live rows with the same-origin snapshot by id so files stay
@@ -2347,8 +2370,8 @@
       // (1) Static snapshot served from the site itself — always available,
       // independent of the backend, so materials never disappear.
       const [smats, ssubs] = await Promise.all([
-        fetchJsonRetry(`${location.origin}/assets/data/materials.json`),
-        fetchJsonRetry(`${location.origin}/assets/data/subjects.json`),
+        fetchJsonRetry(`${location.origin}/assets/data/materials.json?v=20261122`),
+        fetchJsonRetry(`${location.origin}/assets/data/subjects.json?v=20261122`),
       ]);
       if (smats && Array.isArray(smats.materials)) {
         data = smats;
@@ -2361,7 +2384,7 @@
       const [d, sd] = await Promise.all([
         // Exam-scoped: unfiltered listing is capped server-side and the PYQ Archive
         // push would crowd DU & College rows out (zero-materials bug of Sep 2026).
-        apiGet('/api/materials?exam=' + encodeURIComponent('DU & College')),
+        apiGetAll('/api/materials?exam=' + encodeURIComponent('DU & College')),
         apiGet('/api/subjects?exam=' + encodeURIComponent('DU & College')),
       ]);
       if (d) {
@@ -2371,10 +2394,16 @@
         const liveRows = Array.isArray(d.materials) ? d.materials : [];
         const snapRows = (data && Array.isArray(data.materials)) ? data.materials : [];
         const byId = new Map(snapRows.map((m) => [m.id, m]));
+        const liveIds = new Set(liveRows.map((m) => m.id));
         const merged = liveRows.map((m) => {
           const base = byId.get(m.id);
           return deriveCoreFields(base ? Object.assign({}, base, m) : m);
         });
+        // Keep snapshot-only rows as well. A capped or stale live response
+        // must never make an existing PDF disappear from the listings.
+        for (const s of snapRows) {
+          if (s && s.id && !liveIds.has(s.id)) merged.push(deriveCoreFields(Object.assign({}, s)));
+        }
         if (merged.length) data = Object.assign({}, d, { materials: merged });
         else if (!snapRows.length) data = d; // live empty + no snapshot — keep old behavior
         subjectDBLocal = (sd && sd.subjects) || subjectDBLocal;
