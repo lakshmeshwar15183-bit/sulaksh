@@ -59,6 +59,25 @@ async function get(url) {
   return r.json();
 }
 
+// The API caps an unpaginated listing at 5,000 rows. DU & College is larger
+// than that, so fetch every page instead of silently dropping older uploads.
+async function getAllMaterials(baseUrl) {
+  const all = [];
+  const sep = baseUrl.includes('?') ? '&' : '?';
+  let page = 1;
+  let total = null;
+  while (page <= 50) {
+    const d = await get(`${baseUrl}${sep}limit=1000&page=${page}`);
+    if (!d || !Array.isArray(d.materials)) throw new Error('materials payload unexpected');
+    all.push(...d.materials);
+    if (typeof d.total === 'number') total = d.total;
+    if (d.materials.length < 1000) break;
+    if (total !== null && all.length >= total) break;
+    page++;
+  }
+  return { materials: all, total: total === null ? all.length : total };
+}
+
 function readPreviousRows(file) {
   try {
     const parsed = JSON.parse(fs.readFileSync(path.join(OUT_DIR, file), 'utf8'));
@@ -73,9 +92,10 @@ async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const prev = readPreviousRows('materials.json');
   const [mats, subs] = await Promise.all([
-    // Exam-scoped: the snapshot backs DU & College pages, and the unfiltered
-    // listing is capped server-side (PYQ Archive rows would crowd it out).
-    get(`${API}/api/materials?exam=${encodeURIComponent(EXAM)}`),
+    // Exam-scoped and fully paginated: the snapshot backs DU & College pages,
+    // and the unpaginated listing is capped at 5,000 rows, which used to hide
+    // older uploads as newer materials arrived.
+    getAllMaterials(`${API}/api/materials?exam=${encodeURIComponent(EXAM)}`),
     // A stale backend build can 404 here while materials still work — keep
     // serving the previous subject list instead of failing the whole sync.
     get(`${API}/api/subjects?exam=${encodeURIComponent(EXAM)}`).catch((e) => {
