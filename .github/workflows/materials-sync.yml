@@ -23,12 +23,19 @@ jobs:
           node-version: 22
 
       - name: Fetch generator scripts from main
-        run: git fetch origin main && git checkout origin/main -- scripts/generate-materials.mjs scripts/lib/title-cleanup.mjs assets/data/pyq-archive-index.json assets/data/material-shards
+        run: git fetch origin main && git checkout origin/main -- scripts/generate-materials.mjs scripts/fetch-all-materials.mjs scripts/build-full-material-index.js scripts/lib/title-cleanup.mjs assets/data/pyq-archive-index.json
 
       - name: Regenerate snapshot (keeps previous on backend outage)
         env:
           SULAKSH_API: https://sulaksh-backend-production.up.railway.app
         run: node scripts/generate-materials.mjs
+
+      - name: Rebuild complete viewer shards (all materials, paginated)
+        env:
+          SULAKSH_API: https://sulaksh-backend-production.up.railway.app
+        run: |
+          node scripts/fetch-all-materials.mjs .cache/all-materials-export.json
+          node scripts/build-full-material-index.js .cache/all-materials-export.json assets/data/material-shards
 
       - name: Commit snapshot to gh-pages
         run: |
