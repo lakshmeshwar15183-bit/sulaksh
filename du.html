@@ -2359,6 +2359,81 @@
     if (hero) hero.insertBefore(banner, hero.firstChild);
   }
 
+  function mergeMaterialRow(base, live) {
+    if (!base) return deriveCoreFields(live);
+    const out = Object.assign({}, base, live);
+    // A sparse live row must never erase grouping metadata from the snapshot.
+    for (const k of ['track', 'semester', 'material_category', 'is_pyq', 'is_syllabus', 'is_imp', 'cdnUrl']) {
+      if ((out[k] === undefined || out[k] === null || out[k] === '') && base[k] !== undefined && base[k] !== null && base[k] !== '') {
+        out[k] = base[k];
+      }
+    }
+    return deriveCoreFields(out);
+  }
+
+  // Render a complete materials payload (static snapshot, live API, or cache).
+  function renderMaterialData(data, subjectDBLocal, { fromCache = false, showErrors = true } = {}) {
+    subjectDB = subjectDBLocal;
+    try {
+      const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
+      materialsCache = mats;
+      coreMaterials = mats.filter((m) => (m.category || '').toUpperCase() === 'CORE');
+      // Core grid renders FIRST — it must never be left blank because a
+      // later category failed.
+      renderCoreGrid(mats);
+      CATEGORIES.forEach((cat) => {
+        const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
+        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
+        if (cat === 'CORE') return;
+        try { renderCategory(cat, catMats); } catch (e) { console.error('[du] render ' + cat, e); }
+        const countEl = document.getElementById('catCount-' + cat);
+        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
+      });
+      duLoading = false;
+      try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
+      // Re-render current core view if user navigated before data arrived (fix race: pills stuck empty)
+      try {
+        const curView = window.__coreViewId;
+        const curSub = window.__coreSubject;
+        const curTrack = window.__coreTrack;
+        const curSem = window.__coreSem;
+        const curCat = window.__coreCat;
+        if (curSub && curView) {
+          if (curView === 'viewCoreSubject' && curSub) {
+            if (curSem) renderCoreSubjectSem(curSub, curSem);
+            else renderCoreSubjectView(curSub, curTrack);
+          } else if (curView === 'viewCoreTrack' && curSub) {
+            renderCoreTrackView(curSub);
+          } else if (curView === 'viewCoreCategory' && curSub && curSem && curCat) {
+            renderCoreCategoryView(curSub, curSem, curCat);
+          } else if (curView === 'viewCoreSubject' || curView === 'viewCoreTrack' || curView === 'viewCoreCategory') {
+            renderSemPills(curSub, curSem ? Number(curSem) : null);
+          }
+        }
+      } catch(e){ console.error('[du] reload current view', e); }
+
+      const banner = document.getElementById('duLoadError');
+      if (banner) banner.remove();
+      if (fromCache && showErrors) {
+        showDuErrorBanner();
+        const b2 = document.getElementById('duLoadError');
+        if (b2) {
+          b2.innerHTML =
+            '<strong>Showing saved materials.</strong> ' +
+            'Our live server is temporarily unreachable — these are from your last visit. ' +
+            '<button type="button" onclick="window.__duRetryLoad()">Retry now</button>';
+        }
+      }
+    } catch (err) {
+      console.error('[du] renderMaterialData error:', err);
+      renderCoreGrid([]);
+    } finally {
+      duLoading = false;
+      // Ensure pills exit loading state if still showing
+      try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
+    }
+  }
+
   async function loadMaterials({ showErrors = true } = {}) {
     duLoading = true;
     // Show loading in semester pills if user is already in that view
@@ -2373,11 +2448,17 @@
         fetchJsonRetry(`${location.origin}/assets/data/materials.json?v=20261122`),
         fetchJsonRetry(`${location.origin}/assets/data/subjects.json?v=20261122`),
       ]);
-      if (smats && Array.isArray(smats.materials)) {
+      if (smats && Array.isArray(smats.materials) && smats.materials.length) {
         data = smats;
         subjectDBLocal = (ssubs && Array.isArray(ssubs.subjects)) ? ssubs.subjects : [];
       }
     } catch (err) { /* snapshot missing — fall through to live */ }
+
+    // Render the static snapshot immediately. The page must never wait for
+    // Railway (or show "Guide available") while the live API is slow/down.
+    if (data) {
+      renderMaterialData(data, subjectDBLocal, { showErrors });
+    }
 
     // (2) Live API for fresher data when reachable (worker, then backend direct).
     try {
@@ -2395,14 +2476,11 @@
         const snapRows = (data && Array.isArray(data.materials)) ? data.materials : [];
         const byId = new Map(snapRows.map((m) => [m.id, m]));
         const liveIds = new Set(liveRows.map((m) => m.id));
-        const merged = liveRows.map((m) => {
-          const base = byId.get(m.id);
-          return deriveCoreFields(base ? Object.assign({}, base, m) : m);
-        });
+        const merged = liveRows.map((m) => mergeMaterialRow(byId.get(m.id), m));
         // Keep snapshot-only rows as well. A capped or stale live response
         // must never make an existing PDF disappear from the listings.
         for (const s of snapRows) {
-          if (s && s.id && !liveIds.has(s.id)) merged.push(deriveCoreFields(Object.assign({}, s)));
+          if (s && s.id && !liveIds.has(s.id)) merged.push(mergeMaterialRow(s, s));
         }
         if (merged.length) data = Object.assign({}, d, { materials: merged });
         else if (!snapRows.length) data = d; // live empty + no snapshot — keep old behavior
@@ -2455,65 +2533,7 @@
       return;
     }
 
-    try {
-      const mats = (data.materials || []).filter((m) => (m.exam || '').toLowerCase() === 'du & college');
-      materialsCache = mats;
-      coreMaterials = mats.filter((m) => (m.category || '').toUpperCase() === 'CORE');
-      // Core grid renders FIRST — it must never be left blank because a
-      // later category failed.
-      renderCoreGrid(mats);
-      CATEGORIES.forEach((cat) => {
-        const catMats = mats.filter((m) => (m.category || '').toUpperCase() === cat);
-        dynamicSubjects[cat] = Array.from(new Set(catMats.map((m) => m.subject || 'General').filter(Boolean)));
-        if (cat === 'CORE') return;
-        try { renderCategory(cat, catMats); } catch (e) { console.error('[du] render ' + cat, e); }
-        const countEl = document.getElementById('catCount-' + cat);
-        if (countEl) countEl.textContent = catMats.length + ' file' + (catMats.length === 1 ? '' : 's');
-      });
-      duLoading = false;
-      try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
-      // Re-render current core view if user navigated before data arrived (fix race: pills stuck empty)
-      try {
-        const curView = window.__coreViewId;
-        const curSub = window.__coreSubject;
-        const curTrack = window.__coreTrack;
-        const curSem = window.__coreSem;
-        const curCat = window.__coreCat;
-        if (curSub && curView) {
-          if (curView === 'viewCoreSubject' && curSub) {
-            if (curSem) renderCoreSubjectSem(curSub, curSem);
-            else renderCoreSubjectView(curSub, curTrack);
-          } else if (curView === 'viewCoreTrack' && curSub) {
-            renderCoreTrackView(curSub);
-          } else if (curView === 'viewCoreCategory' && curSub && curSem && curCat) {
-            renderCoreCategoryView(curSub, curSem, curCat);
-          } else if (curView === 'viewCoreSubject' || curView === 'viewCoreTrack' || curView === 'viewCoreCategory') {
-            // Fallback: refresh pills if still in loading state
-            renderSemPills(curSub, curSem ? Number(curSem) : null);
-          }
-        }
-      } catch(e){ console.error('[du] reload current view', e); }
-
-      const banner = document.getElementById('duLoadError');
-      if (banner) banner.remove();
-      if (fromCache && showErrors) {
-        showDuErrorBanner();
-        const b2 = document.getElementById('duLoadError');
-        if (b2) {
-          b2.innerHTML =
-            '<strong>Showing saved materials.</strong> ' +
-            'Our live server is temporarily unreachable — these are from your last visit. ' +
-            '<button type="button" onclick="window.__duRetryLoad()">Retry now</button>';
-        }
-      }
-    } catch (err) {
-      console.error('[du] loadMaterials render error:', err);
-      renderCoreGrid([]);
-    } finally {
-      duLoading = false;
-      // Ensure pills exit loading state if still showing
-      try { renderSemPills(window.__coreSubject || '', window.__coreSem ? Number(window.__coreSem) : null); } catch(e){}
-    }
+    renderMaterialData(data, subjectDBLocal, { fromCache, showErrors });
   }
 
   window.__duRetryLoad = function () {
