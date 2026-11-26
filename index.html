@@ -1064,22 +1064,31 @@ isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super'
     return d;
   }
 
+  let homeMaterialsById = new Map();
+  function rememberHomeRows(rows) {
+    homeMaterialsById = new Map((rows || []).filter((m) => m && m.id).map((m) => [m.id, m]));
+  }
+
   async function loadMaterials() {
     const lists = document.querySelectorAll('.mat-list');
     const errMsg = 'Materials could not be loaded right now — please try again.';
     let mats = null;
     try {
-      const sm = await fetchJsonRetry(`${location.origin}/assets/data/materials.json`);
-      if (sm && Array.isArray(sm.materials)) mats = sm.materials;
+      const sm = await fetchJsonRetry(`${location.origin}/assets/data/materials.json?v=20261122`);
+      if (sm && Array.isArray(sm.materials) && sm.materials.length) mats = sm.materials;
     } catch (e) { /* snapshot missing — fall through */ }
     try {
       const data = await apiGet('/api/materials?exam=' + encodeURIComponent('DU & College'));
       if (data && Array.isArray(data.materials) && data.materials.length) {
-        mats = data.materials;
+        const byId = new Map((mats || []).map((m) => [m.id, m]));
+        const liveIds = new Set(data.materials.map((m) => m.id));
+        const merged = data.materials.map((m) => Object.assign({}, byId.get(m.id) || {}, m));
+        for (const s of (mats || [])) if (s && s.id && !liveIds.has(s.id)) merged.push(s);
+        mats = merged;
         homeCacheSet(mats);
       }
     } catch (err) {
-      mats = null;
+      /* keep static snapshot / cache */
     }
 
     // Last-known-good fallback so a hiccup never shows an empty homepage.
@@ -1090,6 +1099,7 @@ isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super'
       return;
     }
 
+    rememberHomeRows(mats);
     lists.forEach((list) => {
       const exam = list.getAttribute('data-exam').replace('&amp;', '&');
       const items = mats.filter((m) => (m.exam || '').toLowerCase() === exam.toLowerCase());
@@ -1115,6 +1125,15 @@ isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super'
   }
 
   async function materialLink(id, mode) {
+    // Prefer the public CDN URL from the static catalog — no Railway needed.
+    const m = homeMaterialsById.get(id);
+    if (m && m.cdnUrl) {
+      try {
+        const u = new URL(m.cdnUrl, location.origin);
+        u.searchParams.set('disposition', mode);
+        return u.toString();
+      } catch (e) { /* fall through to API */ }
+    }
     const res = await fetch(`${SULAKSH_API}/api/materials/${id}/download?disposition=${mode}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Could not open this file.');
@@ -1122,10 +1141,10 @@ isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super'
   }
   async function viewMaterial(id) {
     adGate.open(async function (win) {
-      try {
-        var url = await materialLink(id, 'inline');
-        if (win && !win.closed) { win.location.href = url; } else { window.open(url, '_blank'); }
-      } catch (e) { if (win && !win.closed) win.close(); alert(e.message); }
+      // Static viewer — resolves the file from the complete shards, so it
+      // works even when the backend is down.
+      const vurl = '/view.html?id=' + encodeURIComponent(id);
+      if (win && !win.closed) { win.location.href = vurl; } else { window.location.href = vurl; }
     });
   }
   async function downloadMaterial(id) {
@@ -1290,5 +1309,6 @@ var sc_security="53812362";
 <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async></script>
 <noscript><div class="statcounter"><a title="Web Analytics" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/13355367/0/53812362/1/" alt="Web Analytics" referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- End of Statcounter Code -->
+<script src="assets/js/nav.js" defer></script>
 </body>
 </html>
