@@ -2833,6 +2833,16 @@
   }
 
   async function materialLink(id, mode) {
+    // Prefer the public CDN URL from the static catalog — no Railway needed.
+    const row = (materialsCache || []).find((m) => m && m.id === id) ||
+                (coreMaterials || []).find((m) => m && m.id === id);
+    if (row && row.cdnUrl) {
+      try {
+        const u = new URL(row.cdnUrl, location.origin);
+        u.searchParams.set('disposition', mode);
+        return u.toString();
+      } catch (e) { /* fall through to API */ }
+    }
     const res = await fetch(`${SULAKSH_API}/api/materials/${id}/download?disposition=${mode}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Could not open this file.');
@@ -3018,5 +3028,6 @@ var sc_security="53812362";
 <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async></script>
 <noscript><div class="statcounter"><a title="Web Analytics" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/13355367/0/53812362/1/" alt="Web Analytics" referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- End of Statcounter Code -->
+<script src="assets/js/nav.js" defer></script>
 </body>
 </html>

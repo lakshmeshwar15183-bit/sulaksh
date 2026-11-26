@@ -384,20 +384,19 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
     try { localStorage.setItem(LIST_CACHE_KEY, JSON.stringify({ t: Date.now(), v: v })); } catch (e) {}
   }
 
-  async function loadMaterials() {
+  let materialsById = new Map();
+  function rememberRows(rows) {
+    materialsById = new Map((rows || []).filter((m) => m && m.id).map((m) => [m.id, m]));
+  }
+  function matIsPyq(m) { return !!(m && (m.is_pyq || m.material_category === 'pyqs')); }
+  function matIsSyllabus(m) { return !!(m && (m.is_syllabus || m.material_category === 'syllabus')); }
+  function matIsImp(m) { return !!(m && (m.is_imp || m.material_category === 'important-questions')); }
+
+  function renderFiltered(mats) {
     const list = document.getElementById('matList');
-    let mats = null;
-    try {
-      const data = await getJsonRetry(`${SULAKSH_API}/api/materials?exam=DU%20%26%20College`);
-      if (data) { mats = data.materials || []; listCacheSet(mats); }
-    } catch (err) { mats = null; }
-    if (!mats) mats = listCacheGet();
-    if (!mats || !mats.length) {
-      list.innerHTML = '<div class="mat-empty">Could not load pyq.</div>';
-      return;
-    }
-    const items = mats.filter((m) =>
-      m.is_pyq &&
+    rememberRows(mats);
+    const items = (mats || []).filter((m) =>
+      matIsPyq(m) &&
       (!EXAM || (m.exam || '').toLowerCase() === EXAM.toLowerCase()) &&
       (!CATEGORY || (m.category || '') === CATEGORY) &&
       (!SUBJECT || (m.subject || '') === SUBJECT) &&
@@ -405,6 +404,46 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
       (!SEM || String(m.semester || '') === SEM)
     );
     renderList(list, items);
+  }
+
+  async function loadMaterials() {
+    const list = document.getElementById('matList');
+    let mats = null;
+
+    // (1) Static snapshot — same origin, always available without Railway.
+    try {
+      const r = await fetch('/assets/data/materials.json?v=20261122', { cache: 'no-store' });
+      if (r.ok) {
+        const snap = await r.json();
+        if (snap && Array.isArray(snap.materials) && snap.materials.length) {
+          mats = snap.materials;
+          renderFiltered(mats);
+        }
+      }
+    } catch (e) { /* fall through to live/cache */ }
+
+    // (2) Live API refresh. Union merge: a capped or stale response can only
+    // add rows, never remove snapshot rows.
+    try {
+      const data = await getJsonRetry(`${SULAKSH_API}/api/materials?exam=DU%20%26%20College`);
+      if (data && Array.isArray(data.materials) && data.materials.length) {
+        const byId = new Map((mats || []).map((m) => [m.id, m]));
+        const liveIds = new Set(data.materials.map((m) => m.id));
+        const merged = data.materials.map((m) => Object.assign({}, byId.get(m.id) || {}, m));
+        for (const s of (mats || [])) if (s && s.id && !liveIds.has(s.id)) merged.push(s);
+        mats = merged;
+        listCacheSet(mats);
+        renderFiltered(mats);
+        return;
+      }
+    } catch (err) { /* keep static/cache */ }
+
+    if (!mats || !mats.length) mats = listCacheGet();
+    if (!mats || !mats.length) {
+      list.innerHTML = '<div class="mat-empty">Could not load pyq.</div>';
+      return;
+    }
+    renderFiltered(mats);
   }
 
   function renderList(list, items) {
@@ -435,6 +474,15 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   }
 
   async function materialLink(id, mode) {
+    // Prefer the public CDN URL from the static catalog — no Railway needed.
+    const m = materialsById.get(id);
+    if (m && m.cdnUrl) {
+      try {
+        const u = new URL(m.cdnUrl, location.origin);
+        u.searchParams.set('disposition', mode);
+        return u.toString();
+      } catch (e) { /* fall through to API */ }
+    }
     const res = await fetch(`${SULAKSH_API}/api/materials/${id}/download?disposition=${mode}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Could not open this file.');
@@ -442,10 +490,10 @@ isAdmin: (function(){var r=localStorage.getItem('sulaksh-role');return r==='admi
   }
   async function viewMaterial(id) {
     adGate.open(async function (win) {
-      try {
-        var url = await materialLink(id, 'inline');
-        if (win && !win.closed) { win.location.href = url; } else { window.open(url, '_blank'); }
-      } catch (e) { if (win && !win.closed) win.close(); alert(e.message); }
+      // Static viewer — resolves the file from the complete shards, so it
+      // works even when the backend is down.
+      const vurl = '/view.html?id=' + encodeURIComponent(id);
+      if (win && !win.closed) { win.location.href = vurl; } else { window.location.href = vurl; }
     });
   }
   async function downloadMaterial(id) {
@@ -581,5 +629,6 @@ var sc_security="53812362";
 <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async></script>
 <noscript><div class="statcounter"><a title="Web Analytics" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/13355367/0/53812362/1/" alt="Web Analytics" referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- End of Statcounter Code -->
+<script src="assets/js/nav.js" defer></script>
 </body>
 </html>
