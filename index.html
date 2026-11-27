@@ -847,7 +847,13 @@ isAdmin: (function(){var r=lsGet('sulaksh-role');return r==='admin'||r==='super'
     window.location.href = 'du.html';
   }
   // Belt-and-braces: never show a stale open modal restored via back/forward cache.
-  window.addEventListener('pageshow', (e) => { if (e.persisted) closeModal('duInfoOverlay'); });
+  // Also re-load materials so a Back-returned page doesn't stay stuck empty.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      closeModal('duInfoOverlay');
+      if (typeof loadMaterials === 'function') loadMaterials();
+    }
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeDuInfo();
   });
