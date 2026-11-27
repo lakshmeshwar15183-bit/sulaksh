@@ -1376,6 +1376,16 @@
     if (p && p[0]) replayCoreFromParts(p);
   }
   window.addEventListener('popstate', () => { restoreFromHash(); });
+
+  // Restore materials + deep-link view when returning from back/forward cache.
+  // popstate alone does NOT re-run loadMaterials() on bfcache restore, so a
+  // visitor clicking Back after the page was frozen mid-load would see a stuck
+  // "Loading semesters…" or "Guide available" placeholder forever.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted && location.hash.startsWith('#c=')) {
+      loadMaterials().then(() => restoreFromHash());
+    }
+  });
   if (location.hash.startsWith('#c=')) { const __p = partsFromHash(); if (__p && __p[0]) { window.__restoring = true; try { replayCoreFromParts(__p); } finally { setTimeout(() => { window.__restoring = false; }, 300); } } }
 
   const CORE_CATEGORIES = [
