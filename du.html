@@ -1593,9 +1593,18 @@
   function renderSemPills(subject, activeSem) {
     const el = document.getElementById('coreSemPills');
     if (!el) return;
+    // Never show "Loading semesters…" when we already have materials cached
+    // (static snapshot or localStorage) — avoids a stuck loading state while
+    // the Railway backend is still waking up.
     if (duLoading && (!coreMaterials || coreMaterials.length === 0)) {
-      el.innerHTML = '<span style="font-size:13px;color:var(--muted);padding:9px 12px;display:inline-block;">Loading semesters…</span>';
-      return;
+      const cached = cacheGet(DU_MAT_CACHE_KEY, 7 * 24 * 60 * 60 * 1000) ||
+                     cacheGetLong(DU_MAT_CACHE_KEY, 7 * 24 * 60 * 60 * 1000);
+      if (cached && cached.length) {
+        // fall through to render using cached data
+      } else {
+        el.innerHTML = '<span style="font-size:13px;color:var(--muted);padding:9px 12px;display:inline-block;">Loading semesters…</span>';
+        return;
+      }
     }
     el.innerHTML = CORE_SEMS.map((n) => {
       const cls = `core-sem-pill${n === activeSem ? ' active' : ''}`;
